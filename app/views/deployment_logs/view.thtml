@@ -1,0 +1,53 @@
+<div class="project">
+<table class="table1">
+<thead>
+<tr>
+
+<th colspan="3">
+	<span class="tabletoptitle">Détails d'un log de déploiment</span>
+	<!--
+	<span class="tabletoplink">
+	<?php echo $ajax->link($html->image( 'arrow_switch.png', array('alt' => 'Déployer le projet', 'title' => 'Déployer le projet')).' Déployer', 
+			'/projects/deploy/' . $project['Project']['id'], 
+			array('update' => 'deploy_area'),
+			null,
+			false,
+			false);?>
+	</span>
+	-->
+</th>
+
+</tr>
+</thead>
+
+<tbody>
+
+<tr>
+<th class="sub">Id</th>
+<td>&nbsp;<?php echo $log['DeploymentLog']['id']?></td>
+</tr>
+
+<tr>
+<th class="sub">Nom du projet associé</th>
+<td>&nbsp;<?php echo $html->link($log['Project']['name'],'/projects/view/'.$log['Project']['id'], array('target' => '_blank'), false, true, false)?></td>
+</tr>
+
+<tr>
+<th class="sub">Nom de la personne ayant fait l'opération</th>
+<td>&nbsp;<?php echo $log['User']['username']?></td>
+</tr>
+
+<tr>
+<th class="sub">Date du déploiement</th>
+<td>&nbsp;<?php  echo $log['DeploymentLog']['created'] ?></td>
+</tr>
+
+<tr>
+<th class="sub">Commentaire</th>
+<td>&nbsp;<?php echo $log['DeploymentLog']['comment']?></td>
+</tr>
+
+</tbody>
+</table>
+
+</div>

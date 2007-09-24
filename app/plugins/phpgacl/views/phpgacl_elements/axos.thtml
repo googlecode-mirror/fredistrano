@@ -1,0 +1,42 @@
+<?php echo $this->renderElement('phpgacl_start', array('crumbs' => array ($plugin_url . '/phpgaclElements/axo_sections' => 'Controllable Elements'))); ?>
+
+<?php if (isset($records) && count($records) > 0): ?>
+	<p>
+	Here is the list of your Controllable Elements. You can <?php echo $phpgaclHtml->link('Add a new Controllable Element', $plugin_url . '/phpgaclElements/edit_axo/' . $section['PhpgaclAxoSection']['value']); ?>
+	</p>
+	
+	<table class="phpgacl-listing">
+		<thead>
+			<tr>
+				<th>Identifier</th>
+				<th>Descriptive Name</th>
+				<td></td>
+			</tr>
+		</thead>
+		<tbody>
+			<?php foreach($records as $index => $record): ?>
+				<tr class="<?php echo ($index % 2 == 0 ? 'even' : 'odd'); ?>">
+					<td><?php echo $record['PhpgaclAxo']['value']; ?></td>
+					<td><?php echo $record['PhpgaclAxo']['name']; ?></td>
+					<td>
+						<?php echo $phpgaclHtml->link('Edit', $plugin_url . '/phpgaclElements/edit_axo/' . $section['PhpgaclAxoSection']['value'] . '/' . $record['PhpgaclAxo']['value']); ?>
+						<?php if (!isset($record['protected']) || !$record['protected']): ?>
+							-
+							<?php echo $phpgaclHtml->link('Delete', $plugin_url . '/phpgaclElements/delete_axo/' . $section['PhpgaclAxoSection']['value'] . '/' . $record['PhpgaclAxo']['value']); ?>
+						<?php endif; ?>
+					</td>
+				</tr>
+			<?php endforeach; ?>
+		</tbody>
+	</table>
+<?php elseif (isset($groups)): ?>
+	<p>
+	There are no Controllable Elements defined. You can start by <?php echo $phpgaclHtml->link('Adding a new Controllable Element', $plugin_url . '/phpgaclElements/edit_axo/' . $section['PhpgaclAxoSection']['value']); ?>
+	</p>
+<?php else: ?>
+	<p>
+	There are no Categories that can be used to categorize your Controllable Elements. You can start by <?php echo $phpgaclHtml->link('Adding a new Category', $plugin_url . '/phpgaclElements/edit_group'); ?>
+	</p>
+<?php endif; ?>
+
+<?php echo $this->renderElement('phpgacl_end'); ?>

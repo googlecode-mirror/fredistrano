@@ -1,0 +1,38 @@
+<?php echo $this->renderElement('phpgacl_start'); ?>
+
+<?php if (isset($records) && count($records) > 0): ?>
+	<p>
+	Here is the list of your categories for controllable elements. You can allways <?php echo $phpgaclHtml->link('Add a new Category', $plugin_url . '/phpgaclElements/edit_group'); ?>
+	</p>
+	
+	<table class="phpgacl-listing">
+		<thead>
+			<tr>
+				<th>Identifier</th>
+				<th>Descriptive Name</th>
+				<td></td>
+			</tr>
+		</thead>
+		<tbody>
+			<?php foreach($records as $index => $record): ?>
+				<tr class="<?php echo ($index % 2 == 0 ? 'even' : 'odd'); ?>">
+					<td><?php echo $record['PhpgaclAxoGroup']['value']; ?></td>
+					<td><?php echo $record['PhpgaclAxoGroup']['name']; ?></td>
+					<td>
+						<?php echo $phpgaclHtml->link('Edit', $plugin_url . '/phpgaclElements/edit_group/' . $record['PhpgaclAxoGroup']['value']); ?>
+						<?php if (!isset($record['protected']) || !$record['protected']): ?>
+							-
+							<?php echo $phpgaclHtml->link('Delete', $plugin_url . '/phpgaclElements/delete_group/' . $record['PhpgaclAxoGroup']['value']); ?>
+						<?php endif; ?>
+					</td>
+				</tr>
+			<?php endforeach; ?>
+		</tbody>
+	</table>
+<?php else: ?>
+	<p>
+	There are no categories defined. You can start by <?php echo $phpgaclHtml->link('Adding a new Category', $plugin_url . '/phpgaclElements/edit_group'); ?>
+	</p>
+<?php endif; ?>
+
+<?php echo $this->renderElement('phpgacl_end'); ?>

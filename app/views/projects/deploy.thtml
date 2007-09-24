@@ -1,0 +1,70 @@
+<hr>
+<form action="<?php echo $html->url('/projects/deploy_result'); ?>" method="post" class="f-wrap-1">
+	<div class="req">
+	</div>
+		<fieldset>
+			<h3>Export Subversion</h3>
+		
+			<label for="ProjectRevision"><b>Revision</b>
+			 	<?php echo $html->input('Project/revision', array('size' => '8', 'class' => 'f-name', 'tabindex=1'));?>
+			 	<br />
+			</label>
+			<?php //echo $error->showMessage('Project/revision');?>
+			
+			<small><a href="#" onclick="Effect.toggle('connectionSettings','slide',{delay: 0.5, duration: 1.5}); return false">Spécifier login SVN</a></small>
+			  <div id="connectionSettings" style="display: none;">
+				<label for="ProjectUser"><b>Utilisateur</b>
+			 		<?php echo $html->input('Project/user', array('size' => '20', 'class' => 'f-name'));?>
+					<br />
+				</label>
+				<?php //echo $error->showMessage('Project/user');?>
+			
+				<label for="ProjectPassword"><b>Mot de passe</b>
+			 		<?php echo $html->password('Project/password', array('size' => '20', 'class' => 'f-name'));?>
+					<br />
+				</label>
+			  </div>
+
+			<?php //echo $error->showMessage('Project/password');?>
+			
+			<?php echo $html->hidden('Project/id', array('value' => $id))?>
+	
+			<div class="f-submit-wrap">
+				<?php echo $ajax->submit('Step 1 - svn export', array('class' => 'f-submit','url' => 'deploy_result','update' => 'deploy_result', 'loading' => "Element.show('spinning_image');", 'complete' => "Element.show('step2');", 'loaded' => "Element.hide('spinning_image');"));?>
+				<?php e($html->imageTag('loading_orange.gif','Loading...',array('id'=>'spinning_image','style'=>'display:none'))); ?>
+			</div>
+		</fieldset>
+</form>
+	
+<div id="step2" style="display:none">
+	<form action="<?php echo $html->url('/projects/synchro'); ?>" method="post" class="f-wrap-1">
+			<fieldset>
+				<h3>Synchronisation avec la Prod</h3>
+				<fieldset class="f-name">
+					<fieldset>
+				<label for="ProjectSimulation"><b>Simulation</b>
+					<!--<b>Simulation</b>-->	<?php e($html->checkbox('Project/simulation', 'Simulation du rsync', array('checked' => 'checked', 'value' => true, 'class' => 'f-checkbox')));	?>
+				<br />
+				
+				</label>
+				
+					
+				<label for="DeploymentLogComment"><b>Commentaire</b>
+		 		<?php echo $html->textarea('DeploymentLog/comment', array( 'rows' => 5, 'class' => 'f-name'));?>
+				<br />
+				</fieldset>
+			</label>
+				</fieldset>
+				<?php echo $html->hidden('Project/id', array('value' => $id))?>
+				
+				<div class="f-submit-wrap">
+					<?php echo $ajax->submit('Step 2 - synchronisation', array('class' => 'f-submit','url' => 'synchro','update' => 'deploy_result', 'loading' => "Element.show('spinning_image2');", 'complete' => "Element.hide('spinning_image2');"));?>
+					<?php e($html->imageTag('loading_orange.gif','Loading...',array('id'=>'spinning_image2','style'=>'display:none'))); ?>
+				</div>
+			</fieldset>	
+	</form>
+</div>
+
+
+
+

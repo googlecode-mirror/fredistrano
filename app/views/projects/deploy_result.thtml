@@ -1,0 +1,17 @@
+<?php
+//pr($this->data);
+
+?>
+
+<div class="console">
+<?php
+	echo "console >";
+	echo "<br>";
+	
+	echo "<pre>";
+	print_r($output);
+	echo "</pre>";
+?> 
+</div>
+
+

@@ -1,0 +1,41 @@
+<?php echo $this->renderElement('phpgacl_start'); ?>
+
+<?php if (isset($records) && count($records) > 0): ?>
+	<p>
+	Here is the list of your Access Type sections. Each Access Type section can have any number of Access Type objects.
+	You can <?php echo $phpgaclHtml->link('Add a new Access Type section', $plugin_url . '/phpgaclElements/edit_aco_section'); ?>
+	</p>
+	
+	<table class="phpgacl-listing">
+		<thead>
+			<tr>
+				<th>Identifier</th>
+				<th>Descriptive Name</th>
+				<th>Objects</th>
+				<td></td>
+			</tr>
+		</thead>
+		<tbody>
+			<?php foreach($records as $index => $record): ?>
+				<tr class="<?php echo ($index % 2 == 0 ? 'even' : 'odd'); ?>">
+					<td><?php echo $record['PhpgaclAcoSection']['value']; ?></td>
+					<td><?php echo $record['PhpgaclAcoSection']['name']; ?></td>
+					<td><?php echo $phpgaclHtml->link((count($record['PhpgaclAco']) > 0 ? count($record['PhpgaclAco']) . ' Object' . (count($record['PhpgaclAco']) > 1 ? 's' : '') : 'Add Object'), $plugin_url . '/phpgaclElements/acos/' . $record['PhpgaclAcoSection']['value']); ?></td>
+					<td>
+						<?php echo $phpgaclHtml->link('Edit', $plugin_url . '/phpgaclElements/edit_aco_section/' . $record['PhpgaclAcoSection']['value']); ?>
+						<?php if (!isset($record['protected']) || !$record['protected']): ?>
+							-
+							<?php echo $phpgaclHtml->link('Delete', $plugin_url . '/phpgaclElements/delete_aco_section/' . $record['PhpgaclAcoSection']['value']); ?>
+						<?php endif; ?>
+					</td>
+				</tr>
+			<?php endforeach; ?>
+		</tbody>
+	</table>
+<?php else: ?>
+	<p>
+	There are no Access Type sections defined. You can start by <?php echo $phpgaclHtml->link('Adding a new Access Type section', $plugin_url . '/phpgaclElements/edit_aco_section'); ?>
+	</p>
+<?php endif; ?>
+
+<?php echo $this->renderElement('phpgacl_end'); ?>

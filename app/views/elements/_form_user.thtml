@@ -1,0 +1,15 @@
+	<?php echo $form->labelTag('User/username', '<b>Login<span class="req">*</span></b>');?>
+ 	<?php echo $html->input('User/username', array('size' => '60', 'class' => 'f-name'));?>
+	<?php echo $error->showMessage('User/username');?>
+
+	<?php echo $form->labelTag('User/first_name', '<b>Prénom<span class="req">*</span></b>');?>
+ 	<?php echo $html->input('User/first_name', array('size' => '60', 'class' => 'f-name'));?>
+	<?php echo $error->showMessage('User/first_name');?>
+
+	<?php echo $form->labelTag('User/last_name', '<b>Nom<span class="req">*</span></b>');?>
+ 	<?php echo $html->input('User/last_name', array('size' => '60', 'class' => 'f-name'));?>
+	<?php echo $error->showMessage('User/last_name');?>
+
+	<?php echo $form->labelTag('User/email', '<b>Email</b>');?>
+ 	<?php echo $html->input('User/email', array('size' => '60', 'class' => 'f-name'));?>
+	<?php echo $error->showMessage('User/email');?>

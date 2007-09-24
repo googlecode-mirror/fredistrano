@@ -1,0 +1,25 @@
+<?php echo $this->renderElement('phpgacl_start', array('crumbs' => array ($plugin_url . '/phpgaclElements/axo_sections' => 'Controllable Element sections'))); ?>
+
+<p>
+	Add or Edit a Controllable Element Section by filling in the following form. All fields marked as <strong>bold</strong> are mandatory.
+</p>
+
+<?php echo $phpgaclHtml->formTag(); ?>
+	<div class="phpgacl-form">
+		<label for="value" class="mandatory">Identifier:</label> 
+		<?php echo $phpgaclHtml->input('PhpgaclAxoSection/value', array('size'=>20, 'id'=>'value')); ?>
+			<?php echo $phpgaclHtml->tagErrorMsg('PhpgaclAxoSection/value', 'You need to specify a valid value.')?>
+			<?php echo $phpgaclHtml->tagErrorMsg('PhpgaclAxoSection/value_unique', 'The value you\'ve specified is already assigned to another record.')?>
+			<?php echo $phpgaclHtml->tagErrorMsg('PhpgaclAxoSection/value_reserved', 'The value you\'ve specified starts with \'controller.\' which is reserved for controllers.')?>
+		<br />
+		<label for="name" class="mandatory">Descriptive Name:</label> 
+		<?php echo $phpgaclHtml->input('PhpgaclAxoSection/name', array('size'=>40, 'id'=>'name')); ?>
+			<?php echo $phpgaclHtml->tagErrorMsg('PhpgaclAxoSection/name', 'You need to specify a name.')?>
+
+		<p class="submit">
+			<?php echo $phpgaclHtml->submit('Save', array('class'=>'submit')); ?>
+		</p>
+	</div>
+</form>
+
+<?php echo $this->renderElement('phpgacl_end'); ?>

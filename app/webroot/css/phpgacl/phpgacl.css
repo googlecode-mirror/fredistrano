@@ -1,0 +1,754 @@
+div.phpgacl 
+{
+	float: left;
+	clear: both;
+	width: 100%;
+	text-align: left;
+	font-family: Arial, Helvetica, Sans-Serif;
+	font-size: 1em;
+}
+
+div.phpgacl a.big
+{
+	font-size: 1.5em;
+}
+
+div.phpgacl a.important
+{
+	font-weight: bold;
+}
+
+div.phpgacl br.break
+{
+	clear: both;
+}
+
+div.phpgacl form
+{
+	margin: 0em;
+	padding: 0em;
+}
+
+div.phpgacl form input.submit
+{
+	padding: 0.5em;
+	font-weight: bold;
+}
+
+div.phpgacl h2
+{
+	margin: 0em;
+	margin-bottom: 0.5em;
+	padding: 0em;
+	padding-bottom: 0.3em;
+	border-bottom: 1px solid #c0c0c0;
+	color: #000000;
+	font-size: 1.8em;
+}
+
+div.phpgacl h3
+{
+	margin: 0em;
+	margin-top: 0.8em;
+	margin-bottom: 0.8em;
+	padding: 0em;
+	color: #000000;
+	font-size: 1.5em;
+}
+
+div.phpgacl h4
+{
+	margin: 0em;
+	margin-bottom: 0.8em;
+	padding: 0em;
+	color: #000000;
+	font-size: 1.2em;
+	font-weight: bold;
+}
+
+div.phpgacl input, div.phpgacl select
+{
+	clear: both;
+	display: block;
+}
+
+div.phpgacl p
+{
+	margin: 0em;
+	padding: 0em;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+div.phpgacl p.center
+{
+	text-align: center;
+}
+
+div.phpgacl ul
+{
+	list-style: none;
+	margin: 0em;
+	margin-top: 1em;
+	padding: 0em;
+}
+
+div.phpgacl ul li
+{
+	margin: 0em;
+	margin-bottom: 0.5em;
+	padding-top: 0.1em;
+	padding-left: 1.5em;
+	line-height: 1em;
+	background: url('../../img/phpgacl/icon-arrow.png') top left no-repeat;
+}
+
+/**
+ * Common elements
+ **/
+ 
+div.phpgacl div.phpgacl-breadcrumb
+{
+	float: left;
+	clear: both;
+	width: 100%;
+	text-align: right;
+	margin-top: -0.5em;
+	margin-bottom: 0.5em;
+}
+
+div.phpgacl div.phpgacl-breadcrumb a
+{
+	font-weight: bold;
+}
+
+div.phpgacl div.phpgacl-form
+{
+	float: left;
+	clear: both;
+	width: 100%;
+	margin: 0em;
+	padding: 0em;
+}
+
+div.phpgacl div.phpgacl-form div.error_message
+{
+	margin: 0em;
+	font-size: 1em;
+}
+
+div.phpgacl div.phpgacl-form label
+{
+	font-size: 1em;
+}
+
+div.phpgacl div.phpgacl-form label.mandatory
+{
+	font-weight: bold;
+}
+
+div.phpgacl div.phpgacl-form input.checkbox
+{
+	clear: none;
+	display: inline;
+	font-size: 1em;
+	font-family: inherit;
+}
+
+div.phpgacl p.submit
+{
+	padding-top: 1em;
+}
+
+div.phpgacl p.submit input.submit
+{
+	padding: 0.2em;
+}
+
+div.phpgacl div.phpgacl-form-message
+{
+	float: left;
+	clear: both;
+	width: 100%;
+	margin: 0em;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+	padding: 0em;
+	background: #f9f9f9;
+	border: 1px solid #c0c0c0;
+}
+
+div.phpgacl div.phpgacl-form-message div.phpgacl-form-message-body
+{
+	padding: 0.5em;
+	color: #800000;
+	font-size: 1.2em;
+	font-weight: bold;
+}
+ 
+div.phpgacl div.phpgacl-footer
+{
+	float: left;
+	clear: both;
+	width: 100%;
+	margin-top: 1em;
+	padding-top: 0.5em;
+	color: #484848;
+	text-align: center;
+	border-top: 1px solid #c0c0c0;
+}
+
+div.phpgacl div.phpgacl-footer a
+{
+	text-decoration: underline;
+}
+
+/**
+ * Table Style Listings
+ **/
+
+table.phpgacl-listing 
+{
+	width: auto;
+	background-color: none;
+	color: #000000;
+	border-collapse: collapse;
+	border: 0em;
+	text-align: left;
+	margin: 0em;
+	padding: 0em;
+}
+
+table.phpgacl-listing thead 
+{
+	background: #efefef;
+	color: #000000;
+}
+
+table.phpgacl-listing thead th 
+{
+	padding: 0.5em;
+	border: 1px solid #9196a2;
+	background: #efefef;
+	font-weight: bold;
+	text-align: left;
+	white-space: nowrap;
+}
+
+table.phpgacl-listing thead th a, table.phpgacl-listing thead th a:link, table.phpgacl-listing thead th a:visited 
+{
+	color: #ffffff;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+table.phpgacl-listing thead th a:hover 
+{
+	text-decoration: underline;
+}
+
+table.phpgacl-listing thead td 
+{
+	background: #ffffff;
+	border-left: 1px solid #9196a2;
+	border-bottom: 1px solid #9196a2;
+	border-top: 0em;
+	border-right: 0em;
+}
+
+table.phpgacl-listing td 
+{
+	padding: 0.5em;
+	border: 1px solid #9196a2;
+	text-align: left;
+}
+
+table.phpgacl-listing tr.even td 
+{
+	background: #ffffff;
+	color: #000000;
+}
+
+table.phpgacl-listing tr.odd td 
+{
+	background: #f9f9f9;
+	color: #000000;
+}
+
+table.phpgacl-listing tr.even th, table.phpgacl-listing tr.odd th  
+{
+	padding: 0.5em;
+	border: 1px solid #9196a2;
+}
+
+table.phpgacl-listing tr.even th 
+{
+	font-weight: bold;
+}
+
+table.phpgacl-listing tr.odd th 
+{
+	font-weight: bold;
+}
+
+/**
+ * Alert window
+ **/
+
+div.phpgacl div.phpgacl-alert
+{
+	float: left;
+	clear: both;
+	background: #f9f9f9;
+	border: 1px solid #c0c0c0;
+	margin-bottom: 1em;
+}
+
+div.phpgacl div.phpgacl-alert div.phpgacl-alert-title
+{
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
+	padding-left: 0.5em;
+	background: #efefef;
+	color: #ff0000;
+	border-bottom: 1px solid #c0c0c0;
+	font-size: 1.1em;
+	font-weight: bold;
+}
+
+div.phpgacl div.phpgacl-alert div.phpgacl-alert-message
+{
+	margin-top: 0.5em;
+	margin-left: 0.5em;
+	padding-left: 4em;
+	padding-right: 0.5em;
+	padding-bottom: 0.2em;
+	color: #800000;
+	font-size: 1.1em;
+}
+
+div.phpgacl div.phpgacl-alert-message-error
+{
+	background: url('../../img/phpgacl/icon-error.png') top left no-repeat;
+}
+
+div.phpgacl div.phpgacl-alert-message-warning
+{
+	background: url('../../img/phpgacl/icon-warning.png') top left no-repeat;
+}
+
+div.phpgacl div.phpgacl-alert div.phpgacl-alert-message p
+{
+	padding-bottom: 0.5em;
+}
+
+div.phpgacl div.phpgacl-alert div.phpgacl-alert-message img
+{
+	margin-right: 0.5em;
+	border: 0px;
+}
+
+/**
+ * Source code Box
+ **/
+
+div.phpgacl code, div.phpgacl pre
+{
+	font-family: Courier New, Verdana, Courier, Arial, Helvetica;
+	font-size: 1em;
+}
+
+div.phpgacl pre.phpgacl-code
+{
+	margin-top: 1em;
+	margin-bottom: 1em;
+	padding-top: 0em;
+	padding-bottom: 0em;
+	background: #f9f9f9;
+	border: 1px solid #c0c0c0;
+}
+
+/**
+ * Control Panel
+ **/
+
+div.phpgacl div.phpgacl-control-panel
+{
+	float: left;
+	clear: both;
+	width: 100%;
+	margin-top: 1.5em;
+	margin-bottom: 1.5em;
+}
+
+div.phpgacl div.phpgacl-control-panel div.phpgacl-panel
+{
+	float: left;
+	width: 14em;
+	min-height: 12em;
+	margin-right: 5em;
+	padding-left: 5em;
+}
+
+div.phpgacl div.phpgacl-control-panel div.phpgacl-panel h3
+{
+	margin: 0em;
+	padding: 0em;
+}
+
+div.phpgacl div.phpgacl-control-panel div.phpgacl-panel-controllers
+{
+	background: url('../../img/phpgacl/controllers.png') top left no-repeat;
+}
+
+div.phpgacl div.phpgacl-control-panel div.phpgacl-panel-help
+{
+	background: url('../../img/phpgacl/help.png') top left no-repeat;
+}
+
+div.phpgacl div.phpgacl-control-panel div.phpgacl-panel-permissions
+{
+	background: url('../../img/phpgacl/permissions.png') top left no-repeat;
+}
+
+div.phpgacl div.phpgacl-control-panel div.phpgacl-panel-users
+{
+	background: url('../../img/phpgacl/users.png') top left no-repeat;
+}
+
+div.phpgacl div.phpgacl-control-panel div.phpgacl-panel ul li
+{
+	line-height: 1.2em;
+}
+
+/**
+ * Controller Management
+ **/
+
+div.phpgacl div.phpgacl-controllers
+{
+	float: left;
+	clear: both;
+	width: 100%;
+	margin: 0em;
+	margin-top: 0.5em;
+}
+
+div.phpgacl div.phpgacl-controllers h3.phpgacl-element-title
+{
+	padding: 0.5em;
+	background: #efefef;
+	border: 1px solid #c0c0c0;
+	font-size: 1.2em;
+	font-weight: bold;
+}
+
+div.phpgacl div.phpgacl-controllers div.phpgacl-controller
+{
+	float: left;
+	margin: 0em;
+	margin-right: 3em;
+}
+
+div.phpgacl div.phpgacl-controllers div.phpgacl-controller h4
+{
+	margin-bottom: 0.5em;
+}
+
+div.phpgacl div.phpgacl-controllers div.phpgacl-controller div.phpgacl-controller-action
+{
+	float: left;
+	clear: both;
+	margin: 0em;
+	margin-bottom: 0.5em;
+	padding: 0em;
+	padding-left: 0.5em;
+}
+
+div.phpgacl div.phpgacl-controllers div.phpgacl-controller div.phpgacl-controller-action input.checkbox
+{
+	margin-top: -0.1em;
+}
+
+/**
+ * Import Groups/Users
+ */
+
+div.phpgacl div.phpgacl-import-groups
+{
+	float: left;
+	clear: both;
+	width: 100%;
+	margin: 0em;
+	padding: 0em;
+}
+
+div.phpgacl div.phpgacl-import-users
+{
+	float: left;
+	clear: both;
+	width: 100%;
+	margin: 0em;
+	padding: 0em;
+}
+ 
+div.phpgacl div.phpgacl-import-elements
+{
+	float: left;
+	clear: both;
+	margin: 0em;
+	padding: 0em;
+	padding-bottom: 0.5em;
+}
+
+div.phpgacl div.phpgacl-import-elements div.phpgacl-import-element
+{
+	float: left;
+	clear: both;
+	margin: 0em;
+	margin-bottom: 0.5em;
+	padding: 0em;
+	font-size: 1.1em;
+}
+
+div.phpgacl div.phpgacl-import-elements div.phpgacl-import-element select
+{
+	display: inline;
+	clear: none;
+}
+
+div.phpgacl div.phpgacl-import-elements div.phpgacl-import-element input.radio
+{
+	float: left;
+	clear: left;
+	margin: 0em;
+	padding: 0em;
+	margin-right: 0.5em;
+}
+
+div.phpgacl div.phpgacl-import-elements div.phpgacl-import-element input.radio
+{
+	margin-top: 0.3em;
+	position: relative;
+	top: -0.4em;
+
+}
+
+/**
+ * Edit User
+ */
+ 
+div.phpgacl div.phpgacl-checkbox-element
+{
+	float: left;
+	clear: both;
+	margin: 0em;
+	margin-top: 1em;
+	padding: 0em;
+}
+
+div.phpgacl div.phpgacl-checkbox-element-indent
+{
+	float: left;
+	clear: both;
+	margin: 0em;
+	margin-left: 1.5em;
+	padding: 0em;
+}
+
+div.phpgacl div.phpgacl-checkbox-element input.checkbox
+{
+	margin-top: -0.1em;
+}
+
+/**
+ * Access Control
+ */
+ 
+div.phpgacl div.phpgacl-permissions-groups
+{
+	float: left;
+	clear: both;
+	margin: 0em;
+	padding: 0em;
+	font-size: 1.2em;
+}
+
+div.phpgacl div.phpgacl-elements
+{
+	float: left;
+	clear: both;
+	width: 100%;
+	margin: 0em;
+	margin-top: 0.5em;
+	padding: 0em;
+}
+
+div.phpgacl div.phpgacl-elements div.phpgacl-element
+{
+	float: left;
+	clear: both;
+	width: 100%;
+	margin: 0em;
+	margin-bottom: 0.5em;
+	padding: 0em;
+}
+
+div.phpgacl div.phpgacl-elements div.phpgacl-element h3.phpgacl-element-title
+{
+	padding: 0.5em;
+	background: #efefef;
+	border: 1px solid #c0c0c0;
+	font-size: 1.2em;
+	font-weight: bold;
+}
+
+div.phpgacl div.phpgacl-elements div.phpgacl-element div.phpgacl-section
+{
+	float: left;
+	width: 20em;
+	min-height: 10em;
+	margin: 0em;
+	margin-left: 0.8em;
+	margin-right: 3em;
+}
+
+div.phpgacl div.phpgacl-elements div.phpgacl-element div.phpgacl-section-access
+{
+	float: left;
+	width: 20em;
+	margin: 0em;
+	margin-left: 0.8em;
+	margin-right: 3em;
+}
+
+div.phpgacl div.phpgacl-elements div.phpgacl-element div.phpgacl-section h4
+{
+	margin-bottom: 0.5em;
+}
+
+div.phpgacl div.phpgacl-elements div.phpgacl-element div.phpgacl-section-object
+{
+	float: left;
+	clear: both;
+	width: 100%;
+	margin: 0em;
+	margin-bottom: 0.5em;
+	padding: 0em;
+	padding-left: 0.5em;
+	color: #505050;
+	font-size: 0.8em;
+}
+
+div.phpgacl div.phpgacl-elements div.phpgacl-element span.phpgacl-section-object-name
+{
+	width: 5em;
+	color: #000000;
+	font-size: 1.2em;
+}
+
+div.phpgacl div.phpgacl-elements div.phpgacl-element div.phpgacl-section-object input.radio
+{
+	display: inline;
+	clear: none;
+	margin-top: 0.1em;
+	margin-right: 0.3em;
+	position: relative;
+	top: 0.1em;
+}
+
+div.phpgacl div.phpgacl-elements div.phpgacl-element div.phpgacl-section-object input.checkbox
+{
+	position: relative;
+	margin-top: -0.1em;
+}
+
+div.phpgacl div.phpgacl-elements div.phpgacl-element div.phpgacl-section-object div.phpgacl-section-object-checks
+{
+	float: left;
+	clear: both;
+	width: 100%;
+	margin: 0em;
+	margin-left: 0.5em;
+	padding: 0em;
+}
+
+div.phpgacl div.phpgacl-elements div.phpgacl-element div.phpgacl-section-object div.phpgacl-section-object-checks div.phpgacl-section-object-check
+{
+	float: left;
+	clear: both;
+	width: 100%;
+	margin: 0em;
+	margin-top: 0.5em;
+	padding: 0em;
+	color: #ffffff;
+	font-size: 1.1em;
+	font-weight: normal;
+}
+
+div.phpgacl div.phpgacl-elements div.phpgacl-element div.phpgacl-section-object div.phpgacl-section-object-checks div.phpgacl-section-object-check-pass
+{
+	background: url('../../img/phpgacl/check-pass.png') top left no-repeat;
+}
+
+div.phpgacl div.phpgacl-elements div.phpgacl-element div.phpgacl-section-object div.phpgacl-section-object-checks div.phpgacl-section-object-check-fail
+{
+	background: url('../../img/phpgacl/check-fail.png') top left no-repeat;
+}
+
+div.phpgacl div.phpgacl-elements div.phpgacl-element div.phpgacl-section-object div.phpgacl-section-object-checks div.phpgacl-section-object-check div.phpgacl-section-object-check-content
+{
+	float: left;
+	clear: both;
+	padding: 0.5em;
+	padding-top: 0.2em;
+	padding-left: 2.5em;
+	margin-left: 0.2em;
+}
+
+div.phpgacl div.phpgacl-elements div.phpgacl-element div.phpgacl-section-object div.phpgacl-section-object-checks div.phpgacl-section-object-check-pass div.phpgacl-section-object-check-content
+{
+	color: #000000;
+}
+
+div.phpgacl div.phpgacl-elements div.phpgacl-element div.phpgacl-section-object div.phpgacl-section-object-checks div.phpgacl-section-object-check-fail div.phpgacl-section-object-check-content
+{
+	padding-top: 0.3em;
+	padding-bottom: 0.6em;
+	color: #a0a0a0;
+}
+
+/**
+ * Help
+ **/
+
+div.phpgacl div.phpgacl-help
+{
+	float: left;
+	clear: both;
+	width: 100%;
+	margin: 0em;
+	margin-bottom: 1.5em;
+	padding: 0em;
+}
+
+div.phpgacl div.phpgacl-help
+{
+	line-height: 1.3em;
+	font-size: 1.2em;
+}
+
+div.phpgacl div.phpgacl-help em
+{
+	font-size: 1em;
+}
+
+div.phpgacl div.phpgacl-help p
+{
+	margin-bottom: 1em;
+}
+
+div.phpgacl div.phpgacl-help ul
+{
+	margin-bottom: 1em;
+}

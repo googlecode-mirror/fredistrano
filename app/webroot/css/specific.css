@@ -1,0 +1,14 @@
+.console {background-color: black;color: green;font-weight: bold;padding: 0.5em 0 0.5em 0.5em;height:200px;overflow:auto;}
+
+.tabletoplink {float: right;padding-right: 2px;font-size: 75%;}
+.tabletoplink a {text-decoration:none;}
+.tabletoplink a:hover{text-decoration:none;color:#069;}
+.tabletoplink ul {list-style:none;}
+.tabletoplink ul li {background-image:none;}
+.tabletoplink img {vertical-align: middle;}
+
+.tabletoptitle {float: left;}
+
+#backlink {text-align:right;margin-bottom:5px;}
+#backlink a {text-decoration:none;}
+#backlink img {vertical-align: middle;}

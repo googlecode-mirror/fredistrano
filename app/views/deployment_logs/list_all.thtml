@@ -1,0 +1,45 @@
+<div class="deploymentLogs">
+<h2>Logs des déploiements</h2>
+
+<?php 
+if (!isset($this->params['url']['showArchived'])){
+	echo $html->link('[inclure les logs archivés]','/deploymentLogs/list_all?showArchived' ); 
+}else{
+	echo $html->link('[ignorer les logs archivés]','/deploymentLogs/list_all' ); 
+}
+?>
+<?php
+
+ 	if (!sizeof($logs)) {
+ 		echo 'Pas de logs enregistrés<br/><br/><br/><br/>';
+ 	} else {
+ 		if (!empty($filter)) {
+ 			echo 'Résultats filtrés par : ';
+ 			if (isset($filter['person'])) {
+ 				echo 'personne|<b>' . $filter['person'].'</b> ';
+ 			}
+ 			if (isset($filter['project'])) {
+ 				echo 'projet|<b>' . $filter['project'].'</b>';
+ 			}
+ 			echo ' '.$html->link('[X]','/deploymentLogs/list_all' ).'';
+ 		}
+ 		echo '<ul>';
+ 		$lastdate = null;
+ 		foreach($logs as $log) {
+ 			$created = strtotime($log['DeploymentLog']['created']);
+ 			$newdate = date("d/m/Y",$created);
+ 			$com = $log['DeploymentLog']['comment'];
+ 			$com = (strlen($com) > 10 )? substr($com, 0, 20).'...':$com;
+ 			if ($newdate != $lastdate) {
+ 				$lastdate = $newdate;
+ 				echo '<h3>'.$newdate.'</h3>';
+ 			}
+ 			$line = $html->link(date("H:i:s",$created),'/deploymentLogs/view/'.$log['DeploymentLog']['id']).' : déploiement de <b>'.
+ 				$log['Project']['name'].'</b> par <b>'. $log['User']['username'].'</b> [<i>'. $com .'</i>]';
+ 			echo '<li>'.$line.'</li>';
+		}
+		echo '</ul>';
+	}
+
+?>
+</div>

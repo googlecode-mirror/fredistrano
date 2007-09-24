@@ -1,0 +1,32 @@
+<?php echo $this->renderElement('phpgacl_start', array('crumbs' => array ($plugin_url . '/phpgaclElements/aco_sections' => 'Access Types', $plugin_url . '/phpgaclElements/acos/' . $section['PhpgaclAcoSection']['value'] => $section['PhpgaclAcoSection']['name']))); ?>
+
+<p>
+	Add or Edit an Access Type by filling in the following form. All fields marked as <strong>bold</strong> are mandatory.
+</p>
+
+<?php echo $phpgaclHtml->formTag(); ?>
+	<?php
+	$defaults = array();
+	
+	if (isset($protected) && $protected)
+	{
+		$defaults['disabled'] = true;
+	}
+	?>
+	<div class="phpgacl-form">
+		<label for="value" class="mandatory">Identifier:</label> 
+		<?php echo $phpgaclHtml->input('PhpgaclAco/value', am(array('size'=>20, 'id'=>'value'), $defaults)); ?>
+			<?php echo $phpgaclHtml->tagErrorMsg('PhpgaclAco/value', 'You need to specify a valid value.')?>
+			<?php echo $phpgaclHtml->tagErrorMsg('PhpgaclAco/value_unique', 'The value you\'ve specified is already assigned to another record.')?>
+		<br />
+		<label for="name" class="mandatory">Descriptive Name:</label> 
+		<?php echo $phpgaclHtml->input('PhpgaclAco/name', array('size'=>40, 'id'=>'name')); ?>
+			<?php echo $phpgaclHtml->tagErrorMsg('PhpgaclAco/name', 'You need to specify a name.')?>
+
+		<p class="submit">
+			<?php echo $phpgaclHtml->submit('Save', array('class'=>'submit')); ?>
+		</p>
+	</div>
+</form>
+
+<?php echo $this->renderElement('phpgacl_end'); ?>

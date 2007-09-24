@@ -1,0 +1,41 @@
+<?php echo $this->renderElement('phpgacl_start'); ?>
+
+<div class="phpgacl-help">
+	<p>
+		This plugin is not protected from unauthorized access by default to allow you to set up its settings without being rejected. However, and once
+		you have set permissions accordingly, you can enable protection by uncomenting the following lines located in the file 
+		<code><?php echo APP . 'plugins' . DS . 'phpgacl' . DS . 'phpgacl_app_controller.php'; ?></code>:
+	</p>
+	
+		<?php echo $this->renderElement('phpgacl_code', array ('code'=> '<' . "?php
+		var \$gacl = array(
+			'get' => array (
+				'type' => 'session',
+				'value' => 'User'
+			),
+			'denied' => array (
+				'type' => 'redirect',
+				'value' => '/'
+			)
+		);
+	?" . '>')); ?>
+	
+	<p>
+		Bear in mind that at least your user account should be assigned to a group that has enabled access to <strong>all</strong> controllers and actions 
+		defined in this plugin. You can easily locate which controller/actions belong to this plugin since all controllers start with the name
+		<code>Phpgacl</code>.
+	</p>
+	
+	<p>
+		Once the plugin is protected, it will look for a key named <code>User</code> in the session to find the current user identifier. This key can hold
+		a string, or an indexed array with the index <code>id</code>. Those accounts that try to access the plugin and don't have the necessary privileges
+		will be redirected to your home CakePHP application URL.
+	</p>
+	
+	<p>
+		If you wish to change the behaviour used to obtain the user identifier, or the action executed when access is denied, learn how to modify the 
+		<code>$gacl</code> setting in <?php echo $phpgaclHtml->link('How to use phpGACL to protect your controllers', $plugin_url . '/phpgaclHelps/index/secure#protect'); ?>
+	</p>
+</div>
+
+<?php echo $this->renderElement('phpgacl_end'); ?>

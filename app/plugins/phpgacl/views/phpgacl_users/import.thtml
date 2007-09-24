@@ -1,0 +1,144 @@
+<?php echo $this->renderElement('phpgacl_start'); ?>
+
+<?php if (count($models) > 0): ?>
+	<?php 
+	$jsBlock = '
+		var _phpgacl_Current = new Array();
+		
+		_phpgacl_Current["group"] = null;
+		_phpgacl_Current["user"] = null;
+		
+		function jsPhpgaclModelClicked(section, model)
+		{
+			if (document && document.getElementById)
+			{
+				var oSelectIdentifier = null;
+				var oSelectName = null;
+				
+				if (_phpgacl_Current[section] != null)
+				{
+					oSelectIdentifier = document.getElementById("phpgacl_" + section + "_" + _phpgacl_Current[section] + "_identifier");
+					oSelectName = document.getElementById("phpgacl_" + section + "_" + _phpgacl_Current[section] + "_name");
+	
+					if (oSelectIdentifier && oSelectName)
+					{
+						oSelectIdentifier.disabled = true;
+						oSelectName.disabled = true;
+					}
+				}
+				
+				if (model != "")
+				{
+					oSelectIdentifier = document.getElementById("phpgacl_" + section + "_" + model + "_identifier");
+					oSelectName = document.getElementById("phpgacl_" + section + "_" + model + "_name");
+					
+					if (oSelectIdentifier && oSelectName)
+					{
+						oSelectIdentifier.disabled = false;
+						oSelectName.disabled = false;
+						
+						_phpgacl_Current[section] = model;
+					}
+				}
+				else
+				{
+					_phpgacl_Current[section] = null;
+				}
+			}
+		}
+	';
+	
+	echo $javascript->codeBlock($jsBlock);
+	?>
+	
+	<p>
+		Select from which models you wish to import your groups and/or users. You can only select one model to use when importing groups, and one model to use
+		when importing users. For each selected model, you will need to choose which field will be used when creating the identifier for that record on phpGACL, and which
+		one will act as the descriptive name.
+	</p>
+	
+	<?php echo $this->renderElement('phpgacl_form_message'); ?>
+	
+	<?php echo $phpgaclHtml->formTag(); ?>
+		<div class="phpgacl-import-groups">
+			<h4>Import Groups</h4>
+			
+			<div class="phpgacl-import-elements">
+				<div class="phpgacl-import-element">
+					<?php echo $phpgaclHtml->radio('Model/group', array('' => ' I won\'t be importing groups'), null, array('class'=>'radio', 'onClick'=>'jsPhpgaclModelClicked(\'group\', this.value);')); ?>
+				</div>
+				<?php foreach($models as $model): ?>
+					<div class="phpgacl-import-element">
+						<?php echo $phpgaclHtml->radio('Model/group', array($model['value'] => ' Import from model <strong>' . $model['name'] . '</strong>'), null, array('class'=>'radio', 'onClick'=>'jsPhpgaclModelClicked(\'group\', this.value);')); ?>
+						using field
+						<?php echo $phpgaclHtml->selectTag('Model/group_identifier', $model['columns'], (isset($model['columns']['id']) ? 'id' : null), array('disabled'=>true, 'id'=>'phpgacl_group_' . $model['value'] . '_identifier'), null, false); ?>
+						as identifier,
+						and field
+						<?php echo $phpgaclHtml->selectTag('Model/group_name', $model['columns'], (isset($model['columns']['name']) ? 'name' : null), array('disabled'=>true, 'id'=>'phpgacl_group_' . $model['value'] . '_name'), null, false); ?>
+						as descriptive name.
+					</div>
+				<?php endforeach; ?>
+			</div>
+		</div>
+		
+		<div class="phpgacl-import-users">
+			<h4>Import Users</h4>
+			
+			<div class="phpgacl-import-elements">
+				<div class="phpgacl-import-element">
+					<?php echo $phpgaclHtml->radio('Model/user', array('' => ' I won\'t be importing users'), null, array('class'=>'radio', 'onClick'=>'jsPhpgaclModelClicked(\'user\', null, this.value);')); ?>
+				</div>
+				<?php foreach($models as $model): ?>
+					<div class="phpgacl-import-element">
+						<?php echo $phpgaclHtml->radio('Model/user', array($model['value'] => ' Import from model <strong>' . $model['name'] . '</strong>'), null, array('class'=>'radio', 'onClick'=>'jsPhpgaclModelClicked(\'user\', this.value);')); ?>
+						using field
+						<?php echo $phpgaclHtml->selectTag('Model/user_identifier', $model['columns'], (isset($model['columns']['id']) ? 'id' : null), array('disabled'=>true, 'id'=>'phpgacl_user_' . $model['value'] . '_identifier'), null, false); ?>
+						as identifier,
+						and field
+						<?php echo $phpgaclHtml->selectTag('Model/user_name', $model['columns'], (isset($model['columns']['user']) ? 'user' : (isset($model['columns']['name']) ? 'name' : null)), array('disabled'=>true, 'id'=>'phpgacl_user_' . $model['value'] . '_name'), null, false); ?>
+						as descriptive name.
+					</div>
+				<?php endforeach; ?>
+			</div>
+		</div>
+	
+		<p class="center">
+			<?php echo $phpgaclHtml->hidden('Model/submit', '1'); ?>
+			<?php echo $phpgaclHtml->submit('Import groups and users', array('class'=>'submit')); ?>
+		</p>
+	
+	</form>
+	
+	<?php
+	$jsBlock = '';
+	
+	if (isset($data) && $data['Model']['group'] != '')
+	{
+		$jsBlock .= '
+			jsPhpgaclModelClicked("group", "' . $data['Model']['group'] . '");
+		';
+	}
+	
+	if (isset($data) && $data['Model']['user'] != '')
+	{
+		$jsBlock .= '
+			jsPhpgaclModelClicked("user", "' . $data['Model']['user'] . '");
+		';
+	}
+	
+	if ($jsBlock != '')
+	{
+		echo $javascript->codeBlock($jsBlock, false);
+	}
+	?>
+	
+<?php else: ?>
+	<p>
+		You have no models defined for this CakePHP application. In order to import your groups and/or users into phpGACL, this plugin needs to get the
+		information from your application models. Either create the models that describe the element you wish to import, or go to
+		<?php echo $phpgaclHtml->link('Manage Groups', $plugin_url . '/phpgaclUsers/groups'); ?> or
+		<?php echo $phpgaclHtml->link('Manage Users', $plugin_url . '/phpgaclUsers/users'); ?> to create records.
+	</p>
+<?php endif; ?>
+
+<?php echo $this->renderElement('phpgacl_end'); ?>

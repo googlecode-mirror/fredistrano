@@ -1,0 +1,13 @@
+<?php echo $html->formTag('/users/login', 'post', array('class' => 'f-wrap-1')) ?>
+    <fieldset>
+	    <h6>Identification</h6>
+	    
+	    <?php echo $form->labelTag('User/username', 'Utilisateur :') ?>
+	    <?php echo $html->input('User/username', array('size' => 15, 'class' => 'f-name')); ?>
+	    
+	    <?php echo $form->labelTag('User/password', 'Mot de passe :') ?>
+	    <?php echo $html->password('User/password', array('size' => 15, 'class' => 'f-name')); ?>
+	    
+	    <?php echo $html->submit('Login', array('class' => 'f-submit')); ?>
+	</fieldset>
+</form>

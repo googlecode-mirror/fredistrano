@@ -1,0 +1,51 @@
+<div class="projects">
+<h2>Liste des Projects</h2>
+
+<table class="table1">
+<?php
+$pagination->setPaging($paging); // Initialize the pagination variables
+$th = array (
+            $pagination->sortBy('id'),
+            $pagination->sortBy('name','Nom du projet'),
+            $pagination->sortBy('svn_url', 'URL SVN'),
+            '',
+            '',
+            ''
+); // Generate the pagination sort links
+echo $html->tableHeaders($th); // Create the table headers with sort links if desired
+
+foreach ($data as $output)
+{
+    $tr = array (
+        $output['Project']['id'],
+        $html->link($output['Project']['name'], "/projects/view/{$output['Project']['id']}"),
+        $output['Project']['svn_url'],
+        //$output['Project']['prd_url'],
+        //$output['Project']['prd_path'],
+        $html->link($html->image( 'b_search.png', array('alt' => 'Afficher', 'title' => 'Afficher')),
+			"/projects/View/{$output['Project']['id']}",
+			null,
+			false,
+			false),
+        $html->link($html->image( 'b_edit.png', array('alt' => 'Modifier', 'title' => 'Modifier')),
+			"/projects/edit/{$output['Project']['id']}",
+			null,
+			false,
+			false),
+        $html->link($html->image( 'b_drop.png', array('alt' => 'Supprimer', 'title' => 'Supprimer')),
+			'/projects/delete/' . $output['Project']['id'],
+			null,
+			'Etes vous certain de vouloir supprimer le projet : ' . $output['Project']['name'] . '?',
+			false,
+			false )
+        );
+    echo $html->tableCells($tr,array('class'=>'altRow'),array('class'=>'evenRow'));
+}
+?>
+</table>
+<? echo $this->renderElement('pagination'); // Render the pagination element ?>
+
+</div>
+
+
+

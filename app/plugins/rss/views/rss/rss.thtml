@@ -1,0 +1,22 @@
+<?php
+    vendor("feedcreator/feedcreator.class");
+
+    $rss = new UniversalFeedCreator();
+    $rss->title = $feedTitle;
+    $rss->description = "";
+    $rss->link = FULL_BASE_URL;
+    $rss->syndicationURL = FULL_BASE_URL + '/rss' + $modelName;
+    $rss->cssStyleSheet = "";
+
+    foreach ($rssData as $new) {
+			$item = new FeedItem();
+			$item->title = $new['title'];
+			$item->link = FULL_BASE_URL . $new['link'];
+			$item->guid = FULL_BASE_URL . $new['link'];
+			$item->description = $new['desc'];
+			$item->date = $time->toRSS($new['created']);
+    	$rss->addItem($item);
+    }
+
+    $rss->outputFeed("RSS2.0");
+?>

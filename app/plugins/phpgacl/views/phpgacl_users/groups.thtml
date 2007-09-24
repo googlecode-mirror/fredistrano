@@ -1,0 +1,38 @@
+<?php echo $this->renderElement('phpgacl_start'); ?>
+
+<?php if (isset($records) && count($records) > 0): ?>
+	<p>
+	Here is the list of your groups. You can allways <?php echo $phpgaclHtml->link('Import new groups', $plugin_url . '/phpgaclUsers/import'); ?>
+	or <?php echo $phpgaclHtml->link('Add a new Group', $plugin_url . '/phpgaclUsers/edit_group'); ?>
+	</p>
+	
+	<table class="phpgacl-listing">
+		<thead>
+			<tr>
+				<th>Identifier</th>
+				<th>Descriptive Name</th>
+				<td></td>
+			</tr>
+		</thead>
+		<tbody>
+			<?php foreach($records as $index => $record): ?>
+				<tr class="<?php echo ($index % 2 == 0 ? 'even' : 'odd'); ?>">
+					<td><?php echo $record['PhpgaclAroGroup']['value']; ?></td>
+					<td><?php echo $record['PhpgaclAroGroup']['name']; ?></td>
+					<td>
+						<?php echo $phpgaclHtml->link('Edit', $plugin_url . '/phpgaclUsers/edit_group/' . $record['PhpgaclAroGroup']['value']); ?>
+						-
+						<?php echo $phpgaclHtml->link('Delete', $plugin_url . '/phpgaclUsers/delete_group/' . $record['PhpgaclAroGroup']['value']); ?>
+					</td>
+				</tr>
+			<?php endforeach; ?>
+		</tbody>
+	</table>
+<?php else: ?>
+	<p>
+	There are no groups defined. You can start by <?php echo $phpgaclHtml->link('Importing your groups', $plugin_url . '/phpgaclUsers/import'); ?>
+	or <?php echo $phpgaclHtml->link('Adding a new Group', $plugin_url . '/phpgaclUsers/edit_group'); ?>
+	</p>
+<?php endif; ?>
+
+<?php echo $this->renderElement('phpgacl_end'); ?>

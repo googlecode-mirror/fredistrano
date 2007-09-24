@@ -1,0 +1,19 @@
+	<?php echo $form->labelTag('Project/name', '<b>Nom du  projet<span class="req">*</span></b>');?>
+ 	<?php echo $html->input('Project/name', array('size' => '60', 'class' => 'f-name'));?>
+	<?php echo $error->showMessage('Project/name');?>
+
+	<?php echo $form->labelTag('Project/svn_url', '<b>Url SVN<span class="req">*</span></b>');?>
+ 	<?php echo $html->input('Project/svn_url', array('size' => '60', 'class' => 'f-name'));?>
+	<?php echo $error->showMessage('Project/svn_url');?>
+
+	<?php echo $form->labelTag('Project/prd_url', '<b>Url de l\'application<span class="req">*</span></b>');?>
+ 	<?php echo $html->input('Project/prd_url', array('size' => '60', 'class' => 'f-name'));?>
+	<?php echo $error->showMessage('Project/prd_url');?>
+
+	<?php echo $form->labelTag('Project/prd_path', '<b>Répertoire du projet sur le serveur de prod</b>');?>
+ 	<?php echo $html->input('Project/prd_path', array('size' => '60', 'class' => 'f-name'));?>
+	<?php echo $error->showMessage('Project/prd_path');?>
+	
+	<?php echo $form->labelTag('Project/config_path', '<b>Répertoire des fichiers de configuration du projet (ex: app/config)</b>');?>
+ 	<?php echo $html->input('Project/config_path', array('size' => '60', 'class' => 'f-name'));?>
+	<?php echo $error->showMessage('Project/config_path');?>	

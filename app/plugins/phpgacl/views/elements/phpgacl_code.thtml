@@ -1,0 +1,1 @@
+<pre class="phpgacl-code"><?php echo str_replace(array('<code>', '</code>'), '', highlight_string($code, true)); ?></pre>

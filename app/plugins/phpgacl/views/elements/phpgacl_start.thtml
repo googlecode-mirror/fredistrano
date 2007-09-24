@@ -1,0 +1,38 @@
+<?php echo $phpgaclHtml->css('phpgacl/phpgacl'); ?>
+
+<div class="phpgacl">
+
+	<?php if (!$gacl_api_installed): ?>
+		<?php echo $this->renderElement('phpgacl_alert', array (
+			'type' => 'error',
+			'title' => 'phpGACL API is not installed',
+			'message' => '
+			phpGACL API files don\'t appear to be installed on your vendors path. Before proceeding with the installation, please follow the instructions
+			included below to install the API. After installing, refresh this page to continue.			'
+		)); ?>
+	<?php elseif ($gacl_installed && !$is_secured): ?>
+		<?php echo $this->renderElement('phpgacl_alert', array(
+			'title' => 'This plugin is not protected', 
+			'message' => 'This plugin is not protected from unauthorized access. Because of the way it is currently configured, anyone can access it as long as they
+										know its URL. If you are developing your application and you are sure that no unauthorized users can access it,
+										then you need to take no further action. Otherwise read ' . $phpgaclHtml->link('Secure the phpGACL plugin from unauthorized access', $plugin_url . '/phpgaclHelps/index/secure_plugin', array('class'=>'important')) . ' to secure this plugin.'
+		)); ?>
+	<?php endif; ?>
+	
+	<?php if (isset($phpgacl_title)): ?>
+		<h2><?php echo $phpgacl_title; ?></h2>
+	<?php endif; ?>
+	
+	<?php if (!isset($is_index) || !$is_index): ?>
+		<div class="phpgacl-breadcrumb">
+			<?php echo $phpgaclHtml->link('Go back to Control Panel', $plugin_url); ?>
+			<?php if (isset($crumbs) && count($crumbs) > 0): ?>
+				<?php foreach($crumbs as $link => $text): ?>
+					<?php $phpgaclHtml->addCrumb($text, $link); ?>
+				<?php endforeach; ?>
+				
+				-
+				<?php echo $phpgaclHtml->getCrumbs(' - '); ?>
+			<?php endif; ?>
+		</div>
+	<?php endif; ?>

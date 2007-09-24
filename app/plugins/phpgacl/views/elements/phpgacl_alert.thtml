@@ -1,0 +1,22 @@
+<?php
+if (!isset($type) || !in_array(strtolower($type), array('error', 'warning'))):
+	$type = 'warning';
+else:
+	$type = strtolower($type);
+endif;
+
+if ($type == 'error'):
+	$title = 'ERROR: ' . $title;
+else:
+	$title = 'WARNING: ' . $title;
+endif;
+?>
+
+<div class="phpgacl-alert">
+	<div class="phpgacl-alert-title"><?php echo $title; ?></div>
+	<div class="phpgacl-alert-message phpgacl-alert-message-<?php echo $type; ?>">
+		<p>
+			<?php echo $message; ?>
+		</p>
+	</div>
+</div>

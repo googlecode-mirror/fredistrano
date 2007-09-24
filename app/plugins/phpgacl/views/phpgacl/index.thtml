@@ -1,0 +1,50 @@
+<?php echo $this->renderElement('phpgacl_start'); ?>
+
+<p>
+	This is your phpGACL Control Panel, which lets you manage phpGACL's information for your CakePHP application. Select one of the options below to proceed.
+</p>
+
+<div class="phpgacl-control-panel">
+
+	<div class="phpgacl-panel phpgacl-panel-users">
+		<h3>Users and Groups</h3>
+		
+		<ul>
+			<li><?php echo $phpgaclHtml->link('Import Groups / Users', $plugin_url . '/phpgaclUsers/import'); ?></li>
+			<li><?php echo $phpgaclHtml->link('Groups', $plugin_url . '/phpgaclUsers/groups'); ?> (ARO groups)</li>
+			<li><?php echo $phpgaclHtml->link('Users', $plugin_url . '/phpgaclUsers/users'); ?> (AROs)</li>
+		</ul>
+	</div>
+	
+	<div class="phpgacl-panel phpgacl-panel-controllers">
+		<h3>Protectable Elements</h3>
+		
+		<ul>
+			<li><?php echo $phpgaclHtml->link('Import Controllers / Actions', $plugin_url . '/phpgaclElements'); ?></li>
+			<li><?php echo $phpgaclHtml->link('Access Types', $plugin_url . '/phpgaclElements/aco_sections'); ?> (ACOs)</li>
+			<li><?php echo $phpgaclHtml->link('Categories', $plugin_url . '/phpgaclElements/groups'); ?> (AXO groups)</li>
+			<li><?php echo $phpgaclHtml->link('Controllable Elements', $plugin_url . '/phpgaclElements/axo_sections'); ?> (AXOs)</li>
+		</ul>
+	</div>
+	
+	<div class="phpgacl-panel phpgacl-panel-permissions">
+		<h3>Access Control</h3>
+		
+		<ul>
+			<li><?php echo $phpgaclHtml->link('Permissions for Groups', $plugin_url . '/phpgaclPermissions'); ?></li>
+			<li><?php echo $phpgaclHtml->link('Check Permissions', $plugin_url . '/phpgaclPermissions/check'); ?></li>
+		</ul>
+	</div>
+	
+	<div class="phpgacl-panel phpgacl-panel-help">
+		<h3>Need help? Want tips?</h3>
+		
+		<ul>
+			<li><?php echo $phpgaclHtml->link('How to use phpGACL to protect your controllers', $plugin_url . '/phpgaclHelps/index/secure'); ?></li>
+			<li><?php echo $phpgaclHtml->link('Secure the phpGACL plugin from unauthorized access', $plugin_url . '/phpgaclHelps/index/secure_plugin', array('class'=> (!$is_secured ? 'important' : 'normal'))); ?></li>
+		</ul>
+	</div>
+
+</div>
+
+<?php echo $this->renderElement('phpgacl_end'); ?>

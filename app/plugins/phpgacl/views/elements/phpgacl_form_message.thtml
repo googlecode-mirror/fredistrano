@@ -1,0 +1,3 @@
+<?php if (isset($form_message)): ?>
+	<div class="phpgacl-form-message"><div class="phpgacl-form-message-body"><?php echo $form_message; ?></div></div>
+<?php endif; ?>

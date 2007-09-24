@@ -1,0 +1,85 @@
+<?php echo $this->renderElement('phpgacl_start'); ?>
+
+<p>
+Select which actions should be defined in phpGACL. Those actions that are selected will be available for protection, so you can grant access to these
+actions for certain groups. To remove a controller that was previously saved, uncheck all its actions.
+</p>
+
+<?php echo $phpgaclHtml->formTag(); ?>
+	<?php if (isset($controllers)): ?>
+		<div class="phpgacl-controllers">
+			<h3 class="phpgacl-element-title">Application Controllers</h3>
+			
+			<?php foreach($controllers as $controller): ?>
+				<div class="phpgacl-controller">
+					<h4><?php echo $controller['name']; ?></h4>
+					
+					<?php if (count($controller['actions']) > 0): ?>
+						<?php foreach($controller['actions'] as $action): ?>
+							<div class="phpgacl-controller-action">
+								<?php
+								$htmlAttributes = array(
+									'class' => 'checkbox',
+									'value' => $action['form_value']
+								);
+								
+								if ($controller['isPhpgaclPlugin']):
+									$htmlAttributes['disabled'] = true;
+								endif;
+								
+								if ($action['saved']):
+									$htmlAttributes['checked'] = true;
+								endif;
+								?>
+								<?php echo $phpgaclHtml->appendableCheckbox('Controller/actions', $htmlAttributes); ?> <?php echo $action['name']; ?>
+							</div>
+						<?php endforeach; ?>
+					<?php endif; ?>
+				</div>
+			<?php endforeach; ?>
+		</div>
+	<?php endif; ?>
+	
+	<?php if (isset($plugins)): ?>
+		<?php foreach($plugins as $plugin => $controllers): ?>
+			<div class="phpgacl-controllers">
+				<h3 class="phpgacl-element-title"><?php echo $plugin; ?> Plugin</h3>
+			
+				<?php foreach($controllers as $controller): ?>
+					<div class="phpgacl-controller">
+						<h4><?php echo $controller['name']; ?></h4>
+						
+						<?php if (count($controller['actions']) > 0): ?>
+							<?php foreach($controller['actions'] as $action): ?>
+								<div class="phpgacl-controller-action">
+									<?php
+									$htmlAttributes = array(
+										'class' => 'checkbox',
+										'value' => $action['form_value']
+									);
+									
+									if ($controller['isPhpgaclPlugin']):
+										$htmlAttributes['disabled'] = true;
+									endif;
+									
+									if ($action['saved']):
+										$htmlAttributes['checked'] = true;
+									endif;
+									?>
+									<?php echo $phpgaclHtml->appendableCheckbox('Controller/actions', $htmlAttributes); ?> <?php echo $action['name']; ?>
+								</div>
+							<?php endforeach; ?>
+						<?php endif; ?>
+					</div>
+				<?php endforeach; ?>
+			</div>
+		<?php endforeach; ?>
+	<?php endif; ?>
+		
+	<p class="center">
+		<?php echo $phpgaclHtml->hidden('Controller/submit', '1'); ?>
+		<?php echo $phpgaclHtml->submit('Save controllers and actions', array('class'=>'submit')); ?>
+	</p>
+</form>
+
+<?php echo $this->renderElement('phpgacl_end'); ?>

@@ -1,0 +1,32 @@
+<?php echo $this->renderElement('phpgacl_start', array('crumbs' => array ($plugin_url . '/phpgaclUsers/users' => 'Users'))); ?>
+
+<p>
+	Add or Edit a User by filling in the following form. All fields marked as <strong>bold</strong> are mandatory.
+	<strong>IMPORTANT NOTE</strong>: this will only save the information on phpGACL, if you have your own user table you'll need to update its data.
+</p>
+
+<?php echo $phpgaclHtml->formTag(); ?>
+	<div class="phpgacl-form">
+		<label for="value" class="mandatory">Identifier:</label> 
+		<?php echo $phpgaclHtml->input('PhpgaclAro/value', array('size'=>20, 'id'=>'value')); ?>
+			<?php echo $phpgaclHtml->tagErrorMsg('PhpgaclAro/value', 'You need to specify a valid value.')?>
+			<?php echo $phpgaclHtml->tagErrorMsg('PhpgaclAro/value_unique', 'The value you\'ve specified is already assigned to another record.')?>
+		<br />
+		<label for="name" class="mandatory">Descriptive Name:</label> 
+		<?php echo $phpgaclHtml->input('PhpgaclAro/name', array('size'=>40, 'id'=>'name')); ?>
+			<?php echo $phpgaclHtml->tagErrorMsg('PhpgaclAro/name', 'You need to specify a name.')?>
+		<?php if (count($groups) > 0): ?>
+			<br />
+			<label class="mandatory">Assigned Groups:</label><br />
+			<em>Uncheck all groups to completely remove all assignments for this user</em>
+			<br />
+			<?php echo $phpgaclHtml->generateThreadedCheckBoxes('PhpgaclAroGroup/groups', $groups); ?>
+		<?php endif; ?>
+		
+		<p class="submit">
+			<?php echo $phpgaclHtml->submit('Save', array('class'=>'submit')); ?>
+		</p>
+	</div>
+</form>
+
+<?php echo $this->renderElement('phpgacl_end'); ?>

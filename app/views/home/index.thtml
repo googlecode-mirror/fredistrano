@@ -1,0 +1,24 @@
+<h1>Bienvenue sur Fredistrano, l'outil de déploiement d'applications Php</h1>
+  <em>version 0.1 du 24/09/2007 par Frédéric Bollon</em>
+  <br />
+  <br />
+  <p>Vous trouverez sur cette <?php echo $html->link('page','/pages/help'); ?> une documentation sur l'utilisation de cette application.</p>
+  <p>Pour signaler un bug c'est 
+  <a href="http://trac.fbollon.net/Fredistrano/index.fcgi">ici</a>. 
+  </p>
+  <p>Besoin d'aide ? Posez vos questions sur le  
+  <a href="http://www.fbollon.net/forum/26">forum</a> prévu à cet effet.
+  </p>
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+
+

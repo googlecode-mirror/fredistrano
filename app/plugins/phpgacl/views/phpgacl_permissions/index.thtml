@@ -1,0 +1,62 @@
+<?php echo $this->renderElement('phpgacl_start', array('crumbs' => (isset($record) ? array($plugin_url . '/phpgaclPermissions' => 'Choose Group') : array()))); ?>
+
+<?php if (isset($record)): ?>
+	<?php if (isset($permissions) && count($permissions) > 0): ?>
+		<p>
+		Here is the list of permissions assigned to this group. You can allways <?php echo $phpgaclHtml->link('Add a new Permission', $plugin_url . '/phpgaclPermissions/edit/' . $record['PhpgaclAroGroup']['value']); ?>.
+		</p>
+		
+		<table class="phpgacl-listing">
+			<thead>
+				<tr>
+					<th>Access Type</th>
+					<th>Affected Sections</th>
+					<th>Affected Objects</th>
+					<td></td>
+				</tr>
+			</thead>
+			<tbody>
+				<?php foreach($permissions as $index => $row): ?>
+					<tr class="<?php echo ($index % 2 == 0 ? 'even' : 'odd'); ?>">
+						<td><?php
+							$typeDescription = '';
+							
+							foreach($row['type'] as $type):
+								$typeDescription .= ($typeDescription != '' ? ', ' : '') . $type['name'];
+								$typeDescription .= ' (' . implode(', ', $type['children']) . ')';
+							endforeach;
+							
+							echo $typeDescription;
+						?></td>
+						<td><?php echo $row['sections']; ?></td>
+						<td><?php echo $row['objects']; ?></td>
+						<td>
+							<?php echo $phpgaclHtml->link('Edit', $plugin_url . '/phpgaclPermissions/edit/' . $record['PhpgaclAroGroup']['value'] . '/' . $row['identifier']); ?>
+							-
+							<?php echo $phpgaclHtml->link('Delete', $plugin_url . '/phpgaclPermissions/delete/' . $record['PhpgaclAroGroup']['value'] . '/' . $row['identifier']); ?>
+						</td>
+					</tr>
+				<?php endforeach; ?>
+			</tbody>
+		</table>
+		
+	<?php else: ?>
+		The selected group has no permissions assigned. <?php echo $phpgaclHtml->link('Add new Permission', $plugin_url . '/phpgaclPermissions/edit/' . $record['PhpgaclAroGroup']['value']); ?>
+	<?php endif; ?>
+<?php elseif (isset($groups) && count($groups) > 0): ?>
+	<p>
+	Start by clicking on the group that you wish to set up permissions for. If the group has permissions assigned to it, you will be able to
+	modify, or remove them. You can also add new permissions to the selected group.
+	</p>
+	
+	<div class="phpgacl-permissions-groups">
+		<?php echo $phpgaclHtml->generateThreadedLinks('PhpgaclAroGroup', $plugin_url . '/phpgaclPermissions/index/{$VALUE}', $groups); ?>
+	</div>
+<?php else: ?>
+	<p>
+	There are no groups defined. You can start by <?php echo $phpgaclHtml->link('Importing your groups', $plugin_url . '/phpgaclUsers/import'); ?>
+	or <?php echo $phpgaclHtml->link('Adding a new Group', $plugin_url . '/phpgaclUsers/edit_group'); ?>
+	</p>
+<?php endif; ?>
+
+<?php echo $this->renderElement('phpgacl_end'); ?>

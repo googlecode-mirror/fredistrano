@@ -1,0 +1,16 @@
+<?php echo $html->formTag(null, 'post', array('class' => 'f-wrap-1')) ?>
+	<div class="req">
+		<b>*</b> Champs obligatoires
+	</div>
+	
+	<fieldset>
+		<h3>Modification d'un utilisateur</h3>
+
+		<?php echo $this->renderElement('_form_user');?>
+		
+		<div class="f-submit-wrap">
+			<?php echo $html->submit('Modifier', array('class' => 'f-submit')) ?>
+		</div>
+	</fieldset>
+</form>
+

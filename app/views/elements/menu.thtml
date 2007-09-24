@@ -1,0 +1,14 @@
+<ul id="nav">
+		<li class="<?php echo ($this->params['controller'] == 'home')?"active":"first";?>"><?php echo $html->link('Accueil','/'); ?></li>
+		<li class="<?php echo (in_array($this->params['controller'], array('projects','deploymentLogs')))?"active":"first";?>"><?php echo $html->link('Deploiement','/projects'); ?></li>
+		<li class="<?php echo (in_array($this->params['controller'], array('users','groups','phpgacl')))?"active":"first";?>"><?php echo $html->link('Administration','#'); ?>
+			<ul>
+			<li class="first"><?php echo $html->link('Groupes','/groups'); ?></li>
+			<li class="first"><?php echo $html->link('Utilisateurs','/users'); ?></li>
+			<li class="last"><?php echo $html->link('Permissions','/phpgacl'); ?></li>
+			</ul>
+		</li>
+		<li class="<?php echo ($this->params['controller'] == 'pages')?"active":"first";?>"><?php echo $html->link('Aide','/pages/help'); ?></li>
+</ul>
+
+
