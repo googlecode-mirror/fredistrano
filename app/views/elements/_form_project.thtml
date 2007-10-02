@@ -6,11 +6,11 @@
  	<?php echo $html->input('Project/svn_url', array('size' => '60', 'class' => 'f-name'));?>
 	<?php echo $error->showMessage('Project/svn_url');?>
 
-	<?php echo $form->labelTag('Project/prd_url', '<b>Url de l\'application<span class="req">*</span></b>');?>
+	<?php echo $form->labelTag('Project/prd_url', '<b>Url de l\'application à déployer<span class="req">*</span></b>');?>
  	<?php echo $html->input('Project/prd_url', array('size' => '60', 'class' => 'f-name'));?>
 	<?php echo $error->showMessage('Project/prd_url');?>
 
-	<?php echo $form->labelTag('Project/prd_path', '<b>Répertoire du projet sur le serveur de prod</b>');?>
+	<?php echo $form->labelTag('Project/prd_path', '<b>Chemin absolu du projet à déployer</b>');?>
  	<?php echo $html->input('Project/prd_path', array('size' => '60', 'class' => 'f-name'));?>
 	<?php echo $error->showMessage('Project/prd_path');?>
 	

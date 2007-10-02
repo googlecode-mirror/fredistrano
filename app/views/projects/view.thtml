@@ -63,17 +63,17 @@
 </tr>
 
 <tr>
-<th class="sub">Url Prod</th>
+<th class="sub">Url de l'application à déployer</th>
 <td>&nbsp;<?php echo $html->link($project['Project']['prd_url'], $project['Project']['prd_url'], array('target' => '_blank'), false, true, false) ?></td>
 </tr>
 
 <tr>
-<th class="sub">Path prod</th>
+<th class="sub">Chemin absolu du projet à déployer</th>
 <td>&nbsp;<?php echo $project['Project']['prd_path']?></td>
 </tr>
 
 <tr>
-<th class="sub">Path config</th>
+<th class="sub">Répertoire des fichiers de configuration du projet (ex: app/config)</th>
 <td>&nbsp;<?php echo $project['Project']['config_path']?></td>
 </tr>
 
@@ -88,7 +88,17 @@
 </tr>
 
 <tr>
-<th class="sub">&nbsp;</th>
+<th class="sub">
+
+<i>
+Modifiable dans <?php e(dirname( dirname( dirname( dirname(__FILE__)))).DS)?>app/config.php :<br />
+<?php
+e("Dossier temporaire pour l'export SVN => "._DEPLOYTMPDIR);
+e("<br/ >Dossier du backup avant synchro => "._DEPLOYBACKUPDIR);
+?>
+</i>
+
+</th>
 <td>
 <form action="<?php echo $html->url('/projects/deploy'); ?>" method="post">
 <?php echo $html->hidden('Project/id', array('value' => $project['Project']['id']))?>
