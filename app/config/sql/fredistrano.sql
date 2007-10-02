@@ -801,8 +801,8 @@ CREATE TABLE `projects` (
 -- Contenu de la table `projects`
 -- 
 
-INSERT INTO `projects` (`id`, `name`, `svn_url`, `prd_url`, `prd_path`, `created`, `modified`) VALUES 
-(1, 'monprojet', 'http://monserveur/svn/monprojet/trunk', 'http://monsite', 'monprojet', '2007-05-04 10:21:19', '2007-06-01 22:52:44');
+INSERT INTO `projects` (`id`, `name`, `svn_url`, `prd_url`, `prd_path`, `config_path`, `created`, `modified`) VALUES 
+(1, 'Fredistrano', 'http://svn.fbollon.net/Fredistrano/trunk', 'http://localhost/test/Fredistrano', '/var/www/test1/Fredistrano', 'app/config', '2007-10-02 19:04:09', '2007-10-02 23:03:10');
 
 -- --------------------------------------------------------
 
