@@ -790,10 +790,12 @@ CREATE TABLE `projects` (
   `svn_url` varchar(255) collate utf8_unicode_ci NOT NULL,
   `prd_url` varchar(255) collate utf8_unicode_ci NOT NULL,
   `prd_path` varchar(255) collate utf8_unicode_ci NOT NULL,
+  `config_path` varchar(255) collate utf8_unicode_ci NOT NULL,
   `created` timestamp NULL default NULL,
   `modified` timestamp NULL default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8 AUTO_INCREMENT=2 ;
+
 
 -- 
 -- Contenu de la table `projects`
