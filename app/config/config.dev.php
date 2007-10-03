@@ -19,22 +19,25 @@ define("_AUTHENTICATIONTYPE", "0");
 */
 define("_DIRECTORYTYPE", "20");
 
-//chemin de la racine du serveur web |  la sauce cygwin
-define("_PRDROOT","/var/www/test_deployment");
+// ne pas modifier, installation path de Fredistrano
+define("_FREDISTRANOPATH",dirname( dirname( dirname(__FILE__))));
 
-//dossier de déploiement
-define("_PRDDEPLOYDIR","_deployment");
+// Définition des dossiers utilisés par Fredistrano 
+define("_DEPLOYDIR", _FREDISTRANOPATH . DS . "files");
+define("_DEPLOYTMPDIR", _DEPLOYDIR . DS . "tmp");
+define("_DEPLOYBACKUPDIR", _DEPLOYDIR . DS . "backup");
 
-//dossier temporaire utilisé pour le svn export
-define("_PRDTMPDIR", _PRDDEPLOYDIR."/tmp");
-
-//dossier de backup pour sauvegarder les applications avant le rsync
-define("_PRDBACKUP", _PRDDEPLOYDIR."/backup");
-
-// login et password par défaut pour subversion
+//Facultatif utilisateur et mot de passe par défaut pour le serveur subversion
 define("_SVNUSER", "");
 define("_SVNPASS", "");
 
-// Archive logs 
+
+// Délai pour l'archive des logs 
 define("_LOGSARCHIVEDATE",3 * 7 * 24 * 60 * 60);
+
+
+//Droits sur les dossiers et fichiers lors d'un déploiement
+define("_DIRMODE", 0755);
+
+define("_FILEMODE", 654);
 ?>

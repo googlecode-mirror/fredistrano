@@ -56,6 +56,11 @@ class ProjectsController extends AppController {
 		clearstatcache();
 
 		// si les répertoires temporaires et backup nécessaires à Fredistrano n'existent pas, on le crée
+		
+//		$output .= "-[création du répertoire _DEPLOYDIR " . _DEPLOYDIR . "]\n";
+//		$output .= "-[création du répertoire _DEPLOYTMPDIR ". _DEPLOYTMPDIR . "]\n";
+//		$output .= "-[création du répertoire _DEPLOYBACKUPDIR " . _DEPLOYBACKUPDIR . "]\n";
+		
 		if (!is_dir(_DEPLOYDIR)) {
 			if (mkdir(_DEPLOYDIR, _DIRMODE, TRUE))
 				$output .= "-[création du répertoire " . _DEPLOYDIR . "]\n";
@@ -109,7 +114,7 @@ class ProjectsController extends AppController {
 			// svn export
 			//$output .= "svn export" . $revision . $authentication . " " . $project['Project']['svn_url']." tmpDir\n";
 			$output .= shell_exec("svn export" . $revision . $authentication . " " . $project['Project']['svn_url']." tmpDir");
-			//			$output .= "svn export" . $revision . $authentication . " " . $project['Project']['svn_url'];
+//						$output .= "svn export" . $revision . $authentication . " " . $project['Project']['svn_url']." tmpDir";
 			$this->set('output', $output);
 		}
 	}
@@ -122,35 +127,32 @@ class ProjectsController extends AppController {
 		
 		$output = '';
 					
-		if (!@ file_exists(_DEPLOYTMPDIR. "/" . $project['Project']['name'] . "/tmpDir/".$project['Project']['config_path']."/deploy.php")) {
-			$output .= '[ERROR] - synchro impossible, fichier '.$project['Project']['config_path'].'/deploy.php inexistant';
+		if (!@ file_exists(_DEPLOYTMPDIR. DS . $project['Project']['name'] . DS . "tmpDir" . DS .$project['Project']['config_path']."/deploy.php")) {
+			$output .= '[ERROR] - synchro impossible, fichier '.$project['Project']['config_path'] . DS . 'deploy.php inexistant';
 
 		} else {
-			include_once (_DEPLOYTMPDIR . "/" . $project['Project']['name'] . "/tmpDir/".$project['Project']['config_path']."/deploy.php");
-
+			include_once (_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . $project['Project']['config_path']. DS ."deploy.php");
+			
 			$deployConfig = new DEPLOY_CONFIG();
 			$exclude = $deployConfig->exclude;
-			
 			$exclude_string = "";
 			for ($i = 0; $i < sizeof($exclude); $i++) {
 				$exclude_string .= $exclude[$i] . "\n";
 			}
-			$exclude_file_name = _DEPLOYTMPDIR . "/" . $project['Project']['name'] . "/exclude_file.txt";
-
+			$exclude_file_name = _DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "exclude_file.txt";
 			$handle = fopen($exclude_file_name, "w");
 			fwrite($handle, $exclude_string);
 			fclose($handle);
 
 			//on sauvegarde la version actuelle au cas ou
 			if ($this->_backup($project, $output)) {
-
 				//on défini les option de la commande rsync
 				if ($this->data['Project']['simulation'] == 1) {
 					// simulation
-					$option = '-avn';
+					$option = 'avn';
 				} else {
 					// pas simulation
-					$option = '-av';
+					$option = 'av';
 					
 					// Log du deploiment 
 					$data = array( 'DeploymentLog' => 
@@ -164,7 +166,13 @@ class ProjectsController extends AppController {
 					$this->DeploymentLog->save($data);
 				}	
 					
-				$output .= shell_exec("rsync " . $option . " --delete --exclude-from=" . $exclude_file_name . " " . _DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir/ " . $project['Project']['prd_path']);
+				//mise en forme des paramètres (windows/linux) pour la commande rsync 
+				$exclude_file_name = $this->_pathConverter($exclude_file_name);
+				$source = $this->_pathConverter(_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir". DS);
+				$target = $this->_pathConverter($project['Project']['prd_path']);
+
+				chdir(_DEPLOYDIR);
+				$output .= shell_exec("sh portableRsync.sh ".$option." ".$exclude_file_name." ".$source." ".$target);
 				
 				if ($this->data['Project']['simulation'] == 0) {
 					
@@ -295,7 +303,22 @@ class ProjectsController extends AppController {
 
 	}
 
+	private function _pathConverter($path) {
+		
+		$pathForRsync = $path;
+		$pattern = '/^([A-Za-z]):/';
+		preg_match($pattern, $path, $matches, PREG_OFFSET_CAPTURE);
 
+		//dans le cas d'un path windows on le reformate à la sauce cywin	
+		if (!empty($matches[1][0])) {
+			$windowsLetter = strtolower($matches[1][0]);
+			$pathForRsync = "/".$windowsLetter.substr($path,2);
+			$pathForRsync = strtr("/".$windowsLetter.substr($path,2),"\\", "/");
+		}
+		
+		return $pathForRsync;
+		
+	}
 
 }
 ?>

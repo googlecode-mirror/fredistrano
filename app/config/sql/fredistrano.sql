@@ -794,7 +794,7 @@ CREATE TABLE `projects` (
   `created` timestamp NULL default NULL,
   `modified` timestamp NULL default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 
 -- 
