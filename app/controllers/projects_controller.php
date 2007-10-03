@@ -12,7 +12,7 @@ class ProjectsController extends AppController {
 	var $components = array (
 		'Pagination'
 	);
-	
+
 	var $uses = array (
 		'Project',
 		'DeploymentLog'
@@ -20,18 +20,28 @@ class ProjectsController extends AppController {
 
 	function beforeRender() {
 		// Tableau de liens pour la création du menu contextuel
-		$tab[] = array('text' => 'Actions');
+		$tab[] = array (
+			'text' => 'Actions'
+		);
 
 		if ($this->action != 'index')
-			$tab[] = array('text' => 'Lister les projets', 'link' => '/projects/index');
+			$tab[] = array (
+				'text' => 'Lister les projets',
+				'link' => '/projects/index'
+			);
 
 		if ($this->action != 'add')
-			$tab[] = array('text' => 'Ajouter un projet', 'link' => '/projects/add');
+			$tab[] = array (
+				'text' => 'Ajouter un projet',
+				'link' => '/projects/add'
+			);
 
-		$tab[] = array('text' => 'Afficher tout l\'historique', 'link' => '/deploymentLogs');
+		$tab[] = array (
+			'text' => 'Afficher tout l\'historique',
+			'link' => '/deploymentLogs'
+		);
 		$this->set("context_menu", $tab);
 	}
-
 
 	function index() {
 
@@ -56,18 +66,14 @@ class ProjectsController extends AppController {
 		clearstatcache();
 
 		// si les répertoires temporaires et backup nécessaires à Fredistrano n'existent pas, on le crée
-		
-//		$output .= "-[création du répertoire _DEPLOYDIR " . _DEPLOYDIR . "]\n";
-//		$output .= "-[création du répertoire _DEPLOYTMPDIR ". _DEPLOYTMPDIR . "]\n";
-//		$output .= "-[création du répertoire _DEPLOYBACKUPDIR " . _DEPLOYBACKUPDIR . "]\n";
-		
+
 		if (!is_dir(_DEPLOYDIR)) {
 			if (mkdir(_DEPLOYDIR, _DIRMODE, TRUE))
 				$output .= "-[création du répertoire " . _DEPLOYDIR . "]\n";
 		}
 		if (!is_dir(_DEPLOYTMPDIR)) {
 			if (mkdir(_DEPLOYTMPDIR, _DIRMODE, TRUE))
-				$output .= "-[création du répertoire ". _DEPLOYTMPDIR . "]\n";
+				$output .= "-[création du répertoire " . _DEPLOYTMPDIR . "]\n";
 		}
 		if (!is_dir(_DEPLOYBACKUPDIR)) {
 			if (mkdir(_DEPLOYBACKUPDIR, _DIRMODE, TRUE))
@@ -82,13 +88,13 @@ class ProjectsController extends AppController {
 			$this->set('project', $project);
 
 			//dossier temporaire d'export SVN pour le projet
-			if (is_dir(_DEPLOYTMPDIR . DS .$project['Project']['name'])) {
+			if (is_dir(_DEPLOYTMPDIR . DS . $project['Project']['name'])) {
 				// on le vide si il existe
 				$output .= "-[vidage du répertoire " . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "]\n";
-				$output .= shell_exec('rm -rf ' . _DEPLOYTMPDIR . DS .$project['Project']['name'] . "/*");
+				$output .= shell_exec('rm -rf ' . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "/*");
 			} else {
 				// on le crée si il n'existe pas
-				if (mkdir(_DEPLOYTMPDIR . DS .$project['Project']['name'], _DIRMODE, TRUE))
+				if (mkdir(_DEPLOYTMPDIR . DS . $project['Project']['name'], _DIRMODE, TRUE))
 					$output .= "-[création du répertoire " . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "]\n";
 			}
 
@@ -112,9 +118,7 @@ class ProjectsController extends AppController {
 			}
 
 			// svn export
-			//$output .= "svn export" . $revision . $authentication . " " . $project['Project']['svn_url']." tmpDir\n";
-			$output .= shell_exec("svn export" . $revision . $authentication . " " . $project['Project']['svn_url']." tmpDir");
-//						$output .= "svn export" . $revision . $authentication . " " . $project['Project']['svn_url']." tmpDir";
+			$output .= shell_exec("svn export" . $revision . $authentication . " " . $project['Project']['svn_url'] . " tmpDir");
 			$this->set('output', $output);
 		}
 	}
@@ -124,15 +128,15 @@ class ProjectsController extends AppController {
 
 		$project = $this->Project->read(null, $this->data['Project']['id']);
 		$this->set('project', $project);
-		
+
 		$output = '';
-					
-		if (!@ file_exists(_DEPLOYTMPDIR. DS . $project['Project']['name'] . DS . "tmpDir" . DS .$project['Project']['config_path']."/deploy.php")) {
-			$output .= '[ERROR] - synchro impossible, fichier '.$project['Project']['config_path'] . DS . 'deploy.php inexistant';
+
+		if (!@ file_exists(_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . $project['Project']['config_path'] . "/deploy.php")) {
+			$output .= '[ERROR] - synchro impossible, fichier ' . $project['Project']['config_path'] . DS . 'deploy.php inexistant';
 
 		} else {
-			include_once (_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . $project['Project']['config_path']. DS ."deploy.php");
-			
+			include_once (_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . $project['Project']['config_path'] . DS . "deploy.php");
+
 			$deployConfig = new DEPLOY_CONFIG();
 			$exclude = $deployConfig->exclude;
 			$exclude_string = "";
@@ -153,45 +157,46 @@ class ProjectsController extends AppController {
 				} else {
 					// pas simulation
 					$option = 'av';
-					
+
 					// Log du deploiment 
-					$data = array( 'DeploymentLog' => 
-									array(	
-										'project_id'=> $this->data['Project']['id'], 
-										'title'  	=> $project['Project']['name'].' - '.$_SESSION['User']['username'],
-										'user_id' 	=> $_SESSION['User']['id'],
-										'comment' 	=> $this->data['DeploymentLog']['comment']?$this->data['DeploymentLog']['comment']:'aucun') 
-									  );
-									  
+					$data = array (
+						'DeploymentLog' => array (
+							'project_id' => $this->data['Project']['id'],
+							'title' => $project['Project']['name'] . ' - ' . $_SESSION['User']['username'],
+							'user_id' => $_SESSION['User']['id'],
+							'comment' => $this->data['DeploymentLog']['comment'] ? $this->data['DeploymentLog']['comment'] : 'aucun'
+						)
+					);
+
 					$this->DeploymentLog->save($data);
-				}	
-					
+				}
+
 				//mise en forme des paramètres (windows/linux) pour la commande rsync 
 				$exclude_file_name = $this->_pathConverter($exclude_file_name);
-				$source = $this->_pathConverter(_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir". DS);
+				$source = $this->_pathConverter(_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS);
 				$target = $this->_pathConverter($project['Project']['prd_path']);
 
 				chdir(_DEPLOYDIR);
-				$output .= shell_exec("sh portableRsync.sh ".$option." ".$exclude_file_name." ".$source." ".$target);
-				
+				$output .= shell_exec("sh portableRsync.sh " . $option . " " . $exclude_file_name . " " . $source . " " . $target);
+
 				if ($this->data['Project']['simulation'] == 0) {
-					
+
 					//copie des versions de prod des fichiers database.php et config.php
-					$output .= shell_exec("cp " . $project['Project']['prd_path'] . DS . $project['Project']['config_path']. DS ."database.prd.php " . $project['Project']['prd_path'] . DS . $project['Project']['config_path']. DS ."database.php ");
-					$output .= shell_exec("cp " . $project['Project']['prd_path'] . DS . $project['Project']['config_path']. DS ."config.prd.php " . $project['Project']['prd_path'] . DS . $project['Project']['config_path']. DS ."config.php ");
-					
+					$output .= shell_exec("cp " . $project['Project']['prd_path'] . DS . $project['Project']['config_path'] . DS . "database.prd.php " . $project['Project']['prd_path'] . DS . $project['Project']['config_path'] . DS . "database.php ");
+					$output .= shell_exec("cp " . $project['Project']['prd_path'] . DS . $project['Project']['config_path'] . DS . "config.prd.php " . $project['Project']['prd_path'] . DS . $project['Project']['config_path'] . DS . "config.php ");
+
 					//on corrige les droits 
-					$output .= shell_exec("find ".$project['Project']['prd_path']." -type d -exec chmod "._DIRMODE." {} \;");
-					$output .= shell_exec("find ".$project['Project']['prd_path']." -type f -exec chmod "._FILEMODE." {} \;");
+					$output .= shell_exec("find " . $project['Project']['prd_path'] . " -type d -exec chmod " . _DIRMODE . " {} \;");
+					$output .= shell_exec("find " . $project['Project']['prd_path'] . " -type f -exec chmod " . _FILEMODE . " {} \;");
 
 					$writableConfig = new WRITABLE_DIR();
 					$writable = $writableConfig->writable;
 					if (sizeof($writable) > 0) {
 						for ($i = 0; $i < sizeof($writable); $i++) {
-							$output .= shell_exec("find ".$project['Project']['prd_path'].$writable[$i]." -type d -exec chmod 777 {} \;");		
+							$output .= shell_exec("find " . $project['Project']['prd_path'] . $writable[$i] . " -type d -exec chmod 777 {} \;");
 						}
 					}
-					
+
 				}
 
 			} else {
@@ -211,7 +216,7 @@ class ProjectsController extends AppController {
 		}
 		$project = $this->Project->read(null, $id);
 		$this->set('project', $project);
-		
+
 	}
 
 	function add() {
@@ -261,24 +266,15 @@ class ProjectsController extends AppController {
 
 	private function _backup($project, $output) {
 
-//		chdir(_PRDROOT);
 		if (!is_dir(_DEPLOYBACKUPDIR)) {
 			if (mkdir(_DEPLOYBACKUPDIR, _DIRMODE, TRUE))
 				$output .= "-[création du répertoire " . _DEPLOYBACKUPDIR . "]\n";
 		}
 
-		// suppression de la sauvegarde précédente
-		//			chdir(_PRDROOT . "/" . _PRDBACKUP);
-		//			if (is_dir($project['Project']['prd_path'])) {
-		//				// on le vide si il existe
-		//				$output .= "-[suppression de la sauvegarde précédente /" . _PRDBACKUP . "/" . $project['Project']['prd_path'] . "]\n";
-		//				$output .= shell_exec('rm -rf ' . $project['Project']['prd_path']);
-		//			}
-
 		// création du répertoire pour la sauvegarde
 		if (!is_dir(_DEPLOYBACKUPDIR . DS . $project['Project']['name'])) {
 			if (mkdir(_DEPLOYBACKUPDIR . DS . $project['Project']['name'], _DIRMODE, TRUE)) {
-				$output .= "-[création du répertoire " ._DEPLOYBACKUPDIR . DS . $project['Project']['name'] . "]\n";
+				$output .= "-[création du répertoire " . _DEPLOYBACKUPDIR . DS . $project['Project']['name'] . "]\n";
 			}
 		}
 
@@ -287,13 +283,13 @@ class ProjectsController extends AppController {
 		if (is_dir($project['Project']['prd_path'])) {
 			// rsync pour le backup
 			$output .= shell_exec("rsync -av " . $project['Project']['prd_path'] . " " . _DEPLOYBACKUPDIR . DS);
-			$output .= shell_exec("chmod -R "._DIRMODE." " ._DEPLOYBACKUPDIR);
+			$output .= shell_exec("chmod -R " . _DIRMODE . " " . _DEPLOYBACKUPDIR);
 
 		} else {
 			$output .= "-[pas de backup à faire car le répertoire " . $project['Project']['prd_path'] . " n'existe pas]\n";
 		}
 
-		//			$this->set('output', $output);
+		$this->set('output', $output);
 
 		if (is_dir(_DEPLOYBACKUPDIR . DS . $project['Project']['name'])) {
 			return true;
@@ -303,21 +299,17 @@ class ProjectsController extends AppController {
 
 	}
 
+	//dans le cas d'un path windows on le reformate à la sauce cywin
 	private function _pathConverter($path) {
-		
 		$pathForRsync = $path;
 		$pattern = '/^([A-Za-z]):/';
 		preg_match($pattern, $path, $matches, PREG_OFFSET_CAPTURE);
-
-		//dans le cas d'un path windows on le reformate à la sauce cywin	
-		if (!empty($matches[1][0])) {
+		if (!empty ($matches[1][0])) {
 			$windowsLetter = strtolower($matches[1][0]);
-			$pathForRsync = "/".$windowsLetter.substr($path,2);
-			$pathForRsync = strtr("/".$windowsLetter.substr($path,2),"\\", "/");
+			$pathForRsync = "/" . $windowsLetter . substr($path, 2);
+			$pathForRsync = strtr("/" . $windowsLetter . substr($path, 2), "\\", "/");
 		}
-		
 		return $pathForRsync;
-		
 	}
 
 }
