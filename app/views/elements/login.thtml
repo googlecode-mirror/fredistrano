@@ -2,8 +2,8 @@
     <fieldset>
 	    <h6>Identification</h6>
 	    
-	    <?php echo $form->labelTag('User/username', 'Utilisateur :') ?>
-	    <?php echo $html->input('User/username', array('size' => 15, 'class' => 'f-name')); ?>
+	    <?php echo $form->labelTag('User/login', 'Utilisateur :') ?>
+	    <?php echo $html->input('User/login', array('size' => 15, 'class' => 'f-name')); ?>
 	    
 	    <?php echo $form->labelTag('User/password', 'Mot de passe :') ?>
 	    <?php echo $html->password('User/password', array('size' => 15, 'class' => 'f-name')); ?>

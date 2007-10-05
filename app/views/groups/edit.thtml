@@ -13,5 +13,3 @@
 		</div>
 	</fieldset>
 </form>
-
-<?php echo $html->link('« Retour à la fiche', '/groups/view/' . $this->params['pass'][0]) ?>

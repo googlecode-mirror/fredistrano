@@ -1,57 +1,64 @@
 <?php
 class User extends AppModel {
+
 	var $name = 'User';
 
 	var $validate = array (
-		'username' => array (
+		'login' => array (
 			array (VALID_NOT_EMPTY, 'Veuillez saisir un login.'),
-			array ('isUsernameUnique', 'Ce login existe déjà.')
-		),
-		'password' => array (
-			array (VALID_NOT_EMPTY, 'Veuillez saisir un mot de passe.')
-		),
-		'first_name' => array (
-			array (VALID_NOT_EMPTY, 'Veuillez saisir un prénom.')
-		),
-		'last_name' => array (
-			array (VALID_NOT_EMPTY, 'Veuillez saisir un nom.')
-		)
-		,
-		'email' => array (
-			array (VALID_EMAIL_OPTIONAL, 'L\'adresse e-mail est invalide.')
-		)
-	);
-	
-	var $hasMany = array (
-		'DeploymentLog' => array (
-			'className' => 'DeploymentLog',
-			'order'     => 'DeploymentLog.date DESC',
-			'limit'     => '5',
-			'foreignKey' => 'user_id',
-			'dependent' => false
+			array (array('isUnique', array('login')), 'Ce login est déjà utilisé.')
 		)
 	);
 
-	// basée sur http://cakebaker.wordpress.com/2006/02/06/yet-another-data-validation-approach/
-	// rajouté par mes soins une condition pour ne pas tester le username lors d'une modification
-	function isUsernameUnique() {
-		if ( $this->id == null ) //Adding a user
-        {
-            return (!$this->hasAny( array( 'User.username' => $this->data[$this->name]['username'] ) ));
-        }
-        else //Editing a user
-        {
-            return (!$this->hasAny( array( 'User.username' => $this->data[$this->name]['username'], 'User.id' => '!='.$this->data[$this->name]['id'] ) ) );
-        }
-	}
+	var $hasAndBelongsToMany = array (
+		'Group' => array (
+			'className' => 'Group',
+			'joinTable' => 'groups_users',
+			'foreignKey' => 'user_id',
+			'associationForeignKey' => 'group_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => '',
+			'limit' => '',
+			'offset' => '',
+			'unique' => '',
+			'finderQuery' => '',
+			'deleteQuery' => '',
+			'insertQuery' => ''
+		),
+		
+	);
 
 	function beforeSave() {
 		// si y a un champ password : add() et change_password() mais pas edit()
-		if (isset ($this->data[$this->name]['password'])) {
+		if (isset ($this->data[$this->name]['password']))
 			$this->data[$this->name]['password'] = md5($this->data[$this->name]['password']);
-		}
-		return parent::beforeSave();
+		return parent :: beforeSave();
 	}
-}
+	
+	/**
+	 * Vérifie si un utilisateur existe dans la base 
+	 * @param String $login Utilisateur à vérifier
+	 * @return boolean 
+	 */
+	function isValid($login = null) {
+		$tmp = $this->findByLogin($login);
+		return !empty($tmp);
+	}// isValid
+	
+	function _format(& $user) {
+		$groups = null;
+		if (!empty ($user['Group']))
+			foreach ($user['Group'] as $group)
+				$groups .= $group['name'] . ' ; ';
+		$user['User']['groups'] = $groups;
+		unset ($user['Group']);
+	}
 
+	function _formatAll(& $users) {
+		foreach ($users as & $user)
+			$this->_format($user);
+	}
+	
+}
 ?>

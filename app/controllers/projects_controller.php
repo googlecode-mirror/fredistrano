@@ -162,7 +162,7 @@ class ProjectsController extends AppController {
 					$data = array (
 						'DeploymentLog' => array (
 							'project_id' => $this->data['Project']['id'],
-							'title' => $project['Project']['name'] . ' - ' . $_SESSION['User']['username'],
+							'title' => $project['Project']['name'] . ' - ' . $_SESSION['User']['login'],
 							'user_id' => $_SESSION['User']['id'],
 							'comment' => $this->data['DeploymentLog']['comment'] ? $this->data['DeploymentLog']['comment'] : 'aucun'
 						)

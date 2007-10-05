@@ -35,7 +35,7 @@ if (!isset($this->params['url']['showArchived'])){
  				echo '<h3>'.$newdate.'</h3>';
  			}
  			$line = $html->link(date("H:i:s",$created),'/deploymentLogs/view/'.$log['DeploymentLog']['id']).' : déploiement de <b>'.
- 				$log['Project']['name'].'</b> par <b>'. $log['User']['username'].'</b> [<i>'. $com .'</i>]';
+ 				$log['Project']['name'].'</b> par <b>'. $log['User']['login'].'</b> [<i>'. $com .'</i>]';
  			echo '<li>'.$line.'</li>';
 		}
 		echo '</ul>';

@@ -43,49 +43,25 @@ class AppController extends Controller {
 	var $helpers = array (
 		'Html',
 		'Javascript',
+		'Pagination',
 		'Ajax',
+		'Table', 
 		'Form'
 	);
 
 
-	// setting which controllers to protect
-	// see documentation in /phpgacl/phpgaclHelps/index/secure
-	var $gacl = array (
-		'check' => array (
-			'DeploymentLogs' => array (
-				'archive',
-				'index',
-				'list_all',
-				'view'
-			),
-			'Users' => array (
-				'add',
-				'delete',
-				'edit',
-				'index',
-				'view'
-			),
-			'Projects' => array (
-				'add',
-				'delete',
-				'deploy',
-				'deploy_result',
-				'edit',
-				'index',
-				'synchro',
-				'view'
-			)
-
-		),
-		'denied' => array (
-			'type' => 'redirect',
-			'value' => '/pages/denied'
-		)
-	);
-
 	var $components = array (
-		'PhpGacl',
+		'Pagination',		
+		'Aclite',
 		'Session'
+	);
+	
+	var $authGlobal = array(
+		'App' => array('administration'),
+		'except' => array (
+			'Users.login'=> array('public'),
+			'Users.logout'=> array('public')
+		)
 	);
 
 }

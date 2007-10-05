@@ -34,7 +34,7 @@
 
 <tr>
 <th class="sub">Nom de la personne ayant fait l'opération</th>
-<td>&nbsp;<?php echo $log['User']['username']?></td>
+<td>&nbsp;<?php echo $log['User']['login']?></td>
 </tr>
 
 <tr>

@@ -1,48 +1,49 @@
 <div class="group">
 	<table class="table1">
-<thead>
-<tr>
-
-<th colspan="2">
-	<span class="tabletoptitle">Détails d'un groupe</span>
-</th>
-
-</tr>
-</thead>
-
-<tbody>
-<tr>
-
-<th colspan="2">
-	<div class="tabletoplink">
-		<ul>
-			<li><?php echo $html->link($html->image( 'b_edit.png', array('alt' => 'Modifier', 'title' => 'Modifier')).' modifier', 
-					'/groups/edit/' . $group['Group']['id'], 
-					null,
-					false,
-					false);?></li>
-			<li><?php echo $html->link($html->image( 'b_drop.png', array('alt' => 'Supprimer', 'title' => 'Supprimer')).' supprimer', 
-					'/Groups/delete/' . $group['Group']['id'], 
-					null, 
-					'Etes vous certain de vouloir supprimer le groupe : ' . $group['Group']['id'] . ' ?',
-					false );?></li>
-		</ul>
-	</div>
-</th>
-
-</tr>
-
-<tr>
-<th class="sub">Id</th>
-<td>&nbsp;<?php echo $group['Group']['id'] ?></td>
-</tr>
-
-<tr>
-<th class="sub">Nom du groupe</th>
-<td>&nbsp;<?php echo $group['Group']['group_name'] ?></td>
-</tr>
-
-</tbody>
-</table>
-
+		<thead>
+			<tr>
+				<th colspan="3">Détails d'un groupe</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			<tr>
+				<th colspan="2">
+					<div class="tabletoplink">
+						<ul>
+							<li>
+								<?php echo $html->link(
+									$html->image('b_edit.png', array('alt' => 'Modifier', 'title' => 'Modifier', 'class' => 'action')) . 'Modifier',
+									'/groups/edit/' . $group['Group']['id'], 
+									null, false, false) ?>
+							</li>
+							<li>
+								<?php echo $html->link(
+									$html->image('b_drop.png', array('alt' => 'Supprimer', 'title' => 'Supprimer', 'class' => 'action')) . 'Supprimer', 
+									'/groups/delete/' . $group['Group']['id'], 
+									null, 
+									'Etes vous certain de vouloir supprimer : ' . $group['Group']['name'] . ' ?',
+									false) ?>
+							</li>
+						</ul>
+					</div>
+				</th>
+			</tr>
+			
+			<tr>
+				<th class="sub">Id</th>
+				<td><?php echo $group['Group']['id'] ?></td>
+			</tr>
+			
+			<tr>
+				<th class="sub">Nom</th>
+				<td><?php echo $group['Group']['name'] ?></td>
+			</tr>
+			
+			<tr>
+				<th class="sub">Parent</th>
+				<td><?php echo $html->link($group['ParentGroup']['name'], '/groups/view/' . $group['ParentGroup']['id'], null, false, false) ?></td>
+			</tr>
+		</tbody>
+	</table>
 </div>

@@ -1,44 +1,48 @@
 <div class="groups">
-<h2>Liste des groupes</h2>
-
-<table class="table1">
-<?php
-$pagination->setPaging($paging); // Initialize the pagination variables
-$th = array (
-            $pagination->sortBy('id'),
-            $pagination->sortBy('group_name','Nom'),
-            '',
-            '',
-            ''
-); // Generate the pagination sort links
-echo $html->tableHeaders($th); // Create the table headers with sort links if desired
-
-foreach ($data as $output)
-{
-    $tr = array (
-        $output['Group']['id'],
-        $html->link($output['Group']['group_name'], "/groups/view/{$output['Group']['id']}"),
-        $html->link($html->image( 'b_search.png', array('alt' => 'Afficher', 'title' => 'Afficher')),
-			"/Groups/View/{$output['Group']['id']}",
-			null,
-			false,
-			false),
-        $html->link($html->image( 'b_edit.png', array('alt' => 'Modifier', 'title' => 'Modifier')),
-			"/Groups/edit/{$output['Group']['id']}",
-			null,
-			false,
-			false),
-        $html->link($html->image( 'b_drop.png', array('alt' => 'Supprimer', 'title' => 'Supprimer')),
-			'/Groups/delete/' . $output['Group']['id'],
-			null,
-			'Etes vous certain de vouloir supprimer le groupe : ' . $output['Group']['id'] . ' ?',
-			false,
-			false )
-        );
-    echo $html->tableCells($tr,array('class'=>'altRow'),array('class'=>'evenRow'));
-}
-?>
-</table>
-<? echo $this->renderElement('pagination'); // Render the pagination element ?>
+	<table class="table1">
+		<thead>
+			<tr>
+				<th colspan="7">Liste des groupes</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+		<?php
+		$pagination->setPaging($paging); // Initialize the pagination variables
+		$th = array (
+		            $pagination->sortBy('id'),
+		            $pagination->sortBy('name','Nom'),
+		            'Parent',
+		            'Actions'
+		); // Generate the pagination sort links
+		echo $table->tableHeaders($th); // Create the table headers with sort links if desired
+		
+		foreach ($data as $output)
+		{
+		    $tr = array (
+		        $output['Group']['id'],
+		        $output['Group']['name'],
+		        $output['ParentGroup']['name'],
+				$html->link(
+					$html->image('b_search.png', array('alt' => 'Afficher', 'title' => 'Afficher', 'class' => 'action')),
+					'/groups/view/' . $output['Group']['id'],
+					null, false, false) ."&nbsp;&nbsp;".
+				$html->link(
+					$html->image('b_edit.png', array('alt' => 'Modifier', 'title' => 'Modifier', 'class' => 'action')),
+					'/groups/edit/' . $output['Group']['id'],
+					null, false, false) ."&nbsp;&nbsp;".
+				$html->link(
+					$html->image('b_drop.png', array('alt' => 'Supprimer', 'title' => 'Supprimer', 'class' => 'action')), 
+					'/groups/delete/' . $output['Group']['id'], 
+					null, 
+					'Etes vous certain de vouloir supprimer : ' . $output['Group']['name'] . ' ?',
+					false)
+		    );
+		    echo $table->tableCells($tr,array('class'=>'altRow'),array('class'=>'evenRow'));
+		}
+		?>
+		</tbody>
+	</table>
+	
+	<? echo $this->renderElement('pagination'); // Render the pagination element ?>
 </div>
-

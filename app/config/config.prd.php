@@ -1,4 +1,7 @@
 <?php
+//HTTPS authentification
+define("_HTTPSENABLED",			false);				//enabled https
+
 //Facultatif utilisateur et mot de passe par défaut pour le serveur subversion
 define("_SVNUSER", "");
 define("_SVNPASS", "");
@@ -12,6 +15,10 @@ define("_DIRMODE", 0755);
 //permission sur les fichiers après le deploiement 644 en règle générale
 define("_FILEMODE", 654);
 
+
+// installation path de Fredistrano
+define("_FREDISTRANOPATH",dirname( dirname( dirname(__FILE__))));
+
 // Définition des dossiers utilisés par Fredistrano 
 define("_DEPLOYDIR", _FREDISTRANOPATH . DS . "files");
 define("_DEPLOYTMPDIR", _DEPLOYDIR . DS . "tmp");
@@ -19,16 +26,12 @@ define("_DEPLOYBACKUPDIR", _DEPLOYDIR . DS . "backup");
 
 
 
-
-
 /**
- * ne pas modifier les constantes ci-dessous
- *
- */
-// installation path de Fredistrano
-define("_FREDISTRANOPATH",dirname( dirname( dirname(__FILE__))));
+ * 
+ * SPECIFIQUE -sera supprimé dans une prochaine version 
+ * 
+ * */
 
-//SPECIFIQUE -sera supprimé dans une prochaine version
 //serveur pour les web services
 define("_WEBSERVICESSERVER","hermes:50000");
 

@@ -45,7 +45,7 @@ class Project extends AppModel {
 	var $hasMany = array (
 		'DeploymentLog' => array (
 			'className' => 'DeploymentLog',
-			'order'     => 'DeploymentLog.date DESC',
+			'order'     => 'DeploymentLog.created DESC',
 			'limit'     => '5',
 			'foreignKey' => 'project_id',
 			'dependent' => false

@@ -1,5 +1,9 @@
-<?php echo $form->labelTag('Group/group_name', '<b>Nom<span class="req">*</span></b>') ?>
-<?php echo $html->input('Group/group_name', array('size' => '60', 'class' => 'f-name')) ?>
-<?php echo $error->showMessage('Group/group_name') ?>
+<?php echo $form->labelTag('Group/name', '<b>Nom<span class="req">*</span></b>') ?>
+<?php echo $html->input('Group/name', array('size' => '60', 'class' => 'f-name')) ?>
+<?php echo $error->showMessage('Group/name') ?>
 	
 <?php echo $html->hidden('Group/id') ?>
+
+<?php echo $form->labelTag('Group/parent_id', '<b>Parent</b>');?>
+<?php echo $html->selectTag('Group/parent_id', $groups);?>
+<?php echo $error->showMessage('Group/parent_id') ?>

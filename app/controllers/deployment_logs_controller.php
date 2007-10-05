@@ -95,7 +95,7 @@ class DeploymentLogsController extends AppController {
 			'user_id',
 			'created',
 			'comment',
-			'User.username',
+			'User.login',
 			'Project.name'
 		);
 		$order = 'DeploymentLog.created DESC';
@@ -122,7 +122,7 @@ class DeploymentLogsController extends AppController {
 			'user_id',
 			'created',
 			'comment',
-			'User.username',
+			'User.login',
 			'Project.name'
 		);
 		$order = 'DeploymentLog.created DESC';

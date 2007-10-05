@@ -8,7 +8,7 @@
 
 		<?php echo $this->renderElement('_form_user');?>
 		
-		<?php echo $form->labelTag('User/password', '<b>Mot de passe<span class="req">*</span></b>');?>
+		<?php echo $form->labelTag('User/password', '<b>Mot de passe</b>');?>
 	 	<?php echo $html->password('User/password', array('size' => '60', 'class' => 'f-name'));?>
 		<?php echo $error->showMessage('User/password');?>
 		

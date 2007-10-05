@@ -61,7 +61,7 @@ http://creativecommons.org/licenses/GPL/2.0/
 		
 		<?php
 					if(isset($_SESSION['User'])){
-						echo "<p>Bienvenu ".$_SESSION['User']['username']." ";
+						echo "<p>Bienvenu ".$_SESSION['User']['login']." ";
 						echo $html->link('[Déconnexion]','/users/logout')."</p>";
 					}else{
 					?>

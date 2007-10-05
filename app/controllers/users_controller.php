@@ -2,26 +2,35 @@
 class UsersController extends AppController {
 
 	var $name = 'Users';
-	var $helpers = array ('Html', 'Form', 'Error', 'Pagination', 'Ajax', 'Javascript');
-	var $components = array ('Pagination', 'RequestHandler');
+
+	var $helpers = array ();
+
+	var $components = array ();
+
+//	var $authLocal = array(
+//		'Users' => array('authorizations'),
+//		'except' => array (
+//			'login'=> array('public'),
+//			'logout'=> array('public')
+//		)
+//	);
 
 	function beforeRender() {
 		// Tableau de liens pour la création du menu contextuel
 		$tab[] = array('text' => 'Actions');
-
 		if ($this->action != 'index')
 			$tab[] = array('text' => 'Liste des utilisateurs', 'link' => '/users/index');
-
 		if ($this->action != 'add')
 			$tab[] = array('text' => 'Ajouter un utilisateur', 'link' => '/users/add');
-
 		$this->set("context_menu", $tab);
+		parent::beforeRender();
 	}
 
 	function index() {
 		$criteria = NULL;
-		list ($order, $limit, $page) = $this->Pagination->init($criteria); // Added
-		$data = $this->User->findAll($criteria, NULL, $order, $limit, $page); // Extra parameters added
+		list ($order, $limit, $page) = $this->Pagination->init($criteria);
+		$data = $this->User->findAll($criteria, NULL, $order, $limit, $page);
+		$this->User->_formatAll($data);
 		$this->set('data', $data);
 	}
 
@@ -29,20 +38,31 @@ class UsersController extends AppController {
 		if (!$id or !$this->User->read(null, $id)) {
 			$this->Session->setFlash('Identifiant invalide.');
 			$this->redirect('/users/index');
+			exit;
 		}
-		$this->set('user', $this->User->read(null, $id));
+		$user = $this->User->read(null, $id);
+		$this->User->_format($user);
+		$this->set('user', $user);
 	}
 
 	function add() {
 		if (empty ($this->data)) {
+			$this->set('groups', $this->User->Group->generateList());
+			$this->set('selectedGroups', null);
 			$this->render();
 		} else {
 			$this->cleanUpFields();
 			if ($this->User->save($this->data)) {
-				$this->Session->setFlash('Utilisateur créé, pensez à gérer ses permissions.');
+				$this->Aclite->reloadsAcls('Aro');
+				$this->Session->setFlash('Utilisateur créé.');
 				$this->redirect('/users/index');
 			} else {
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+				$this->set('groups', $this->User->Group->generateList());
+				if (empty ($this->data['Group']['Group'])) {
+					$this->data['Group']['Group'] = null;
+				}
+				$this->set('selectedGroups', $this->data['Group']['Group']);
 			}
 		}
 	}
@@ -52,15 +72,27 @@ class UsersController extends AppController {
 			if (!$id or !$this->User->read(null, $id)) {
 				$this->Session->setFlash('Identifiant invalide.');
 				$this->redirect('/users/index');
+				exit;
 			}
 			$this->data = $this->User->read(null, $id);
+			$this->set('groups', $this->User->Group->generateList());
+			if (empty ($this->data['Group'])) {
+				$this->data['Group'] = null;
+			}
+			$this->set('selectedGroups', $this->_selectedArray($this->data['Group']));
 		} else {
 			$this->cleanUpFields();
 			if ($this->User->save($this->data)) {
+				$this->Aclite->reloadsAcls('Aro');
 				$this->Session->setFlash('Utilisateur modifié.');
 				$this->redirect('/users/view/' . $id);
 			} else {
 				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+				$this->set('groups', $this->User->Group->generateList());
+				if (empty ($this->data['Group']['Group'])) {
+					$this->data['Group']['Group'] = null;
+				}
+				$this->set('selectedGroups', $this->data['Group']['Group']);
 			}
 		}
 	}
@@ -69,8 +101,10 @@ class UsersController extends AppController {
 		if (!$id or !$this->User->read(null, $id)) {
 			$this->Session->setFlash('Identifiant invalide.');
 			$this->redirect('/users/index');
+			exit;
 		}
 		if ($this->User->del($id)) {
+			$this->Aclite->reloadsAcls('Aro');
 			$this->Session->setFlash('Utilisateur supprimé.');
 			$this->redirect('/users/index');
 		} else {
@@ -83,18 +117,20 @@ class UsersController extends AppController {
 		if (!$id or !$this->User->read(null, $id)) {
 			$this->Session->setFlash('Identifiant invalide.');
 			$this->redirect('/users/index');
+			exit;
 		}
 
-		if (!empty($this->data)) {
+		if (!empty ($this->data)) {
 			$user = $this->User->read(null, $id);
 
-			if (empty($this->data['User']['old_password'])
-			or empty($this->data['User']['password'])
-			or empty($this->data['User']['confirm_password'])) {
+			// le mot de passe n'est pas obligatoire donc l'ancien mdp peut être vide
+			if (empty ($this->data['User']['password']) or empty ($this->data['User']['confirm_password'])) {
 				$this->Session->setFlash('Veuillez remplir tous les champs.');
-			} elseif (md5($this->data['User']['old_password']) != $user['User']['password']) {
+			}
+			elseif (md5($this->data['User']['old_password']) != $user['User']['password']) {
 				$this->Session->setFlash('Ancien mot de passe incorrect.');
-			} elseif ($this->data['User']['password'] != $this->data['User']['confirm_password']) {
+			}
+			elseif ($this->data['User']['password'] != $this->data['User']['confirm_password']) {
 				$this->Session->setFlash('Vous n\'avez pas saisi deux fois le même mot de passe.');
 			} else {
 				$this->User->id = $user['User']['id'];
@@ -109,50 +145,81 @@ class UsersController extends AppController {
 	}
 
 	function login() {
-		//Don't show the error message if no data has been submitted.
-		$this->set('error', false);
+		// On accepte uniquement les requetes HTTPS
+		if (!env('HTTPS') && _HTTPSENABLED) {
+			$this->redirect('/');
+			exit ();
+		}
 
-		// If a user has submitted form data:
-		if (!empty($this->data)) {
-			$someone = $this->User->findByUsername($this->data['User']['username']);
+		// Un utilisateur a fourni ses identifiants
+		if (!empty ($this->data)) {
 
-			//authentification par webservice + mysql
-			//pour changer le type d'authentification voir le fichier app/confg/config.php
-			if (_AUTHENTICATIONTYPE == "1") {
-				include ("SOAP/Client.php");
-				unset ($ret);
-				$dest = "http://" . _WEBSERVICESSERVER . "/OSI_authentificationWS/Config1?wsdl";
-				$wsdl = new SOAP_WSDL($dest);
-				$soapclient = $wsdl->getProxy();
-				$ret = $soapclient->authentifierAnnuaire($someone['User']['username'], $this->data['User']['password'], _DIRECTORYTYPE);
-			//authentification par mysql
+			if ($this->User->isValid($this->data['User']['login'])) {
+				// Un utilisateur portant le meme nom existe dans la base
+				
+				if ($this->_authenticate($this->data['User']['login'], $this->data['User']['password']) === true) {
+					// Authentification réussie
+					$someone = $this->User->findByLogin($this->data['User']['login']);
+					$userSession['id'] = $someone['User']['id'];
+					$userSession['login'] = $someone['User']['login'];
+					if (empty ($someone['Group']))
+						$someone['Group'][0]['name'] = 'member';
+					$userSession['group'] = $someone['Group'][0]['name'];
+					$this->Session->write('user_alias', $someone['User']['login']);
+					$this->Session->write('User', $userSession);
+					$this->log($someone['User']['login'] . " - Connexion", LOG_DEBUG);
+					$this->Session->setFlash('Identification acceptée');
+
+				} else {
+					//Authentification échouée
+					$this->Session->setFlash('Identification incorrecte !');
+				}
+
 			} else {
-				$ret = (!empty($someone['User']['password']) and ($someone['User']['password'] == md5($this->data['User']['password'])));
+				// L'utilisateur n'existe pas dans la base
+				$this->Session->setFlash('Utilisateur inconnu !');
 			}
 
-			//Authentification réussie
-			if ($ret == "true") {
-				// on ne met pas le mot de passe en session
-				unset($someone['User']['password']);
-				$this->Session->write('User', $someone['User']);
-
-				$this->log("connexion " . $someone['User']['username'], LOG_DEBUG);
-
-				$this->Session->setFlash('Identification acceptée.');
-				$this->redirect('/');
-			//Authentification échouée
-			} else {
-				// Remember the $error var in the view? Let's set that to true:
-				$this->Session->setFlash('Identification incorrecte !');
-				$this->redirect('/');
-			}
+			// Affichage
+			$this->set('HTTP_REFERER', $_SERVER['HTTP_REFERER']);
+			$this->layout = "ajax";
 		}
 	}
 
 	function logout() {
+		$this->log($this->Session->read('User.login') . " - Déconnexion", LOG_DEBUG);
 		$this->Session->delete('User');
+		$this->Session->delete('user_alias');
 		$this->Session->setFlash('Vous êtes maintenant déconnecté.');
-		$this->redirect('/');
+		$this->redirect($this->referer());
 	}
+
+	/**
+	 * authentification par webservice + mysql
+	 * pour changer le type d'authentification voir le fichier app/confg/config.php
+	 */
+	private function _authenticate($user, $passwd) {
+
+		if (_AUTHENTICATIONTYPE == "1") {
+			// authentification par WS
+			include ("SOAP/Client.php");
+			
+			$dest = "https://" . _WEBSERVICESSERVER . "/OSI_authentificationWS/ConfigSSL?wsdl";
+			$wsdl = new SOAP_WSDL($dest);
+			$soapclient = $wsdl->getProxy();
+			$soapclient->setOpt('curl', CURLOPT_CAINFO, _WS_SSL_TRUSTEDCA_FILE);
+			$soapclient->setOpt('curl', CURLOPT_SSL_VERIFYPEER, 2);
+			$soapclient->setOpt('curl', CURLOPT_SSL_VERIFYHOST, 0);
+			
+			$res = $soapclient->authentifierAnnuaire($user, $passwd, _DIRECTORYTYPE);
+			return $res=="true";
+
+		} else {
+			//authentification par mysql
+			$user = $this->User->findByLogin($user); // requete cachée
+			
+			return (!empty ($user['User']['password']) and ($user['User']['password'] == md5($passwd)));
+		}
+	} // _authenticate
 }
 ?>
