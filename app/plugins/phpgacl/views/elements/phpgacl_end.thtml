@@ -1,4 +1,0 @@
-	<div class="phpgacl-footer">
-		phpGACL Plugin <?php echo $version; ?> running on <a href="http://www.cakephp.org">CakePHP</a> <?php echo $cake_version; ?>
-	</div>
-</div>
