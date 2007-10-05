@@ -1,0 +1,45 @@
+<div>
+<?php 
+	if (empty($permissions))
+		echo "Aucune permission enregistrée";
+	else {
+		echo '<ul>';
+		foreach($permissions as $permission) {
+			$allowed = '';
+			$denied = '';
+			
+			if ($permission['ArosAco']['_create'] == 1)
+				$allowed .= 'create ';
+			else if ($permission['ArosAco']['_create'] == -1)
+				$denied .= 'create ';
+				
+			if ($permission['ArosAco']['_delete'] == 1)
+				$allowed .= 'delete ';
+			else if ($permission['ArosAco']['_delete'] == -1)
+				$denied .= 'delete ';
+				
+			if ($permission['ArosAco']['_update'] == 1)
+				$allowed .= 'update ';
+			else if ($permission['ArosAco']['_update'] == -1)
+				$denied .= 'update ';
+				
+			if ($permission['ArosAco']['_read'] == 1)
+				$allowed .= 'read ';
+			else if ($permission['ArosAco']['_read'] == -1)
+				$denied .= 'read ';
+			
+			$delete = $edit?$html->link(' [X] ','/aclite/aclManagement/deletePermission/'.$permission['ArosAco']['id'],null,'Supprimer cette permission?'):'';
+			
+			if (strlen($denied)>0 && strlen($allowed)>0) 
+				echo '<li><b>'.$permission['Aro']['alias'].'</b> peut effectuer sur <b>'.$permission['Aco']['alias'].'</b> les actions suivantes [<i>'.$allowed.
+					'</i> ] mais ne peut pas effectuer [ '.$denied.'] '.$delete.'</li>';
+			else if (strlen($denied) == 0) 
+				echo '<li><b>'.$permission['Aro']['alias'].'</b> peut <b>tout</b> faire sur <b>'.$permission['Aco']['alias'].'</b> '.$delete.'</li>';
+			else if (strlen($allowed) == 0) 
+				echo '<li><b>'.$permission['Aro']['alias'].'</b> ne peut <b>rien</b> faire sur <b>'.$permission['Aco']['alias'].'</b> '.$delete.'</li>';
+			
+		}
+		echo '</ul>';
+	}
+?>
+</div>

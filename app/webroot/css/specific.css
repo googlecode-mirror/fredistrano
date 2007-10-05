@@ -3,6 +3,7 @@
 .tabletoplink {float: right;padding-right: 2px;font-size: 75%;}
 .tabletoplink a {text-decoration:none;}
 .tabletoplink a:hover{text-decoration:none;color:#069;}
+.tabletoplink a:visited{text-decoration:none;color:#fff;}
 .tabletoplink ul {list-style:none;}
 .tabletoplink ul li {background-image:none;}
 .tabletoplink img {vertical-align: middle;}

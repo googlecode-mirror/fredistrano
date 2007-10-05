@@ -1,0 +1,47 @@
+<div class="controlObjects">
+	<table class="table1">
+		<thead>
+			<tr>
+				<th colspan="5">Liste des objets de contrôle</th>
+			</tr>
+		</thead>
+
+		<tbody>
+		<?php
+		$pagination->setPaging($paging); // Initialize the pagination variables
+		$th = array (
+			$pagination->sortBy('id', 'Id'),
+			$pagination->sortBy('name', 'Nom'),
+			'Parent',
+			'Actions'
+		); // Generate the pagination sort links
+		echo $table->tableHeaders($th); // Create the table headers with sort links if desired
+
+		foreach ($data as $output) {
+			$tr = array (
+				$output['ControlObject']['id'],
+				$output['ControlObject']['name'],
+				$output['ParentControlObject']['name'],
+				$html->link(
+					$html->image('b_search.png', array('alt' => 'Afficher', 'title' => 'Afficher', 'class' => 'action')),
+					'/control_objects/view/' . $output['ControlObject']['id'],
+					null, false, false) ."&nbsp;&nbsp;".
+				$html->link(
+					$html->image('b_edit.png', array('alt' => 'Modifier', 'title' => 'Modifier', 'class' => 'action')),
+					'/control_objects/edit/' . $output['ControlObject']['id'],
+					null, false, false) ."&nbsp;&nbsp;".
+				$html->link(
+					$html->image('b_drop.png', array('alt' => 'Supprimer', 'title' => 'Supprimer', 'class' => 'action')),
+					'/control_objects/delete/' . $output['ControlObject']['id'],
+					null,
+					'Etes vous certain de vouloir supprimer : ' . $output['ControlObject']['name'] . ' ?',
+					false)
+			);
+			echo $table->tableCells($tr,array('class'=>'altRow'),array('class'=>'evenRow'));
+		}
+		?>
+		</tbody>
+	</table>
+
+	<? echo $this->renderElement('pagination'); // Render the pagination element ?>
+</div>
