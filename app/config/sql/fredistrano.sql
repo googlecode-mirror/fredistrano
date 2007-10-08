@@ -148,7 +148,7 @@ CREATE TABLE `users` (
 -- Contenu de la table `users`
 -- 
 
-INSERT INTO `users` (`id`, `login`, `password`, `first_name`, `last_name`, `email`, `created`, `modified`) VALUES (1, 'admin', '0f359740bd1cda994f8b55330c86d845', NULL, NULL, NULL, '2007-07-23 19:17:34', '2007-07-23 19:17:34');
+INSERT INTO `users` (`id`, `login`, `password`, `first_name`, `last_name`, `email`, `created`, `modified`) VALUES (1, 'admin', '21232f297a57a5a743894a0e4a801fc3', NULL, NULL, NULL, '2007-07-23 19:17:34', '2007-07-23 19:17:34');
 
 -- --------------------------------------------------------
 -- 

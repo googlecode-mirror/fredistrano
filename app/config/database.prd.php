@@ -65,16 +65,6 @@ class DATABASE_CONFIG {
 		'prefix' => ''
 	);
 
-	var $gacl = array (
-		'driver' => 'mysql',
-		'connect' => 'mysql_connect',
-		'host' => 'mysql.server',
-		'login' => 'user',
-		'password' => 'password',
-		'database' => 'Fredistrano',
-		'prefix' => 'phpgacl_'
-	);
-
 	var $test = array (
 		'driver' => 'mysql',
 		'connect' => 'mysql_connect',

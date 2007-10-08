@@ -1,5 +1,6 @@
 <?php
 
+
 /* SVN FILE: $Id: app_model.php 4409 2007-02-02 13:20:59Z phpnut $ */
 /**
  * Application model for Cake.
@@ -39,48 +40,71 @@
  * @subpackage	cake.cake
  */
 class AppModel extends Model {
+
+	/**
+	 * Support UTF-8
+	 */
 	static $utf8IsSet = false;
 
-	function __construct(){
-		if(!self::$utf8IsSet) {
+	function __construct() {
+		$db = & ConnectionManager :: getDataSource($this->useDbConfig);
+		if (!self :: $utf8IsSet and (get_class($db) != 'LdapSource')) {
 			$this->execute("SET NAMES 'utf8'");
-			self::$utf8IsSet = true;
+			self :: $utf8IsSet = true;
 		}
-		parent::__construct();
+		parent :: __construct();
 	}
 
-	// basée sur http://cakebaker.wordpress.com/2006/02/06/yet-another-data-validation-approach/
+	/**
+	 * Vérifie l'unicité des valeurs d'un champ
+	 */
+	function isUnique($params) {
+		$fieldName = $params[0];
+		if ($this-> { $this->primaryKey } == null) // add
+			return (!$this->hasAny(array ($this->name . '.' . $fieldName => $this->data[$this->name][$fieldName])));
+		else // edit
+			return (!$this->hasAny(array (
+				$this->name . '.' . $fieldName => $this->data[$this->name][$fieldName],
+				$this->name . '.' . $this->primaryKey => '!=' . $this->data[$this->name][$this->primaryKey]
+			)));
+	}// isUnique
+
+	/**
+	 * Validation avancée
+	 * basée sur http://cakebaker.42dh.com/2006/02/06/yet-another-data-validation-approach/
+	 */
 	function invalidFields($data = array ()) {
-		if (!$this->beforeValidate()) {
+		if (!$this->beforeValidate())
 			return false;
-		}
-
-		if (!isset ($this->validate) || !empty ($this->validationErrors)) {
-			if (!isset ($this->validate)) {
-				return true;
-			} else {
-				return $this->validationErrors;
-			}
-		}
-
-		if (isset ($this->data)) {
+	
+		if (!isset ($this->validate))
+			return true;
+	
+		if (!empty ($this->validationErrors))
+			return $this->validationErrors;
+	
+		if (isset ($this->data))
 			$data = array_merge($data, $this->data);
-		}
-
+	
 		$errors = array ();
 		$this->set($data);
-
+	
 		foreach ($data as $table => $field) {
 			foreach ($this->validate as $field_name => $validators) {
 				foreach ($validators as $validator) {
 					if (isset ($validator[0])) {
-						if (method_exists($this, $validator[0])) {
-							if (isset ($data[$table][$field_name]) && !call_user_func(array (
-									$this,
-									$validator[0]
-								))) {
-								if (!isset ($errors[$field_name])) {
-									$errors[$field_name] = isset ($validator[1]) ? $validator[1] : 1;
+						if (is_array($validator[0])) {
+							$function_name = $validator[0][0];
+							$params = $validator[0][1];
+	
+							if (method_exists($this, $function_name)) {
+								if (isset ($data[$table][$field_name]) and !call_user_func(array (
+										$this,
+										$function_name
+									), $params)) {
+									if (!isset ($errors[$field_name])) {
+										$errors[$field_name] = isset ($validator[1]) ? $validator[1] : 1;
+									}
 								}
 							}
 						} else {
@@ -94,8 +118,10 @@ class AppModel extends Model {
 				}
 			}
 		}
+	
 		$this->validationErrors = $errors;
 		return $errors;
-	}
-}
+	}// invalidFields
+
+}// AppModel
 ?>

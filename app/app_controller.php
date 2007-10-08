@@ -45,7 +45,8 @@ class AppController extends Controller {
 		'Javascript',
 		'Pagination',
 		'Ajax',
-		'Table', 
+		'Table',
+		'Error', 
 		'Form'
 	);
 
