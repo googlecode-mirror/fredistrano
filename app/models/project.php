@@ -10,7 +10,7 @@ class Project extends AppModel {
 				'Veuillez saisir un nom de projet'
 			)
 			,
-			array (array('isUnique', array('name')), 'Ce login est déjà utilisé.')
+			array (array('isUnique', array('name')), 'Ce nom de projet est déjà utilisé.')
 		),
 		'svn_url' => array (
 			array (
