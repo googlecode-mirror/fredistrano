@@ -10,10 +10,7 @@ class Project extends AppModel {
 				'Veuillez saisir un nom de projet'
 			)
 			,
-			array (
-				'isProjectNameUnique',
-				'Ce projet existe déjà'
-			)
+			array (array('isUnique', array('name')), 'Ce login est déjà utilisé.')
 		),
 		'svn_url' => array (
 			array (
@@ -52,18 +49,6 @@ class Project extends AppModel {
 		)
 	);
 
-	// basée sur http://cakebaker.wordpress.com/2006/02/06/yet-another-data-validation-approach/
-	// rajouté par mes soins une condition pour ne pas tester le username lors d'une modification
-	function isProjectNameUnique() {
-		if ( $this->id == null ) //Adding a project
-        {
-            return (!$this->hasAny( array( 'Project.name' => $this->data[$this->name]['name'] ) ));
-        }
-        else //Editing a project
-        {
-            return (!$this->hasAny( array( 'Project.name' => $this->data[$this->name]['name'], 'Project.id' => '!='.$this->data[$this->name]['id'] ) ) );
-        }
-	}
 
 }
 ?>
