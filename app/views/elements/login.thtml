@@ -1,4 +1,4 @@
-<?php echo $html->formTag('/users/login', 'post', array('class' => 'f-wrap-1')) ?>
+<form class="f-wrap-1" action="<?php echo ((_HTTPSENABLED)?'https':'http').'://'. $serverName . $appPath ?>/users/login" method="post">
     <fieldset>
 	    <h6>Identification</h6>
 	    

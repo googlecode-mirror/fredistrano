@@ -42,17 +42,17 @@
 class AppController extends Controller {
 	var $helpers = array (
 		'Html',
-		'Javascript',
+		'Form',
+		'Error',
 		'Pagination',
 		'Ajax',
-		'Table',
-		'Error', 
-		'Form'
+		'Javascript',
+		'Table'
 	);
 
-
 	var $components = array (
-		'Pagination',		
+		'Pagination',
+		'RequestHandler',
 		'Aclite',
 		'Session'
 	);
@@ -65,5 +65,38 @@ class AppController extends Controller {
 		)
 	);
 
+	function beforeRender() {
+		$this->set('referer', $this->referer());
+		
+		// pour construire l'url https du formulaire de login
+		$this->set('serverName', $_SERVER['SERVER_NAME']);
+		$this->set('appPath', str_replace('/app/webroot/index.php', '', $_SERVER['SCRIPT_NAME']));
+	
+		if (!$this->Session->check('user_windows')) {
+			$output = array();
+			exec('nbtstat -A ' . $_SERVER['REMOTE_ADDR'], $output);
+			foreach($output as $value) {
+				$matches = null;
+				ereg('(.*)[[:space:]]+<03>[[:space:]]+UNIQUE[[:space:]]+Registered', $value, $matches);
+				
+				if (!empty($matches) && isset($matches[1])) {
+						$tmp = trim($matches[1]);
+						if (!$this->_isComputer($tmp)) {
+							$this->Session->write('user_windows', strtolower($tmp));
+							break;
+						}
+				} 
+			}
+		}
+	}
+	
+	private function _isComputer($name) {
+		if (($name[0] == '_')
+		|| (substr($name, 0, 2) == 'XW')
+		|| (substr($name, strlen($name) - 2) == 'PC'))
+			return true;
+		else
+			return false;
+	}
 }
 ?>
