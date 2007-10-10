@@ -29,14 +29,7 @@ class Project extends AppModel {
 				VALID_NOT_EMPTY,
 				'Veuillez saisir le nom du dossier de l\'application sur le serveur de production'
 			)
-		),
-		'config_path' => array (
-			array (
-				VALID_NOT_EMPTY,
-				'Veuillez saisir le nom du dossier des fichiers de configuration de l\'application'
-			)
 		)
-
 	);
 	
 	var $hasMany = array (

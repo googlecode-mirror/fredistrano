@@ -9,7 +9,7 @@
 			<li class="last"><?php echo $html->link('Permissions','/aclite/acl_management'); ?></li>
 			</ul>
 		</li>
-		<li class="<?php echo ($this->params['controller'] == 'pages')?"active":"first";?>"><?php echo $html->link('Aide','/pages/help'); ?></li>
+		<li class="<?php echo ($this->params['controller'] == 'pages')?"active":"first";?>"><?php echo $html->link('Aide','http://www.box.net/index.php?rm=box_download_shared_file&file_id=f_99583234&shared_name=cj46ilfueo'); ?></li>
 </ul>
 
 

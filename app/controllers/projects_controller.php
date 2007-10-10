@@ -131,11 +131,11 @@ class ProjectsController extends AppController {
 
 		$output = '';
 
-		if (!@ file_exists(_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . $project['Project']['config_path'] . "/deploy.php")) {
-			$output .= '[ERROR] - synchro impossible, fichier ' . $project['Project']['config_path'] . DS . 'deploy.php inexistant';
+		if (!@ file_exists(_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php")) {
+			$output .= '[ERROR] - synchro impossible, fichier deploy.php inexistant';
 
 		} else {
-			include_once (_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . $project['Project']['config_path'] . DS . "deploy.php");
+			include_once (_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php");
 
 			$deployConfig = new DEPLOY_CONFIG();
 			$exclude = $deployConfig->exclude;
@@ -181,9 +181,8 @@ class ProjectsController extends AppController {
 
 				if ($this->data['Project']['simulation'] == 0) {
 
-					//copie des versions de prod des fichiers database.php et config.php
-					$output .= shell_exec("cp " . $project['Project']['prd_path'] . DS . $project['Project']['config_path'] . DS . "database.prd.php " . $project['Project']['prd_path'] . DS . $project['Project']['config_path'] . DS . "database.php ");
-					$output .= shell_exec("cp " . $project['Project']['prd_path'] . DS . $project['Project']['config_path'] . DS . "config.prd.php " . $project['Project']['prd_path'] . DS . $project['Project']['config_path'] . DS . "config.php ");
+					//renommage des versions de prod des fichiers de type .prd.xxx en .xxx
+					$output .= shell_exec("find " . $project['Project']['prd_path'] . " -name '*.prd.*' -exec rename 's/\.prd\./\./i' {} +");
 
 					//on corrige les droits 
 					$output .= shell_exec("find " . $project['Project']['prd_path'] . " -type d -exec chmod " . _DIRMODE . " {} \;");

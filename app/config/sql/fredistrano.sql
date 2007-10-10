@@ -37,7 +37,6 @@ CREATE TABLE `projects` (
   `svn_url` varchar(255) collate utf8_unicode_ci NOT NULL,
   `prd_url` varchar(255) collate utf8_unicode_ci NOT NULL,
   `prd_path` varchar(255) collate utf8_unicode_ci NOT NULL,
-  `config_path` varchar(255) collate utf8_unicode_ci NOT NULL,
   `created` timestamp NULL default NULL,
   `modified` timestamp NULL default NULL,
   PRIMARY KEY  (`id`)
@@ -48,8 +47,8 @@ CREATE TABLE `projects` (
 -- Contenu de la table `projects`
 -- 
 
-INSERT INTO `projects` (`id`, `name`, `svn_url`, `prd_url`, `prd_path`, `config_path`, `created`, `modified`) VALUES 
-(1, 'Fredistrano', 'http://svn.fbollon.net/Fredistrano/trunk', 'http://localhost/test/Fredistrano', '/var/www/test1/Fredistrano', 'app/config', '2007-10-02 19:04:09', '2007-10-02 23:03:10');
+INSERT INTO `projects` (`id`, `name`, `svn_url`, `prd_url`, `prd_path`, `created`, `modified`) VALUES 
+(1, 'Fredistrano', 'http://svn.fbollon.net/Fredistrano/trunk', 'http://localhost/test/Fredistrano', '/var/www/test1/Fredistrano', '2007-10-02 19:04:09', '2007-10-02 23:03:10');
 
 -- --------------------------------------------------------
 

@@ -12,9 +12,9 @@ class AcliteAppController extends AppController {
 	);
 
 	var $authGlobal = array (
-//		'AcliteApp' => array (
-//			'authorizations'
-//		)
+		'AcliteApp' => array (
+			'authorizations'
+		)
 	);
 
 }

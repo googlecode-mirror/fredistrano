@@ -73,11 +73,6 @@
 </tr>
 
 <tr>
-<th class="sub">Répertoire des fichiers de configuration du projet (ex: app/config)</th>
-<td>&nbsp;<?php echo $project['Project']['config_path']?></td>
-</tr>
-
-<tr>
 <th class="sub">Créé le</th>
 <td>&nbsp;<?php echo $project['Project']['created']?></td>
 </tr>

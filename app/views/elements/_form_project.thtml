@@ -14,6 +14,3 @@
  	<?php echo $html->input('Project/prd_path', array('size' => '60', 'class' => 'f-name'));?>
 	<?php echo $error->showMessage('Project/prd_path');?>
 	
-	<?php echo $form->labelTag('Project/config_path', '<b>Répertoire des fichiers de configuration du projet (ex: app/config)</b>');?>
- 	<?php echo $html->input('Project/config_path', array('size' => '60', 'class' => 'f-name'));?>
-	<?php echo $error->showMessage('Project/config_path');?>	
