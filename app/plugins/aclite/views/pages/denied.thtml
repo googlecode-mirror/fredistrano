@@ -1,4 +1,4 @@
-<h1><img src="/Fredistrano/img/lock.png" alt="denied" title="denied" />Accès refusé</h1>
+<h1><img src="../../img/lock.png" alt="denied" title="denied" />Accès refusé</h1>
 <?php echo '<b>Détails</b> : '.$denialDetails."<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>"; ?>
   
   
