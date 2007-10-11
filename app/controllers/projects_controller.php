@@ -132,8 +132,8 @@ class ProjectsController extends AppController {
 		$output = '';
 
 		if (!@ file_exists(_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php")) {
-			$output .= '[ERROR] - synchro impossible, fichier deploy.php inexistant';
-
+			$output .= '[ERROR] - synchro impossible, fichier deploy.php inexistant, ' .
+					'ce fichier doit se trouver à la racine du projet à déployer, voir la documentation de Fredistrano';
 		} else {
 			include_once (_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php");
 
@@ -180,31 +180,34 @@ class ProjectsController extends AppController {
 				$output .= shell_exec("sh portableRsync.sh " . $option . " " . $exclude_file_name . " " . $source . " " . $target);
 
 				if ($this->data['Project']['simulation'] == 0) {
-
 					//renommage des versions de prod des fichiers de type .prd.xxx en .xxx
-					$output .= shell_exec("find " . $project['Project']['prd_path'] . " -name '*.prd.*' -exec rename 's/\.prd\./\./i' {} +");
-
-					//on corrige les droits 
-					$output .= shell_exec("find " . $project['Project']['prd_path'] . " -type d -exec chmod " . _DIRMODE . " {} \;");
-					$output .= shell_exec("find " . $project['Project']['prd_path'] . " -type f -exec chmod " . _FILEMODE . " {} \;");
-
-					$writableConfig = new WRITABLE_DIR();
-					$writable = $writableConfig->writable;
-					if (sizeof($writable) > 0) {
-						for ($i = 0; $i < sizeof($writable); $i++) {
-							$output .= shell_exec("find " . $project['Project']['prd_path'] . $writable[$i] . " -type d -exec chmod 777 {} \;");
-						}
+					if (_WINOS == true) {
+						$output .= shell_exec("bash.exe --login -c 'find " . $this->_pathConverter($project['Project']['prd_path']) . " -name \'*.prd.*\' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -v 's/\.prd\./\./i' {} +'");	
+					} else {
+						$output .= shell_exec("find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.prd.*' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -v 's/\.prd\./\./i' {} +");
 					}
 
+					//on corrige les droits si le serveur est sous linux
+					if (_WINOS == true) {
+						$output .= shell_exec("find " . $project['Project']['prd_path'] . " -type d -exec chmod " . _DIRMODE . " {} \;");
+						$output .= shell_exec("find " . $project['Project']['prd_path'] . " -type f -exec chmod " . _FILEMODE . " {} \;");
+						
+						$writableConfig = new WRITABLE_DIR();
+						$writable = $writableConfig->writable;
+						if (sizeof($writable) > 0) {
+							for ($i = 0; $i < sizeof($writable); $i++) {
+								$output .= shell_exec("find " . $project['Project']['prd_path'] . $writable[$i] . " -type d -exec chmod 777 {} \;");
+							}
+						}
+					}
+					$output .= "suppression du fichier " . $project['Project']['prd_path'] . DS . "deploy.php";
+					$output .= shell_exec('rm ' . $project['Project']['prd_path'] . DS . "deploy.php");
 				}
-
 			} else {
 				$output .= "Erreur - problème de sauvegarde ";
 			}
-
 		}
 		$this->set('output', $output);
-
 	}
 
 	function view($id = null) {
@@ -298,15 +301,18 @@ class ProjectsController extends AppController {
 
 	}
 
+
 	//dans le cas d'un path windows on le reformate à la sauce cywin
 	private function _pathConverter($path) {
 		$pathForRsync = $path;
-		$pattern = '/^([A-Za-z]):/';
-		preg_match($pattern, $path, $matches, PREG_OFFSET_CAPTURE);
-		if (!empty ($matches[1][0])) {
-			$windowsLetter = strtolower($matches[1][0]);
-			$pathForRsync = "/" . $windowsLetter . substr($path, 2);
-			$pathForRsync = strtr("/" . $windowsLetter . substr($path, 2), "\\", "/");
+		if (_WINOS) {
+			$pattern = '/^([A-Za-z]):/';
+			preg_match($pattern, $path, $matches, PREG_OFFSET_CAPTURE);
+			if (!empty ($matches[1][0])) {
+				$windowsLetter = strtolower($matches[1][0]);
+				$pathForRsync = "/" . $windowsLetter . substr($path, 2);
+				$pathForRsync = strtr("/" . $windowsLetter . substr($path, 2), "\\", "/");
+			}	
 		}
 		return $pathForRsync;
 	}

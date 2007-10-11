@@ -45,6 +45,18 @@
 //EOF
 
    require_once(APP.'config'.DS.'config.php');
+   
+   detectOs();
+   
+   function detectOs(){
+		$pattern = '/^([A-Za-z]):/';
+		preg_match($pattern, $_SERVER['DOCUMENT_ROOT'], $matches, PREG_OFFSET_CAPTURE);
+		if (!empty ($matches[1][0])) {
+			define("_WINOS", true);
+		}else{
+			define("_WINOS", false);
+		}
+	}
 
 
 ?>

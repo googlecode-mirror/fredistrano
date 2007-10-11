@@ -98,5 +98,7 @@ class AppController extends Controller {
 		else
 			return false;
 	}
+	
+
 }
 ?>
