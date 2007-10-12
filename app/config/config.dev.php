@@ -1,6 +1,6 @@
 <?php
 //HTTPS authentification
-define("_HTTPSENABLED",			true);				//enabled https
+define("_HTTPSENABLED",			false);				//enabled https
 
 //Facultatif utilisateur et mot de passe par défaut pour le serveur subversion
 define("_SVNUSER", "");

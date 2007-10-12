@@ -120,7 +120,7 @@ class ProjectsController extends AppController {
 			// svn export
 			set_time_limit(_TIMELIMITSVN);
 			$output .= shell_exec("svn export" . $revision . $authentication . " " . $project['Project']['svn_url'] . " tmpDir");
-			preg_match('/Exported revision ([0-9]+)\.$/', $output, $matches);
+			preg_match('/ ([0-9]+)\.$/i', $output, $matches);
 
 			$this->set('revision', $matches[1]);
 			$this->set('output', $output);
