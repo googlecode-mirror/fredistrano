@@ -68,15 +68,15 @@ class ProjectsController extends AppController {
 		// si les répertoires temporaires et backup nécessaires à Fredistrano n'existent pas, on le crée
 
 		if (!is_dir(_DEPLOYDIR)) {
-			if (mkdir(_DEPLOYDIR, _DIRMODE, TRUE))
+			if (mkdir(_DEPLOYDIR, octdec(_DIRMODE), TRUE))
 				$output .= "-[création du répertoire " . _DEPLOYDIR . "]\n";
 		}
 		if (!is_dir(_DEPLOYTMPDIR)) {
-			if (mkdir(_DEPLOYTMPDIR, _DIRMODE, TRUE))
+			if (mkdir(_DEPLOYTMPDIR, octdec(_DIRMODE), TRUE))
 				$output .= "-[création du répertoire " . _DEPLOYTMPDIR . "]\n";
 		}
 		if (!is_dir(_DEPLOYBACKUPDIR)) {
-			if (mkdir(_DEPLOYBACKUPDIR, _DIRMODE, TRUE))
+			if (mkdir(_DEPLOYBACKUPDIR, octdec(_DIRMODE), TRUE))
 				$output .= "-[création du répertoire " . _DEPLOYBACKUPDIR . "]\n";
 		}
 
@@ -94,13 +94,13 @@ class ProjectsController extends AppController {
 				$output .= shell_exec('rm -rf ' . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "/*");
 			} else {
 				// on le crée si il n'existe pas
-				if (mkdir(_DEPLOYTMPDIR . DS . $project['Project']['name'], _DIRMODE, TRUE))
+				if (mkdir(_DEPLOYTMPDIR . DS . $project['Project']['name'], octdec(_DIRMODE), TRUE))
 					$output .= "-[création du répertoire " . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "]\n";
 			}
 
 			// création du répertoire de l'application si il n'existe pas
 			if (!is_dir($project['Project']['prd_path'])) {
-				if (@ mkdir($project['Project']['prd_path'], _DIRMODE, TRUE))
+				if (@ mkdir($project['Project']['prd_path'], octdec(_DIRMODE), TRUE))
 					$output .= "-[création du répertoire " . $project['Project']['prd_path'] . "]\n";
 			}
 
@@ -120,7 +120,7 @@ class ProjectsController extends AppController {
 			// svn export
 			set_time_limit(_TIMELIMITSVN);
 			$output .= shell_exec("svn export" . $revision . $authentication . " " . $project['Project']['svn_url'] . " tmpDir");
-			preg_match('/ ([0-9]+)\.$/i', $output, $matches);
+			preg_match('/ ([0-9]+)\.$/', $output, $matches);
 
 			$this->set('revision', $matches[1]);
 			$this->set('output', $output);
@@ -180,11 +180,11 @@ class ProjectsController extends AppController {
 
 				chdir(_DEPLOYDIR);
 				set_time_limit(_TIMELIMITRSYNC);
-				$output .= shell_exec("sh portableRsync.sh " . $option . " " . $exclude_file_name . " " . $source . " " . $target);
+				$output .= shell_exec("rsync -$option --delete --exclude-from=$exclude_file_name $source $target");
 
 				if ($this->data['Project']['simulation'] == 0) {
-					//renommage des versions de prod des fichiers de type .prd.xxx en .xxx et suppression des *.dev.*
 					if (_WINOS === true) {
+						//couche cygwin
 						$prefix = "bash.exe --login -c '";
 						$suffix = "'";
 					} else {
@@ -192,23 +192,23 @@ class ProjectsController extends AppController {
 						$suffix = "";
 					}
 					
+					//renommage des versions de prod des fichiers de type .prd.xxx en .xxx et suppression des *.dev.*
 					$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.prd.*' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -vf 's/\.prd\./\./i' {} +".$suffix);
 					$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.dev.*' -exec rm -f {} \;".$suffix);
 
-					//on corrige les droits si le serveur est sous linux
-					if (_WINOS === false) {
-						$output .= shell_exec("find " . $project['Project']['prd_path'] . " -type d -exec chmod " . _DIRMODE . " {} \;");
-						$output .= shell_exec("find " . $project['Project']['prd_path'] . " -type f -exec chmod " . _FILEMODE . " {} \;");
-						
-						$writable = $this->_getConfig()->writable;
-						if (sizeof($writable) > 0) {
-							for ($i = 0; $i < sizeof($writable); $i++) {
-								$output .= shell_exec("find " . $project['Project']['prd_path'] . $writable[$i] . " -type d -exec chmod 777 {} \;");
-							}
+					//correction des droits 
+					$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -type d -exec chmod " . _DIRMODE . " {} \;".$suffix);
+					$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -type f -exec chmod " . _FILEMODE . " {} \;".$suffix);	
+					$writable = $this->_getConfig()->writable;
+					if (sizeof($writable) > 0) {
+						for ($i = 0; $i < sizeof($writable); $i++) {
+							$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path'] . $writable[$i] ) . " -type d -exec chmod 777 {} \;".$suffix);
 						}
 					}
-					$output .= "suppression du fichier " . $project['Project']['prd_path'] . DS . "deploy.php";
-					$output .= shell_exec('rm ' . $project['Project']['prd_path'] . DS . "deploy.php");
+					
+					//suppression du fichier deploy.php
+					$output .= "-[suppression du fichier " . $project['Project']['prd_path'] . DS . "deploy.php]";
+					$output .= shell_exec('rm ' . $this->_pathConverter( $project['Project']['prd_path'] . DS . "deploy.php") );
 				}
 			} else {
 				$output .= "Erreur - problème de sauvegarde ";
@@ -276,13 +276,13 @@ class ProjectsController extends AppController {
 	private function _backup($project, $output) {
 
 		if (!is_dir(_DEPLOYBACKUPDIR)) {
-			if (mkdir(_DEPLOYBACKUPDIR, _DIRMODE, TRUE))
+			if (mkdir(_DEPLOYBACKUPDIR, octdec(_DIRMODE), TRUE))
 				$output .= "-[création du répertoire " . _DEPLOYBACKUPDIR . "]\n";
 		}
 
 		// création du répertoire pour la sauvegarde
 		if (!is_dir(_DEPLOYBACKUPDIR . DS . $project['Project']['name'])) {
-			if (mkdir(_DEPLOYBACKUPDIR . DS . $project['Project']['name'], _DIRMODE, TRUE)) {
+			if (mkdir(_DEPLOYBACKUPDIR . DS . $project['Project']['name'], octdec(_DIRMODE), TRUE)) {
 				$output .= "-[création du répertoire " . _DEPLOYBACKUPDIR . DS . $project['Project']['name'] . "]\n";
 			}
 		}
@@ -317,8 +317,7 @@ class ProjectsController extends AppController {
 			preg_match($pattern, $path, $matches, PREG_OFFSET_CAPTURE);
 			if (!empty ($matches[1][0])) {
 				$windowsLetter = strtolower($matches[1][0]);
-				$pathForRsync = "/" . $windowsLetter . substr($path, 2);
-				$pathForRsync = strtr("/" . $windowsLetter . substr($path, 2), "\\", "/");
+				$pathForRsync = strtr(_CYGWINROOT . $windowsLetter . substr($path, 2), "\\", "/");
 			}	
 		}
 		return $pathForRsync;
