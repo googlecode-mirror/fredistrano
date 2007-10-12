@@ -119,6 +119,9 @@ class ProjectsController extends AppController {
 
 			// svn export
 			$output .= shell_exec("svn export" . $revision . $authentication . " " . $project['Project']['svn_url'] . " tmpDir");
+			preg_match('/Exported revision ([0-9]+)\.$/', $output, $matches);
+
+			$this->set('revision', $matches[1]);
 			$this->set('output', $output);
 		}
 	}
@@ -137,8 +140,7 @@ class ProjectsController extends AppController {
 		} else {
 			include_once (_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php");
 
-			$deployConfig = new DEPLOY_CONFIG();
-			$exclude = $deployConfig->exclude;
+			$exclude = $this->_getConfig()->exclude;
 			$exclude_string = "";
 			for ($i = 0; $i < sizeof($exclude); $i++) {
 				$exclude_string .= $exclude[$i] . "\n";
@@ -180,20 +182,27 @@ class ProjectsController extends AppController {
 				$output .= shell_exec("sh portableRsync.sh " . $option . " " . $exclude_file_name . " " . $source . " " . $target);
 
 				if ($this->data['Project']['simulation'] == 0) {
-					//renommage des versions de prod des fichiers de type .prd.xxx en .xxx
-					if (_WINOS == true) {
-						$output .= shell_exec("bash.exe --login -c 'find " . $this->_pathConverter($project['Project']['prd_path']) . " -name \'*.prd.*\' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -v 's/\.prd\./\./i' {} +'");	
+					//renommage des versions de prod des fichiers de type .prd.xxx en .xxx et suppression des *.dev.*
+					if (_WINOS === true) {
+						//$output .= shell_exec("find " . $this->_pathConverter($project['Project']['prd_path']) . " -name \'*.prd.*\' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -v 's/\.prd\./\./i' {} +'");	
+						//$output .= shell_exec("bash.exe --login -c 'find " . $this->_pathConverter($project['Project']['prd_path']) . " -name \'*.dev.*\' -exec rm -f {} \;'");	
+						$prefix = "bash.exe --login -c '";
+						$suffix = "'";
 					} else {
-						$output .= shell_exec("find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.prd.*' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -v 's/\.prd\./\./i' {} +");
+						$prefix = "";
+						$suffix = "";
 					}
+					
+					$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.prd.*' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -vf 's/\.prd\./\./i' {} +".$suffix);
+					$output .= $prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.prd.*' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -vf 's/\.prd\./\./i' {} +".$suffix;
+					$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.dev.*' -exec rm -f {} \;".$suffix);
 
 					//on corrige les droits si le serveur est sous linux
-					if (_WINOS == true) {
+					if (_WINOS === false) {
 						$output .= shell_exec("find " . $project['Project']['prd_path'] . " -type d -exec chmod " . _DIRMODE . " {} \;");
 						$output .= shell_exec("find " . $project['Project']['prd_path'] . " -type f -exec chmod " . _FILEMODE . " {} \;");
 						
-						$writableConfig = new WRITABLE_DIR();
-						$writable = $writableConfig->writable;
+						$writable = $this->_getConfig()->writable;
 						if (sizeof($writable) > 0) {
 							for ($i = 0; $i < sizeof($writable); $i++) {
 								$output .= shell_exec("find " . $project['Project']['prd_path'] . $writable[$i] . " -type d -exec chmod 777 {} \;");
@@ -316,6 +325,16 @@ class ProjectsController extends AppController {
 		}
 		return $pathForRsync;
 	}
+	
+	private function &_getConfig() {
+		static $instance;
 
+		if (!isset($instance) || !$instance) {
+			$instance = &new DEPLOY_CONFIG();
+		}
+
+		return $instance;
+	}
+	
 }
 ?>

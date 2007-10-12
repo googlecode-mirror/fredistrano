@@ -1,8 +1,3 @@
-<?php
-//pr($this->data);
-
-?>
-
 <div class="console">
 <?php
 	echo "console >";
@@ -14,4 +9,6 @@
 ?> 
 </div>
 
-
+<script language="JavaScript" type="text/javascript">
+  document.getElementById("DeploymentLogComment").value = "Révision exportée <?php echo $revision;?>";
+</script>

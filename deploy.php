@@ -21,11 +21,7 @@
 		'/app/config/config.php',
 		'.settings'
 	);
-
- }
- 
- class WRITABLE_DIR {
-
+	
 	// répertoires sur lesquel un CHMOD 777 sera executé à la suite du déploiement
 	// les répertoires de log, de cache, les répertoires d'upload, etc ...
 	var $writable = array (
