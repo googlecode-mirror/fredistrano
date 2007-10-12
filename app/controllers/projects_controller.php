@@ -118,6 +118,7 @@ class ProjectsController extends AppController {
 			}
 
 			// svn export
+			set_time_limit(_TIMELIMITSVN);
 			$output .= shell_exec("svn export" . $revision . $authentication . " " . $project['Project']['svn_url'] . " tmpDir");
 			preg_match('/Exported revision ([0-9]+)\.$/', $output, $matches);
 
@@ -149,7 +150,6 @@ class ProjectsController extends AppController {
 			$handle = fopen($exclude_file_name, "w");
 			fwrite($handle, $exclude_string);
 			fclose($handle);
-
 			//on sauvegarde la version actuelle au cas ou
 			if ($this->_backup($project, $output)) {
 				//on défini les option de la commande rsync
@@ -179,13 +179,12 @@ class ProjectsController extends AppController {
 				$target = $this->_pathConverter($project['Project']['prd_path']);
 
 				chdir(_DEPLOYDIR);
+				set_time_limit(_TIMELIMITRSYNC);
 				$output .= shell_exec("sh portableRsync.sh " . $option . " " . $exclude_file_name . " " . $source . " " . $target);
 
 				if ($this->data['Project']['simulation'] == 0) {
 					//renommage des versions de prod des fichiers de type .prd.xxx en .xxx et suppression des *.dev.*
 					if (_WINOS === true) {
-						//$output .= shell_exec("find " . $this->_pathConverter($project['Project']['prd_path']) . " -name \'*.prd.*\' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -v 's/\.prd\./\./i' {} +'");	
-						//$output .= shell_exec("bash.exe --login -c 'find " . $this->_pathConverter($project['Project']['prd_path']) . " -name \'*.dev.*\' -exec rm -f {} \;'");	
 						$prefix = "bash.exe --login -c '";
 						$suffix = "'";
 					} else {
@@ -194,7 +193,6 @@ class ProjectsController extends AppController {
 					}
 					
 					$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.prd.*' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -vf 's/\.prd\./\./i' {} +".$suffix);
-					$output .= $prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.prd.*' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -vf 's/\.prd\./\./i' {} +".$suffix;
 					$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.dev.*' -exec rm -f {} \;".$suffix);
 
 					//on corrige les droits si le serveur est sous linux
