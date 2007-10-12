@@ -193,7 +193,7 @@ class ProjectsController extends AppController {
 					}
 					
 					//renommage des versions de prod des fichiers de type .prd.xxx en .xxx et suppression des *.dev.*
-					$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.prd.*' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -vf 's/\.prd\./\./i' {} +".$suffix);
+					$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.prd.*' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -vf 's/\.prd\./\./i' {} \;".$suffix);
 					$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.dev.*' -exec rm -f {} \;".$suffix);
 
 					//correction des droits 
@@ -207,7 +207,7 @@ class ProjectsController extends AppController {
 					}
 					
 					//suppression du fichier deploy.php
-					$output .= "-[suppression du fichier " . $project['Project']['prd_path'] . DS . "deploy.php]";
+					$output .= "\n-[suppression du fichier " . $project['Project']['prd_path'] . DS . "deploy.php]";
 					$output .= shell_exec('rm ' . $this->_pathConverter( $project['Project']['prd_path'] . DS . "deploy.php") );
 				}
 			} else {

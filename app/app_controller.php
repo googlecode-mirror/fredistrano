@@ -60,6 +60,7 @@ class AppController extends Controller {
 	var $authGlobal = array(
 		'App' => array('administration'),
 		'except' => array (
+			'Home.index'=> array('public'),
 			'Users.login'=> array('public'),
 			'Users.logout'=> array('public')
 		)
