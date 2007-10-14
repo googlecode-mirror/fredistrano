@@ -56,7 +56,10 @@ http://creativecommons.org/licenses/GPL/2.0/
 		<div id="logo">
 		<?php echo $html->link( $html->image( 'logo.png', array('alt' => 'fbollon.net', 'title' => 'fbollon.net')), 'http://www.fbollon.net', null, false, false ); ?>
 		</div>
-
+		<div id="flag">
+        <?php echo $html->link( $html->image( 'fr.gif', array('alt' => 'french', 'title' => 'french')), '/home/switchLanguage/fr-FR', null, false, false ); ?>
+        <?php echo $html->link( $html->image( 'en.gif', array('alt' => 'english', 'title' => 'english')), '/home/switchLanguage/en-US', null, false, false ); ?>
+		</div>
 		<div id="utility">
 		
 		<?php

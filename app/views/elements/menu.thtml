@@ -1,15 +1,15 @@
 <ul id="nav">
-		<li class="<?php echo ($this->params['controller'] == 'home')?"active":"first";?>"><?php echo $html->link('Accueil','/'); ?></li>
-		<li class="<?php echo (in_array($this->params['controller'], array('projects','deploymentLogs')))?"active":"first";?>"><?php echo $html->link('Projets','/projects'); ?></li>
-		<li class="<?php echo (in_array($this->params['controller'], array('users','groups','control_objects','acl_management')))?"active":"first";?>"><?php echo $html->link('Administration','#'); ?>
+		<li class="<?php echo ($this->params['controller'] == 'home')?"active":"first";?>"><?php echo $html->link(LANG_HOME,'/'); ?></li>
+		<li class="<?php echo (in_array($this->params['controller'], array('projects','deploymentLogs')))?"active":"first";?>"><?php echo $html->link(LANG_PROJECTS,'/projects'); ?></li>
+		<li class="<?php echo (in_array($this->params['controller'], array('users','groups','control_objects','acl_management')))?"active":"first";?>"><?php echo $html->link(LANG_ADMINISTRATION); ?>
 			<ul>
-			<li class="first"><?php echo $html->link('Groupes','/groups'); ?></li>
-			<li class="first"><?php echo $html->link('Utilisateurs','/users'); ?></li>
-			<li class="first"><?php echo $html->link('Objets de contrôle','/control_objects'); ?></li>
-			<li class="last"><?php echo $html->link('Permissions','/aclite/acl_management'); ?></li>
+			<li class="first"><?php echo $html->link(LANG_GROUPS,'/groups'); ?></li>
+			<li class="first"><?php echo $html->link(LANG_USERS,'/users'); ?></li>
+			<li class="first"><?php echo $html->link(LANG_CONTROLOBJECT,'/control_objects'); ?></li>
+			<li class="last"><?php echo $html->link(LANG_AUTHORIZATIONS,'/aclite/acl_management'); ?></li>
 			</ul>
 		</li>
-		<li class="<?php echo ($this->params['controller'] == 'pages')?"active":"first";?>"><?php echo $html->link('Aide','/files/Fredistrano-documentation.pdf'); ?></li>
+		<li class="<?php echo ($this->params['controller'] == 'pages')?"active":"first";?>"><?php echo $html->link(LANG_HELP,'/files/Fredistrano-documentation.pdf'); ?></li>
 </ul>
 
 

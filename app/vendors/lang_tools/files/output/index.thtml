@@ -1,5 +1,4 @@
-<h1><?php echo LANG_WELCOMETITLE;?></h1>
-  
+<h1>Bienvenue sur Fredistrano, l'outil de déploiement d'applications Php</h1>
   <em>version 0.2 du 10/10/2007 par Frédéric Bollon</em>
   <br />
   <br />
@@ -10,6 +9,7 @@
   <p>Besoin d'aide ? Posez vos questions sur le  
   <a href="http://www.fbollon.net/forum/26">forum</a> prévu à cet effet.
   </p>
+  <br /><?php echo LANG_WELCOME; ?>
   <br />
   <br />
   <br />

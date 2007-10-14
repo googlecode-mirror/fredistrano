@@ -1,0 +1,77 @@
+How to use langTools in a real application?
+------------------------------------------
+
+
+1. Case study 1 : Rapid multilang development in a cake 1.1.x application
+---------------
+
+
+1.1. Description
+----------------
+
+In this case study, we want to develop a web application with cake 1.1.x. To support several languages, we are going to use langTools at design time.
+At runtime, we have choosed to use constants in order to dynamically 
+
+
+1.2. Steps
+----------
+
+> Hint: 
+	- Steps marked as [i] are optional and may be skipped
+	- [appRoot] is the root folder of your application
+	- [langTools] is the folder where langTools has been deployed
+
+1. Install in the '[appRoot]/app/vendors' folder (see README file)
+
+
+2. Add the following code in '[appRoot]/app/config/bootstrap.php' so as to load the correct constant language file
+
+	// Default lang (may be moved to [appRoot]/app/config/config.php)
+	if (!defined('LANG_DEFAULT'))
+		define('LANG_DEFAULT','en-EN');
+
+	// Load the required lang file
+	$lang = isset ($_SESSION['userPreferedLanguage']) ? $_SESSION['userPreferedLanguage'] : LANG_DEFAULT;
+	require_once (APP . 'locale' . DS . $lang . DS . LC_MESSAGES . DS . 'default.php');
+
+
+[3.] If required, configure the default behaviour of langTools by modifying the paramters contained in '[langTools]/config/language_config.php'
+
+
+4. Edit your code as usual except that when you need to refer or define a language token, simply type in your php file something like:
+
+	'#tokenName##lang_0##trans_0##..##lang_i##trans_i#'
+
+For example:
+	- if I need to create the token 'welcome' with two translations, I would type:
+	'#welcome##fr-FR##bonjour##en-US##welcome#'
+
+	- if I need to create the token 'welcome' with a french translation, I would type:
+	'#welcome##fr-FR##bonjour#'
+ 
+	- if I need to create the token 'welcome' without any translation, I would type:
+	'#welcome#'
+
+ 	- If I want to refer to the existing 'welcome' token 
+	'#welcome#'
+
+
+5. Ask langTools to scan your source code to create corresponding language files (populate '[appRoot]/app/language') and replace all language tokens in your source code
+
+	>php[.exe] [langTools]/scripts/langTools.php scan -bovFM CONSTANT cakephp files
+ 
+> Hint: 
+	- If your are using eclipse you may define this command as a php external tool
+
+
+[6.] Check the what langtools as done for you
+
+	- read you source code: In our example, all '#welcome...#' tokens would have been replaced by the constant LANG_WELCOME
+	- take a quick look at the generated lang files '[appRoot]/app/locale/[lang]/LC_MESSAGES/default.php' (alphabetically sorted constants)
+	- see the '[appRoot]/app/locale/lang-all.php' which is a key file for langTools and should content all token with their translations
+	- ask langTools to output all lang tokens 
+	>php[.exe] [langTools]/scripts/langTools.php list -M cakephp keys
+	
+> Hint: 
+	- You may edit manually '[appRoot]/app/locale/lang-all.php', langTools will automaticallty update the corresponding language files at the next run 
+	

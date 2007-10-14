@@ -242,7 +242,7 @@ hr {margin: 1em 0;background:#f2f2f2;height:1px;color:#f2f2f2;border:none;clear:
 /* LAYOUT TYPE E */
 	#type-e #content-wrap {background: transparent url("images/content_wrap_e_bg.gif") repeat-y 100% 0}
 	#type-e #logo {position:absolute;top:0;left:auto;right:25px;width:165px;text-align:center;}
-	#type-e #utility {position:absolute;top:50px;left:auto;right:25px;width:165px;border-top: 5px solid #999}
+	#type-e #utility {position:absolute;top:55px;left:auto;right:25px;width:165px;border-top: 5px solid #999}
 	#type-e #content {margin: 0 243px 0 50px}
 
 /* LAYOUT TYPE F */
