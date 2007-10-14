@@ -1,14 +1,14 @@
 <h1><?php echo LANG_WELCOMETITLE;?></h1>
   
-  <em>version 0.2 du 10/10/2007 par Frédéric Bollon</em>
+  <em><?php echo LANG_VERSION; ?></em>
   <br />
   <br />
-  <p>Vous trouverez <?php echo $html->link('ici','/files/Fredistrano-documentation.pdf'); ?> une documentation sur l'utilisation de cette application.</p>
-  <p>Pour signaler un bug c'est 
-  <a href="http://trac.fbollon.net/Fredistrano/index.fcgi">ici</a>. 
+  <p><?php echo LANG_YOUCANFIND.' '.$html->link(LANG_THISLINK,'/files/Fredistrano-documentation.pdf'); ?> </p>
+   
+  <p><?php echo LANG_REPORTBUG; ?> 
+  <a href="http://trac.fbollon.net/Fredistrano/index.fcgi">http://trac.fbollon.net/Fredistrano/index.fcgi</a>. 
   </p>
-  <p>Besoin d'aide ? Posez vos questions sur le  
-  <a href="http://www.fbollon.net/forum/26">forum</a> prévu à cet effet.
+  <p><?php echo LANG_NEEDHELP; ?> <a href="http://www.fbollon.net/forum/26">forum</a>.
   </p>
   <br />
   <br />

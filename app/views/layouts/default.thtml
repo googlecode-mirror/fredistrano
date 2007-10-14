@@ -39,11 +39,11 @@ http://creativecommons.org/licenses/GPL/2.0/
 	<div id="header">
 		<div id="site-name">Fredistrano</div>
 		<div id="search">
-			<form action="">
+			<!--<form action="">
 			<label for="searchsite">Recherche :</label>
 			<input id="searchsite" name="searchsite" type="text" />
 			<input type="submit" value="Go" class="f-submit" />
-			</form>
+			</form>-->
 		</div>
 		
 		<!-- app/views/elements/menu.thtml -->
@@ -64,8 +64,8 @@ http://creativecommons.org/licenses/GPL/2.0/
 		
 		<?php
 					if(isset($_SESSION['User'])){
-						echo "<p>Bienvenu ".$_SESSION['User']['login']." ";
-						echo $html->link('[Déconnexion]','/users/logout')."</p>";
+						echo "<p>".LANG_WELCOME." ".$_SESSION['User']['login']." ";
+						echo $html->link(LANG_LOGOUT,'/users/logout')."</p>";
 					}else{
 					?>
 							<?php echo $this->renderElement('login') ?>
@@ -86,7 +86,9 @@ http://creativecommons.org/licenses/GPL/2.0/
 
 
 			<?php if(isset($_SERVER['HTTP_REFERER'])){?>
-			<div id="backlink"><?php echo $html->link($html->image( 'arrow_left.png', array('alt' => 'page précédente', 'title' => 'page précédente')).'<span> retour</span>',
+			<div id="backlink"><?php echo $html->link($html->image( 'arrow_left.png', array('alt' => LANG_PREVIOUS, 
+																							'title' => LANG_PREVIOUS)).
+																							'<span> '.LANG_BACK.'</span>',
 				$_SERVER['HTTP_REFERER'],
 				null,
 				false,
@@ -96,7 +98,7 @@ http://creativecommons.org/licenses/GPL/2.0/
 			<?php echo $content_for_layout;	?>
 	
 			<div id="footer">
-			<p>&copy; 2007 <a href="http://fbollon.net">fbollon</a> </p>
+			<p>&copy; 2007 <a href="http://fbollon.net">fbollon.net</a> </p>
 			</div>
 
 		</div>
