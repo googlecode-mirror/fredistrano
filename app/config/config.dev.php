@@ -1,10 +1,10 @@
 <?php
 //HTTPS authentification
-define("_HTTPSENABLED",			false);				//enabled https
+define("_HTTPSENABLED",	1);							//enabled https 0 = never, 1 = login, 2 = always
 
 //Comptes
-define("_SVNUSER", "");						//login subversion par défaut
-define("_SVNPASS", "");					//password subversion par défaut
+define("_SVNUSER", "");								//login subversion par défaut
+define("_SVNPASS", "");								//password subversion par défaut
 
 // Délais
 define("_LOGSARCHIVEDATE",3 * 7 * 24 * 60 * 60);	//délai pour l'archive des logs 
@@ -23,7 +23,7 @@ define("_DEPLOYBACKUPDIR", _DEPLOYDIR . DS . "backup");
 define("_CYGWINROOT","/cygdrive/");									//
 
 //SPECIFIQUE -sera supprimé dans une prochaine version
-define("_WEBSERVICESSERVER",	""); 	// endpoint URL
+define("_WEBSERVICESSERVER",	""); 				// endpoint URL
 define("_AUTHENTICATIONTYPE",	"0");				// 0 = mysql / 1 = webservice + mysql
 define("_DIRECTORYTYPE",		"20");				// 10 = genesis / 11 = yellowhat / 20 = dnsan
 define("_WS_SSL_TRUSTEDCA_FILE","D:/Apache/Apache2/conf/ssl.crt/AdixenCA.crt");

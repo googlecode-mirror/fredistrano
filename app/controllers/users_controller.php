@@ -147,6 +147,7 @@ class UsersController extends AppController {
 	function login() {
 		// On accepte uniquement les requetes HTTPS
 		if (!env('HTTPS') && _HTTPSENABLED) {
+			$this->Session->setFlash('HTTPS required but unavailable!');
 			$this->redirect('/');
 			exit ();
 		}
@@ -181,7 +182,10 @@ class UsersController extends AppController {
 			}
 
 			// Affichage
-			$this->set('HTTP_REFERER', $_SERVER['HTTP_REFERER']);
+            $tmp = empty($_SERVER['HTTP_REFERER'])?'/':$_SERVER['HTTP_REFERER'];
+            if (_HTTPSENABLED == 2)
+            	$tmp = preg_replace('#(http)://#','${1}s://',$tmp);
+		    $this->set('HTTP_REFERER', $tmp);
 			$this->layout = "ajax";
 		}
 	}
