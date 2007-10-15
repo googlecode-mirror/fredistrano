@@ -186,7 +186,10 @@ class UsersController extends AppController {
             if (_HTTPSENABLED == 2)
             	$tmp = preg_replace('#(http)://#','${1}s://',$tmp);
 		    $this->set('HTTP_REFERER', $tmp);
-			$this->layout = "ajax";
+			if (_HTTPSENABLED != 1)
+            	$this->render('login_php','ajax');
+            else
+            	$this->render('login_js','ajax');
 		}
 	}
 

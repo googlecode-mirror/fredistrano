@@ -1,6 +1,6 @@
 <?php
 //HTTPS authentification
-define("_HTTPSENABLED",	1);							//enabled https 0 = never, 1 = login, 2 = always
+define("_HTTPSENABLED",	0);							//enabled https 0 = never, 1 = login, 2 = always
 
 //Comptes
 define("_SVNUSER", "");								//login subversion par défaut
