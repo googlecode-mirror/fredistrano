@@ -16,6 +16,7 @@ class UsersController extends AppController {
 //	);
 
 	function beforeRender() {
+		parent::beforeRender();
 		// Tableau de liens pour la création du menu contextuel
 		$tab[] = array('text' => 'Actions');
 		if ($this->action != 'index')
@@ -23,7 +24,6 @@ class UsersController extends AppController {
 		if ($this->action != 'add')
 			$tab[] = array('text' => LANG_USERADD, 'link' => '/users/add');
 		$this->set("context_menu", $tab);
-		parent::beforeRender();
 	}
 
 	function index() {

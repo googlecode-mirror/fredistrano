@@ -16,6 +16,7 @@ class GroupsController extends AppController {
 //	);
 
 	function beforeRender() {
+		parent::beforeRender();
 		// Tableau de liens pour la création du menu contextuel
 		$tab[] = array (
 			'text' => 'Actions'
@@ -31,7 +32,6 @@ class GroupsController extends AppController {
 				'link' => '/groups/add'
 			);
 		$this->set('context_menu', $tab);
-		parent :: beforeRender();
 	}
 
 	function index() {

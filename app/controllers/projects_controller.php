@@ -19,6 +19,8 @@ class ProjectsController extends AppController {
 	);
 
 	function beforeRender() {
+		parent::beforeRender();
+		
 		// Tableau de liens pour la création du menu contextuel
 		$tab[] = array (
 			'text' => 'Actions'

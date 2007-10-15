@@ -12,6 +12,7 @@ class DeploymentLogsController extends AppController {
 	);
 
 	function beforeRender() {
+		parent::beforeRender();
 		$this->set('NYI', false);
 
 		// Tableau de lien pour la création du menu contextuel
