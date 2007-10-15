@@ -11,7 +11,7 @@ class DeploymentLogsController extends AppController {
 		'DeploymentLog'
 	);
 
-	function beforeFilter() {
+	function beforeRender() {
 		$this->set('NYI', false);
 
 		// Tableau de lien pour la création du menu contextuel
@@ -32,7 +32,7 @@ class DeploymentLogsController extends AppController {
 
 		// On passe le tableau de lien dans la variable links pour l'élément context_menu.thtml
 		$this->set("context_menu", $tab);
-	} // beforeFilter
+	} // beforeRender
 
 	// Available actions ----------------------------------------------------------------------------------
 	function index() {
