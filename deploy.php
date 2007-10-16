@@ -19,7 +19,8 @@
 		'/app/tmp/tests/*',
 		'/app/config/database.php',
 		'/app/config/config.php',
-		'.settings'
+		'.settings',
+		'/files/tmp/*'
 	);
 	
 	// répertoires sur lesquel un CHMOD 777 sera executé à la suite du déploiement
