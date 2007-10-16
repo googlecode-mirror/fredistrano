@@ -13,7 +13,6 @@ class DeploymentLogsController extends AppController {
 
 	function beforeRender() {
 		parent::beforeRender();
-		$this->set('NYI', false);
 
 		// Tableau de lien pour la création du menu contextuel
 		$tab[] = array (
@@ -132,13 +131,6 @@ class DeploymentLogsController extends AppController {
 		$this->set('logs', $logs);
 		$this->set('filter',$filter);
 	} // _listByProject
-
-	private function _listByPerson($id = null) {
-		$this->set('filter', array (
-			'person' => $id
-		));
-		$this->set('NYI', true);
-	} // _listByPerson
 
 } // DeploymentLogs
 ?>

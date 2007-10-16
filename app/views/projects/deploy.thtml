@@ -1,5 +1,5 @@
 <hr>
-<form action="<?php echo $html->url('/projects/deploy_result'); ?>" method="post" class="f-wrap-1">
+<form action="<?php echo $html->url('/projects/export'); ?>" method="post" class="f-wrap-1">
 	<div class="req">
 	</div>
 		<fieldset>
@@ -30,7 +30,7 @@
 			<?php echo $html->hidden('Project/id', array('value' => $id))?>
 	
 			<div class="f-submit-wrap">
-				<?php echo $ajax->submit('Step 1 - svn export', array('class' => 'f-submit','url' => 'deploy_result','update' => 'deploy_result', 'loading' => "Element.show('spinning_image');", 'complete' => "Element.show('step2');", 'loaded' => "Element.hide('spinning_image');"));?>
+				<?php echo $ajax->submit('Step 1 - svn export', array('class' => 'f-submit','url' => 'export','update' => 'deploy_result', 'loading' => "Element.show('spinning_image');", 'complete' => "Element.show('step2');", 'loaded' => "Element.hide('spinning_image');"));?>
 				<?php e($html->imageTag('loading_orange.gif','Loading...',array('id'=>'spinning_image','style'=>'display:none'))); ?>
 			</div>
 		</fieldset>
@@ -58,13 +58,24 @@
 				<?php echo $html->hidden('Project/id', array('value' => $id))?>
 				
 				<div class="f-submit-wrap">
-					<?php echo $ajax->submit('Step 2 - synchronisation', array('class' => 'f-submit','url' => 'synchro','update' => 'deploy_result', 'loading' => "Element.show('spinning_image2');", 'complete' => "Element.hide('spinning_image2');"));?>
+					<?php echo $ajax->submit('Step 2 - synchronisation', array('class' => 'f-submit','url' => 'synchro','update' => 'deploy_result', 'loading' => "Element.show('spinning_image2');", 'complete' => "Element.show('step3');", 'loaded' => "Element.hide('spinning_image2');"));?>
 					<?php e($html->imageTag('loading_orange.gif','Loading...',array('id'=>'spinning_image2','style'=>'display:none'))); ?>
 				</div>
 			</fieldset>	
 	</form>
 </div>
 
-
-
+<div id="step3" style="display:none">
+	<form action="<?php echo $html->url('/projects/post_deploy'); ?>" method="post" class="f-wrap-1">
+			<fieldset>
+				<h3>Post deploy</h3>
+				<?php echo $html->hidden('Project/id', array('value' => $id))?>
+				
+				<div class="f-submit-wrap">
+					<?php echo $ajax->submit('Step 3 - postDeploy', array('class' => 'f-submit','url' => 'post_deploy','update' => 'deploy_result', 'loading' => "Element.show('spinning_image3');", 'complete' => "Element.hide('spinning_image3');"));?>
+					<?php e($html->imageTag('loading_orange.gif','Loading...',array('id'=>'spinning_image3','style'=>'display:none'))); ?>
+				</div>
+			</fieldset>	
+	</form>
+</div>
 

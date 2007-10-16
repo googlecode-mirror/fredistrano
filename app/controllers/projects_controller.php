@@ -59,7 +59,7 @@ class ProjectsController extends AppController {
 
 	}
 
-	function deploy_result() {
+	function export() {
 		$this->layout = 'ajax';
 		$output = '';
 		$revision = '';
@@ -157,10 +157,10 @@ class ProjectsController extends AppController {
 				//on défini les option de la commande rsync
 				if ($this->data['Project']['simulation'] == 1) {
 					// simulation
-					$option = 'rtpgoOvn';
+					$option = 'rtOvn';
 				} else {
 					// pas simulation
-					$option = 'rtpgoOv';
+					$option = 'rtOv';
 
 					// Log du deploiment 
 					$data = array (
@@ -168,10 +168,10 @@ class ProjectsController extends AppController {
 							'project_id' => $this->data['Project']['id'],
 							'title' => $project['Project']['name'] . ' - ' . $_SESSION['User']['login'],
 							'user_id' => $_SESSION['User']['id'],
-							'comment' => $this->data['DeploymentLog']['comment'] ? $this->data['DeploymentLog']['comment'] : 'aucun'
+							'comment' => $this->data['DeploymentLog']['comment'] ? $this->data['DeploymentLog']['comment'] : 'aucun',
+							'archive' => 0
 						)
 					);
-
 					$this->DeploymentLog->save($data);
 				}
 
@@ -184,39 +184,62 @@ class ProjectsController extends AppController {
 				set_time_limit(_TIMELIMITRSYNC);
 				$output .= shell_exec("rsync -$option --delete --exclude-from=$exclude_file_name $source $target");
 
-				if ($this->data['Project']['simulation'] == 0) {
-					if (_WINOS === true) {
-						//couche cygwin
-						$prefix = "bash.exe --login -c '";
-						$suffix = "'";
-					} else {
-						$prefix = "";
-						$suffix = "";
-					}
-					
-					//renommage des versions de prod des fichiers de type .prd.xxx en .xxx et suppression des *.dev.*
-					$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.prd.*' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -vf 's/\.prd\./\./i' {} \;".$suffix);
-					$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.dev.*' -exec rm -f {} \;".$suffix);
-
-					//correction des droits 
-					$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -type d -exec chmod " . _DIRMODE . " {} \;".$suffix);
-					$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -type f -exec chmod " . _FILEMODE . " {} \;".$suffix);	
-					$writable = $this->_getConfig()->writable;
-					if (sizeof($writable) > 0) {
-						for ($i = 0; $i < sizeof($writable); $i++) {
-							$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path'] . $writable[$i] ) . " -type d -exec chmod 777 {} \;".$suffix);
-						}
-					}
-					
-					//suppression du fichier deploy.php
-					$output .= "\n-[suppression du fichier " . $project['Project']['prd_path'] . DS . "deploy.php]";
-					$output .= shell_exec('rm ' . $this->_pathConverter( $project['Project']['prd_path'] . DS . "deploy.php") );
-				}
 			} else {
 				$output .= "Erreur - problème de sauvegarde ";
 			}
 		}
 		$this->set('output', $output);
+	}
+
+	function post_deploy() {
+		$this->layout = 'ajax';
+
+		$project = $this->Project->read(null, $this->data['Project']['id']);
+		$this->set('project', $project);
+
+		$output = '';
+		if (!@ file_exists(_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php")) {
+			$output .= '[ERROR] - synchro impossible, fichier deploy.php inexistant, ' .
+					'ce fichier doit se trouver à la racine du projet à déployer, voir la documentation de Fredistrano';
+		} else {
+			include_once (_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php");
+			chdir(_DEPLOYDIR);
+			if (_WINOS === true) {
+				//couche cygwin
+				$prefix = "bash.exe --login -c '";
+				$suffix = "'";
+			} else {
+				$prefix = "";
+				$suffix = "";
+			}
+			
+			set_time_limit(_TIMELIMITPOSTDEPLOY);
+			
+			//renommage des versions de prod des fichiers de type .prd.xxx en .xxx et suppression des *.dev.*
+			$output .= "\n-[renommage des fichiers '.prd.']\n";
+			$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.prd.*' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -vf 's/\.prd\./\./i' {} \;".$suffix);
+			$output .= "\n-[suppression des fichiers '.dev.']\n";
+			$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.dev.*' -exec rm -vf {} \;".$suffix);
+			
+			//correction des droits 
+			$output .= "\n-[modification des droits des répertoires ] Nouvelles permissions: " . _DIRMODE;
+			$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -type d -exec chmod " . _DIRMODE . " {} \;".$suffix);
+			$output .= "\n-[modification des droits des fichiers] Nouvelles permissions: " . _FILEMODE;
+			$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -type f -exec chmod " . _FILEMODE . " {} \;".$suffix);	
+			$writable = $this->_getConfig()->writable;
+			if (sizeof($writable) > 0) {
+				for ($i = 0; $i < sizeof($writable); $i++) {
+					$output .= "\n-[Ajout de persmissions pour écriture]";
+					$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path'] . $writable[$i] ) . " -type d -exec chmod 777 {} \;".$suffix);
+				}
+			}
+			
+			//suppression du fichier deploy.php
+			$output .= "\n-[suppression du fichier " . $project['Project']['prd_path'] . DS . "deploy.php]";
+			$output .= shell_exec('rm ' . $this->_pathConverter( $project['Project']['prd_path'] . DS . "deploy.php") );	
+			
+			$this->set('output', $output);
+		}
 	}
 
 	function view($id = null) {

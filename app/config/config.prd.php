@@ -9,7 +9,9 @@ define("_SVNPASS", "");								//password subversion par défaut
 // Délais
 define("_LOGSARCHIVEDATE",3 * 7 * 24 * 60 * 60);	//délai pour l'archive des logs 
 define("_TIMELIMITSVN", 10 * 60); 					//durée maximum d'exécution d un export subversion
-define("_TIMELIMITRSYNC", 5 * 60);					//durée maximum d'exécution d une synchro rsync
+define("_TIMELIMITRSYNC", 1 * 60);					//durée maximum d'exécution d une synchro rsync
+define("_TIMELIMITPOSTDEPLOY", 5 * 60);				//durée maximum d'exécution apres le deploy
+define("_TIMELIMITBEFOREDEPLOY", 5 * 60);			//durée maximum d'exécution avant le deploy
 
 // Permissions
 define("_DIRMODE", '750');							//permission sur les répertoires après le deploiement 755 en règle générale 
