@@ -157,10 +157,10 @@ class ProjectsController extends AppController {
 				//on défini les option de la commande rsync
 				if ($this->data['Project']['simulation'] == 1) {
 					// simulation
-					$option = 'avn';
+					$option = 'rtpgoOvn';
 				} else {
 					// pas simulation
-					$option = 'av';
+					$option = 'rtpgoOv';
 
 					// Log du deploiment 
 					$data = array (
