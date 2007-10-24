@@ -41,9 +41,9 @@ label br {clear:left}
 		form.f-wrap-1 label {float:none}
 		/* end hiding from IE5 mac */
 
-		form.f-wrap-1 label input, form.f-wrap-1 label textarea, form.f-wrap-1 label select {width:15em;float:left;margin-left:10px}
+		form.f-wrap-1 label input, form.f-wrap-1 label textarea, form.f-wrap-1 label select {width:25em;float:left;margin-left:10px}
 
-		form.f-wrap-1 label b {float:left;width:12em;line-height: 1.7;display:block;position:relative}
+		form.f-wrap-1 label b {float:left;width:20em;line-height: 1.7;display:block;position:relative}
 		form.f-wrap-1 label b .req {color:#c00;font-size:150%;font-weight:normal;position:absolute;top:-.1em;line-height:1;left:-.4em;width:.3em;height:.3em}
 		form.f-wrap-1 div.req {color:#666;font-size:96%;font-weight:normal;position:absolute;top:.4em;right:.4em;left:auto;width:13em;text-align:right}
 		form.f-wrap-1 div.req b {color:#c00;font-size:140%}

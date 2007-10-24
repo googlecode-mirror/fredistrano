@@ -73,21 +73,7 @@
 </tr>
 
 <tr>
-<th class="sub">Créé le</th>
-<td>&nbsp;<?php echo $project['Project']['created']?></td>
-</tr>
-
-<tr>
-<th class="sub">Modifié le</th>
-<td>&nbsp;<?php echo $project['Project']['modified']?></td>
-</tr>
-
-<tr>
-<th class="sub">
-
-&nbsp;
-
-</th>
+<th class="sub">&nbsp;</th>
 <td>
 <form action="<?php echo $html->url('/projects/deploy'); ?>" method="post">
 <?php echo $html->hidden('Project/id', array('value' => $project['Project']['id']))?>
@@ -100,9 +86,11 @@
 </td>
 </tr>
 
-
 </tbody>
 </table>
+
+<div class="smalldateblock">Créé le <?php echo $project['Project']['created']?><br />
+Modifié le <?php echo $project['Project']['modified']?></div> 
 
 </div>
 <!--<div class="featurebox">-->
@@ -113,12 +101,6 @@
 
 <div id="deploy_result"  >
 </div>
-
-
-
-<div id="deploy_result2"  >
-</div>
-
 
 <!--</div>-->
 

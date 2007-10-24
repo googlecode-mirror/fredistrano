@@ -15,3 +15,10 @@
 #backlink img {vertical-align: middle;}
 
 #type-e #flag {position:absolute;top:35px;left:auto;right:25px;width:165px;text-align:center;}
+
+.smalldateblock {float: right;font-size: 75%;text-align: right;background-color: #F1F1F1;padding: 2px;
+    border-bottom: 1px solid #900;
+    border-top: 1px solid #900;
+    border-left: 1px solid #900;
+    border-right: 1px solid #900;
+    }

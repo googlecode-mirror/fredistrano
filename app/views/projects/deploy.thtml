@@ -37,7 +37,7 @@
 </form>
 	
 <div id="step2" style="display:none">
-	<form action="<?php echo $html->url('/projects/synchro'); ?>" method="post" class="f-wrap-1">
+	<form action="<?php echo $html->url('/projects/synchronize'); ?>" method="post" class="f-wrap-1">
 			<fieldset>
 				<h3>Synchronisation avec la Prod</h3>
 				<fieldset class="f-name">
@@ -58,7 +58,7 @@
 				<?php echo $html->hidden('Project/id', array('value' => $id))?>
 				
 				<div class="f-submit-wrap">
-					<?php echo $ajax->submit('Step 2 - synchronisation', array('class' => 'f-submit','url' => 'synchro','update' => 'deploy_result', 'loading' => "Element.show('spinning_image2');", 'complete' => "Element.show('step3');", 'loaded' => "Element.hide('spinning_image2');"));?>
+					<?php echo $ajax->submit('Step 2 - synchronisation', array('class' => 'f-submit','url' => 'synchronize','update' => 'deploy_result', 'loading' => "Element.show('spinning_image2');", 'complete' => "(document.getElementById('ProjectSimulation').checked)?Element.hide('step3'):Element.show('step3');", 'loaded' => "Element.hide('spinning_image2');"));?>
 					<?php e($html->imageTag('loading_orange.gif','Loading...',array('id'=>'spinning_image2','style'=>'display:none'))); ?>
 				</div>
 			</fieldset>	
@@ -66,13 +66,28 @@
 </div>
 
 <div id="step3" style="display:none">
-	<form action="<?php echo $html->url('/projects/post_deploy'); ?>" method="post" class="f-wrap-1">
+	<form action="<?php echo $html->url('/projects/finalize'); ?>" method="post" class="f-wrap-1">
 			<fieldset>
-				<h3>Post deploy</h3>
+				<h3>Finalisation du déploiement</h3>
 				<?php echo $html->hidden('Project/id', array('value' => $id))?>
 				
+				<fieldset class="f-name">
+					<label for="RenamePrdFile"><b>Renommage des fichiers '.prd.'</b>
+						<?php e($html->checkbox('Project/RenamePrdFile', 'Renommage des fichiers .prd.', array((_RENAMEPRDFILE === true)?"'checked' => 'checked'":null, 'value' => true, 'class' => 'f-checkbox')));	?>
+					<br />
+					</label>
+					<label for="ChangeFileMode"><b>Ajustement des droits</b>
+						<?php e($html->checkbox('Project/ChangeFileMode', 'Ajustement des droits', array((_CHANGEMODE === true)?"'checked' => 'checked'":null, 'value' => true, 'class' => 'f-checkbox')));	?>
+					<br />
+					</label>
+					<label for="GiveWriteMode"><b>Droits d'écriture</b>
+						<?php e($html->checkbox('Project/GiveWriteMode', 'Droits d\'écriture', array((_GIVEWRITEMODE === true)?"'checked' => 'checked'":null, 'value' => true, 'class' => 'f-checkbox')));	?>
+					<br />
+					</label>				
+				</fieldset>
+				
 				<div class="f-submit-wrap">
-					<?php echo $ajax->submit('Step 3 - postDeploy', array('class' => 'f-submit','url' => 'post_deploy','update' => 'deploy_result', 'loading' => "Element.show('spinning_image3');", 'complete' => "Element.hide('spinning_image3');"));?>
+					<?php echo $ajax->submit('Step 3 - finalisation', array('class' => 'f-submit','url' => 'finalize','update' => 'deploy_result', 'loading' => "Element.show('spinning_image3');", 'complete' => "Element.hide('spinning_image3');"));?>
 					<?php e($html->imageTag('loading_orange.gif','Loading...',array('id'=>'spinning_image3','style'=>'display:none'))); ?>
 				</div>
 			</fieldset>	

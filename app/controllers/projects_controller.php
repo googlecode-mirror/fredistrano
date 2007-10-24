@@ -45,6 +45,8 @@ class ProjectsController extends AppController {
 		$this->set("context_menu", $tab);
 	}
 
+	// Public actions -----------------------------------------------------------
+	
 	function index() {
 
 		$criteria = NULL;
@@ -58,8 +60,82 @@ class ProjectsController extends AppController {
 		$this->set('id', $id);
 
 	}
+	
+	function view($id = null) {
+
+		if (!$id) {
+			$this->Session->setFlash('Invalid id for Project.');
+			$this->redirect('/projects/index');
+		}
+		$project = $this->Project->read(null, $id);
+		$this->set('project', $project);
+
+	}
+
+	function add() {
+
+		if (empty ($this->data)) {
+			$this->render();
+		} else {
+			$this->cleanUpFields();
+			if ($this->Project->save($this->data)) {
+				$this->Session->setFlash('The Project has been saved');
+				$this->redirect('/projects/index');
+			} else {
+				$this->Session->setFlash('Please correct errors below.');
+			}
+		}
+	}
+
+	function edit($id = null) {
+
+		if (empty ($this->data)) {
+			if (!$id) {
+				$this->Session->setFlash('Invalid id for Project');
+				$this->redirect('/projects/index');
+			}
+			$this->data = $this->Project->read(null, $id);
+		} else {
+			$this->cleanUpFields();
+			if ($this->Project->save($this->data)) {
+				$this->Session->setFlash('The Project has been saved');
+				$this->redirect('/projects/view/' . $id);
+			} else {
+				$this->Session->setFlash('Please correct errors below.');
+			}
+		}
+	}
+
+	function delete($id = null) {
+		if (!$id) {
+			$this->Session->setFlash('Invalid id for Project');
+			$this->redirect('/projects/index');
+		}
+		if ($this->Project->del($id)) {
+			$this->Session->setFlash('The Project deleted: id ' . $id . '');
+			$this->redirect('/projects/index');
+		}
+	}
+	
+	// Ajax steps -----------------------------------------------------------
+	
+	function initialize() {
+		// custom timelimit
+		set_time_limit(_TIMELIMIT_INITIALIZE);
+		$t = getMicrotime();
+		
+		$this->layout = 'ajax';
+		$output = '';
+		
+		$this->set('output', $output);
+		$this->set('took', round((getMicrotime() - $t) , 3));
+	}
 
 	function export() {
+		// custom timelimit
+		set_time_limit(_TIMELIMIT_EXPORT);
+		$t = getMicrotime();
+		
 		$this->layout = 'ajax';
 		$output = '';
 		$revision = '';
@@ -120,21 +196,26 @@ class ProjectsController extends AppController {
 			}
 
 			// svn export
-			set_time_limit(_TIMELIMITSVN);
 			$output .= shell_exec("svn export" . $revision . $authentication . " " . $project['Project']['svn_url'] . " tmpDir");
 			preg_match('/ ([0-9]+)\.$/', $output, $matches);
 
 			$this->set('revision', $matches[1]);
 			$this->set('output', $output);
-		}
+			$this->set('took', round((getMicrotime() - $t) , 3));
+		}	
 	}
 
-	function synchro() {
-		$this->layout = 'ajax';
+	function synchronize() {
+		// custom timelimit
+		set_time_limit(_TIMELIMIT_RSYNC);
+		$t = getMicrotime();
+
+		
 
 		$project = $this->Project->read(null, $this->data['Project']['id']);
 		$this->set('project', $project);
-
+		
+		$this->layout = 'ajax';
 		$output = '';
 
 		if (!@ file_exists(_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php")) {
@@ -146,8 +227,11 @@ class ProjectsController extends AppController {
 			$exclude = $this->_getConfig()->exclude;
 			$exclude_string = "";
 			for ($i = 0; $i < sizeof($exclude); $i++) {
-				$exclude_string .= $exclude[$i] . "\n";
+				$exclude_string .= "- ".$exclude[$i] . "\n";
 			}
+			$exclude_string .= "- deploy.php\n";
+			$exclude_string .= "- **.dev.**\n";
+			
 			$exclude_file_name = _DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "exclude_file.txt";
 			$handle = fopen($exclude_file_name, "w");
 			fwrite($handle, $exclude_string);
@@ -181,23 +265,28 @@ class ProjectsController extends AppController {
 				$target = $this->_pathConverter($project['Project']['prd_path']);
 
 				chdir(_DEPLOYDIR);
-				set_time_limit(_TIMELIMITRSYNC);
 				$output .= shell_exec("rsync -$option --delete --exclude-from=$exclude_file_name $source $target");
+				$output .= e("rsync -$option --delete --exclude-from=$exclude_file_name $source $target");
 
 			} else {
 				$output .= "Erreur - problème de sauvegarde ";
 			}
 		}
 		$this->set('output', $output);
+		$this->set('took', round((getMicrotime() - $t) , 3));
 	}
 
-	function post_deploy() {
-		$this->layout = 'ajax';
+	function finalize() {
+		// custom timelimit
+		set_time_limit(_TIMELIMIT_FINALIZE);
+		$t = getMicrotime();
 
 		$project = $this->Project->read(null, $this->data['Project']['id']);
 		$this->set('project', $project);
-
+		
+		$this->layout = 'ajax';
 		$output = '';
+		
 		if (!@ file_exists(_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php")) {
 			$output .= '[ERROR] - synchro impossible, fichier deploy.php inexistant, ' .
 					'ce fichier doit se trouver à la racine du projet à déployer, voir la documentation de Fredistrano';
@@ -212,91 +301,37 @@ class ProjectsController extends AppController {
 				$prefix = "";
 				$suffix = "";
 			}
+		
+			if ($this->data['Project']['RenamePrdFile'] == true) {
+				//renommage des versions de prod des fichiers de type .prd.xxx en .xxx
+				$output .= "\n-[renommage des fichiers '.prd.']\n";
+				$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.prd.*' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -vf 's/\.prd\./\./i' {} \;".$suffix);				
+			}
 			
-			set_time_limit(_TIMELIMITPOSTDEPLOY);
+			if ($this->data['Project']['ChangeFileMode'] == true) {
+				//ajustement des droits 
+				$output .= "\n-[modification des droits des fichiers] Nouvelles permissions: " . _FILEMODE;
+				$output .= shell_exec("chmod -R " ._FILEMODE . "  ".$this->_pathConverter($project['Project']['prd_path']));	
+				$output .= "\n-[modification des droits des répertoires ] Nouvelles permissions: " . _DIRMODE;
+				$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -type d -exec chmod " . _DIRMODE . " {} \;".$suffix);
+			}
 			
-			//renommage des versions de prod des fichiers de type .prd.xxx en .xxx et suppression des *.dev.*
-			$output .= "\n-[renommage des fichiers '.prd.']\n";
-			$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.prd.*' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -vf 's/\.prd\./\./i' {} \;".$suffix);
-			$output .= "\n-[suppression des fichiers '.dev.']\n";
-			$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.dev.*' -exec rm -vf {} \;".$suffix);
-			
-			//correction des droits 
-			$output .= "\n-[modification des droits des répertoires ] Nouvelles permissions: " . _DIRMODE;
-			$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -type d -exec chmod " . _DIRMODE . " {} \;".$suffix);
-			$output .= "\n-[modification des droits des fichiers] Nouvelles permissions: " . _FILEMODE;
-			$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -type f -exec chmod " . _FILEMODE . " {} \;".$suffix);	
-			$writable = $this->_getConfig()->writable;
-			if (sizeof($writable) > 0) {
-				for ($i = 0; $i < sizeof($writable); $i++) {
-					$output .= "\n-[Ajout de persmissions pour écriture]";
-					$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path'] . $writable[$i] ) . " -type d -exec chmod 777 {} \;".$suffix);
+			if ($this->data['Project']['GiveWriteMode'] == true) {
+				$output .= "\n-[Ajout de persmissions pour écriture]\n";
+				$writable = $this->_getConfig()->writable;
+				if (sizeof($writable) > 0) {
+					for ($i = 0; $i < sizeof($writable); $i++) {
+						$output .= shell_exec("chmod -vR " ._WRITEMODE . "  ".$this->_pathConverter($project['Project']['prd_path'] . $writable[$i] ));
+					}
 				}
 			}
 			
-			//suppression du fichier deploy.php
-			$output .= "\n-[suppression du fichier " . $project['Project']['prd_path'] . DS . "deploy.php]";
-			$output .= shell_exec('rm ' . $this->_pathConverter( $project['Project']['prd_path'] . DS . "deploy.php") );	
-			
-			$this->set('output', $output);
 		}
+		$this->set('output', $output);
+		$this->set('took', round((getMicrotime() - $t) , 3));
 	}
-
-	function view($id = null) {
-
-		if (!$id) {
-			$this->Session->setFlash('Invalid id for Project.');
-			$this->redirect('/projects/index');
-		}
-		$project = $this->Project->read(null, $id);
-		$this->set('project', $project);
-
-	}
-
-	function add() {
-
-		if (empty ($this->data)) {
-			$this->render();
-		} else {
-			$this->cleanUpFields();
-			if ($this->Project->save($this->data)) {
-				$this->Session->setFlash('The Project has been saved');
-				$this->redirect('/projects/index');
-			} else {
-				$this->Session->setFlash('Please correct errors below.');
-			}
-		}
-	}
-
-	function edit($id = null) {
-
-		if (empty ($this->data)) {
-			if (!$id) {
-				$this->Session->setFlash('Invalid id for Project');
-				$this->redirect('/projects/index');
-			}
-			$this->data = $this->Project->read(null, $id);
-		} else {
-			$this->cleanUpFields();
-			if ($this->Project->save($this->data)) {
-				$this->Session->setFlash('The Project has been saved');
-				$this->redirect('/projects/view/' . $id);
-			} else {
-				$this->Session->setFlash('Please correct errors below.');
-			}
-		}
-	}
-
-	function delete($id = null) {
-		if (!$id) {
-			$this->Session->setFlash('Invalid id for Project');
-			$this->redirect('/projects/index');
-		}
-		if ($this->Project->del($id)) {
-			$this->Session->setFlash('The Project deleted: id ' . $id . '');
-			$this->redirect('/projects/index');
-		}
-	}
+	
+	// Private functions -----------------------------------------------------------
 
 	private function _backup($project, $output) {
 

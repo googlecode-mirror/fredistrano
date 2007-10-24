@@ -1,8 +1,9 @@
 <div class="console">
 <?php
-	echo "console >";
-	echo "<br>";
+	debug($this->data);
 	
+	echo "console [executed in $took s] >";
+	echo "<br>";	
 	echo "<pre>";
 	print_r($output);
 	echo "</pre>";
