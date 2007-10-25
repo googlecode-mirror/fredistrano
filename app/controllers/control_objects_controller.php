@@ -23,12 +23,12 @@ class ControlObjectsController extends AppController {
 		);
 		if ($this->action != 'index')
 			$tab[] = array (
-				'text' => 'Liste des objets de contrôle',
+				'text' => LANG_CONTROLOBJECTLIST,
 				'link' => '/control_objects/index'
 			);
 		if ($this->action != 'add')
 			$tab[] = array (
-				'text' => 'Ajouter un objet de contrôle',
+				'text' => LANG_ADDCONTROLOBJECT,
 				'link' => '/control_objects/add'
 			);
 		$this->set('context_menu', $tab);
@@ -42,7 +42,7 @@ class ControlObjectsController extends AppController {
 
 	function view($id = null) {
 		if (!$id or !$this->ControlObject->read(null, $id)) {
-			$this->Session->setFlash('Identifiant invalide.');
+			$this->Session->setFlash(LANG_INVALIDCREDENTIALS);
 			$this->redirect('/control_objects/index');
 			exit;
 		}
@@ -57,10 +57,10 @@ class ControlObjectsController extends AppController {
 			$this->cleanUpFields();
 			if ($this->ControlObject->save($this->data)) {
 				$this->Aclite->reloadsAcls('Aco');
-				$this->Session->setFlash('Objet de contrôle créé.');
+				$this->Session->setFlash(LANG_COCREATED);
 				$this->redirect('/control_objects/index');
 			} else {
-				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+				$this->Session->setFlash(LANG_CORRECTERRORSBELOW);
 				$this->set('controlObjects', $this->ControlObject->generateList());
 			}
 		}
@@ -69,7 +69,7 @@ class ControlObjectsController extends AppController {
 	function edit($id = null) {
 		if (empty ($this->data)) {
 			if (!$id or !$this->ControlObject->read(null, $id)) {
-				$this->Session->setFlash('Identifiant invalide.');
+				$this->Session->setFlash(LANG_INVALIDCREDENTIALS);
 				$this->redirect('/control_objects/index');
 				exit;
 			}
@@ -81,10 +81,10 @@ class ControlObjectsController extends AppController {
 				unset ($this->data['ControlObject']['parent_id']);
 			if ($this->ControlObject->save($this->data)) {
 				$this->Aclite->reloadsAcls('Aco');
-				$this->Session->setFlash('Objet de contrôle modifié.');
+				$this->Session->setFlash(LANG_COUPDATED);
 				$this->redirect('/control_objects/view/' . $id);
 			} else {
-				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+				$this->Session->setFlash(LANG_CORRECTERRORSBELOW);
 				$this->set('controlObjects', $this->ControlObject->generateList());
 			}
 		}
@@ -92,16 +92,16 @@ class ControlObjectsController extends AppController {
 
 	function delete($id = null) {
 		if (!$id or !$this->ControlObject->read(null, $id)) {
-			$this->Session->setFlash('Identifiant invalide.');
+			$this->Session->setFlash(LANG_INVALIDCREDENTIALS);
 			$this->redirect('/control_objects/index');
 			exit;
 		}
 		if ($this->ControlObject->del($id)) {
 			$this->Aclite->reloadsAcls('Aco');
-			$this->Session->setFlash('Objet de contrôle supprimé.');
+			$this->Session->setFlash(LANG_CODELETED);
 			$this->redirect('/control_objects/index');
 		} else {
-			$this->Session->setFlash('Erreur lors de la suppression.');
+			$this->Session->setFlash(LANG_ERRORDURINGDELETION);
 			$this->redirect('/control_objects/view/' . $id);
 		}
 	}

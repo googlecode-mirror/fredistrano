@@ -21,12 +21,12 @@ class DeploymentLogsController extends AppController {
 
 		if ($this->action != 'list_all')
 			$tab[] = array (
-				'text' => 'Afficher tout l\'historique',
+				'text' => LANG_DISPLAYFULLHISTORY,
 				'link' => '/deploymentLogs/list_all'
 			);
 
 		$tab[] = array (
-			'text' => 'Lister les projets',
+			'text' => LANG_PROJECTLIST,
 			'link' => '/projects'
 		);
 
@@ -42,8 +42,8 @@ class DeploymentLogsController extends AppController {
 	function list_all($op = null, $id = null) {
 		$archived = $this->_archive();
 		if ($archived > 0) 
-			$this->Session->setFlash('Archivage automatique de '.$archived.' log(s)');
-	
+			$this->Session->setFlash(sprintf(LANG_AUTOLOGARCHIVE,$archived));
+
 		switch ($op) {
 			case null :
 				$this->_listAll();
@@ -55,7 +55,7 @@ class DeploymentLogsController extends AppController {
 				$this->_listByProject($id);
 				break;
 			default :
-				$this->Session->setFlash('Opération non supportée (' . $op.')');
+				$this->Session->setFlash(LANG_UNSUPPORTEDACTION . $op);
 				$this->redirect('/deploymentLogs/list_all');
 				break;
 		} // switch
@@ -63,7 +63,7 @@ class DeploymentLogsController extends AppController {
 
 	function view($id) {
 		if (!$id or !$this->DeploymentLog->read(null, $id)) {
-			$this->Session->setFlash('Identifiant de log inconnu ('.$id.')');
+			$this->Session->setFlash(LANG_INVALIDLOGID.$id);
 			$this->redirect('/deploymentLogs/list_all');
 		}
 		$this->set('log', $this->DeploymentLog->read(null, $id));
@@ -79,7 +79,7 @@ class DeploymentLogsController extends AppController {
 		$this->DeploymentLog->delAll();
 
 		// Afichage
-		$this->Session->setFlash('Tous les logs ont été supprimés');
+		$this->Session->setFlash(LANG_ALLLOGSDELETED);
 		$this->redirect('/deploymentLogs/list_all');
 	} //_ reset
 
@@ -107,7 +107,7 @@ class DeploymentLogsController extends AppController {
 
 	private function _listByProject($id = null) {
 		if (!$id or !$this->Project->read(null, $id)) {
-			$this->Session->setFlash('Identifiant de projet inconnu ('.$id.')');
+			$this->Session->setFlash(LANG_INVALIDPROJECTID.$id);
 			$this->redirect('/deploymentLogs/list_all');
 		}
 		

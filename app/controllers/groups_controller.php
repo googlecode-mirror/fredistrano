@@ -23,12 +23,12 @@ class GroupsController extends AppController {
 		);
 		if ($this->action != 'index')
 			$tab[] = array (
-				'text' => 'Liste des groupes',
+				'text' => LANG_GROUPLIST,
 				'link' => '/groups/index'
 			);
 		if ($this->action != 'add')
 			$tab[] = array (
-				'text' => 'Ajouter un groupe',
+				'text' => LANG_ADDGROUP,
 				'link' => '/groups/add'
 			);
 		$this->set('context_menu', $tab);
@@ -42,7 +42,7 @@ class GroupsController extends AppController {
 
 	function view($id = null) {
 		if (!$id or !$this->Group->read(null, $id)) {
-			$this->Session->setFlash('Identifiant invalide.');
+			$this->Session->setFlash(LANG_INVALIDID);
 			$this->redirect('/groups/index');
 			exit;
 		}
@@ -58,10 +58,10 @@ class GroupsController extends AppController {
 			$this->cleanUpFields();
 			if ($this->Group->save($this->data)) {
 				$this->Aclite->reloadsAcls('Aro');
-				$this->Session->setFlash('Groupe créé.');
+				$this->Session->setFlash(LANG_GROUPCREATED);
 				$this->redirect('/groups/index');
 			} else {
-				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+				$this->Session->setFlash(LANG_CORRECTERRORSBELOW);
 				$this->set('groups', $this->Group->generateList());
 			}
 		}
@@ -70,7 +70,7 @@ class GroupsController extends AppController {
 	function edit($id = null) {
 		if (empty ($this->data)) {
 			if (!$id or !$this->Group->read(null, $id)) {
-				$this->Session->setFlash('Identifiant invalide.');
+				$this->Session->setFlash(LANG_INVALIDID);
 				$this->redirect('/groups/index');
 				exit;
 			}
@@ -82,10 +82,10 @@ class GroupsController extends AppController {
 				unset ($this->data['Group']['parent_id']);
 			if ($this->Group->save($this->data)) {				
 				$this->Aclite->reloadsAcls('Aro');
-				$this->Session->setFlash('Groupe modifié.');
+				$this->Session->setFlash(LANG_GROUPUPDATED);
 				$this->redirect('/groups/view/' . $id);
 			} else {
-				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+				$this->Session->setFlash(LANG_CORRECTERRORSBELOW);
 				$this->set('groups', $this->Group->generateList());
 			}
 		}
@@ -93,16 +93,16 @@ class GroupsController extends AppController {
 
 	function delete($id = null) {
 		if (!$id or !$this->Group->read(null, $id)) {
-			$this->Session->setFlash('Identifiant invalide.');
+			$this->Session->setFlash(LANG_INVALIDID);
 			$this->redirect('/groups/index');
 			exit;
 		}
 		if ($this->Group->del($id)) {
 			$this->Aclite->reloadsAcls('Aro');
-			$this->Session->setFlash('Groupe supprimé.');
+			$this->Session->setFlash(LANG_GROUPDELETED);
 			$this->redirect('/groups/index');
 		} else {
-			$this->Session->setFlash('Erreur lors de la suppression.');
+			$this->Session->setFlash(LANG_ERRORDURINGDELETION);
 			$this->redirect('/groups/view/' . $id);
 		}
 	}

@@ -28,18 +28,18 @@ class ProjectsController extends AppController {
 
 		if ($this->action != 'index')
 			$tab[] = array (
-				'text' => 'Lister les projets',
+				'text' => LANG_PROJECTSLIST,
 				'link' => '/projects/index'
 			);
 
 		if ($this->action != 'add')
 			$tab[] = array (
-				'text' => 'Ajouter un projet',
+				'text' => LANG_ADDPROJECT,
 				'link' => '/projects/add'
 			);
 
 		$tab[] = array (
-			'text' => 'Afficher tout l\'historique',
+			'text' => LANG_DISPLAYFULLHISTORY,
 			'link' => '/deploymentLogs'
 		);
 		$this->set("context_menu", $tab);
@@ -64,7 +64,7 @@ class ProjectsController extends AppController {
 	function view($id = null) {
 
 		if (!$id) {
-			$this->Session->setFlash('Invalid id for Project.');
+			$this->Session->setFlash(LANG_INVALIDID);
 			$this->redirect('/projects/index');
 		}
 		$project = $this->Project->read(null, $id);
@@ -79,10 +79,10 @@ class ProjectsController extends AppController {
 		} else {
 			$this->cleanUpFields();
 			if ($this->Project->save($this->data)) {
-				$this->Session->setFlash('The Project has been saved');
+				$this->Session->setFlash(LANG_PROJECTSAVED);
 				$this->redirect('/projects/index');
 			} else {
-				$this->Session->setFlash('Please correct errors below.');
+				$this->Session->setFlash(LANG_CORRECTERRORSBELOW);
 			}
 		}
 	}
@@ -91,28 +91,28 @@ class ProjectsController extends AppController {
 
 		if (empty ($this->data)) {
 			if (!$id) {
-				$this->Session->setFlash('Invalid id for Project');
+				$this->Session->setFlash(LANG_INVALIDID);
 				$this->redirect('/projects/index');
 			}
 			$this->data = $this->Project->read(null, $id);
 		} else {
 			$this->cleanUpFields();
 			if ($this->Project->save($this->data)) {
-				$this->Session->setFlash('The Project has been saved');
+				$this->Session->setFlash(LANG_PROJECTSAVED);
 				$this->redirect('/projects/view/' . $id);
 			} else {
-				$this->Session->setFlash('Please correct errors below.');
+				$this->Session->setFlash(LANG_CORRECTERRORSBELOW);
 			}
 		}
 	}
 
 	function delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash('Invalid id for Project');
+			$this->Session->setFlash(LANG_INVALIDID);
 			$this->redirect('/projects/index');
 		}
 		if ($this->Project->del($id)) {
-			$this->Session->setFlash('The Project deleted: id ' . $id . '');
+			$this->Session->setFlash(LANG_PROJECTDELETED);
 			$this->redirect('/projects/index');
 		}
 	}
@@ -159,7 +159,7 @@ class ProjectsController extends AppController {
 		}
 
 		if (!$this->data['Project']['id']) {
-			$this->Session->setFlash('L\'identifiant du projet est invalide.');
+			$this->Session->setFlash(LANG_INVALIDID);
 
 		} else {
 			$project = $this->Project->read(null, $this->data['Project']['id']);
