@@ -7,27 +7,27 @@ class Project extends AppModel {
 		'name' => array (
 			array (
 				VALID_NOT_EMPTY,
-				'Veuillez saisir un nom de projet'
+				LANG_ENTERPROJECTNAME
 			)
 			,
-			array (array('isUnique', array('name')), 'Ce nom de projet est déjà utilisé.')
+			array (array('isUnique', array('name')), LANG_PROJECTNAMEALREADYEXISTS)
 		),
 		'svn_url' => array (
 			array (
 				VALID_NOT_EMPTY,
-				'Veuillez saisir l\'url du repository pour ce projet'
+				LANG_ENTERURLREPOSITORYFORTHISPROJECT
 			)
 		),
 		'prd_url' => array (
 			array (
 				VALID_NOT_EMPTY,
-				'Veuillez saisir l\'url de l\'application sur le serveur de production'
+				LANG_ENTERPRODUCTIONURL
 			)
 		),
 		'prd_path' => array (
 			array (
 				VALID_NOT_EMPTY,
-				'Veuillez saisir le nom du dossier de l\'application sur le serveur de production'
+				LANG_ENTERAPPLICATIONDIRECTORY
 			)
 		)
 	);

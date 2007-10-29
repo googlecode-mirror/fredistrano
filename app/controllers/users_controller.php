@@ -36,7 +36,7 @@ class UsersController extends AppController {
 
 	function view($id = null) {
 		if (!$id or !$this->User->read(null, $id)) {
-			$this->Session->setFlash('Identifiant invalide.');
+			$this->Session->setFlash(LANG_INVALIDID);
 			$this->redirect('/users/index');
 			exit;
 		}
@@ -54,10 +54,10 @@ class UsersController extends AppController {
 			$this->cleanUpFields();
 			if ($this->User->save($this->data)) {
 				$this->Aclite->reloadsAcls('Aro');
-				$this->Session->setFlash('Utilisateur créé.');
+				$this->Session->setFlash(LANG_USERCREATED);
 				$this->redirect('/users/index');
 			} else {
-				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+				$this->Session->setFlash(LANG_CORRECTERRORSBELOW);
 				$this->set('groups', $this->User->Group->generateList());
 				if (empty ($this->data['Group']['Group'])) {
 					$this->data['Group']['Group'] = null;
@@ -70,7 +70,7 @@ class UsersController extends AppController {
 	function edit($id = null) {
 		if (empty ($this->data)) {
 			if (!$id or !$this->User->read(null, $id)) {
-				$this->Session->setFlash('Identifiant invalide.');
+				$this->Session->setFlash(LANG_INVALIDID);
 				$this->redirect('/users/index');
 				exit;
 			}
@@ -84,10 +84,10 @@ class UsersController extends AppController {
 			$this->cleanUpFields();
 			if ($this->User->save($this->data)) {
 				$this->Aclite->reloadsAcls('Aro');
-				$this->Session->setFlash('Utilisateur modifié.');
+				$this->Session->setFlash(LANG_USERUPDATED);
 				$this->redirect('/users/view/' . $id);
 			} else {
-				$this->Session->setFlash('Veuillez corriger les erreurs ci-dessous.');
+				$this->Session->setFlash(LANG_CORRECTERRORSBELOW);
 				$this->set('groups', $this->User->Group->generateList());
 				if (empty ($this->data['Group']['Group'])) {
 					$this->data['Group']['Group'] = null;
@@ -99,23 +99,23 @@ class UsersController extends AppController {
 
 	function delete($id = null) {
 		if (!$id or !$this->User->read(null, $id)) {
-			$this->Session->setFlash('Identifiant invalide.');
+			$this->Session->setFlash(LANG_INVALIDID);
 			$this->redirect('/users/index');
 			exit;
 		}
 		if ($this->User->del($id)) {
 			$this->Aclite->reloadsAcls('Aro');
-			$this->Session->setFlash('Utilisateur supprimé.');
+			$this->Session->setFlash(LANG_USERDELETED);
 			$this->redirect('/users/index');
 		} else {
-			$this->Session->setFlash('Erreur lors de la suppression.');
+			$this->Session->setFlash(LANG_ERRORDURINGDELETION);
 			$this->redirect('/users/view/' . $id);
 		}
 	}
 
 	function change_password($id = null) {
 		if (!$id or !$this->User->read(null, $id)) {
-			$this->Session->setFlash('Identifiant invalide.');
+			$this->Session->setFlash(LANG_INVALIDID);
 			$this->redirect('/users/index');
 			exit;
 		}
@@ -125,20 +125,20 @@ class UsersController extends AppController {
 
 			// le mot de passe n'est pas obligatoire donc l'ancien mdp peut être vide
 			if (empty ($this->data['User']['password']) or empty ($this->data['User']['confirm_password'])) {
-				$this->Session->setFlash('Veuillez remplir tous les champs.');
+				$this->Session->setFlash(LANG_PLEASEFILLINALLFIELDS);
 			}
 			elseif (md5($this->data['User']['old_password']) != $user['User']['password']) {
-				$this->Session->setFlash('Ancien mot de passe incorrect.');
+				$this->Session->setFlash(LANG_INCORRECTOLDPASSWORD);
 			}
 			elseif ($this->data['User']['password'] != $this->data['User']['confirm_password']) {
-				$this->Session->setFlash('Vous n\'avez pas saisi deux fois le même mot de passe.');
+				$this->Session->setFlash(LANG_NOTENTEREDTWICETHESAMEPASSWORD);
 			} else {
 				$this->User->id = $user['User']['id'];
 				if ($this->User->saveField('password', $this->data['User']['password'], true)) {
-					$this->Session->setFlash('Mot de passe modifié.');
+					$this->Session->setFlash(LANG_PASSWORDCHANGED);
 					$this->redirect('/users/view/' . $id);
 				} else {
-					$this->Session->setFlash('Erreur lors de la modification : ' . mysql_error());
+					$this->Session->setFlash(LANG_ERRORDURINGDELETION . mysql_error());
 				}
 			}
 		}
@@ -147,7 +147,7 @@ class UsersController extends AppController {
 	function login() {
 		// On accepte uniquement les requetes HTTPS
 		if (!env('HTTPS') && _HTTPSENABLED) {
-			$this->Session->setFlash('HTTPS required but unavailable!');
+			$this->Session->setFlash(LANG_HTTPSREQUIREBUTUNVALAIBLE);
 			$this->redirect('/');
 			exit ();
 		}
@@ -169,23 +169,23 @@ class UsersController extends AppController {
 					$this->Session->write('user_alias', $someone['User']['login']);
 					$this->Session->write('User', $userSession);
 					$this->log($someone['User']['login'] . " - Connexion", LOG_DEBUG);
-					$this->Session->setFlash('Identification acceptée');
+					$this->Session->setFlash(LANG_IDENTIFICATIONACCEPTED);
 
 				} else {
 					//Authentification échouée
-					$this->Session->setFlash('Identification incorrecte !');
+					$this->Session->setFlash(LANG_IDENTIFICATIONWRONG);
 				}
 
 			} else {
 				// L'utilisateur n'existe pas dans la base
-				$this->Session->setFlash('Utilisateur inconnu !');
+				$this->Session->setFlash('LANG_IDENTIFICATIONWRONG !');
 			}
 
 			// Affichage
             $tmp = empty($_SERVER['HTTP_REFERER'])?'/':$_SERVER['HTTP_REFERER'];
             if (_HTTPSENABLED == 2)
-            		$tmp = preg_replace('#(http)://#','${1}s://',$tmp);
-//            	$tmp = preg_replace('§(http)://§','${1}s://',$tmp);
+//            		$tmp = preg_replace(LANG_(HTTP)://,'${1}s://',$tmp);
+            	$tmp = preg_replace('§(http)://§','${1}s://',$tmp);
 		    $this->set('HTTP_REFERER', $tmp);
 			if (_HTTPSENABLED != 1)
             	$this->render('login_php','ajax');
@@ -198,7 +198,7 @@ class UsersController extends AppController {
 		$this->log($this->Session->read('User.login') . " - Déconnexion", LOG_DEBUG);
 		$this->Session->delete('User');
 		$this->Session->delete('user_alias');
-		$this->Session->setFlash('Vous êtes maintenant déconnecté.');
+		$this->Session->setFlash(LANG_YOURARENOWDISCONNECTED);
 		$this->redirect($this->referer());
 	}
 

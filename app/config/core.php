@@ -143,4 +143,5 @@
  */
 	define('ACL_CLASSNAME', 'DB_ACL');
 	define('ACL_FILENAME', 'dbacl' . DS . 'db_acl');
+	
 ?>

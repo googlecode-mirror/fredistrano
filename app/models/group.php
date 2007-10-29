@@ -7,7 +7,7 @@ class Group extends AppModel {
 		'name' => array (
 			array (
 				VALID_NOT_EMPTY,
-				'Veuillez saisir un nom.'
+				LANG_PLEASEENTERANAME
 			),
 			array (
 				array (
@@ -16,7 +16,7 @@ class Group extends AppModel {
 						'name'
 					)
 				),
-				'Un groupe de ce nom existe déjà.'
+				LANG_GROUPALREADYEXISTS
 			)
 		)
 	);
