@@ -7,13 +7,13 @@ class AclManagementController extends AcliteAppController {
 	
 	function deleteAclObjects($all=false) {
 		$this->AclManagement->deleteAclObjects(null,$all);
-		$this->Session->setFlash('Les tables ACL ont été vidées');
+		$this->Session->setFlash(LANG_ACLTABLESTRUNCATED);
 		$this->redirect('aclite/aclManagement');
 	} // deleteAllAclObjects
 
 	function importMasterData() {
 		$this->AclManagement->importMasterData();
-		$this->Session->setFlash('Import terminé');
+		$this->Session->setFlash(LANG_IMPORTFINISHED);
 		$this->redirect('aclite/aclManagement');
 	} // importMasterData
 
@@ -26,7 +26,7 @@ class AclManagementController extends AcliteAppController {
 
 	function reloadAcls() {
 		$this->AclManagement->reloadAcls();
-		$this->Session->setFlash('Rechargment terminé');
+		$this->Session->setFlash(LANG_RELOADINGFINISHED);
 		$this->redirect('aclite/aclManagement');
 	} // reloadAcls
 
@@ -39,7 +39,7 @@ class AclManagementController extends AcliteAppController {
 			if ($this->AclManagement->Permission->add($this->data['Permission'])) {
 				$this->data = null;
 			} else
-				$this->Session->setFlash('Tous les éléments doivent avoir une valeur');
+				$this->Session->setFlash(LANG_ALLELEMENTSMUSTHAVEAVALUE);
 
 			$this->_initializeLists();
 			$this->set('permissions', $this->Acl->Aco->ArosAco->findAll(null, null, "Aro.alias ASC"));
@@ -49,9 +49,9 @@ class AclManagementController extends AcliteAppController {
 	function deletePermission($id = null) {
 		if ($id != null) {
 			$this->AclManagement->Permission->del($id);
-			$this->Session->setFlash('Permission supprimée');
+			$this->Session->setFlash(LANG_PERMISSIONDELETED);
 		} else
-			$this->Session->setFlash('Identifiant de la permission inconnu');
+			$this->Session->setFlash(LANG_IDPERMISSIONUNKNOWN);
 
 		$this->redirect('aclite/aclManagement/updatePermissions');
 	} // deletePermission

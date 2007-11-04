@@ -5,8 +5,8 @@ class User extends AppModel {
 
 	var $validate = array (
 		'login' => array (
-			array (VALID_NOT_EMPTY, 'Veuillez saisir un login.'),
-			array (array('isUnique', array('login')), 'Ce login est déjà utilisé.')
+			array (VALID_NOT_EMPTY, LANG_PLEASEENTERALOGIN),
+			array (array('isUnique', array('login')), LANG_LOGINALREADYUSED)
 		)
 	);
 

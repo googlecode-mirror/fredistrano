@@ -11,6 +11,14 @@ $supportedLang =  array (
 );
 
 $msg =   array (
+	'aclmanagement' =>  array (
+		'fr-FR' => "Gestion des ACLs",
+		'en-US' => "ACL management"
+	),
+	'acltablestruncated' =>  array (
+		'fr-FR' => "Les tables ACL ont été vidées.",
+		'en-US' => "ACL tables truncated."
+	),
 	'addcontrolobject' =>  array (
 		'fr-FR' => "Ajouter un objet de contrôle",
 		'en-US' => "Add control object"
@@ -27,6 +35,10 @@ $msg =   array (
 		'fr-FR' => "Administration",
 		'en-US' => "Administration"
 	),
+	'allelementsmusthaveavalue' =>  array (
+		'fr-FR' => "Tous les éléments doivent avoir une valeur.",
+		'en-US' => "All elements must have a value."
+	),
 	'alllogsdeleted' =>  array (
 		'fr-FR' => "Tous les logs ont été supprimés.",
 		'en-US' => "All logs deleted."
@@ -42,6 +54,10 @@ $msg =   array (
 	'back' =>  array (
 		'fr-FR' => "retour",
 		'en-US' => "back"
+	),
+	'changingpermissions' =>  array (
+		'fr-FR' => "Faire évoluer les permissions (ajout, suppression).",
+		'en-US' => "Changing the permissions (addition, deletion)"
 	),
 	'cocreated' =>  array (
 		'fr-FR' => "Objet de contrôle créé.",
@@ -135,6 +151,18 @@ $msg =   array (
 		'fr-FR' => "Identification incorrecte !",
 		'en-US' => "Identification wrong !"
 	),
+	'idpermissionunknown' =>  array (
+		'fr-FR' => "Identifiant de la permission inconnu.",
+		'en-US' => "Id permission unknown."
+	),
+	'importdataintoobjectsmastersacls' =>  array (
+		'fr-FR' => "Imports des données maîtres en objets ACLs.",
+		'en-US' => "Imports data into objects masters ACLs."
+	),
+	'importfinished' =>  array (
+		'fr-FR' => "Import terminé.",
+		'en-US' => "Import finished."
+	),
 	'incorrectoldpassword' =>  array (
 		'fr-FR' => "Ancien mot de passe incorrect.",
 		'en-US' => "Incorect old password."
@@ -155,9 +183,17 @@ $msg =   array (
 		'fr-FR' => "Identifiant de projet inconnu => ",
 		'en-US' => "Invalid Project id => "
 	),
+	'listdata' =>  array (
+		'fr-FR' => "Liste des données de base",
+		'en-US' => "Master data list"
+	),
 	'login' =>  array (
 		'fr-FR' => "Connexion",
 		'en-US' => "Login"
+	),
+	'loginalreadyused' =>  array (
+		'fr-FR' => "Ce login est déjà utilisé.",
+		'en-US' => "This login is already used."
 	),
 	'logout' =>  array (
 		'fr-FR' => "[Déconnexion]",
@@ -171,6 +207,10 @@ $msg =   array (
 		'fr-FR' => "Vous n'avez pas saisi deux fois le même mot de passe.",
 		'en-US' => "You have not entered twice the same password."
 	),
+	'nothingtodisplay' =>  array (
+		'fr-FR' => "Rien à afficher",
+		'en-US' => "Nothing to display"
+	),
 	'objectnamealreadyexist' =>  array (
 		'fr-FR' => "Un objet de ce nom existe déjà.",
 		'en-US' => "An object with this name already exists."
@@ -182,6 +222,18 @@ $msg =   array (
 	'passwordchanged' =>  array (
 		'fr-FR' => "Mot de passe modifié.",
 		'en-US' => "Password changed."
+	),
+	'permissiondeleted' =>  array (
+		'fr-FR' => "Permission supprimée.",
+		'en-US' => "Permission deleted."
+	),
+	'permissionsgranted' =>  array (
+		'fr-FR' => "Permissions accordées demandeurs et objets de controle ",
+		'en-US' => "Permissions granted and control objects"
+	),
+	'pleaseenteralogin' =>  array (
+		'fr-FR' => "Veuillez saisir un login.",
+		'en-US' => "Please enter a login."
 	),
 	'pleaseenteraname' =>  array (
 		'fr-FR' => "Veuillez saisir un nom",
@@ -219,17 +271,41 @@ $msg =   array (
 		'fr-FR' => "Lister les projets",
 		'en-US' => "Projects list"
 	),
+	'reloadingfinished' =>  array (
+		'fr-FR' => "Rechargement terminé.",
+		'en-US' => "Reloading finished."
+	),
+	'removingexistingobjects' =>  array (
+		'fr-FR' => "Suppression des objets existants.",
+		'en-US' => "Removing existing objects."
+	),
 	'reportbug' =>  array (
 		'fr-FR' => "Pour signaler un bug",
 		'en-US' => "report bugs and enhancements at "
+	),
+	'resetaclusingdatafromtheapplication' =>  array (
+		'fr-FR' => "Réinitialiser les ACLs à partir des données de l'application (User, Group et ControlObject).",
+		'en-US' => "Reset ACL using data from the application (User, Group and ControlObject)"
+	),
+	'summaryofcurrentpermissions' =>  array (
+		'fr-FR' => "Resume des permissions en vigueur",
+		'en-US' => "Summary of current permissions"
 	),
 	'thislink' =>  array (
 		'fr-FR' => "ce lien",
 		'en-US' => "this link"
 	),
+	'thiswillinvolvethelossofexistingacl' =>  array (
+		'fr-FR' => "Cette opération entrainera la perte des ACLs actuelles. Souhaitez vous continuer?",
+		'en-US' => "This will involve the loss of existing ACLs. Do you want to continue?"
+	),
 	'unsupportedaction' =>  array (
 		'fr-FR' => "Opération non supportée => ",
 		'en-US' => "Unsupported action => "
+	),
+	'usage' =>  array (
+		'fr-FR' => "Utilisation",
+		'en-US' => "Usage"
 	),
 	'useradd' =>  array (
 		'fr-FR' => "Ajouter un utilisateur",
@@ -251,6 +327,10 @@ $msg =   array (
 		'fr-FR' => "Utilisateur",
 		'en-US' => "Username"
 	),
+	'userorgroup' =>  array (
+		'fr-FR' => "Demandeurs (utilisateurs ou groupes) :",
+		'en-US' => "Users or groups :"
+	),
 	'users' =>  array (
 		'fr-FR' => "Utilisateurs",
 		'en-US' => "Users"
@@ -258,6 +338,10 @@ $msg =   array (
 	'userupdated' =>  array (
 		'fr-FR' => "Utilisateur modifié.",
 		'en-US' => "User updated."
+	),
+	'usethispagetomanageaclobjects' =>  array (
+		'fr-FR' => "Utiliser cette page pour manger les objets ACL",
+		'en-US' => "Use this page to manage ACLs objects"
 	),
 	'version' =>  array (
 		'fr-FR' => "Version 0.2 - 13/10/2007",
@@ -278,6 +362,10 @@ $msg =   array (
 	'yourarenowdisconnected' =>  array (
 		'fr-FR' => "Vous êtes maintenant déconnecté.",
 		'en-US' => "Your are now disconnected."
+	),
+	'edit' =>  array (
+		'fr-FR' => " [modifier] ",
+		'en-US' => " [edit] "
 	)
 );
 

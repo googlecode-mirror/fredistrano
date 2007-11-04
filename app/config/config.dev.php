@@ -30,6 +30,10 @@ define("_DEPLOYTMPDIR", _DEPLOYDIR . DS . "tmp");					//nécessaire à Fredistra
 define("_DEPLOYBACKUPDIR", _DEPLOYDIR . DS . "backup");				//nécessaire à Fredistrano pour stocker les backups
 define("_CYGWINROOT","/cygdrive/");									//uniquement pour cygwin sur les serveurs windows, en générale "/cygdrive/" ou "/"
 
+// Language
+define('LANG_DEFAULT','en-US'); 					//available languages :  en-US, fr-FR
+require_once (APP . 'locale' . DS . LANG_DEFAULT . DS . 'LC_MESSAGES' . DS . 'default.php');
+
 //SPECIFIQUE -sera supprimé dans une prochaine version
 define("_WEBSERVICESSERVER",	""); 				// endpoint URL
 define("_AUTHENTICATIONTYPE",	"0");				// 0 = mysql / 1 = webservice + mysql

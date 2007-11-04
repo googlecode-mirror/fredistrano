@@ -92,15 +92,15 @@ class AppController extends Controller {
 		}
 	}
 	
-	function beforeFilter(){
-		// Default lang 
-		if (!defined('LANG_DEFAULT'))
-			define('LANG_DEFAULT','en-US');
-	
-		// Load the required lang file
-		$lang = isset ($_SESSION['userPreferedLanguage']) ? $_SESSION['userPreferedLanguage'] : LANG_DEFAULT;
-		require_once (APP . 'locale' . DS . $lang . DS . 'LC_MESSAGES' . DS . 'default.php');
-	}
+//	function beforeFilter(){
+//		// Default lang 
+//		if (!defined('LANG_DEFAULT'))
+//			define('LANG_DEFAULT','en-US');
+//	
+//		// Load the required lang file
+//		$lang = isset ($_SESSION['userPreferedLanguage']) ? $_SESSION['userPreferedLanguage'] : LANG_DEFAULT;
+//		require_once (APP . 'locale' . DS . $lang . DS . 'LC_MESSAGES' . DS . 'default.php');
+//	}
 	
 	private function _isComputer($name) {
 		if (($name[0] == '_')

@@ -1,21 +1,21 @@
-<h1>Resume des permissions en vigueur</h1>
+<?php e('<h1>'.LANG_SUMMARYOFCURRENTPERMISSIONS.'</h1>');?>
 
-<h2>Liste données de base</h2>
+<?php e('<h2>'.LANG_LISTDATA.'</h2>');?>
 
 <div style="float: left; width: 45%;">
-	<strong>Demandeurs (utilisateurs ou groupes) :</strong>
+	<strong><?php e(LANG_USERORGROUP);?></strong>
 	<br /><br />
-	<?php echo (empty($aros)) ? 'Rien à afficher' : $aros ?>
+	<?php echo (empty($aros)) ? LANG_NOTHINGTODISPLAY : $aros ?>
 </div>
 
 <div style="float: right; width: 45%;">
-	<strong>Objets de contrôle :</strong>
+	<strong><?php e(LANG_CONTROLOBJECT)?></strong>
 	<br /><br />
-	<?php echo (empty($acos)) ? 'Rien à afficher' : $acos ?>
+	<?php echo (empty($acos)) ? LANG_NOTHINGTODISPLAY : $acos ?>
 </div>
 
 <div style="clear: both;"><br /></div>
 
-<h2>Permissions accordées demandeurs et objets de controle <small><?php echo $html->link(' [edit] ','/aclite/aclManagement/updatePermissions') ?></small></h2>
+<h2><?php e(LANG_PERMISSIONSGRANTED);?><small><?php echo $html->link(LANG_EDIT,'/aclite/aclManagement/updatePermissions') ?></small></h2>
 
 <?php echo $this->renderElement('_displayPermissions') ?>
