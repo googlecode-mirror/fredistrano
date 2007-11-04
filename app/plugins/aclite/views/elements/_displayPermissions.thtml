@@ -1,7 +1,7 @@
 <div>
 <?php 
 	if (empty($permissions))
-		echo "Aucune permission enregistrée";
+		echo LANG_NOPERMISSIONREGISTERED;
 	else {
 		echo '<ul>';
 		foreach($permissions as $permission) {
@@ -28,7 +28,7 @@
 			else if ($permission['ArosAco']['_read'] == -1)
 				$denied .= 'read ';
 			
-			$delete = $edit?$html->link(' [X] ','/aclite/aclManagement/deletePermission/'.$permission['ArosAco']['id'],null,'Supprimer cette permission?'):'';
+			$delete = $edit?$html->link(' [X] ','/aclite/aclManagement/deletePermission/'.$permission['ArosAco']['id'],null,LANG_DELETETHISPERMISSION):'';
 			
 			if (strlen($denied)>0 && strlen($allowed)>0) 
 				echo '<li><b>'.$permission['Aro']['alias'].'</b> peut effectuer sur <b>'.$permission['Aco']['alias'].'</b> les actions suivantes [<i>'.$allowed.

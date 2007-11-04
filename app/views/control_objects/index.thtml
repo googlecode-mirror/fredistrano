@@ -2,7 +2,7 @@
 	<table class="table1">
 		<thead>
 			<tr>
-				<th colspan="5">Liste des objets de contrôle</th>
+				<th colspan="5"><?php e(LANG_CONTROLOBJECTLIST);?></th>
 			</tr>
 		</thead>
 
@@ -11,7 +11,7 @@
 		$pagination->setPaging($paging); // Initialize the pagination variables
 		$th = array (
 			$pagination->sortBy('id', 'Id'),
-			$pagination->sortBy('name', 'Nom'),
+			$pagination->sortBy('name', 'Name'),
 			'Parent',
 			'Actions'
 		); // Generate the pagination sort links
@@ -23,18 +23,18 @@
 				$output['ControlObject']['name'],
 				$output['ParentControlObject']['name'],
 				$html->link(
-					$html->image('b_search.png', array('alt' => 'Afficher', 'title' => 'Afficher', 'class' => 'action')),
+					$html->image('b_search.png', array('alt' => LANG__VIEW, 'title' => LANG__VIEW, 'class' => 'action')),
 					'/control_objects/view/' . $output['ControlObject']['id'],
 					null, false, false) ."&nbsp;&nbsp;".
 				$html->link(
-					$html->image('b_edit.png', array('alt' => 'Modifier', 'title' => 'Modifier', 'class' => 'action')),
+					$html->image('b_edit.png', array('alt' => LANG__EDIT, 'title' => LANG__EDIT, 'class' => 'action')),
 					'/control_objects/edit/' . $output['ControlObject']['id'],
 					null, false, false) ."&nbsp;&nbsp;".
 				$html->link(
-					$html->image('b_drop.png', array('alt' => 'Supprimer', 'title' => 'Supprimer', 'class' => 'action')),
+					$html->image('b_drop.png', array('alt' => LANG__DELETE, 'title' => LANG__DELETE, 'class' => 'action')),
 					'/control_objects/delete/' . $output['ControlObject']['id'],
 					null,
-					'Etes vous certain de vouloir supprimer : ' . $output['ControlObject']['name'] . ' ?',
+					LANG_AREYOUSUREYOUWANTTODELETE.' : ' . $output['ControlObject']['name'] . ' ?',
 					false)
 			);
 			echo $table->tableCells($tr,array('class'=>'altRow'),array('class'=>'evenRow'));

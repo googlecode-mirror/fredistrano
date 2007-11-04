@@ -266,7 +266,7 @@ class ProjectsController extends AppController {
 
 				chdir(_DEPLOYDIR);
 				$output .= shell_exec("rsync -$option --delete --exclude-from=$exclude_file_name $source $target");
-				$output .= e("rsync -$option --delete --exclude-from=$exclude_file_name $source $target");
+				//$output .= e("rsync -$option --delete --exclude-from=$exclude_file_name $source $target");
 
 			} else {
 				$output .= "Erreur - problème de sauvegarde ";

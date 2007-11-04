@@ -1,14 +1,14 @@
 <form action="<?php echo $html->url('/projects/add'); ?>" method="post" class="f-wrap-1">
-<div class="req"><b>*</b> Champs obligatoires</div>
+<div class="req"><b>*</b> <?php e(LANG_REQUIREDFIELDS);?></div>
 <fieldset>
-<h3>Nouveau projet</h3>
+<h3><?php e(LANG_NEWPROJECT);?></h3>
 
 	<!-- app/views/elements/_form_user.thtml -->
 	<?php echo $this->renderElement('_form_project');?>
 
 
 <div class="f-submit-wrap">
-	<?php echo $html->submit('Ajouter', array('class' => 'f-submit'));?>
+	<?php echo $html->submit(LANG_SAVE, array('class' => 'f-submit'));?>
 </div>
 </fieldset>
 </form>

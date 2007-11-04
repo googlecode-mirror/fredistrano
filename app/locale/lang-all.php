@@ -11,6 +11,26 @@ $supportedLang =  array (
 );
 
 $msg =   array (
+	'_delete' =>  array (
+		'fr-FR' => "Supprimer",
+		'en-US' => "Delete"
+	),
+	'_edit' =>  array (
+		'fr-FR' => "Modifier",
+		'en-US' => "Edit"
+	),
+	'_view' =>  array (
+		'fr-FR' => "Afficher",
+		'en-US' => "View"
+	),
+	'accessdenied' =>  array (
+		'fr-FR' => "Accès refusé",
+		'en-US' => "Access denied"
+	),
+	'aclitehomepage' =>  array (
+		'fr-FR' => "Page d'accueil du plugin AcLitE",
+		'en-US' => "AcLite home page"
+	),
 	'aclmanagement' =>  array (
 		'fr-FR' => "Gestion des ACLs",
 		'en-US' => "ACL management"
@@ -26,6 +46,10 @@ $msg =   array (
 	'addgroup' =>  array (
 		'fr-FR' => "Ajouter un groupe",
 		'en-US' => "Add group"
+	),
+	'addingnewpermission' =>  array (
+		'fr-FR' => "Ajout d'une nouvelle permission",
+		'en-US' => "Adding a new permission"
 	),
 	'addproject' =>  array (
 		'fr-FR' => "Ajouter un projet",
@@ -43,6 +67,10 @@ $msg =   array (
 		'fr-FR' => "Tous les logs ont été supprimés.",
 		'en-US' => "All logs deleted."
 	),
+	'areyousureyouwanttodelete' =>  array (
+		'fr-FR' => "Etes vous certain de vouloir supprimer",
+		'en-US' => "Are you sure you want to delete"
+	),
 	'authorizations' =>  array (
 		'fr-FR' => "Permissions",
 		'en-US' => "Authorizations"
@@ -54,6 +82,10 @@ $msg =   array (
 	'back' =>  array (
 		'fr-FR' => "retour",
 		'en-US' => "back"
+	),
+	'changinganobjectofcontrol' =>  array (
+		'fr-FR' => "Modification d'un objet de contrôle",
+		'en-US' => "Changing an object of control"
 	),
 	'changingpermissions' =>  array (
 		'fr-FR' => "Faire évoluer les permissions (ajout, suppression).",
@@ -67,13 +99,17 @@ $msg =   array (
 		'fr-FR' => "Objet de contrôle supprimé.",
 		'en-US' => "Control object deleted."
 	),
+	'comment' =>  array (
+		'fr-FR' => "Commentaire",
+		'en-US' => "Comment"
+	),
 	'controlobject' =>  array (
 		'fr-FR' => "Objets de contrôle",
 		'en-US' => "Control objects"
 	),
 	'controlobjectlist' =>  array (
 		'fr-FR' => "Liste des objets de contrôle",
-		'en-US' => "Control objects list"
+		'en-US' => "Control object list"
 	),
 	'correcterrorsbelow' =>  array (
 		'fr-FR' => "Veuillez corriger les erreurs ci-dessous.",
@@ -83,9 +119,25 @@ $msg =   array (
 		'fr-FR' => "Objet de contrôle modifié.",
 		'en-US' => "Control object updated."
 	),
+	'currentpermissions' =>  array (
+		'fr-FR' => " [afficher] ",
+		'en-US' => " [view] "
+	),
+	'deletethispermission' =>  array (
+		'fr-FR' => "Supprimer cette permission?",
+		'en-US' => "Delete this permission?"
+	),
+	'details' =>  array (
+		'fr-FR' => "Détails",
+		'en-US' => "Details"
+	),
 	'displayfullhistory' =>  array (
 		'fr-FR' => "Afficher tout l'historique",
 		'en-US' => "Display full history"
+	),
+	'edit' =>  array (
+		'fr-FR' => " [modifier] ",
+		'en-US' => " [edit] "
 	),
 	'enterapplicationdirectory' =>  array (
 		'fr-FR' => "Veuillez saisir le nom du dossier de l'application sur le serveur de production",
@@ -106,6 +158,14 @@ $msg =   array (
 	'errorduringdeletion' =>  array (
 		'fr-FR' => "Erreur lors de la suppression.",
 		'en-US' => "Error during deletion"
+	),
+	'execute' =>  array (
+		'fr-FR' => "sur",
+		'en-US' => "on"
+	),
+	'finalizationofdeployment' =>  array (
+		'fr-FR' => "Finalisation du déploiement",
+		'en-US' => "Finalization of deployment"
 	),
 	'groupalreadyexists' =>  array (
 		'fr-FR' => "Un groupe de ce nom existe déjà.",
@@ -203,6 +263,18 @@ $msg =   array (
 		'fr-FR' => "Besoin d'aide ? Posez vos questions sur le ",
 		'en-US' => "Need help ? You can ask questions on the forum "
 	),
+	'newcontrolobject' =>  array (
+		'fr-FR' => "Nouvel objet de contrôle",
+		'en-US' => "New control object"
+	),
+	'newproject' =>  array (
+		'fr-FR' => "Nouveau projet",
+		'en-US' => "New project"
+	),
+	'nopermissionregistered' =>  array (
+		'fr-FR' => "Aucune permission enregistrée",
+		'en-US' => "No permission registered"
+	),
 	'notenteredtwicethesamepassword' =>  array (
 		'fr-FR' => "Vous n'avez pas saisi deux fois le même mot de passe.",
 		'en-US' => "You have not entered twice the same password."
@@ -210,6 +282,10 @@ $msg =   array (
 	'nothingtodisplay' =>  array (
 		'fr-FR' => "Rien à afficher",
 		'en-US' => "Nothing to display"
+	),
+	'objectcontroldetail' =>  array (
+		'fr-FR' => "Détails d'un objet de contrôle",
+		'en-US' => "Control object details"
 	),
 	'objectnamealreadyexist' =>  array (
 		'fr-FR' => "Un objet de ce nom existe déjà.",
@@ -242,6 +318,10 @@ $msg =   array (
 	'pleasefillinallfields' =>  array (
 		'fr-FR' => "Veuillez remplir tous les champs.",
 		'en-US' => "Please fill in all fields."
+	),
+	'pluginaclitemanagement' =>  array (
+		'fr-FR' => "Gestion du plugin aclite",
+		'en-US' => "Plugin AcLite management"
 	),
 	'previous' =>  array (
 		'fr-FR' => "page précédente",
@@ -279,21 +359,69 @@ $msg =   array (
 		'fr-FR' => "Suppression des objets existants.",
 		'en-US' => "Removing existing objects."
 	),
+	'renamefiles' =>  array (
+		'fr-FR' => "Renommage des fichiers",
+		'en-US' => "Rename files"
+	),
 	'reportbug' =>  array (
 		'fr-FR' => "Pour signaler un bug",
 		'en-US' => "report bugs and enhancements at "
+	),
+	'requiredfields' =>  array (
+		'fr-FR' => "Champs obligatoires",
+		'en-US' => "Required fields"
 	),
 	'resetaclusingdatafromtheapplication' =>  array (
 		'fr-FR' => "Réinitialiser les ACLs à partir des données de l'application (User, Group et ControlObject).",
 		'en-US' => "Reset ACL using data from the application (User, Group and ControlObject)"
 	),
+	'revision' =>  array (
+		'fr-FR' => "Révision",
+		'en-US' => "Revision"
+	),
+	'rsyncsimulation' =>  array (
+		'fr-FR' => "Simulation du rsync",
+		'en-US' => "Rsync simulation"
+	),
+	'save' =>  array (
+		'fr-FR' => "Sauvegarder",
+		'en-US' => "Save"
+	),
+	'simulation' =>  array (
+		'fr-FR' => "Simulation",
+		'en-US' => "Simulation"
+	),
+	'specifysvnlogin' =>  array (
+		'fr-FR' => "Spécifier login SVN",
+		'en-US' => "Specify SVN login"
+	),
+	'step1' =>  array (
+		'fr-FR' => "Step 1 - svn export",
+		'en-US' => "Step 1 - svn export"
+	),
+	'step2' =>  array (
+		'fr-FR' => "Step 2 - synchronisation",
+		'en-US' => "Step 2 - synchronization"
+	),
+	'subversionexport' =>  array (
+		'fr-FR' => "Export Subversion",
+		'en-US' => "Subversion export"
+	),
 	'summaryofcurrentpermissions' =>  array (
 		'fr-FR' => "Resume des permissions en vigueur",
 		'en-US' => "Summary of current permissions"
 	),
+	'synchronizingwithproductionserver' =>  array (
+		'fr-FR' => "Synchronisation avec la Prod",
+		'en-US' => "Synchronizing with production server"
+	),
 	'thislink' =>  array (
 		'fr-FR' => "ce lien",
 		'en-US' => "this link"
+	),
+	'thispluginsimplymanageyouracls' =>  array (
+		'fr-FR' => "Ce plugin permet gérer en toute simplicité vos ACLs.",
+		'en-US' => "This plugin simply manage your ACLs."
 	),
 	'thiswillinvolvethelossofexistingacl' =>  array (
 		'fr-FR' => "Cette opération entrainera la perte des ACLs actuelles. Souhaitez vous continuer?",
@@ -303,9 +431,17 @@ $msg =   array (
 		'fr-FR' => "Opération non supportée => ",
 		'en-US' => "Unsupported action => "
 	),
+	'updatingpermissions' =>  array (
+		'fr-FR' => "Mise à jour des permissions",
+		'en-US' => "Updating permissions"
+	),
 	'usage' =>  array (
 		'fr-FR' => "Utilisation",
 		'en-US' => "Usage"
+	),
+	'user' =>  array (
+		'fr-FR' => "Utilisateur",
+		'en-US' => "User"
 	),
 	'useradd' =>  array (
 		'fr-FR' => "Ajouter un utilisateur",
@@ -347,6 +483,10 @@ $msg =   array (
 		'fr-FR' => "Version 0.2 - 13/10/2007",
 		'en-US' => "Version 0.2 - 13/10/2007"
 	),
+	'view' =>  array (
+		'fr-FR' => " [afficher] ",
+		'en-US' => " [view] "
+	),
 	'welcome' =>  array (
 		'fr-FR' => "Bienvenu",
 		'en-US' => "Welcome"
@@ -363,9 +503,17 @@ $msg =   array (
 		'fr-FR' => "Vous êtes maintenant déconnecté.",
 		'en-US' => "Your are now disconnected."
 	),
-	'edit' =>  array (
-		'fr-FR' => " [modifier] ",
-		'en-US' => " [edit] "
+	'adjustingmodes' =>  array (
+		'fr-FR' => "Ajustement des droits",
+		'en-US' => "Adjusting modes"
+	),
+	'writingmode' =>  array (
+		'fr-FR' => "Droits d'écriture",
+		'en-US' => "Writing mode"
+	),
+	'step3' =>  array (
+		'fr-FR' => "Step 3 - finalisation",
+		'en-US' => "Step 3 - finalization"
 	)
 );
 
