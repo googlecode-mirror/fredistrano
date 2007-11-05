@@ -5,7 +5,7 @@ else if (!env('HTTPS') && (_HTTPSENABLED > 0))
 	echo 'https://'. $serverName . $appPath;
 ?>/users/login" method="post">
     <fieldset>
-	    <h6>Identification</h6>
+	    <h6><?php e(LANG_IDENTIFICATION);?></h6>
 	    
 	    <?php echo $form->labelTag('User/login', LANG_USERNAME) ?>
 	    <?php echo $html->input('User/login', array('size' => 15, 'class' => 'f-name')); ?>

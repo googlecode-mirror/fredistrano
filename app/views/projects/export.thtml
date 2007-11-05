@@ -9,5 +9,5 @@
 </div>
 
 <script language="JavaScript" type="text/javascript">
-  document.getElementById("DeploymentLogComment").value = "Révision exportée <?php echo $revision;?>";
+  document.getElementById("DeploymentLogComment").value = "Revision exported <?php echo $revision;?>";
 </script>

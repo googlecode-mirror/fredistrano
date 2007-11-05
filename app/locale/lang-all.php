@@ -23,6 +23,10 @@ $msg =   array (
 		'fr-FR' => "Afficher",
 		'en-US' => "View"
 	),
+	'absolutepath' =>  array (
+		'fr-FR' => "Chemin absolu du projet à déployer",
+		'en-US' => "Applcation absolute path"
+	),
 	'accessdenied' =>  array (
 		'fr-FR' => "Accès refusé",
 		'en-US' => "Access denied"
@@ -55,6 +59,14 @@ $msg =   array (
 		'fr-FR' => "Ajouter un projet",
 		'en-US' => "Add project"
 	),
+	'addwritablemode' =>  array (
+		'fr-FR' => "Ajout de permissions pour écriture",
+		'en-US' => "Add writable mode"
+	),
+	'adjustingmodes' =>  array (
+		'fr-FR' => "Ajustement des droits",
+		'en-US' => "Adjusting modes"
+	),
 	'administration' =>  array (
 		'fr-FR' => "Administration",
 		'en-US' => "Administration"
@@ -67,9 +79,17 @@ $msg =   array (
 		'fr-FR' => "Tous les logs ont été supprimés.",
 		'en-US' => "All logs deleted."
 	),
+	'applicationurl' =>  array (
+		'fr-FR' => "Url de l'application à déployer",
+		'en-US' => "Application Url"
+	),
 	'areyousureyouwanttodelete' =>  array (
 		'fr-FR' => "Etes vous certain de vouloir supprimer",
 		'en-US' => "Are you sure you want to delete"
+	),
+	'associatedgroups' =>  array (
+		'fr-FR' => "Groupes associés",
+		'en-US' => "Associated groups"
 	),
 	'authorizations' =>  array (
 		'fr-FR' => "Permissions",
@@ -82,6 +102,14 @@ $msg =   array (
 	'back' =>  array (
 		'fr-FR' => "retour",
 		'en-US' => "back"
+	),
+	'backupcurrentprodversion' =>  array (
+		'fr-FR' => "sauvegarde de la version actuellement en prod",
+		'en-US' => "backup current prod version"
+	),
+	'backupissue' =>  array (
+		'fr-FR' => "Erreur - problème de sauvegarde ",
+		'en-US' => "Error - backup issue"
 	),
 	'changinganobjectofcontrol' =>  array (
 		'fr-FR' => "Modification d'un objet de contrôle",
@@ -119,6 +147,14 @@ $msg =   array (
 		'fr-FR' => "Objet de contrôle modifié.",
 		'en-US' => "Control object updated."
 	),
+	'createdon' =>  array (
+		'fr-FR' => "Créé le",
+		'en-US' => "Created on"
+	),
+	'creatingdirectory' =>  array (
+		'fr-FR' => "création du répertoire",
+		'en-US' => "creating directory"
+	),
 	'currentpermissions' =>  array (
 		'fr-FR' => " [afficher] ",
 		'en-US' => " [view] "
@@ -126,6 +162,18 @@ $msg =   array (
 	'deletethispermission' =>  array (
 		'fr-FR' => "Supprimer cette permission?",
 		'en-US' => "Delete this permission?"
+	),
+	'deploynonexistent' =>  array (
+		'fr-FR' => "[ERROR] - synchro impossible, fichier deploy.php inexistant, ce fichier doit se trouver à la racine du projet à déployer, voir la documentation de Fredistrano",
+		'en-US' => "[ERROR] - sync impossible file deploy.php nonexistent, the file must be at the root of the project to deploy, see Fredistrano documentation"
+	),
+	'deployproject' =>  array (
+		'fr-FR' => "Déployer",
+		'en-US' => "Deploy"
+	),
+	'deploytheproject' =>  array (
+		'fr-FR' => "Déployer le projet",
+		'en-US' => "Deploy the project"
 	),
 	'details' =>  array (
 		'fr-FR' => "Détails",
@@ -135,9 +183,17 @@ $msg =   array (
 		'fr-FR' => "Afficher tout l'historique",
 		'en-US' => "Display full history"
 	),
+	'dumpdirectory' =>  array (
+		'fr-FR' => "vidage du répertoire",
+		'en-US' => "dump directory"
+	),
 	'edit' =>  array (
 		'fr-FR' => " [modifier] ",
 		'en-US' => " [edit] "
+	),
+	'editproject' =>  array (
+		'fr-FR' => "Modification du projet",
+		'en-US' => "Edit project"
 	),
 	'enterapplicationdirectory' =>  array (
 		'fr-FR' => "Veuillez saisir le nom du dossier de l'application sur le serveur de production",
@@ -167,6 +223,10 @@ $msg =   array (
 		'fr-FR' => "Finalisation du déploiement",
 		'en-US' => "Finalization of deployment"
 	),
+	'firstname' =>  array (
+		'fr-FR' => "Prénom",
+		'en-US' => "Firstname"
+	),
 	'groupalreadyexists' =>  array (
 		'fr-FR' => "Un groupe de ce nom existe déjà.",
 		'en-US' => "A group with that name already exists."
@@ -195,6 +255,10 @@ $msg =   array (
 		'fr-FR' => "Aide",
 		'en-US' => "Help"
 	),
+	'history' =>  array (
+		'fr-FR' => "Historique",
+		'en-US' => "History"
+	),
 	'home' =>  array (
 		'fr-FR' => "Accueil",
 		'en-US' => "Home"
@@ -202,6 +266,14 @@ $msg =   array (
 	'httpsrequirebutunvalaible' =>  array (
 		'fr-FR' => "HTTPS nécessaire, mais pas disponible!",
 		'en-US' => "HTTPS required but unavailable!"
+	),
+	'id' =>  array (
+		'fr-FR' => "Id",
+		'en-US' => "Id"
+	),
+	'identification' =>  array (
+		'fr-FR' => "Identification",
+		'en-US' => "Identification"
 	),
 	'identificationaccepted' =>  array (
 		'fr-FR' => "Identification acceptée.",
@@ -243,13 +315,17 @@ $msg =   array (
 		'fr-FR' => "Identifiant de projet inconnu => ",
 		'en-US' => "Invalid Project id => "
 	),
+	'lastname' =>  array (
+		'fr-FR' => "Nom",
+		'en-US' => "Lastname"
+	),
 	'listdata' =>  array (
 		'fr-FR' => "Liste des données de base",
 		'en-US' => "Master data list"
 	),
 	'login' =>  array (
-		'fr-FR' => "Connexion",
-		'en-US' => "Login"
+		'fr-FR' => "Login",
+		'en-US' => "Username"
 	),
 	'loginalreadyused' =>  array (
 		'fr-FR' => "Ce login est déjà utilisé.",
@@ -259,6 +335,18 @@ $msg =   array (
 		'fr-FR' => "[Déconnexion]",
 		'en-US' => "[Logout]"
 	),
+	'mail' =>  array (
+		'fr-FR' => "E-mail",
+		'en-US' => "Mail"
+	),
+	'modifiedon' =>  array (
+		'fr-FR' => "Modifié le",
+		'en-US' => "Modified on"
+	),
+	'name' =>  array (
+		'fr-FR' => "Nom",
+		'en-US' => "Name"
+	),
 	'needhelp' =>  array (
 		'fr-FR' => "Besoin d'aide ? Posez vos questions sur le ",
 		'en-US' => "Need help ? You can ask questions on the forum "
@@ -267,9 +355,25 @@ $msg =   array (
 		'fr-FR' => "Nouvel objet de contrôle",
 		'en-US' => "New control object"
 	),
+	'newdirmodes' =>  array (
+		'fr-FR' => "Nouvelles permissions",
+		'en-US' => "New dir modes"
+	),
+	'newfilesmode' =>  array (
+		'fr-FR' => "Nouvelles permissions",
+		'en-US' => "New files modes"
+	),
 	'newproject' =>  array (
 		'fr-FR' => "Nouveau projet",
 		'en-US' => "New project"
+	),
+	'next' =>  array (
+		'fr-FR' => "Suivant",
+		'en-US' => "Next"
+	),
+	'nobackupneeded' =>  array (
+		'fr-FR' => "pas de backup à faire car le répertoire",
+		'en-US' => "no backup needed"
 	),
 	'nopermissionregistered' =>  array (
 		'fr-FR' => "Aucune permission enregistrée",
@@ -283,6 +387,10 @@ $msg =   array (
 		'fr-FR' => "Rien à afficher",
 		'en-US' => "Nothing to display"
 	),
+	'numberperpage' =>  array (
+		'fr-FR' => "Nombre par page",
+		'en-US' => "Number per page"
+	),
 	'objectcontroldetail' =>  array (
 		'fr-FR' => "Détails d'un objet de contrôle",
 		'en-US' => "Control object details"
@@ -290,6 +398,10 @@ $msg =   array (
 	'objectnamealreadyexist' =>  array (
 		'fr-FR' => "Un objet de ce nom existe déjà.",
 		'en-US' => "An object with this name already exists."
+	),
+	'parent' =>  array (
+		'fr-FR' => "Parent",
+		'en-US' => "Parent"
 	),
 	'password' =>  array (
 		'fr-FR' => "Mot de passe",
@@ -324,16 +436,28 @@ $msg =   array (
 		'en-US' => "Plugin AcLite management"
 	),
 	'previous' =>  array (
-		'fr-FR' => "page précédente",
-		'en-US' => "previous page"
+		'fr-FR' => "Précédent",
+		'en-US' => "Previous"
+	),
+	'projectabsolutepath' =>  array (
+		'fr-FR' => "Chemin absolu du projet à déployer",
+		'en-US' => "Project absolute path"
 	),
 	'projectdeleted' =>  array (
 		'fr-FR' => "Project supprimé.",
 		'en-US' => "Project deleted."
 	),
+	'projectdetails' =>  array (
+		'fr-FR' => "Détails d'un projet",
+		'en-US' => "Project details"
+	),
 	'projectlist' =>  array (
-		'fr-FR' => "Lister les projets",
+		'fr-FR' => "Liste des Projects",
 		'en-US' => "Project list"
+	),
+	'projectname' =>  array (
+		'fr-FR' => "Nom du projet",
+		'en-US' => "Project name"
 	),
 	'projectnamealreadyexists' =>  array (
 		'fr-FR' => "Ce nom de projet est déjà utilisé.",
@@ -403,6 +527,10 @@ $msg =   array (
 		'fr-FR' => "Step 2 - synchronisation",
 		'en-US' => "Step 2 - synchronization"
 	),
+	'step3' =>  array (
+		'fr-FR' => "Step 3 - finalisation",
+		'en-US' => "Step 3 - finalization"
+	),
 	'subversionexport' =>  array (
 		'fr-FR' => "Export Subversion",
 		'en-US' => "Subversion export"
@@ -410,6 +538,14 @@ $msg =   array (
 	'summaryofcurrentpermissions' =>  array (
 		'fr-FR' => "Resume des permissions en vigueur",
 		'en-US' => "Summary of current permissions"
+	),
+	'svnexport' =>  array (
+		'fr-FR' => "svn export",
+		'en-US' => "svn export"
+	),
+	'svnurl' =>  array (
+		'fr-FR' => "Url SVN",
+		'en-US' => "SVN Url"
 	),
 	'synchronizingwithproductionserver' =>  array (
 		'fr-FR' => "Synchronisation avec la Prod",
@@ -430,6 +566,14 @@ $msg =   array (
 	'unsupportedaction' =>  array (
 		'fr-FR' => "Opération non supportée => ",
 		'en-US' => "Unsupported action => "
+	),
+	'updatingdirmode' =>  array (
+		'fr-FR' => "modification des droits des répertoires",
+		'en-US' => "updating directories mode"
+	),
+	'updatingfilesmodes' =>  array (
+		'fr-FR' => "modification des droits des fichiers",
+		'en-US' => "updating files mode"
 	),
 	'updatingpermissions' =>  array (
 		'fr-FR' => "Mise à jour des permissions",
@@ -495,6 +639,10 @@ $msg =   array (
 		'fr-FR' => "Bienvenue sur Fredistrano, l'outil de déploiement d'applications Php",
 		'en-US' => "Welcome on Fredistrano, the deployment tool for Php applications"
 	),
+	'writingmode' =>  array (
+		'fr-FR' => "Droits d'écriture",
+		'en-US' => "Writing mode"
+	),
 	'youcanfind' =>  array (
 		'fr-FR' => "Vous trouverez une documentation sur l'utilisation de cette application en suivant ",
 		'en-US' => "You can find usage documentation by following "
@@ -503,17 +651,9 @@ $msg =   array (
 		'fr-FR' => "Vous êtes maintenant déconnecté.",
 		'en-US' => "Your are now disconnected."
 	),
-	'adjustingmodes' =>  array (
-		'fr-FR' => "Ajustement des droits",
-		'en-US' => "Adjusting modes"
-	),
-	'writingmode' =>  array (
-		'fr-FR' => "Droits d'écriture",
-		'en-US' => "Writing mode"
-	),
-	'step3' =>  array (
-		'fr-FR' => "Step 3 - finalisation",
-		'en-US' => "Step 3 - finalization"
+	'doesntexist' =>  array (
+		'fr-FR' => "n'existe pas",
+		'en-US' => "does not exist"
 	)
 );
 

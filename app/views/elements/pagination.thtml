@@ -5,8 +5,8 @@
 	    // $leftArrow = $html->image('nav/arrowleft.gif', Array('height' => 15));
 	    // $rightArrow = $html->image('nav/arrowright.gif', Array('height' => 15));
 
-		$leftArrow = "<strong>Précédent</strong>";
-	    $rightArrow = "<strong>Suivant</strong>";
+		$leftArrow = "<strong>".LANG_PREVIOUS."</strong>";
+	    $rightArrow = "<strong>".LANG_NEXT."</strong>";
 
 	    $prev = $pagination->prevPage($leftArrow, false);
 	    $prev = $prev?$prev:$leftArrow;
@@ -17,7 +17,7 @@
 	    
 	    echo '<div class="pagin_nav">'.$prev.' '.$pages.' '.$next.'</div>';
 	    echo '<div class="pagin_datas">' . $pagination->result() . '&nbsp;&nbsp;&nbsp;&nbsp;'
-	    	. 'Nombre par page : ' . $pagination->resultsPerPage(NULL, ' ') . '</div>';
+	    	. LANG_NUMBERPERPAGE.' : ' . $pagination->resultsPerPage(NULL, ' ') . '</div>';
     endif;
 	?>
 </div>

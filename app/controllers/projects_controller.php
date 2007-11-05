@@ -147,15 +147,15 @@ class ProjectsController extends AppController {
 
 		if (!is_dir(_DEPLOYDIR)) {
 			if (mkdir(_DEPLOYDIR, octdec(_DIRMODE), TRUE))
-				$output .= "-[création du répertoire " . _DEPLOYDIR . "]\n";
+				$output .= "-[".LANG_CREATINGDIRECTORY." " . _DEPLOYDIR . "]\n";
 		}
 		if (!is_dir(_DEPLOYTMPDIR)) {
 			if (mkdir(_DEPLOYTMPDIR, octdec(_DIRMODE), TRUE))
-				$output .= "-[création du répertoire " . _DEPLOYTMPDIR . "]\n";
+				$output .= "-[".LANG_CREATINGDIRECTORY." " . _DEPLOYTMPDIR . "]\n";
 		}
 		if (!is_dir(_DEPLOYBACKUPDIR)) {
 			if (mkdir(_DEPLOYBACKUPDIR, octdec(_DIRMODE), TRUE))
-				$output .= "-[création du répertoire " . _DEPLOYBACKUPDIR . "]\n";
+				$output .= "-[".LANG_CREATINGDIRECTORY. " " . _DEPLOYBACKUPDIR . "]\n";
 		}
 
 		if (!$this->data['Project']['id']) {
@@ -168,23 +168,23 @@ class ProjectsController extends AppController {
 			//dossier temporaire d'export SVN pour le projet
 			if (is_dir(_DEPLOYTMPDIR . DS . $project['Project']['name'])) {
 				// on le vide si il existe
-				$output .= "-[vidage du répertoire " . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "]\n";
+				$output .= "-[".LANG_DUMPDIRECTORY." " . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "]\n";
 				$output .= shell_exec('rm -rf ' . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "/*");
 			} else {
 				// on le crée si il n'existe pas
 				if (mkdir(_DEPLOYTMPDIR . DS . $project['Project']['name'], octdec(_DIRMODE), TRUE))
-					$output .= "-[création du répertoire " . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "]\n";
+					$output .= "-[".LANG_CREATINGDIRECTORY. " " . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "]\n";
 			}
 
 			// création du répertoire de l'application si il n'existe pas
 			if (!is_dir($project['Project']['prd_path'])) {
 				if (@ mkdir($project['Project']['prd_path'], octdec(_DIRMODE), TRUE))
-					$output .= "-[création du répertoire " . $project['Project']['prd_path'] . "]\n";
+					$output .= "-[".LANG_CREATINGDIRECTORY. " " . $project['Project']['prd_path'] . "]\n";
 			}
 
 			//on se place dans le dossier temporaire pour faire le svn export
 			chdir(_DEPLOYTMPDIR . DS . $project['Project']['name']);
-			$output .= "-[commande svn export]\n";
+			$output .= "-[".LANG_SVNEXPORT."]\n";
 			if ((isset ($this->data['Project']['revision']) && ($this->data['Project']['revision']) != "")) {
 				$revision = ' -r ' . $this->data['Project']['revision'];
 			}
@@ -219,8 +219,7 @@ class ProjectsController extends AppController {
 		$output = '';
 
 		if (!@ file_exists(_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php")) {
-			$output .= '[ERROR] - synchro impossible, fichier deploy.php inexistant, ' .
-					'ce fichier doit se trouver à la racine du projet à déployer, voir la documentation de Fredistrano';
+			$output .= LANG_DEPLOYNONEXISTENT;
 		} else {
 			include_once (_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php");
 
@@ -269,7 +268,7 @@ class ProjectsController extends AppController {
 				//$output .= e("rsync -$option --delete --exclude-from=$exclude_file_name $source $target");
 
 			} else {
-				$output .= "Erreur - problème de sauvegarde ";
+				$output .= LANG_BACKUPISSUE;
 			}
 		}
 		$this->set('output', $output);
@@ -288,8 +287,7 @@ class ProjectsController extends AppController {
 		$output = '';
 		
 		if (!@ file_exists(_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php")) {
-			$output .= '[ERROR] - synchro impossible, fichier deploy.php inexistant, ' .
-					'ce fichier doit se trouver à la racine du projet à déployer, voir la documentation de Fredistrano';
+			$output .= LANG_DEPLOYNONEXISTENT;
 		} else {
 			include_once (_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php");
 			chdir(_DEPLOYDIR);
@@ -304,20 +302,20 @@ class ProjectsController extends AppController {
 		
 			if ($this->data['Project']['RenamePrdFile'] == true) {
 				//renommage des versions de prod des fichiers de type .prd.xxx en .xxx
-				$output .= "\n-[renommage des fichiers '.prd.']\n";
+				$output .= "\n-[".LANG_RENAMEFILES." '.prd.']\n";
 				$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.prd.*' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -vf 's/\.prd\./\./i' {} \;".$suffix);				
 			}
 			
 			if ($this->data['Project']['ChangeFileMode'] == true) {
 				//ajustement des droits 
-				$output .= "\n-[modification des droits des fichiers] Nouvelles permissions: " . _FILEMODE;
+				$output .= "\n-[".LANG_UPDATINGFILESMODES."] ".LANG_NEWFILESMODE.": " . _FILEMODE;
 				$output .= shell_exec("chmod -R " ._FILEMODE . "  ".$this->_pathConverter($project['Project']['prd_path']));	
-				$output .= "\n-[modification des droits des répertoires ] Nouvelles permissions: " . _DIRMODE;
+				$output .= "\n-[".LANG_UPDATINGDIRMODE." ] ".LANG_NEWDIRMODES.": " . _DIRMODE;
 				$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -type d -exec chmod " . _DIRMODE . " {} \;".$suffix);
 			}
 			
 			if ($this->data['Project']['GiveWriteMode'] == true) {
-				$output .= "\n-[Ajout de persmissions pour écriture]\n";
+				$output .= "\n-[".LANG_ADDWRITABLEMODE."]\n";
 				$writable = $this->_getConfig()->writable;
 				if (sizeof($writable) > 0) {
 					for ($i = 0; $i < sizeof($writable); $i++) {
@@ -337,25 +335,25 @@ class ProjectsController extends AppController {
 
 		if (!is_dir(_DEPLOYBACKUPDIR)) {
 			if (mkdir(_DEPLOYBACKUPDIR, octdec(_DIRMODE), TRUE))
-				$output .= "-[création du répertoire " . _DEPLOYBACKUPDIR . "]\n";
+				$output .= "-[".LANG_CREATINGDIRECTORY. " " . _DEPLOYBACKUPDIR . "]\n";
 		}
 
 		// création du répertoire pour la sauvegarde
 		if (!is_dir(_DEPLOYBACKUPDIR . DS . $project['Project']['name'])) {
 			if (mkdir(_DEPLOYBACKUPDIR . DS . $project['Project']['name'], octdec(_DIRMODE), TRUE)) {
-				$output .= "-[création du répertoire " . _DEPLOYBACKUPDIR . DS . $project['Project']['name'] . "]\n";
+				$output .= "-[".LANG_CREATINGDIRECTORY. " " . _DEPLOYBACKUPDIR . DS . $project['Project']['name'] . "]\n";
 			}
 		}
 
 		//
-		$output .= "-[sauvegarde de la version actuellement en prod]\n";
+		$output .= "-[".LANG_BACKUPCURRENTPRODVERSION."]\n";
 		if (is_dir($project['Project']['prd_path'])) {
 			// rsync pour le backup
 			$output .= shell_exec("rsync -av " . $project['Project']['prd_path'] . " " . _DEPLOYBACKUPDIR . DS);
 			$output .= shell_exec("chmod -R " . _DIRMODE . " " . _DEPLOYBACKUPDIR);
 
 		} else {
-			$output .= "-[pas de backup à faire car le répertoire " . $project['Project']['prd_path'] . " n'existe pas]\n";
+			$output .= "-[".LANG_NOBACKUPNEEDED." " . $project['Project']['prd_path'] . " ".LANG_DOESNTEXIST."]\n";
 		}
 
 		$this->set('output', $output);

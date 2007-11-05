@@ -1,16 +1,16 @@
-	<?php echo $form->labelTag('Project/name', '<b>Nom du  projet<span class="req">*</span></b>');?>
+	<?php echo $form->labelTag('Project/name', '<b>'.LANG_PROJECTNAME.'<span class="req">*</span></b>');?>
  	<?php echo $html->input('Project/name', array('size' => '60', 'class' => 'f-name'));?>
 	<?php echo $error->showMessage('Project/name');?>
 
-	<?php echo $form->labelTag('Project/svn_url', '<b>Url SVN<span class="req">*</span></b>');?>
+	<?php echo $form->labelTag('Project/svn_url', '<b>'.LANG_SVNURL.'<span class="req">*</span></b>');?>
  	<?php echo $html->input('Project/svn_url', array('size' => '60', 'class' => 'f-name'));?>
 	<?php echo $error->showMessage('Project/svn_url');?>
 
-	<?php echo $form->labelTag('Project/prd_url', '<b>Url de l\'application à déployer<span class="req">*</span></b>');?>
+	<?php echo $form->labelTag('Project/prd_url', '<b>'.LANG_APPLICATIONURL.'<span class="req">*</span></b>');?>
  	<?php echo $html->input('Project/prd_url', array('size' => '60', 'class' => 'f-name'));?>
 	<?php echo $error->showMessage('Project/prd_url');?>
 
-	<?php echo $form->labelTag('Project/prd_path', '<b>Chemin absolu du projet à déployer</b>');?>
+	<?php echo $form->labelTag('Project/prd_path', '<b>'.LANG_ABSOLUTEPATH.'</b>');?>
  	<?php echo $html->input('Project/prd_path', array('size' => '60', 'class' => 'f-name'));?>
 	<?php echo $error->showMessage('Project/prd_path');?>
 	

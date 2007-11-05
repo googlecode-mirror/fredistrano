@@ -4,10 +4,10 @@
 <tr>
 
 <th colspan="3">
-	<span class="tabletoptitle">Détails d'un projet</span>
+	<span class="tabletoptitle"><?php e(LANG_PROJECTDETAILS);?></span>
 	<!--
 	<span class="tabletoplink">
-	<?php echo $ajax->link($html->image( 'arrow_switch.png', array('alt' => 'Déployer le projet', 'title' => 'Déployer le projet')).' Déployer', 
+	<?php echo $ajax->link($html->image( 'arrow_switch.png', array('alt' => LANG_DEPLOYPROJECT, 'title' => LANG_DEPLOYPROJECT)).' '.LANG_DEPLOYPROJECT, 
 			'/projects/deploy/' . $project['Project']['id'], 
 			array('update' => 'deploy_area'),
 			null,
@@ -26,20 +26,20 @@
 <th colspan="2">
 	<div class="tabletoplink">
 		<ul>
-			<li><?php echo $html->link($html->image( 'date.png', array('alt' => 'Historique', 'title' => 'Historique')).' historique', 
+			<li><?php echo $html->link($html->image( 'date.png', array('alt' => LANG_HISTORY, 'title' => LANG_HISTORY)).' '.LANG_HISTORY, 
 					'/deploymentLogs/list_all/project/' . $project['Project']['id'], 
 					null,
 					false,
 					false);?></li>
-			<li><?php echo $html->link($html->image( 'b_edit.png', array('alt' => 'Modifier', 'title' => 'Modifier')).' modifier', 
+			<li><?php echo $html->link($html->image( 'b_edit.png', array('alt' => LANG__EDIT, 'title' => LANG__EDIT)).' '.LANG__EDIT, 
 					'/projects/edit/' . $project['Project']['id'], 
 					null,
 					false,
 					false);?></li>
-			<li><?php echo $html->link($html->image( 'b_drop.png', array('alt' => 'Supprimer', 'title' => 'Supprimer')).' supprimer', 
+			<li><?php echo $html->link($html->image( 'b_drop.png', array('alt' => LANG__DELETE, 'title' => LANG__DELETE)).' '.LANG__DELETE, 
 					'/projects/delete/' . $project['Project']['id'], 
 					null, 
-					'Etes vous certain de vouloir supprimer le projet : ' . $project['Project']['name'] . '?',
+					LANG_AREYOUSUREYOUWANTTODELETE.' : ' . $project['Project']['name'] . '?',
 					false );?></li>
 		</ul>
 	</div>
@@ -48,27 +48,27 @@
 </tr>
 
 <tr>
-<th class="sub">Id</th>
+<th class="sub"><?php e(LANG_ID);?></th>
 <td>&nbsp;<?php echo $project['Project']['id']?></td>
 </tr>
 
 <tr>
-<th class="sub">Nom du projet</th>
+<th class="sub"><?php e(LANG_PROJECTNAME);?></th>
 <td>&nbsp;<?php echo $project['Project']['name']?></td>
 </tr>
 
 <tr>
-<th class="sub">Url SVN</th>
+<th class="sub"><?php e(LANG_SVNURL);?></th>
 <td>&nbsp;<?php echo $project['Project']['svn_url']?></td>
 </tr>
 
 <tr>
-<th class="sub">Url de l'application à déployer</th>
+<th class="sub"><?php e(LANG_APPLICATIONURL);?></th>
 <td>&nbsp;<?php echo $html->link($project['Project']['prd_url'], $project['Project']['prd_url'], array('target' => '_blank'), false, true, false) ?></td>
 </tr>
 
 <tr>
-<th class="sub">Chemin absolu du projet à déployer</th>
+<th class="sub"><?php e(LANG_PROJECTABSOLUTEPATH);?></th>
 <td>&nbsp;<?php echo $project['Project']['prd_path']?></td>
 </tr>
 
@@ -79,7 +79,7 @@
 <?php echo $html->hidden('Project/id', array('value' => $project['Project']['id']))?>
 <div class="f-submit-wrap" style="clear:right;float:right;">
 				<?php e($html->imageTag('loading_orange.gif','Loading...',array('id'=>'spinning_image0','style'=>'display:none'))); ?>
-				<?php echo $ajax->submit('Déployer le projet', array('class' => 'f-submit','url' => '/projects/deploy/' . $project['Project']['id'],'update' => 'deploy_area', 'loading' => "Element.show('spinning_image0');", 'loaded' => "Element.hide('spinning_image0');"));?>
+				<?php echo $ajax->submit(LANG_DEPLOYTHEPROJECT, array('class' => 'f-submit','url' => '/projects/deploy/' . $project['Project']['id'],'update' => 'deploy_area', 'loading' => "Element.show('spinning_image0');", 'loaded' => "Element.hide('spinning_image0');"));?>
 </div>
 </form>
 
@@ -89,8 +89,8 @@
 </tbody>
 </table>
 
-<div class="smalldateblock">Créé le <?php echo $project['Project']['created']?><br />
-Modifié le <?php echo $project['Project']['modified']?></div> 
+<div class="smalldateblock"><?php e(LANG_CREATEDON);?> <?php echo $project['Project']['created']?><br />
+<?php e(LANG_MODIFIEDON);?> <?php echo $project['Project']['modified']?></div> 
 
 </div>
 <!--<div class="featurebox">-->
