@@ -183,6 +183,10 @@ $msg =   array (
 		'fr-FR' => "Afficher tout l'historique",
 		'en-US' => "Display full history"
 	),
+	'doesntexist' =>  array (
+		'fr-FR' => "n'existe pas",
+		'en-US' => "does not exist"
+	),
 	'dumpdirectory' =>  array (
 		'fr-FR' => "vidage du répertoire",
 		'en-US' => "dump directory"
@@ -651,9 +655,9 @@ $msg =   array (
 		'fr-FR' => "Vous êtes maintenant déconnecté.",
 		'en-US' => "Your are now disconnected."
 	),
-	'doesntexist' =>  array (
-		'fr-FR' => "n'existe pas",
-		'en-US' => "does not exist"
+	'documentationfile' =>  array (
+		'fr-FR' => "Fredistrano-documentation-FR.pdf",
+		'en-US' => "Fredistrano-documentation-EN.pdf"
 	)
 );
 

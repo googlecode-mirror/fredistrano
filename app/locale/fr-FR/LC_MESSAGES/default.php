@@ -48,6 +48,7 @@ define('LANG_DEPLOYPROJECT',"Déployer");
 define('LANG_DEPLOYTHEPROJECT',"Déployer le projet");
 define('LANG_DETAILS',"Détails");
 define('LANG_DISPLAYFULLHISTORY',"Afficher tout l'historique");
+define('LANG_DOESNTEXIST',"n'existe pas");
 define('LANG_DUMPDIRECTORY',"vidage du répertoire");
 define('LANG_EDIT'," [modifier] ");
 define('LANG_EDITPROJECT',"Modification du projet");
@@ -165,6 +166,6 @@ define('LANG_WELCOMETITLE',"Bienvenue sur Fredistrano, l'outil de déploiement d
 define('LANG_WRITINGMODE',"Droits d'écriture");
 define('LANG_YOUCANFIND',"Vous trouverez une documentation sur l'utilisation de cette application en suivant ");
 define('LANG_YOURARENOWDISCONNECTED',"Vous êtes maintenant déconnecté.");
-define('LANG_DOESNTEXIST',"n'existe pas");
+define('LANG_DOCUMENTATIONFILE',"Fredistrano-documentation-FR.pdf");
 
 ?>

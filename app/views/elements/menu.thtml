@@ -9,7 +9,7 @@
 			<li class="last"><?php echo $html->link(LANG_AUTHORIZATIONS,'/aclite/acl_management'); ?></li>
 			</ul>
 		</li>
-		<li class="<?php echo ($this->params['controller'] == 'pages')?"active":"first";?>"><?php echo $html->link(LANG_HELP,'/files/Fredistrano-documentation.pdf'); ?></li>
+		<li class="<?php echo ($this->params['controller'] == 'pages')?"active":"first";?>"><?php echo $html->link(LANG_HELP,'/files/'.LANG_DOCUMENTATIONFILE); ?></li>
 </ul>
 
 

@@ -48,6 +48,7 @@ define('LANG_DEPLOYPROJECT',"Deploy");
 define('LANG_DEPLOYTHEPROJECT',"Deploy the project");
 define('LANG_DETAILS',"Details");
 define('LANG_DISPLAYFULLHISTORY',"Display full history");
+define('LANG_DOESNTEXIST',"does not exist");
 define('LANG_DUMPDIRECTORY',"dump directory");
 define('LANG_EDIT'," [edit] ");
 define('LANG_EDITPROJECT',"Edit project");
@@ -165,6 +166,6 @@ define('LANG_WELCOMETITLE',"Welcome on Fredistrano, the deployment tool for Php 
 define('LANG_WRITINGMODE',"Writing mode");
 define('LANG_YOUCANFIND',"You can find usage documentation by following ");
 define('LANG_YOURARENOWDISCONNECTED',"Your are now disconnected.");
-define('LANG_DOESNTEXIST',"does not exist");
+define('LANG_DOCUMENTATIONFILE',"Fredistrano-documentation-EN.pdf");
 
 ?>
