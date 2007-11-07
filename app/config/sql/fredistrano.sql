@@ -3,14 +3,14 @@
 -- http://www.phpmyadmin.net
 -- 
 -- Serveur: localhost
--- Généré le : Mer 10 Octobre 2007 à 23:02
+-- Généré le : Mer 07 Novembre 2007 à 23:13
 -- Version du serveur: 5.0.45
 -- Version de PHP: 5.2.3-1ubuntu6
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
 -- 
--- Base de données: `Fredistrano`
+-- Base de données: `test_fredistrano03`
 -- 
 
 -- --------------------------------------------------------
@@ -216,7 +216,7 @@ CREATE TABLE IF NOT EXISTS `projects` (
 -- 
 
 INSERT INTO `projects` (`id`, `name`, `svn_url`, `prd_url`, `prd_path`, `created`, `modified`) VALUES 
-(1, 'Fredistrano', 'http://svn.fbollon.net/Fredistrano/trunk', 'http://localhost/Fredistrano_test', '/var/www/Fredistrano_test', '2007-10-02 19:04:09', '2007-10-05 22:48:58');
+(1, 'Fredistrano_example', 'http://fredistrano.googlecode.com/svn/trunk', 'http://localhost/Fredistrano_example', '/var/www/Fredistrano_example', '2007-10-02 19:04:09', '2007-11-07 23:13:29');
 
 -- --------------------------------------------------------
 
