@@ -160,13 +160,12 @@ define('LANG_USERORGROUP',"Users or groups :");
 define('LANG_USERS',"Users");
 define('LANG_USERUPDATED',"User updated.");
 define('LANG_USETHISPAGETOMANAGEACLOBJECTS',"Use this page to manage ACLs objects");
-define('LANG_VERSION',"Version 0.2 - 13/10/2007");
+define('LANG_VERSION',"Version 0.3 - 11/07/2007");
 define('LANG_VIEW'," [view] ");
 define('LANG_WELCOME',"Welcome");
 define('LANG_WELCOMETITLE',"Welcome on Fredistrano, the deployment tool for Php applications");
 define('LANG_WRITINGMODE',"Writing mode");
 define('LANG_YOUCANFIND',"You can find usage documentation by following ");
 define('LANG_YOURARENOWDISCONNECTED',"Your are now disconnected.");
-define('LANG_DOCUMENTATIONFILE',"Fredistrano-documentation-EN.pdf");
 
 ?>
