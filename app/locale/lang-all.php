@@ -183,6 +183,10 @@ $msg =   array (
 		'fr-FR' => "Afficher tout l'historique",
 		'en-US' => "Display full history"
 	),
+	'documentationfile' =>  array (
+		'fr-FR' => "Fredistrano-documentation-FR.pdf",
+		'en-US' => "Fredistrano-documentation-EN.pdf"
+	),
 	'doesntexist' =>  array (
 		'fr-FR' => "n'existe pas",
 		'en-US' => "does not exist"
@@ -628,8 +632,8 @@ $msg =   array (
 		'en-US' => "Use this page to manage ACLs objects"
 	),
 	'version' =>  array (
-		'fr-FR' => "Version 0.2 - 13/10/2007",
-		'en-US' => "Version 0.2 - 13/10/2007"
+		'fr-FR' => "Version 0.3 - 07/11/2007",
+		'en-US' => "Version 0.3 - 11/07/2007"
 	),
 	'view' =>  array (
 		'fr-FR' => " [afficher] ",
@@ -654,10 +658,6 @@ $msg =   array (
 	'yourarenowdisconnected' =>  array (
 		'fr-FR' => "Vous êtes maintenant déconnecté.",
 		'en-US' => "Your are now disconnected."
-	),
-	'documentationfile' =>  array (
-		'fr-FR' => "Fredistrano-documentation-FR.pdf",
-		'en-US' => "Fredistrano-documentation-EN.pdf"
 	)
 );
 

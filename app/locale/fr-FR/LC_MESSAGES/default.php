@@ -48,6 +48,7 @@ define('LANG_DEPLOYPROJECT',"Déployer");
 define('LANG_DEPLOYTHEPROJECT',"Déployer le projet");
 define('LANG_DETAILS',"Détails");
 define('LANG_DISPLAYFULLHISTORY',"Afficher tout l'historique");
+define('LANG_DOCUMENTATIONFILE',"Fredistrano-documentation-FR.pdf");
 define('LANG_DOESNTEXIST',"n'existe pas");
 define('LANG_DUMPDIRECTORY',"vidage du répertoire");
 define('LANG_EDIT'," [modifier] ");
