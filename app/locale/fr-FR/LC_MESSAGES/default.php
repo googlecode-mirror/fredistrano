@@ -160,7 +160,7 @@ define('LANG_USERORGROUP',"Demandeurs (utilisateurs ou groupes) :");
 define('LANG_USERS',"Utilisateurs");
 define('LANG_USERUPDATED',"Utilisateur modifié.");
 define('LANG_USETHISPAGETOMANAGEACLOBJECTS',"Utiliser cette page pour manger les objets ACL");
-define('LANG_VERSION',"Version 0.3 - 07/11/2007");
+define('LANG_VERSION',"Version 0.3.1 - 11/11/2007");
 define('LANG_VIEW'," [afficher] ");
 define('LANG_WELCOME',"Bienvenu");
 define('LANG_WELCOMETITLE',"Bienvenue sur Fredistrano, l'outil de déploiement d'applications Php");

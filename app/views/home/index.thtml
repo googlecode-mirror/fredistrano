@@ -3,10 +3,10 @@
   <em><?php echo LANG_VERSION; ?></em>
   <br />
   <br />
-  <p><?php echo LANG_YOUCANFIND.' '.$html->link(LANG_THISLINK,'/files/Fredistrano-documentation.pdf'); ?> </p>
+  <p><?php echo LANG_YOUCANFIND.' '.$html->link(LANG_THISLINK,'/files/'.LANG_DOCUMENTATIONFILE); ?> </p>
    
   <p><?php echo LANG_REPORTBUG; ?> 
-  <a href="http://trac.fbollon.net/Fredistrano/index.fcgi">http://trac.fbollon.net/Fredistrano/index.fcgi</a>. 
+  <a href="http://code.google.com/p/fredistrano/issues/list">http://code.google.com/p/fredistrano/issues/list</a>. 
   </p>
   <p><?php echo LANG_NEEDHELP; ?> <a href="http://www.fbollon.net/forum/26">forum</a>.
   </p>

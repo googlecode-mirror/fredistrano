@@ -632,8 +632,8 @@ $msg =   array (
 		'en-US' => "Use this page to manage ACLs objects"
 	),
 	'version' =>  array (
-		'fr-FR' => "Version 0.3 - 07/11/2007",
-		'en-US' => "Version 0.3 - 11/07/2007"
+		'fr-FR' => "Version 0.3.1 - 11/11/2007",
+		'en-US' => "Version 0.3.1 - 11/11/2007"
 	),
 	'view' =>  array (
 		'fr-FR' => " [afficher] ",
