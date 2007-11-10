@@ -9,14 +9,16 @@
 \usepackage{color}
 \pagestyle{headings}
 \author{Frédéric BOLLON}
-\title{Fredistrano v0.2\\Documentation\\}
+\title{Fredistrano v0.3.1\\Documentation\\}
 \begin{document}
 \maketitle
 \tableofcontents
 
 \chapter{Introduction}
 Fredistrano est une application qui permet de déployer un projet Php depuis un serveur Subversion vers un environnement de production.\\
-Cette application doit \^{e}tre installée sur le serveur de production.
+Cette application doit \^{e}tre installée sur le serveur de production.\\
+
+Je remercie Aurélien Millet et euphrate\_ylb pour leur précieuse participation à ce projet.
 
 \chapter{Pré-requis}
 
@@ -52,7 +54,7 @@ chmod -R 777 app/tmp/ files/
 \end{verbatim}
 
 \item Créer la base de données à l'aide du script sql qui se trouve dans\\ /app/config/sql/fredistrano.sql\\
-\item Créer les fichiers app/config.php et app/database.php en s'inspirant des fichiers config.prd.php et database.prd.php\newpage
+\item Créer les fichiers app/config/config.php et app/config/database.php en s'inspirant des fichiers config.prd.php et database.prd.php\newpage
 
 \item Configurer app/config/database.php en fonction de votre base de données\\\\exemple :\\
 
@@ -161,7 +163,7 @@ Pour pouvoir déployer une application Php à l'aide de Fredistrano, il faut dan
 \item Afficher le détail du projet à deployer
 \item Cliquer sur "Déployer le projet".
 \item Préciser le numéro de révision à déployer si nécessaire, pour la version la plus récente ne rien mettre.
-\item Dans le cas d'un projet Subversion privé, protégé par mot de passe, préciser le login et mot de passe (si l'authentification est commune à tous vos projets à déployer, il est possible de renseigner le login et mot de passe subversion dans le fichier app/config.php ).
+\item Dans le cas d'un projet Subversion privé, protégé par mot de passe, préciser le login et mot de passe (si l'authentification est commune à tous vos projets à déployer, il est possible de renseigner le login et mot de passe subversion dans le fichier app/config/config.php ).
 \item Cliquer sur "Step 1 SVN export"
 \item La commande svn export est exécutée dans le dossier "Fredistrano/files/tmp/nomduprojet/tempDir".
 \item Simulation coché rien ne sera fait, juste un résumé de ce qui va être fait sera affiché.
@@ -176,8 +178,5 @@ Pour pouvoir déployer une application Php à l'aide de Fredistrano, il faut dan
 \item Un billet sur l'utilisation de Subversion \\ http://www.fbollon.net/node/65 \\
 \item Le forum d'aide de Fredistrano \\ http://www.fbollon.net/forum/26
 \end{itemize}
-
-\chapter{Remerciements}
-Je remercie Aurélien Millet et euphrate\_ylb pour leur précieuse participation à ce projet.
 
 \end{document}

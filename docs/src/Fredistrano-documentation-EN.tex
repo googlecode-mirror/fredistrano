@@ -1,6 +1,6 @@
 \documentclass[12pt,a4paper]{report}
 \usepackage[utf8]{inputenc}
-%\usepackage[french] {babel}
+
 \usepackage{ucs}
 \usepackage{amsmath}
 \usepackage{amsfonts}
@@ -9,18 +9,21 @@
 \usepackage{color}
 \pagestyle{headings}
 \author{Frédéric BOLLON}
-\title{Fredistrano v0.2\\Documentation\\}
+\title{Fredistrano v0.3.1\\Documentation\\}
 \begin{document}
 \maketitle
 \tableofcontents
 
 \chapter{Introduction}
-Fredistrano is an application that allows to deploy Php project from a Subversion server to a production environment.\\
-This application must be installed on the production server.
+Fredistrano is a deployment tool for PHP web applications. It automates the export of your sources from a subversion repository and synchronizes them with the content of a target directory. Several manual tasks are also handled directly by the application during the deployment: renaming of configuration files, modifying permissions... Fredistrano is inspired from the smart Capistrano project.\\
 
-\chapter{Requirement}
-Fredistrano must be installed on a Web server Apache hosted \textbf{indifferently} under Linux or Windows.
-\paragraph*{Common}
+From a technical perspective, this application has been written in PHP with the cakePHP framework. Fredistrano both supports Windows/Linux environment. Concerning Windows, Fredistrano requires the installation of Cygwin in order to use the rsync command.\\
+
+Special thanks to Aurélien Millet and euphrate\_ylb for their help in this project.
+
+\chapter{Requirements}
+Fredistrano must be installed on a Apache Web server hosted \textbf{indifferently} under Linux or Windows.
+\paragraph*{Common to all OS}
 \begin{itemize}
 \item 
 A Php project "versioned" with Subversion
@@ -40,7 +43,7 @@ For deployment on windows servers, you need to install cygwin with packages rsyn
 
 \chapter{Installation}
 \begin{itemize}
-\item Download the lastest version of Fredistrano on http://www.fbollon.net/downloads in the directory "source/Fredistrano".\\
+\item Download the lastest version of Fredistrano on\\ http://code.google.com/p/fredistrano/downloads/list
 \item Untar the archive at the root of your web server or in a directory of your choice \: \\
 tar xzvf fredistrano\_x.x.tar.gz \\
 \item Give writable permission to temporaries directories (only on linux servers).\\
@@ -51,7 +54,7 @@ chmod -R 777 app/tmp/ files/
 \end{verbatim}
 
 \item Create the database with the sql script in\\ /app/config/sql/fredistrano.sql\\
-\item Create files app/config.php et app/database.php with the help of config.prd.php and database.prd.php\newpage
+\item Create files app/config/config.php et app/config/database.php with the help of config.prd.php and database.prd.php\newpage
 
 \item Configure app/config/database.php following your database\\\\example :\\
 
@@ -78,24 +81,21 @@ chmod -R 777 app/tmp/ files/
 \end{lstlisting}
 %---------------------------------------------------------------
 
-
 \item A user "admin" with password "admin" is created by the sql script, don't forget to change password in Administration/users.
 If you create a new user, you need to affect if the group "admin".
 \textbf{Do not delete the user "admin" before creating a new user for the group "admin".}
 
 \end{itemize}
 
-
-
 \chapter{Usage}
-\section{Important Details}\label{precimportantes}
-Pour pouvoir déloyer une application Php avec Fredistrano sur votre serveur de production votre projet doit répondre à certaines exigences :\\
+\section{Setting up your project}\label{precimportantes}
+Before being able to deploy your project with fredistrano, you must set it up according to the following recommandations :\\
 \begin{itemize}
-\item Votre projet doit-être versionné sur un serveur subversion.\\
-\item Les fichiers dont le contenu doit-\^{e}tre différent entre la version de développement et la version de production, ne doivent pas être versionnés mais des copies de chaque version avec une extension du type ".dev.xxx" et ".prd.xxx" doivent se trouver dans Subversion.\\
-Par exemple, l'application à déployer nécessite un fichier database.php où les paramètres de connexion à la base de données sont définis, ce fichier sera ignoré dans Subversion et les fichiers database.dev.php et database.prd.php seront versionnés avec respectivement la configuration du serveur de développement et du serveur de production.\\
-Quelque soit l'extension, les fichiers *.prd.xxx seront renommés en *.xxx lors du déploiement.\\
-\item Un fichier nommé deploy.php doit se trouver à la racine de l'application. Ce fichier est "la recette" de déploiement, il va permettre de définir la liste des répertoires et fichiers à exclure lors du dépoiement en production ainsi que la liste des répertoires sur lesquel un CHMOD 777 sera executé à la suite du déploiement afin de permettre l'écriture dans ces dossiers.\newpage Exemple de contenu pour le fichier deploy.php :\\
+\item Your project must be versionned with subversion.\\
+\item If the content of some files differs between the deveploment environment and the production one, these files shouldn't be added to subversion but only copies with an extension like '.dev.xxx' et '.prd.xxx':\\
+For example, if the application requires a database.php file where connection parameters are defined, you won't add directly this file to subversion. Instead, you will add two other versions, one for each environment, nammed database.dev.php and database.prd.php.\\ 
+During the deployment, whatever the extension is, all 'prd.xxx' files will be deployed (not 'dev.xxx' ones) and renamed in '.xxx'.
+\item A 'deploy.php' file must be created at the application root. This files contains application specific deployment parameters such as a list of files and folders that shouldn't be synchronized, a list of writable directories... Notice that this file won't be deployed in your production environment. Here is an example of deploy.php :\\
 
 %---------------------------------------------------------------
 \definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
@@ -104,9 +104,7 @@ Quelque soit l'extension, les fichiers *.prd.xxx seront renommés en *.xxx lors 
 \lstset{backgroundcolor=\color{lbcolor},rulecolor=}
 \begin{lstlisting}[frame=tb]{}
 class DEPLOY_CONFIG {
-	// tableau permettant la creation du fichier
-	// des repertoires et fichiers a exclure 
-	// lors du depoiement en production
+
 	var $exclude = array (
 		'/app/tmp/cache/models/*',
 		'/app/tmp/cache/persistent/*',
@@ -120,10 +118,6 @@ class DEPLOY_CONFIG {
 		'.settings'
 	);
 
-	// repertoires sur lesquel un CHMOD 777 
-	// sera execute a la suite du deploiement
-	// les repertoires de log, de cache, 
-	// les repertoires d'upload, etc ...
 	var $writable = array (
 		'/app/tmp',
 		'/app/webroot/files'
@@ -135,47 +129,47 @@ class DEPLOY_CONFIG {
 \end{itemize}
 \newpage
 
-\section{Les différentes étapes d'un déploiement }
-\subsection{Ajout d'un projet}
-Pour pouvoir déployer une application Php à l'aide de Fredistrano, il faut dans un premier ajouter un projet à déployer.\\
-\begin{enumerate}
-\item Cliquer sur l'onglet "Projets" puis sur le lien "Ajouter un projet"
-\item Renseigner les différents champs du formulaire de création :\\
+\section{Deployment steps}
 
-\begin{list}{- Champ}{}
-\item \textbf{"Nom du projet"} : Permet d'identifier le projet, servira également de nom pour un dossier temporaire lors du déploiement, il est donc préférable d'éviter les caractères spéciaux.
-\item \textbf{"Url SVN"} :  Url vers le repository SVN du projet à déployer (exemple : "http://svn.mondomain.com/monProjet/trunk").
-\item \textbf{"Url de l'application à déployer"} :  Servira uniquement à afficher un lien vers l'application.
-\item \textbf{"Chemin absolu du projet à déployer"} :  Chemin absolu vers le dossier sur le serveur de production où sera déployé l'application\\exemple sur un serveur Windows : D:\textbackslash www\textbackslash html\textbackslash monProjet \\exemple sur un serveur Linux : /var/www/html/monProjet ou encore /home/monUser/monDomain.com.
+\subsection{Adding a new project}
+
+To deploy a PHP web application with Fredistrano, the first step is to create a new project.\\
+
+\begin{enumerate}
+\item Click on the "Pojects" toggle (Top of your screen)
+\item Click on the "Add a new project" link
+\item Fill out the form as follow:\\
+
+\begin{list}{- Field:}{}
+\item \textbf{"Project name"} : Is used to identify the project. It will also be used as a diretory name for temporary copy during the deployment. Do not use special characters.
+\item \textbf{"SVN Url"} :  Url of the SVN repository of the project that should be deployed (eg. : "http://svn.mondomain.com/monProjet/trunk").
+\item \textbf{"Application Url"} : Won't be used by Fredistrano. Juste a simple reminder.
+\item \textbf{"Absolute path"} :  Absolute path of the target folder where the application should be deployed\\Example for a Windows server (located on the server) : D:\textbackslash www\textbackslash html\textbackslash myProject \\Example on a Linux server : /var/www/html/monProjet or /home/monUser/monDomain.com.
 %\item \textbf{"Répertoire des fichiers de configuration du projet"} :  Répertoire de l'application où se trouvent les fichiers database.php, config.php et deploy.php (\ref{precimportantes}).
 \end{list}
 \end{enumerate}
 
-
-
-
-\subsection{Déploiement d'un projet}
+\subsection{Project deployment}
 \begin{enumerate}
-\item Afficher le détail du projet à deployer
-\item Cliquer sur "Déployer le projet".
-\item Préciser le numéro de révision à déployer si nécessaire, pour la version la plus récente ne rien mettre.
-\item Dans le cas d'un projet Subversion privé, protégé par mot de passe, préciser le login et mot de passe (si l'authentification est commune à tous vos projets à déployer, il est possible de renseigner le login et mot de passe subversion dans le fichier app/config.php ).
-\item Cliquer sur "Step 1 SVN export"
-\item La commande svn export est exécutée dans le dossier "Fredistrano/files/tmp/nomduprojet/tempDir".
-\item Simulation coché rien ne sera fait, juste un résumé de ce qui va être fait sera affiché.
-\item Cliquer sur "Step 2 synchronisation"
-\item Un backup du répertoire de production est effectué dans "Fredistrano/files/backup/nomduprojet" puis la commande rsync est exécutée entre le dossier "Fredistrano/files/tmp/nomduprojet/tempDir" et le dossier "nomduprojet"
-\item "Step 3 finalisation" les trois options sont désactivables: renommage des fichiers '.prd.', l'ajustement des droits des répertoires et fichiers et enfin les droits d'écriture sur les dossiers définis dans deploy.php.
+\item Display the details of the project that should be deployed.
+\item Click on "Deploy project".
+\item Specify the revision number. If empty, Fredistrano will checkout the latest revision of the repository.
+\item In the case of a private Suversion project protected by login/password, you may specify your credentials at this step. If all your projects are using the same credentials, you may specify them in the file \textit{app/config/config.php}.
+\item Click on "Step 1 SVN export". An svn export is executed and hte result is displayed in the console located at the bottom (\textit{output console}) "Fredistrano/files/tmp/nomduprojet/tempDir".
+\item For the next step, if "simulate" is checked, the rsync command will only be simualted and its  result may be seen in the output console.
+\item Click on "Step 2 synchronize".
+\item A backup is preformed in "Fredistrano/files/backup/projectName". The rsync command is executed between "Fredistrano/files/tmp/projectName/tempDir" and "projectName".
+\item Finally, as the last step, three options may be overridden: 1. renaming of '.prd.' files, 2. force files and folders permissions, 3. set write privileges on special folders . The inial values depend on the content of your config.php file.
+\item Click on "Step 3 finalize" and your done!
 \end{enumerate}
 
-\chapter{Références}
+\chapter{Related links}
+You will find in the following 
 \begin{itemize}
-\item Un hébergement qui permet l'utilisation de Fredistrano \\ http://www.fbollon.net/node/12 \\
-\item Un billet sur l'utilisation de Subversion \\ http://www.fbollon.net/node/65 \\
-\item Le forum d'aide de Fredistrano \\ http://www.fbollon.net/forum/26
+\item An example of web host that satisfy the requirements of Fredistrano \\ http://www.fbollon.net/node/12 \\
+\item A quick explanation on how to use Subversion \\ http://www.fbollon.net/node/65 \\
+\item The official support forum of Fredistrano \\ http://www.fbollon.net/forum/26
 \end{itemize}
 
-\chapter{Remerciements}
-Je remercie Aurélien Millet et euphrate\_ylb pour leur précieuse participation à ce projet.
 
 \end{document}
