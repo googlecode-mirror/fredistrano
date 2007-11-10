@@ -311,6 +311,7 @@ class ProjectsController extends AppController {
 				$output .= "\n-[".LANG_UPDATINGFILESMODES."] ".LANG_NEWFILESMODE.": " . _FILEMODE;
 				$output .= shell_exec("chmod -R " ._FILEMODE . "  ".$this->_pathConverter($project['Project']['prd_path']));	
 				$output .= "\n-[".LANG_UPDATINGDIRMODE." ] ".LANG_NEWDIRMODES.": " . _DIRMODE;
+				$output .= shell_exec("chmod " ._DIRMODE . "  ".$this->_pathConverter($project['Project']['prd_path']));
 				$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -type d -exec chmod " . _DIRMODE . " {} \;".$suffix);
 			}
 			

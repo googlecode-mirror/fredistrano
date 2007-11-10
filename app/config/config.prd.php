@@ -19,8 +19,8 @@ define("_CHANGEMODE", true);						//change file and directory mode
 define("_GIVEWRITEMODE", true);						//give write access on directories define in deploy.php in $writable
 
 // Permissions
-define("_DIRMODE", '750');							//directories mode after deployment 
-define("_FILEMODE", '640');							//files mode after deployment 
+define("_DIRMODE", '755');							//directories mode after deployment 
+define("_FILEMODE", '644');							//files mode after deployment 
 define("_WRITEMODE", '777');						//writable mode on directories defined in deploy.php in $writable after deployment 
 
 // Filesytem
