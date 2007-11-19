@@ -185,7 +185,7 @@ class UsersController extends AppController {
             $tmp = empty($_SERVER['HTTP_REFERER'])?'/':$_SERVER['HTTP_REFERER'];
             if (_HTTPSENABLED == 2)
 //            		$tmp = preg_replace(LANG_(HTTP)://,'${1}s://',$tmp);
-            	$tmp = preg_replace('§(http)://§','${1}s://',$tmp);
+            	$tmp = preg_replace('/(http):\/\//','${1}s://',$tmp);
 		    $this->set('HTTP_REFERER', $tmp);
 			if (_HTTPSENABLED != 1)
             	$this->render('login_php','ajax');
