@@ -192,7 +192,7 @@ hr {margin: 1em 0;background:#f2f2f2;height:1px;color:#f2f2f2;border:none;clear:
 
 	/* TABLES */
 	.table1 {border: 2px solid #900;border-collapse:collapse;width:100%}
-		.table1 td {background: #fff url("images/sprites.gif") repeat-x 0 -1600px;padding:3px;border: 1px solid #fff}
+		.table1 td {padding:3px;border: 1px solid #fff}
 		.table1 th {text-align:left;border: 1px solid #fff}
 		.table1 thead th {color:#fff;font-size:115%;background: #900 url("images/sprites.gif") repeat-x 0 -1300px;padding: 1px 3px}
 		.table1 tbody th {color:#fff;font-size:105%;background: #88b8db url("images/sprites.gif") repeat-x 0 -1400px;padding: 1px 5px}
@@ -200,6 +200,9 @@ hr {margin: 1em 0;background:#f2f2f2;height:1px;color:#f2f2f2;border:none;clear:
 		.table1 th a {color:#fff;}
 		.table1 ul {margin:0;padding:0}
 		.table1 li{display:inline; list-style:none;}
+				
+		.table1 .row_modified {background: #fee}
+		.table1 tr.trOver {background: #fee no-repeat 10px -695px; cursor:pointer;}
 
 	/* TABLES - calendar */
 	.calendar {width:200px;font-size:92%}

@@ -7,6 +7,15 @@ class Deployment extends AppModel {
 	
 	var $DeploymentLog = null;
 	
+	var $useTable = false;
+	
+	var $process = array(
+		0 => 'initialize',
+		1 => 'initialize',
+		2 => 'initialize',
+		3 => 'initialize'
+	);
+	
 	function __construct() {
 		parent :: __construct();
 		
@@ -18,8 +27,7 @@ class Deployment extends AppModel {
 	}// __construct 
 	
 	// Public deploy -----------------------------------------------------------------		
-	function execute($project_id = null, $options = array()) {
-
+	function runProcess($project_id = null, $options = array()) {
 		if ( $project_id == null || !($project = $this->Project->read(null, $project_id))
 				|| !$this->isConfigAvailable($project['Project']['name'])) 
 			return false;		
@@ -27,9 +35,9 @@ class Deployment extends AppModel {
 		// Init options
 		if (empty($options))
 			$options = array(
-				'backup'		=>	true,
-				'simulation' 	=> 	true,
-				'comment' 		=> 	'none'
+				'backup'			=>	true,
+				'simulation' 		=> 	true,
+				'comment' 			=> 	'empty',
 				'renamePrdFile' 	=> 	false,
 				'changeFileMode' 	=> 	false,
 				'giveWriteMode'		=> 	false
@@ -49,15 +57,32 @@ class Deployment extends AppModel {
 		$output .= $this->finalize($project_id, $options);
 		
 		return $output;
-	}// execute
+	}// runProcess
+	
+	/**
+	 * Run a deployment step and performs the required checks
+	 * @param string $project_id 	Id of the project that should be deployed 
+	 * @param int $project_id 		Id of the project that should be deployed 
+	 * @param array $options		Various options used for configuring the step 
+	 * @return string 			Shell output 
+     */			
+	function runStep($step = null, $project_id = null, $options = array()) {
+		if ( $step == null && !in_array($step, $this->$process) )
+			return false;
 			
+		// Check  
+		
+		$this->{$step}($project_id,$options);	
+	}// runStep
+		
+	//  Private Step -----------------------------------------------------------
 	/**
 	 * Step 1 of the deployment process: Initialize
 	 * @param int $project_id 	Id of the project that should be deployed 
 	 * @param array $options	Various options used for configuring the step 
 	 * @return string 			Shell output 
      */
-	function initialize($project_id = null, $options = array()) {
+	private function initialize($project_id = null, $options = array()) {
 
 		if ( $project_id == null || !($project = $this->Project->read(null, $project_id))
 				|| !$this->isConfigAvailable($project['Project']['name'])) 
@@ -83,7 +108,7 @@ class Deployment extends AppModel {
 	 * @return string 			Shell output 
      */
 	
-	function export($project_id = null, $options = array()) {
+	private function export($project_id = null, $options = array()) {
 	
 		if ( $project_id == null || !($project = $this->Project->read(null, $project_id))
 				|| !$this->isConfigAvailable($project['Project']['name'])) 
@@ -92,13 +117,65 @@ class Deployment extends AppModel {
 		include_once (_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php");
 			
 		$default_options = array(
-			'XXX' 	=> 	false
+			'revision' 	=> 	null,
+			'user' 		=> 	_SVNUSER,
+			'password' 	=> 	_SVNPASS
 		);
 		$options = array_merge($default_options, $options);
 		$output = '';
 		
-		// Perform the job 
-				
+		// Perform the job
+		//	on efface le cache de stat() sinon problème avec la fonction is_dir() - voir la doc Php
+		clearstatcache();
+
+		// si les répertoires temporaires et backup nécessaires à Fredistrano n'existent pas, on le crée
+		if (!is_dir(_DEPLOYDIR)) {
+			if (mkdir(_DEPLOYDIR, octdec(_DIRMODE), TRUE))
+				$output .= "-[".LANG_CREATINGDIRECTORY." " . _DEPLOYDIR . "]\n";
+		}
+		if (!is_dir(_DEPLOYTMPDIR)) {
+			if (mkdir(_DEPLOYTMPDIR, octdec(_DIRMODE), TRUE))
+				$output .= "-[".LANG_CREATINGDIRECTORY." " . _DEPLOYTMPDIR . "]\n";
+		}
+		if (!is_dir(_DEPLOYBACKUPDIR)) {
+			if (mkdir(_DEPLOYBACKUPDIR, octdec(_DIRMODE), TRUE))
+				$output .= "-[".LANG_CREATINGDIRECTORY. " " . _DEPLOYBACKUPDIR . "]\n";
+		}
+
+		$project = $this->Project->read(null, $project_id);
+
+		//dossier temporaire d'export SVN pour le projet
+		if (is_dir(_DEPLOYTMPDIR . DS . $project['Project']['name'])) {
+			// on le vide si il existe
+			$output .= "-[".LANG_DUMPDIRECTORY." " . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "]\n";
+			$output .= shell_exec('rm -rf ' . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "/*");
+		} else {
+			// on le crée si il n'existe pas
+			if (mkdir(_DEPLOYTMPDIR . DS . $project['Project']['name'], octdec(_DIRMODE), TRUE))
+				$output .= "-[".LANG_CREATINGDIRECTORY. " " . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "]\n";
+		}
+
+		// création du répertoire de l'application si il n'existe pas
+		if (!is_dir($project['Project']['prd_path'])) {
+			if (@ mkdir($project['Project']['prd_path'], octdec(_DIRMODE), TRUE))
+				$output .= "-[".LANG_CREATINGDIRECTORY. " " . $project['Project']['prd_path'] . "]\n";
+		}
+
+		//on se place dans le dossier temporaire pour faire le svn export
+		chdir(_DEPLOYTMPDIR . DS . $project['Project']['name']);
+		$output .= "-[".LANG_SVNEXPORT."]\n";
+		if ( $options['revision'] == null ) 
+			$revision = ' -r ' . $options['revision'];
+		else 
+			$revision = '';
+
+		$authentication = ' --username ' . $options['user'] . ' --password ' . $options['password'];
+
+        //echo "svn export" . $revision . $authentication . " " . $project['Project']['svn_url'] . " tmpDir";
+		 
+		// svn export
+		$output .= shell_exec("svn export" . $revision . $authentication . " " . $project['Project']['svn_url'] . " tmpDir");
+		
 		return $output;
 	}// export
 	
@@ -109,7 +186,7 @@ class Deployment extends AppModel {
 	 * @param array $options	Various options used for configuring the step 
 	 * @return string 			Shell output 
      */
-	function synchronize($project_id =null, $options = array()) {
+	private function synchronize($project_id =null, $options = array()) {
 		
 		if ( $project_id == null || !($project = $this->Project->read(null, $project_id))
 				|| !$this->isConfigAvailable($project['Project']['name'])) 
@@ -183,7 +260,7 @@ class Deployment extends AppModel {
 	 * @param array $options	Various options used for configuring the step 
 	 * @return string 			Shell output 
      */
-	function finalize($project_id = null, $options = array()) {
+	private function finalize($project_id = null, $options = array()) {
 		if ( $project_id == null || !($project = $this->Project->read(null, $project_id))
 				|| !$this->isConfigAvailable($project['Project']['name'])) 
 			return false;		
@@ -237,15 +314,14 @@ class Deployment extends AppModel {
 		
 		return $output;
 	}// finalize
-		
-	//  Public all-----------------------------------------------------------
+
 	/**
 	 * Optional step in the deployment process: Backup
 	 * @param int $project_id 	Id of the project that should be deployed 
 	 * @param array $options	Various options used for configuring the step 
 	 * @return string 			Shell output 
      */
-	function backup($project, $output) {
+	private function backup($project, $output) {
 
 		if (!is_dir(_DEPLOYBACKUPDIR)) {
 			if (mkdir(_DEPLOYBACKUPDIR, octdec(_DIRMODE), TRUE))
@@ -318,5 +394,5 @@ class Deployment extends AppModel {
 		return $instance;
 	}// _getConfig
 	
-}// ControlObject
+}// Deployment
 ?>

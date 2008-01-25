@@ -50,6 +50,7 @@ class ProjectsController extends AppController {
 	function index() {
 
 		$criteria = NULL;
+		$this->Pagination->sortBy = 'name';
 		list ($order, $limit, $page) = $this->Pagination->init($criteria); // Added
 		$data = $this->Project->findAll($criteria, NULL, $order, $limit, $page); // Extra parameters added
 		$this->set('data', $data);

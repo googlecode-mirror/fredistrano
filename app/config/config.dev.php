@@ -34,11 +34,10 @@ define("_CYGWINROOT","/cygdrive/");									//only for cygwin windows server , e
 define('LANG_DEFAULT','en-US'); 					//available languages :  en-US, fr-FR
 require_once (APP . 'locale' . DS . LANG_DEFAULT . DS . 'LC_MESSAGES' . DS . 'default.php');
 
-
-
-//SPECIFIC - Will be removed in a futur version
-define("_WEBSERVICESSERVER",	""); 				// endpoint URL
-define("_AUTHENTICATIONTYPE",	"0");				// 0 = mysql / 1 = webservice + mysql
-define("_DIRECTORYTYPE",		"20");				// 10 = genesis / 11 = yellowhat / 20 = dnsan
-define("_WS_SSL_TRUSTEDCA_FILE","D:/Apache/Apache2/conf/ssl.crt/AdixenCA.crt");
+// Auth
+define("_AUTHENTICATIONTYPE",		"2");	
+//SPECIFIQUE -sera supprimé dans une prochaine version=
+define("_WS_SSL_TRUSTEDCA_FILE",    "");
+define("_WEBSERVICESSERVER",		""); 			
+define("_AUTHENTICATIONTDIRECTORY",	"20");
 ?>

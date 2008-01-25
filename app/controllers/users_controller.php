@@ -208,25 +208,45 @@ class UsersController extends AppController {
 	 */
 	private function _authenticate($user, $passwd) {
 
-		if (_AUTHENTICATIONTYPE == "1") {
+		if (_AUTHENTICATIONTYPE == "0"){
+			// Accepter tout 
+			return true;
+			
+		} else if (_AUTHENTICATIONTYPE == "1") {
 			// authentification par WS
-			include ("SOAP/Client.php");
 			
-			$dest = "https://" . _WEBSERVICESSERVER . "/OSI_authentificationWS/ConfigSSL?wsdl";
-			$wsdl = new SOAP_WSDL($dest);
-			$soapclient = $wsdl->getProxy();
-			$soapclient->setOpt('curl', CURLOPT_CAINFO, _WS_SSL_TRUSTEDCA_FILE);
-			$soapclient->setOpt('curl', CURLOPT_SSL_VERIFYPEER, 2);
-			$soapclient->setOpt('curl', CURLOPT_SSL_VERIFYHOST, 0);
-			
-			$res = $soapclient->authentifierAnnuaire($user, $passwd, _DIRECTORYTYPE);
-			return $res=="true";
+			$client = new SoapClient( null,
+			array(
+				 		'location' 		=>	"https://" . _WEBSERVICESSERVER . "/OSI_authentificationWS/ConfigSSL?style=document",
+				    	'uri'  			=>	'urn:OSI_authentificationWSVi',
+	                    'use'     		=>	SOAP_LITERAL
+			)
+			);
+				
+			$params = array (
+			new SoapParam( $user, 'login'),
+			new SoapParam( $passwd, 'pass'),
+			new SoapParam( _AUTHENTICATIONTDIRECTORY, 'annuaire')
+			);
 
-		} else {
+			try {
+				$result = $client->__soapCall('authentifierAnnuaire', $params);
+			} catch (SoapFault $fault) {
+				$this->Session->setFlash('Identification impossible [err:'.$fault->getMessage().']');
+				return false;
+			}
+			 
+			return $result=='true';
+
+		} else if (_AUTHENTICATIONTYPE == "2") {
 			//authentification par mysql
 			$user = $this->User->findByLogin($user); // requete cachée
 			
 			return (!empty ($user['User']['password']) and ($user['User']['password'] == md5($passwd)));
+			
+		} else {
+			return false;
+			
 		}
 	} // _authenticate
 }

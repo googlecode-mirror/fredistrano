@@ -1,0 +1,8 @@
+<h1>Administration</h1>
+<h2>Authorization management</h2>
+<ul>
+	<li><?php echo $html->link( LANG_GROUPS,'/groups'); ?></li>
+	<li><?php echo $html->link( LANG_USERS,'/users'); ?></li>
+	<li><?php echo $html->link( LANG_CONTROLOBJECT,'/control_objects'); ?></li>
+	<li><?php echo $html->link( LANG_AUTHORIZATIONS,'/aclite/acl_management'); ?></li>
+</ul>

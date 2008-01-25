@@ -5,6 +5,12 @@
  * Nevertheless you may also edit this file manually
  */
 
+define('LANG_LANDSCAPE',	"Landscape");
+define('LANG_DEPLOYMENTS',	"Deployment");
+define('LANG_BROADCASTS',	"Broadcasts");
+define('LANG_LOGVIEWER',	"Log viewer");
+define('LANG_ALERTS',	"Alerts");
+
 define('LANG__DELETE',"Delete");
 define('LANG__EDIT',"Edit");
 define('LANG__VIEW',"View");
@@ -65,7 +71,7 @@ define('LANG_GROUPALREADYEXISTS',"A group with that name already exists.");
 define('LANG_GROUPCREATED',"Group created.");
 define('LANG_GROUPDELETED',"Group deleted.");
 define('LANG_GROUPLIST',"Groups list");
-define('LANG_GROUPS',"groups");
+define('LANG_GROUPS',"Groups");
 define('LANG_GROUPUPDATED',"Group updated.");
 define('LANG_HELP',"Help");
 define('LANG_HISTORY',"History");
@@ -85,7 +91,7 @@ define('LANG_INVALIDLOGID',"Invalid log id => ");
 define('LANG_INVALIDPROJECTID',"Invalid Project id => ");
 define('LANG_LASTNAME',"Lastname");
 define('LANG_LISTDATA',"Master data list");
-define('LANG_LOGIN',"Username");
+define('LANG_LOGIN',"Login");
 define('LANG_LOGINALREADYUSED',"This login is already used.");
 define('LANG_LOGOUT',"[Logout]");
 define('LANG_MAIL',"Mail");

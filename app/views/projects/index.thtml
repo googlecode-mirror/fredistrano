@@ -9,45 +9,25 @@
 <?php
 $pagination->setPaging($paging); // Initialize the pagination variables
 $th = array (
-            $pagination->sortBy('id'),
             $pagination->sortBy('name',LANG_PROJECTNAME),
             $pagination->sortBy('svn_url', LANG_SVNURL),
-            'Actions'
+            $pagination->sortBy('prd_path', 'Target')
 ); // Generate the pagination sort links
 echo $html->tableHeaders($th); // Create the table headers with sort links if desired
 
 foreach ($data as $output)
 {
     $tr = array (
-        $output['Project']['id'],
-        $html->link($output['Project']['name'], "/projects/view/{$output['Project']['id']}"),
+        $output['Project']['name'],
         $output['Project']['svn_url'],
         //$output['Project']['prd_url'],
-        //$output['Project']['prd_path'],
-        $html->link($html->image( 'b_search.png', array('alt' => LANG__VIEW, 'title' => LANG__VIEW)),
-			"/projects/View/{$output['Project']['id']}",
-			null,
-			false,
-			false)."&nbsp;&nbsp;".
-        $html->link($html->image( 'b_edit.png', array('alt' => LANG__EDIT, 'title' => LANG__EDIT)),
-			"/projects/edit/{$output['Project']['id']}",
-			null,
-			false,
-			false)."&nbsp;&nbsp;".
-        $html->link($html->image( 'b_drop.png', array('alt' => LANG__DELETE, 'title' => LANG__DELETE)),
-			'/projects/delete/' . $output['Project']['id'],
-			null,
-			LANG_AREYOUSUREYOUWANTTODELETE.' : ' . $output['Project']['name'] . '?',
-			false,
-			false )
-        );
-    echo $html->tableCells($tr,array('class'=>'altRow'),array('class'=>'evenRow'));
+        $output['Project']['prd_path'] 
+    );
+
+    echo $html->tableCells($tr, array('class' => 'altRow', 'onmouseover' => "this.className='trOver'", 'onmouseout' => "this.className='table1'", 'onclick' => "document.location='".$this->base."/projects/view/".$output['Project']['id']."';"), array('class' => 'evenRow', 'onmouseover' => "this.className='trOver'", 'onmouseout' => "this.className='table1'", 'onclick' => "document.location='".$this->base."/projects/view/".$output['Project']['id']."';"));
 }
 ?>
 </table>
 <? echo $this->renderElement('pagination'); // Render the pagination element ?>
 
 </div>
-
-
-
