@@ -8,7 +8,7 @@
   <p><?php echo LANG_REPORTBUG; ?> 
   <a href="http://code.google.com/p/fredistrano/issues/list">http://code.google.com/p/fredistrano/issues/list</a>. 
   </p>
-  <p><?php echo LANG_NEEDHELP; ?> <a href="http://www.fbollon.net/forum/26">forum</a>.
+  <p><?php echo LANG_NEEDHELP; ?> <a href="http://www.fbollon.net/forum/25">forum</a>.
   </p>
   <br />
   <br />

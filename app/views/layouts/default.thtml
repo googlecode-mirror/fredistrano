@@ -23,10 +23,8 @@ http://creativecommons.org/licenses/GPL/2.0/
 
 <?php echo $javascript->link('common') ?>
 <?php echo $html->charsetTag('UTF-8') ?>
-<?php echo $javascript->link('prototype') ?>
-<?php echo $javascript->link('effects') ?>
-<?php echo $javascript->link('controls') ?>
-<?php echo $javascript->link('scriptaculous.js?load=effects') ?>
+<?php echo $javascript->link('scriptaculous/prototype') ?>
+<?php echo $javascript->link('scriptaculous/scriptaculous.js?load=effects') ?>
 <!--[if lt IE 7]>
 <?php echo $javascript->link('pngfix') ?>
 <![endif]-->
@@ -63,14 +61,12 @@ http://creativecommons.org/licenses/GPL/2.0/
 		<div id="utility">
 		
 		<?php
-					if(isset($_SESSION['User'])){
-						echo "<p>".LANG_WELCOME." ".$_SESSION['User']['login']." ";
-						echo $html->link(LANG_LOGOUT,'/users/logout')."</p>";
-					}else{
-					?>
-							<?php echo $this->renderElement('login') ?>
-
-					<?php } ?>
+			if(isset($_SESSION['User'])){
+				echo "<p>".LANG_WELCOME." ".$_SESSION['User']['login']." ";
+				echo $html->link(LANG_LOGOUT,'/users/logout')."</p>";
+			}else{
+				echo $this->renderElement('login'); 
+			 } ?>
 
 			<!-- app/views/elements/menu.thtml -->
 			<?php echo $this->renderElement('context_menu') ?>					
@@ -78,12 +74,15 @@ http://creativecommons.org/licenses/GPL/2.0/
 		
 		<div id="content">
 			
-			<?php $session->flash(); ?>
-			<script type="text/javascript">
-				new Effect.Highlight('flashMessage', {startcolor:'#ffff99', endcolor:'#ffffff', duration: 3.0});
-				Effect.Pulsate('flashMessage');
-			</script>
-
+			<?php 
+			if ($session->check('Message.flash')):
+				$session->flash();
+			?>
+				<script type="text/javascript">
+					new Effect.Highlight('flashMessage', {startcolor:'#ffff99', endcolor:'#ffffff', duration: 3.0});
+					Effect.Pulsate('flashMessage');
+				</script>
+			<?php endif; ?>
 
 			<?php if(isset($_SERVER['HTTP_REFERER'])){?>
 			<div id="backlink"><?php echo $html->link($html->image( 'arrow_left.png', array('alt' => LANG_PREVIOUS, 
