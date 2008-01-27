@@ -2,6 +2,7 @@
 class HomeController extends AppController {
 
 	var $uses = array (
+		'Project',
 		'DeploymentLog'
 	);
 
@@ -21,7 +22,11 @@ class HomeController extends AppController {
 		$order = 'DeploymentLog.created DESC';
 		$logs = $this->DeploymentLog->findAll(null, $fields, $order,10);
 
+		$projects = $this->Project->generateList();
+		
 		$this->set('logs', $logs);
+		$this->set('projects', $projects);
+		
 	} // index
 	
 	/**

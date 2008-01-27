@@ -3,16 +3,16 @@
 
 <?php if(!empty($_SESSION['User'])): ?>
 	<div id='quick_start'>
-	<h3>Start working with one of the link below:</h3>
+	<h3>Quick start</h3>
 	<ul>
-	<li><?php echo $html->link('Select a project','/projects'); ?></li>
+	<li>Access an existing project: <?php echo $html->selectTag('Project/id', $projects, null, array('onchange' => "document.location = '".$this->base."/projects/view/'+$('ProjectId').selectedIndex;"), null, true); ?></li>
 	<li><?php echo $html->link('Create a new project','/projects/add'); ?></li>
 	</ul>
-	</div>
+</div>
 <?php endif; ?>
 
 <div id='logsOverview'>
-<h3>Overview of the last 10 deployments:</h3>
+<h3>Deployment history (10 last)</h3>
 <ul>
 <?php 
 if (empty($logs))
