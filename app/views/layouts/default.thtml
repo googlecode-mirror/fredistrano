@@ -35,7 +35,7 @@ http://creativecommons.org/licenses/GPL/2.0/
 <div id="wrap">
 
 	<div id="header">
-		<div id="site-name">Fredistrano</div>
+		<div id="site-name">Fredistrano <span class="smallInTitle">   -   0.3.2 rc1 ( CakeFest edition ) </span></div>
 		<div id="search">
 			<!--<form action="">
 			<label for="searchsite">Recherche :</label>
@@ -63,7 +63,7 @@ http://creativecommons.org/licenses/GPL/2.0/
 		<?php
 			if(isset($_SESSION['User'])){
 				echo "<center><p>".LANG_WELCOME." ".$_SESSION['User']['login']." ";
-				echo "<br />[ ".$html->link('Settings','/users/change_password/'.$_SESSION['User']['id'])." ".$html->link('Logout','/users/logout')." ]</p></center>";
+				echo "<br />[ ".$html->link('Settings','/users/change_password/'.$_SESSION['User']['id'])."  -  ".$html->link('Logout','/users/logout')." ]</p></center>";
 			}else{
 				echo $this->renderElement('login'); 
 			 } ?>
