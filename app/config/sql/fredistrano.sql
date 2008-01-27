@@ -93,9 +93,10 @@ CREATE TABLE IF NOT EXISTS `aros_acos` (
 -- Contenu de la table `aros_acos`
 -- 
 
-INSERT INTO `aros_acos` (`id`, `aro_id`, `aco_id`, `_create`, `_read`, `_update`, `_delete`) VALUES 
-(1, 6, 1, '1', '1', '1', '1'),
-(2, 2, 2, '1', '1', '1', '1');
+INSERT INTO `fredistrano`.`aros_acos` VALUES  (1,6,1,'1','1','1','1'),
+ (3,3,7,'1','1','1','1'),
+ (4,5,8,'1','1','1','1'),
+ (5,1,2,'1','1','1','1');
 
 -- --------------------------------------------------------
 

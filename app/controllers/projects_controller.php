@@ -2,22 +2,34 @@
 class ProjectsController extends AppController {
 
 	var $name = 'Projects';
+	
 	var $helpers = array (
 		'Html',
 		'Form',
 		'Ajax',
 		'Pagination',
-		'Error'
+		'Error',
+		'Adixen'
 	);
+	
 	var $components = array (
 		'Pagination'
 	);
 
 	var $uses = array (
-		'Project',
-		'DeploymentLog'
+		'Project'
 	);
 
+	var $authLocal = array (
+		'Projects'	=> 	array( 'entrance' ), 
+		'except' 	=> 	array(
+			'edit' 		=> 	array( 'buinessData' ),
+			'add'		=> 	array( 'buinessData' ),
+			'delete' 	=> 	array( 'buinessData' ),
+			'deploy' 	=> 	array( 'buinessData' )
+		)
+	);
+	
 	function beforeRender() {
 		parent::beforeRender();
 		
@@ -46,35 +58,43 @@ class ProjectsController extends AppController {
 	}
 
 	// Public actions -----------------------------------------------------------
-	
+	/**
+	 * List all projects
+	 */
 	function index() {
-
 		$criteria = NULL;
 		$this->Pagination->sortBy = 'name';
 		list ($order, $limit, $page) = $this->Pagination->init($criteria); // Added
 		$data = $this->Project->findAll($criteria, NULL, $order, $limit, $page); // Extra parameters added
 		$this->set('data', $data);
-	}
+	}// index
 
+	/**
+	 * Deploy a project
+	 * @param string $id ID of the project to be deployed
+	 */
 	function deploy($id = null) {
 		$this->layout = 'ajax';
 		$this->set('id', $id);
+	}// deploy
 
-	}
-	
+	/**
+	 * View properties of a specified project
+	 * @param string $id ID of the project to be viewed
+	 */
 	function view($id = null) {
-
 		if (!$id) {
 			$this->Session->setFlash(LANG_INVALIDID);
 			$this->redirect('/projects/index');
 		}
 		$project = $this->Project->read(null, $id);
 		$this->set('project', $project);
+	}// view
 
-	}
-
+	/**
+	 * Add a new project
+	 */
 	function add() {
-
 		if (empty ($this->data)) {
 			$this->render();
 		} else {
@@ -86,10 +106,13 @@ class ProjectsController extends AppController {
 				$this->Session->setFlash(LANG_CORRECTERRORSBELOW);
 			}
 		}
-	}
-
+	}// add 
+	
+	/**
+	 * Edit a project properties
+	 * @param string $id ID of the project to be edited 
+	 */
 	function edit($id = null) {
-
 		if (empty ($this->data)) {
 			if (!$id) {
 				$this->Session->setFlash(LANG_INVALIDID);
@@ -105,8 +128,12 @@ class ProjectsController extends AppController {
 				$this->Session->setFlash(LANG_CORRECTERRORSBELOW);
 			}
 		}
-	}
-
+	}// edit
+	
+	/**
+	 * Delete a project
+	 * @param string $id ID of the project to be deleted
+	 */
 	function delete($id = null) {
 		if (!$id) {
 			$this->Session->setFlash(LANG_INVALIDID);
@@ -116,282 +143,7 @@ class ProjectsController extends AppController {
 			$this->Session->setFlash(LANG_PROJECTDELETED);
 			$this->redirect('/projects/index');
 		}
-	}
+	}// delete
 	
-	// Ajax steps -----------------------------------------------------------
-	
-	function initialize() {
-		// custom timelimit
-		set_time_limit(_TIMELIMIT_INITIALIZE);
-		$t = getMicrotime();
-		
-		$this->layout = 'ajax';
-		$output = '';
-		
-		$this->set('output', $output);
-		$this->set('took', round((getMicrotime() - $t) , 3));
-	}
-
-	function export() {
-		// custom timelimit
-		set_time_limit(_TIMELIMIT_EXPORT);
-		$t = getMicrotime();
-		
-		$this->layout = 'ajax';
-		$output = '';
-		$revision = '';
-
-		//on efface le cache de stat() sinon problème avec la fonction is_dir() - voir la doc Php
-		clearstatcache();
-
-		// si les répertoires temporaires et backup nécessaires à Fredistrano n'existent pas, on le crée
-
-		if (!is_dir(_DEPLOYDIR)) {
-			if (mkdir(_DEPLOYDIR, octdec(_DIRMODE), TRUE))
-				$output .= "-[".LANG_CREATINGDIRECTORY." " . _DEPLOYDIR . "]\n";
-		}
-		if (!is_dir(_DEPLOYTMPDIR)) {
-			if (mkdir(_DEPLOYTMPDIR, octdec(_DIRMODE), TRUE))
-				$output .= "-[".LANG_CREATINGDIRECTORY." " . _DEPLOYTMPDIR . "]\n";
-		}
-		if (!is_dir(_DEPLOYBACKUPDIR)) {
-			if (mkdir(_DEPLOYBACKUPDIR, octdec(_DIRMODE), TRUE))
-				$output .= "-[".LANG_CREATINGDIRECTORY. " " . _DEPLOYBACKUPDIR . "]\n";
-		}
-
-		if (!$this->data['Project']['id']) {
-			$this->Session->setFlash(LANG_INVALIDID);
-
-		} else {
-			$project = $this->Project->read(null, $this->data['Project']['id']);
-			$this->set('project', $project);
-
-			//dossier temporaire d'export SVN pour le projet
-			if (is_dir(_DEPLOYTMPDIR . DS . $project['Project']['name'])) {
-				// on le vide si il existe
-				$output .= "-[".LANG_DUMPDIRECTORY." " . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "]\n";
-				$output .= shell_exec('rm -rf ' . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "/*");
-			} else {
-				// on le crée si il n'existe pas
-				if (mkdir(_DEPLOYTMPDIR . DS . $project['Project']['name'], octdec(_DIRMODE), TRUE))
-					$output .= "-[".LANG_CREATINGDIRECTORY. " " . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "]\n";
-			}
-
-			// création du répertoire de l'application si il n'existe pas
-			if (!is_dir($project['Project']['prd_path'])) {
-				if (@ mkdir($project['Project']['prd_path'], octdec(_DIRMODE), TRUE))
-					$output .= "-[".LANG_CREATINGDIRECTORY. " " . $project['Project']['prd_path'] . "]\n";
-			}
-
-			//on se place dans le dossier temporaire pour faire le svn export
-			chdir(_DEPLOYTMPDIR . DS . $project['Project']['name']);
-			$output .= "-[".LANG_SVNEXPORT."]\n";
-			if ((isset ($this->data['Project']['revision']) && ($this->data['Project']['revision']) != "")) {
-				$revision = ' -r ' . $this->data['Project']['revision'];
-			}
-
-			if (($this->data['Project']['user'] != "") && ($this->data['Project']['password'] != "")) {
-				$authentication = ' --username ' . $this->data['Project']['user'] . ' --password ' . $this->data['Project']['password'];
-			} else {
-				$authentication = ' --username ' . _SVNUSER . ' --password ' . _SVNPASS;
-			}
-
-			// svn export
-			$output .= shell_exec("svn export" . $revision . $authentication . " " . $project['Project']['svn_url'] . " tmpDir");
-			preg_match('/ ([0-9]+)\.$/', $output, $matches);
-
-			$this->set('revision', $matches[1]);
-			$this->set('output', $output);
-			$this->set('took', round((getMicrotime() - $t) , 3));
-		}	
-	}
-
-	function synchronize() {
-		// custom timelimit
-		set_time_limit(_TIMELIMIT_RSYNC);
-		$t = getMicrotime();
-
-		
-
-		$project = $this->Project->read(null, $this->data['Project']['id']);
-		$this->set('project', $project);
-		
-		$this->layout = 'ajax';
-		$output = '';
-
-		if (!@ file_exists(_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php")) {
-			$output .= LANG_DEPLOYNONEXISTENT;
-		} else {
-			include_once (_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php");
-
-			$exclude = $this->_getConfig()->exclude;
-			$exclude_string = "";
-			for ($i = 0; $i < sizeof($exclude); $i++) {
-				$exclude_string .= "- ".$exclude[$i] . "\n";
-			}
-			$exclude_string .= "- deploy.php\n";
-			$exclude_string .= "- **.dev.**\n";
-			
-			$exclude_file_name = _DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "exclude_file.txt";
-			$handle = fopen($exclude_file_name, "w");
-			fwrite($handle, $exclude_string);
-			fclose($handle);
-			//on sauvegarde la version actuelle au cas ou
-			if ($this->_backup($project, $output)) {
-				//on défini les option de la commande rsync
-				if ($this->data['Project']['simulation'] == 1) {
-					// simulation
-					$option = 'rtOvn';
-				} else {
-					// pas simulation
-					$option = 'rtOv';
-
-					// Log du deploiment 
-					$data = array (
-						'DeploymentLog' => array (
-							'project_id' => $this->data['Project']['id'],
-							'title' => $project['Project']['name'] . ' - ' . $_SESSION['User']['login'],
-							'user_id' => $_SESSION['User']['id'],
-							'comment' => $this->data['DeploymentLog']['comment'] ? $this->data['DeploymentLog']['comment'] : 'aucun',
-							'archive' => 0
-						)
-					);
-					$this->DeploymentLog->save($data);
-				}
-
-				//mise en forme des paramètres (windows/linux) pour la commande rsync 
-				$exclude_file_name = $this->_pathConverter($exclude_file_name);
-				$source = $this->_pathConverter(_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS);
-				$target = $this->_pathConverter($project['Project']['prd_path']);
-
-				chdir(_DEPLOYDIR);
-				$output .= shell_exec("rsync -$option --delete --exclude-from=$exclude_file_name $source $target");
-				//$output .= e("rsync -$option --delete --exclude-from=$exclude_file_name $source $target");
-
-			} else {
-				$output .= LANG_BACKUPISSUE;
-			}
-		}
-		$this->set('output', $output);
-		$this->set('took', round((getMicrotime() - $t) , 3));
-	}
-
-	function finalize() {
-		// custom timelimit
-		set_time_limit(_TIMELIMIT_FINALIZE);
-		$t = getMicrotime();
-
-		$project = $this->Project->read(null, $this->data['Project']['id']);
-		$this->set('project', $project);
-		
-		$this->layout = 'ajax';
-		$output = '';
-		
-		if (!@ file_exists(_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php")) {
-			$output .= LANG_DEPLOYNONEXISTENT;
-		} else {
-			include_once (_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php");
-			chdir(_DEPLOYDIR);
-			if (_WINOS === true) {
-				//couche cygwin
-				$prefix = "bash.exe --login -c '";
-				$suffix = "'";
-			} else {
-				$prefix = "";
-				$suffix = "";
-			}
-		
-			if ($this->data['Project']['RenamePrdFile'] == true) {
-				//renommage des versions de prod des fichiers de type .prd.xxx en .xxx
-				$output .= "\n-[".LANG_RENAMEFILES." '.prd.']\n";
-				$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.prd.*' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -vf 's/\.prd\./\./i' {} \;".$suffix);				
-			}
-			
-			if ($this->data['Project']['ChangeFileMode'] == true) {
-				//ajustement des droits 
-				$output .= "\n-[".LANG_UPDATINGFILESMODES."] ".LANG_NEWFILESMODE.": " . _FILEMODE;
-				$output .= shell_exec("chmod -R " ._FILEMODE . "  ".$this->_pathConverter($project['Project']['prd_path']));	
-				$output .= "\n-[".LANG_UPDATINGDIRMODE." ] ".LANG_NEWDIRMODES.": " . _DIRMODE;
-				$output .= shell_exec("chmod " ._DIRMODE . "  ".$this->_pathConverter($project['Project']['prd_path']));
-				$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -type d -exec chmod " . _DIRMODE . " {} \;".$suffix);
-			}
-			
-			if ($this->data['Project']['GiveWriteMode'] == true) {
-				$output .= "\n-[".LANG_ADDWRITABLEMODE."]\n";
-				$writable = $this->_getConfig()->writable;
-				if (sizeof($writable) > 0) {
-					for ($i = 0; $i < sizeof($writable); $i++) {
-						$output .= shell_exec("chmod -vR " ._WRITEMODE . "  ".$this->_pathConverter($project['Project']['prd_path'] . $writable[$i] ));
-					}
-				}
-			}
-			
-		}
-		$this->set('output', $output);
-		$this->set('took', round((getMicrotime() - $t) , 3));
-	}
-	
-	// Private functions -----------------------------------------------------------
-
-	private function _backup($project, $output) {
-
-		if (!is_dir(_DEPLOYBACKUPDIR)) {
-			if (mkdir(_DEPLOYBACKUPDIR, octdec(_DIRMODE), TRUE))
-				$output .= "-[".LANG_CREATINGDIRECTORY. " " . _DEPLOYBACKUPDIR . "]\n";
-		}
-
-		// création du répertoire pour la sauvegarde
-		if (!is_dir(_DEPLOYBACKUPDIR . DS . $project['Project']['name'])) {
-			if (mkdir(_DEPLOYBACKUPDIR . DS . $project['Project']['name'], octdec(_DIRMODE), TRUE)) {
-				$output .= "-[".LANG_CREATINGDIRECTORY. " " . _DEPLOYBACKUPDIR . DS . $project['Project']['name'] . "]\n";
-			}
-		}
-
-		//
-		$output .= "-[".LANG_BACKUPCURRENTPRODVERSION."]\n";
-		if (is_dir($project['Project']['prd_path'])) {
-			// rsync pour le backup
-			$output .= shell_exec("rsync -av " . $project['Project']['prd_path'] . " " . _DEPLOYBACKUPDIR . DS);
-			$output .= shell_exec("chmod -R " . _DIRMODE . " " . _DEPLOYBACKUPDIR);
-
-		} else {
-			$output .= "-[".LANG_NOBACKUPNEEDED." " . $project['Project']['prd_path'] . " ".LANG_DOESNTEXIST."]\n";
-		}
-
-		$this->set('output', $output);
-
-		if (is_dir(_DEPLOYBACKUPDIR . DS . $project['Project']['name'])) {
-			return true;
-		} else {
-			return false;
-		}
-
-	}
-
-
-	//dans le cas d'un path windows on le reformate à la sauce cywin
-	private function _pathConverter($path) {
-		$pathForRsync = $path;
-		if (_WINOS) {
-			$pattern = '/^([A-Za-z]):/';
-			preg_match($pattern, $path, $matches, PREG_OFFSET_CAPTURE);
-			if (!empty ($matches[1][0])) {
-				$windowsLetter = strtolower($matches[1][0]);
-				$pathForRsync = strtr(_CYGWINROOT . $windowsLetter . substr($path, 2), "\\", "/");
-			}	
-		}
-		return $pathForRsync;
-	}
-	
-	private function &_getConfig() {
-		static $instance;
-
-		if (!isset($instance) || !$instance) {
-			$instance = &new DEPLOY_CONFIG();
-		}
-
-		return $instance;
-	}
-	
-}
+}// ProjectsController
 ?>

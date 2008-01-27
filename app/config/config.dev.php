@@ -35,7 +35,8 @@ define('LANG_DEFAULT','en-US'); 					//available languages :  en-US, fr-FR
 require_once (APP . 'locale' . DS . LANG_DEFAULT . DS . 'LC_MESSAGES' . DS . 'default.php');
 
 // Auth
-define("_AUTHENTICATIONTYPE",		"2");	
+define("_AUTHENTICATIONTYPE",		"2");
+define("_DISABLEACLITE",			false);
 //SPECIFIQUE -sera supprimé dans une prochaine version=
 define("_WS_SSL_TRUSTEDCA_FILE",    "");
 define("_WEBSERVICESSERVER",		""); 			

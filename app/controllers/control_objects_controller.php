@@ -3,17 +3,15 @@ class ControlObjectsController extends AppController {
 
 	var $name = 'ControlObjects';
 	
-	var $helpers = array (
-	);
+	var $helpers = array ();
 	
-	var $components = array (
-	);
+	var $components = array ();
 
-//	var $authLocal = array (
-//		'ControlObjects' => array (
-//			'authorizations'
-//		)
-//	);
+	var $authLocal = array (
+		'ControlObjects' => array (
+			'authorizations'
+		)
+	);
 
 	function beforeRender() {
 		parent :: beforeRender();

@@ -1,155 +1,22 @@
-<h1>Aide</h1>
-<h2>Fredistrano - Outil de déploiement pour les aplications Php</h2>
-<p>Frédéric Bollon		le		24/09/2007		version	0.1	</p>
+<h1>Help</h1>
+<p><em><?php echo LANG_VERSION; ?></em></p>
 
-	<h3>I - pré-requis</h3>
-	<h4>Système:</h4>
-				<ul>
-					<li><a href="http://www.fbollon.net/node/12">Un hébergement Php</a> avec le <a href="http://fr2.php.net/manual/fr/features.safe-mode.php">"Safe Mode"</a> non activé</li>
-					<li>Un projet Php "versionné" avec Subversion </li>
-					<li>Pour le déploiement sur un serveur windows, il faut installer 
-  <a href="http://www.cygwin.com/">cygwin</a> 
-   avec rsync et un client subversion.</li>					
-				</ul>
+Check for news and updates about Fredistrano on its <?php echo $html->link('homepage','http://code.google.com/p/fredistrano'); ?>	
 	
-	<h4>Les fichiers de configuration propre à l'application:</h4>		
-				<ul>
-					<li>app/config/config.php //configuration de l'authentification + divers</li>
-					<li>app/config/database.php //configuration de la base de données</li>
-					<li>app/config/deploy.php //recette de déploiement (exemple: les fichiers ignorés lors du déploiement, les fichiers à autoriser en écriture)</li>
-				</ul>
-			
-				<p>exemple de contenu pour le fichier deploy.php :</p>			
-				
-	<pre>
+<h3>Support</h3>
+<ul>
+	<li>Documentation [ <?php echo $html->link('PDF-En','/files/'.LANG_DOCUMENTATIONFILE); ?> ]</li>
+	<li><?php echo $html->link('Knoweldge base','http://code.google.com/p/fredistrano/wiki'); ?> with detailled installation instructions, FAQS and solutions to common problems</li>
+	<li>Share your experience and problems directly on the <?php echo $html->link('Fredistrano forum','http://www.fbollon.net/forum/63'); ?></li>
+	<li>Report <?php echo $html->link('bugs and enhancements','http://code.google.com/p/fredistrano/issues/list'); ?> to the development team</li>
+</ul>	
 
- class DEPLOY_CONFIG {
+<h3>Developpement team</h3>
+<ul>
+	<li><a href="http://www.fbollon.net/user/1">fbollon</a> - Project leader</li>
+	<li><a href="http://www.fbollon.net/user/3">Dia</a> - Developement, beta test</li>
+	<li><a href="http://www.fbollon.net/user/2">euphrate_ylb</a> - Developement</li>
+</ul>
 
-	// tableau permettant la création du fichier
-	// des répertoires et fichiers à exclure lors du dépoiement en production
-	var $exclude = array (
-		'/app/tmp/cache/models/*',
-		'/app/tmp/cache/persistent/*',
-		'/app/tmp/cache/views/*',
-		'/app/tmp/logs/*',
-		'/app/tmp/sessions/*',
-		'/app/tmp/tests/*',
-		'/app/webroot/files/*',
-		'/app/config/database.php',
-		'/app/config/config.php',
-		'.settings'
-	);
-
-	// répertoires sur lesquel un CHMOD 777 sera executé à la suite du déploiement
-	// les répertoires de log, de cache, les répertoires d'upload, etc ...
-	var $writable = array (
-		'/app/tmp',
-		'/app/webroot/files'
-	);
-
- }
-
-	</pre>
-
-	<h3>II - Téléchargement</h3>
-		<p>Vous trouverez les archives des différentes versions dans le répertoire "source/Fredistrano" sur cette <a href="http://www.fbollon.net/downloads" alt="télécharger les sources" title="télécharger les sources">page</a></p>
-	<h3>III - Installation</h3>
-		<p>Vous trouverez la procédure d'installation dans le fichier docs/fredistrano/INSTALL</p>
-
-		<p>
-		
-  <ul>
-    <li>décompresser l'archive : tar -xzvf fredistrano_x.x.tar.gz à la racine de votre web server ou dans un dossier de votre choix.<br/>
-    </li>
-    <li>créer la base de données à l'aide du script sql qui se trouve dans /app/config/sql/fredistrano.sql<br/>
-    </li>
-    <li>créer les fichiers app/config.php et app/database.php en s'inspirant des fichiers config.prd.php et database.prd.php<br/>
-    </li>
-    <li>changement des droits (récursivement) sur le répertoire des fichiers temporaires app/tmp (sessions, cache, etc...) avec la commande :
-	chmod -R 777 tmp/
-	ou avec votre client ftp si vous n'avez pas d'accès ssh<br/>
-    </li>
-    <li>un utilisateur "admin" avec comme mot de passe "pass" est créé par le script sql, 
-penser à changer le mot de passe dans Administration/utilisateurs, avec le lien "changer le mot de passe" dans la fiche d'un utilisateur.
-<br/><br/>
-Si vous souhaitez créer un nouvel utilisateur, il faut le créer via le menu Administration/utilisateurs, 
-puis dans Administration/permission, cliquer sur "Import Groups / Users"
-et ensuite sélectionner "Import from model User using field id as identifier, and field username as descriptive name". 
-<br/><br/>
-Il faut affecter le groupe "admin" au nouvel utilisateur pour qu'il puisse accéder à l'application:
-"Administration/permission" -> "Users" puis modifier l'utilisateur et sélectionner le groupe "admin".
-<br/><br/>
-<strong>Ne pas supprimer l'utilisateur "admin" tant qu'un autre utilisateur appartenant au groupe "admin" ne soit créer.</strong><br/>
-    </li>
-  </ul>
-		
-		</p>
-
-
-	<h3>IV - Création du projet dans l'application</h3>
-	
-	<ol>
-		<li>Onglet "Déploiement"</li>
-		<li>lien "Ajouter un projet"</li>
-	</ol>
-	
-	<div class="featurebox">
-		<p><b>Nom du projet</b>  : le nom du projet</p>
-		<p><b>Url SVN</b>  : Url vers le repository SVN du projet à déployer
-			(exemple : "http://mondomain.com/svn/info/php/_CakePHP/_model/trunk")</p>
-		<p><b>Url Prod</b> : http://mondomain.com/CakePHP-model</p>
-		<p><b>Path prod</b>  : nom du dossier à partir de la racine du serveur Web (exemple : "CakePHP-model" pour une appli se trouvant sur http://mondomain.com/CakePHP-model )</p>
-		<p><b>Répertoire des fichiers de configuration du projet</b> : voir les pré-requis (exemple : app/config ) </p>
-	</div>
-
-	<h3>V - Utilisation</h3>
-	
-  <h4>Précisions importantes :  pour pouvoir déloyer un projet avec Fredistrano sur votre serveur de production il est nécessaire : </h4>
-  	<ul>
-		<li>Votre projet doit-être versionné sur un serveur subversion</li>
-		<li>les fichiers config.php, database.php ne doivent pas être versionnés mais une version de développement et une version de production doivent être versionnées<br/>
-		soit config.dev.php, config.prd.php, database.dev.php et database.prd.php<br/>
-		lors d'un déploiement les fichiers xxxx.prd.php seront renomés en xxxx.php</li>
-		<li>le fichier deploy.php (voir exemple dans <i>I - pré-requis</i>) doit être présent</li>
-		<li>les dossiers et fichiers à exclure lors d'un déploiement (cache, session, fichiers uploadés par l'application, etc ...) doivent être précisés dans deploy.php <strong>et</strong>/ou ignorés dans subversion</li>
-	</ul>	
-	
-
-	<h4>les différentes étapes d'un déploiement :</h4>
-	<ul>
-		<li>bouton "Déployer le projet"</li>
-		<ul>
-			<li>préciser le numéro de révision si nécessaire, pour la dernière version ne rien mettre</li>
-			<li>préciser un user et mot de passe subversion ( il est possible de renseigner le user et mot de passe subversion dans le fichier app/config.php )</li>
-		</ul>
-
-		<li>bouton "Step 1 SVN export"</li>
-		<ul>
-			<li>la commande svn export est exécutée dans le dossier "_deployment/tmp/nomduprojet/tempDir"</li>
-		</ul>
-
-		<li>bouton "Step 2 synchronisation"</li>
-		<ul>
-			<li>simulation coché rien n'est fait juste un résumé de ce qui va être fait</li>
-			<li>simulation décoché</li>
-			<ul>
-				<li>un backup du répertoire de prod est effectué dans "_deployment/backup/nomduprojet"</li>
-				<li>la commande rsync est exécutée entre le dossier "_deployment/tmp/nomduprojet/tempDir" et le dossier "nomduprojet"</li>
-			</ul>
-		</ul>
-	</ul>
-	
-	<h3>VI - Liens utiles</h3>
-	
-	<ul>
-		<li><a href="http://www.fbollon.net/node/12">Un hébergement qui permet l'utilisation de Fredistrano</a></li>
-		<li><a href="http://www.fbollon.net/node/65">Un billet sur l'utilisation de Subversion</a></li>
-		<li>( à venir ) Un billet sur le versionnement d'un projet basé sur CakePHP</a></li>
-	</ul>	
-	
-	<h3>VII - Remerciements</h3>
-	<ul>
-		<li><a href="http://www.fbollon.net/user/2">euphrate_ylb</a> pour la gestion des logs</li>
-		<li><a href="http://www.fbollon.net/user/3">Dia</a> pour la gestion des groupes</li>
-	</ul>
-	
+<h3>Acknowledgments</h3>
+Thanks to you, fredistrano's users, for using using this appliction to deploy your source code. 	

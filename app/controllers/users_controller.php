@@ -7,13 +7,13 @@ class UsersController extends AppController {
 
 	var $components = array ();
 
-//	var $authLocal = array(
-//		'Users' => array('authorizations'),
-//		'except' => array (
-//			'login'=> array('public'),
-//			'logout'=> array('public')
-//		)
-//	);
+	var $authLocal = array(
+		'Users' => array('authorizations'),
+		'except' => array (
+			'login'=> array('public'),
+			'logout'=> array('public')
+		)
+	);
 
 	function beforeRender() {
 		parent::beforeRender();
@@ -249,5 +249,6 @@ class UsersController extends AppController {
 			
 		}
 	} // _authenticate
-}
+	
+}// UsersController
 ?>

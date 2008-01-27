@@ -47,7 +47,7 @@ define('LANG_CORRECTERRORSBELOW',"Please correct errors below.");
 define('LANG_COUPDATED',"Control object updated.");
 define('LANG_CREATEDON',"Created on");
 define('LANG_CREATINGDIRECTORY',"creating directory");
-define('LANG_CURRENTPERMISSIONS'," [view] ");
+define('LANG_CURRENTPERMISSIONS',"Current permissions");
 define('LANG_DELETETHISPERMISSION',"Delete this permission?");
 define('LANG_DEPLOYNONEXISTENT',"[ERROR] - sync impossible file deploy.php nonexistent, the file must be at the root of the project to deploy, see Fredistrano documentation");
 define('LANG_DEPLOYPROJECT',"Deploy");

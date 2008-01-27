@@ -2,6 +2,7 @@
 class DeploymentLogsController extends AppController {
 
 	var $name = 'DeploymentLogs';
+
 	var $helpers = array (
 		'Html'
 	);
@@ -11,6 +12,10 @@ class DeploymentLogsController extends AppController {
 		'DeploymentLog'
 	);
 
+	var $authLocal = array (
+		'DeploymentLogs'	=> 	array( 'entrance' )
+	);
+		
 	function beforeRender() {
 		parent::beforeRender();
 
@@ -35,10 +40,16 @@ class DeploymentLogsController extends AppController {
 	} // beforeRender
 
 	// Available actions ----------------------------------------------------------------------------------
+	/**
+	 * List all logs
+	 */
 	function index() {
 		$this->redirect('/deploymentLogs/list_all');
 	} // index
 
+	/**
+	 * List all logs
+	 */
 	function list_all($op = null, $id = null) {
 		$archived = $this->_archive();
 		if ($archived > 0) 
@@ -61,6 +72,10 @@ class DeploymentLogsController extends AppController {
 		} // switch
 	} // listAll
 
+	/**
+	 * View properties of a specified log
+	 * @param string $id ID of the log to be viewed
+	 */
 	function view($id) {
 		if (!$id or !$this->DeploymentLog->read(null, $id)) {
 			$this->Session->setFlash(LANG_INVALIDLOGID.$id);
@@ -70,11 +85,17 @@ class DeploymentLogsController extends AppController {
 	} // view
 
 	// Private functions ----------------------------------------------------------------------------------
+	/**
+	 * Private function for archiving old logs
+	 */
 	private function _archive() {
 		$oldTime = time() - _LOGSARCHIVEDATE;
 		return $this->DeploymentLog->archive($oldTime);
 	}// _archive
-	
+
+	/**
+	 * Private function for deleting of all logs
+	 */
 	private function _reset() {
 		$this->DeploymentLog->delAll();
 
@@ -83,6 +104,9 @@ class DeploymentLogsController extends AppController {
 		$this->redirect('/deploymentLogs/list_all');
 	} //_ reset
 
+	/**
+	 * Private function for listing logs
+	 */
 	private function _listAll() {
 		$filter = array();
 		$conditions = '';
@@ -105,6 +129,10 @@ class DeploymentLogsController extends AppController {
 		$this->set('logs', $logs);
 	} // _listAll
 
+	/**
+	 * Private function for listing logs associated to a project
+	 * @param string $id ID of the project
+	 */
 	private function _listByProject($id = null) {
 		if (!$id or !$this->Project->read(null, $id)) {
 			$this->Session->setFlash(LANG_INVALIDPROJECTID.$id);

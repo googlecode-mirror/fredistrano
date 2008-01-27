@@ -9,11 +9,11 @@ class GroupsController extends AppController {
 	var $components = array (
 	);
 
-//	var $authLocal = array (
-//		'Groups' => array (
-//			'authorizations'
-//		)
-//	);
+	var $authLocal = array (
+		'Groups' => array (
+			'authorizations'
+		)
+	);
 
 	function beforeRender() {
 		parent::beforeRender();

@@ -1,5 +1,5 @@
 <hr>
-<form action="<?php echo $html->url('/projects/export'); ?>" method="post" class="f-wrap-1">
+<form action="<?php echo $html->url('/deployments/export'); ?>" method="post" class="f-wrap-1">
 	<div class="req">
 	</div>
 		<fieldset>
@@ -30,14 +30,14 @@
 			<?php echo $html->hidden('Project/id', array('value' => $id))?>
 	
 			<div class="f-submit-wrap">
-				<?php echo $ajax->submit(LANG_STEP1, array('class' => 'f-submit','url' => 'export','update' => 'deploy_result', 'loading' => "Element.show('spinning_image');", 'complete' => "Element.show('step2');", 'loaded' => "Element.hide('spinning_image');"));?>
+				<?php echo $ajax->submit(LANG_STEP1, array('class' => 'f-submit','url' => '/deployments/export','update' => 'deploy_result', 'loading' => "Element.show('spinning_image');", 'complete' => "Element.show('step2');", 'loaded' => "Element.hide('spinning_image');"));?>
 				<?php e($html->imageTag('loading_orange.gif','Loading...',array('id'=>'spinning_image','style'=>'display:none'))); ?>
 			</div>
 		</fieldset>
 </form>
 	
 <div id="step2" style="display:none">
-	<form action="<?php echo $html->url('/projects/synchronize'); ?>" method="post" class="f-wrap-1">
+	<form action="<?php echo $html->url('/deployments/synchronize'); ?>" method="post" class="f-wrap-1">
 			<fieldset>
 				<h3><?php e(LANG_SYNCHRONIZINGWITHPRODUCTIONSERVER);?></h3>
 				<fieldset class="f-name">
@@ -58,7 +58,7 @@
 				<?php echo $html->hidden('Project/id', array('value' => $id))?>
 				
 				<div class="f-submit-wrap">
-					<?php echo $ajax->submit(LANG_STEP2, array('class' => 'f-submit','url' => 'synchronize','update' => 'deploy_result', 'loading' => "Element.show('spinning_image2');", 'complete' => "(document.getElementById('ProjectSimulation').checked)?Element.hide('step3'):Element.show('step3');", 'loaded' => "Element.hide('spinning_image2');"));?>
+					<?php echo $ajax->submit(LANG_STEP2, array('class' => 'f-submit','url' => '/deployments/synchronize','update' => 'deploy_result', 'loading' => "Element.show('spinning_image2');", 'complete' => "(document.getElementById('ProjectSimulation').checked)?Element.hide('step3'):Element.show('step3');", 'loaded' => "Element.hide('spinning_image2');"));?>
 					<?php e($html->imageTag('loading_orange.gif','Loading...',array('id'=>'spinning_image2','style'=>'display:none'))); ?>
 				</div>
 			</fieldset>	
@@ -66,7 +66,7 @@
 </div>
 
 <div id="step3" style="display:none">
-	<form action="<?php echo $html->url('/projects/finalize'); ?>" method="post" class="f-wrap-1">
+	<form action="<?php echo $html->url('/deployments/finalize'); ?>" method="post" class="f-wrap-1">
 			<fieldset>
 				<h3><?php e(LANG_FINALIZATIONOFDEPLOYMENT);?></h3>
 				<?php echo $html->hidden('Project/id', array('value' => $id))?>
@@ -87,7 +87,7 @@
 				</fieldset>
 				
 				<div class="f-submit-wrap">
-					<?php echo $ajax->submit(LANG_STEP3, array('class' => 'f-submit','url' => 'finalize','update' => 'deploy_result', 'loading' => "Element.show('spinning_image3');", 'complete' => "Element.hide('spinning_image3');"));?>
+					<?php echo $ajax->submit(LANG_STEP3, array('class' => 'f-submit','url' => '/deployments/finalize','update' => 'deploy_result', 'loading' => "Element.show('spinning_image3');", 'complete' => "Element.hide('spinning_image3');"));?>
 					<?php e($html->imageTag('loading_orange.gif','Loading...',array('id'=>'spinning_image3','style'=>'display:none'))); ?>
 				</div>
 			</fieldset>	

@@ -56,16 +56,6 @@ class AppController extends Controller {
 		'Aclite',
 		'Session'
 	);
-	
-	var $authGlobal = array(
-		'App' => array('administration'),
-		'except' => array (
-			'Home.index'=> array('public'),
-			'Home.switchLanguage'=> array('public'),
-			'Users.login'=> array('public'),
-			'Users.logout'=> array('public')
-		)
-	);
 
 	function beforeRender() {
 		$this->set('referer', $this->referer());
@@ -73,23 +63,6 @@ class AppController extends Controller {
 		// pour construire l'url https du formulaire de login
 		$this->set('serverName', $_SERVER['SERVER_NAME']);
 		$this->set('appPath', str_replace('/app/webroot/index.php', '', $_SERVER['SCRIPT_NAME']));
-	
-		if (!$this->Session->check('user_windows')) {
-			$output = array();
-			exec('nbtstat -A ' . $_SERVER['REMOTE_ADDR'], $output);
-			foreach($output as $value) {
-				$matches = null;
-				ereg('(.*)[[:space:]]+<03>[[:space:]]+UNIQUE[[:space:]]+Registered', $value, $matches);
-				
-				if (!empty($matches) && isset($matches[1])) {
-						$tmp = trim($matches[1]);
-						if (!$this->_isComputer($tmp)) {
-							$this->Session->write('user_windows', strtolower($tmp));
-							break;
-						}
-				} 
-			}
-		}
 	}
 	
 //	function beforeFilter(){
@@ -101,17 +74,5 @@ class AppController extends Controller {
 //		$lang = isset ($_SESSION['userPreferedLanguage']) ? $_SESSION['userPreferedLanguage'] : LANG_DEFAULT;
 //		require_once (APP . 'locale' . DS . $lang . DS . 'LC_MESSAGES' . DS . 'default.php');
 //	}
-	
-	private function _isComputer($name) {
-		if (($name[0] == '_')
-		|| (substr($name, 0, 2) == 'XW')
-		|| (substr($name, strlen($name) - 2) == 'PC'))
-			return true;
-		else
-			return false;
-	}
-	
-
-
 }
 ?>

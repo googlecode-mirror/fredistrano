@@ -11,6 +11,9 @@ class AcliteComponent extends Object {
 	);
 
 	function startup(& $controller) {		
+		if (defined('_DISABLEACLITE') && _DISABLEACLITE) 
+			return true;
+			
 		// Init
 		$this->controller = & $controller;
 		$config = & AcliteComponent :: getConfig();

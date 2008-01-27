@@ -10,112 +10,127 @@ class Deployment extends AppModel {
 	var $useTable = false;
 	
 	var $process = array(
-		0 => 'initialize',
-		1 => 'initialize',
-		2 => 'initialize',
-		3 => 'initialize'
+//		0 => 'initialize',
+		1 => 'export',
+		2 => 'synchronize',
+		3 => 'finalize'
 	);
 	
+	var $lastExecutionTime = 0;
+	
+	var $lastError = '';
+	
 	function __construct() {
-		parent :: __construct();
+		parent::__construct();
 		
 		loadModel('Project');
 		$this->Project = new Project(); 
 		
 		loadModel('DeploymentLog');
 		$this->DeploymentLog = new DeploymentLog();
+
+		if ( Configure::read() > 0 )
+			if (!class_exists('CakeLog'))
+				uses('cake_log');
 	}// __construct 
 	
 	// Public deploy -----------------------------------------------------------------		
+	/**
+	 * Run a complete deployment process
+	 * @param int $project_id 		Id of the project that should be deployed 
+	 * @param array $options		Various options used for configuring the step 
+	 * @return string 			Shell output 
+     */	
 	function runProcess($project_id = null, $options = array()) {
-		if ( $project_id == null || !($project = $this->Project->read(null, $project_id))
-				|| !$this->isConfigAvailable($project['Project']['name'])) 
+		if ( $project_id == null || !($project = $this->Project->read(null, $project_id)) ) { 
+			$this->lastExecutionTime = 0;
 			return false;		
-	
+		}
+		
+		$t1 = getMicrotime();
+		
 		// Init options
-		if (empty($options))
-			$options = array(
-				'backup'			=>	true,
-				'simulation' 		=> 	true,
-				'comment' 			=> 	'empty',
-				'renamePrdFile' 	=> 	false,
-				'changeFileMode' 	=> 	false,
-				'giveWriteMode'		=> 	false
-			);
+		$default_options = array(
+			'backup'			=>	false,
+			'simulation' 		=> 	false,
+			'renamePrdFile' 	=> 	false,
+			'changeFileMode' 	=> 	false,
+			'giveWriteMode'		=> 	false
+		);
+		$options = array_merge($default_options, $options);
 
 		// Performs successively each step
-		$output = "> Initialize:\n";
-		$output .= $this->initialize($project_id, $options);
+		//$output = "> Initialize:\n";
+		//$output .= $this->initialize($project, $options);
 		
 		$output = "> Export:\n";
-		$output .= $this->export($project_id, $options);
-		
+		$output .= $this->export($project, $options);
+		preg_match('/ ([0-9]+)\.$/', $output, $matches);
+		$options['comment'] = 'Revision exported ' . $matches[1];	
+
 		$output = "> Synchronize:\n";
-		$output .= $this->synchronize($project_id, $options);
+		$output .= $this->synchronize($project, $options);
 
 		$output = "> Finalize:\n";
-		$output .= $this->finalize($project_id, $options);
+		$output .= $this->finalize($project, $options);
+		
+		$this->lastExecutionTime = round((getMicrotime() - $t1) , 3);
 		
 		return $output;
 	}// runProcess
 	
 	/**
 	 * Run a deployment step and performs the required checks
-	 * @param string $project_id 	Id of the project that should be deployed 
+	 * @param string $step			Step that should be performed 
 	 * @param int $project_id 		Id of the project that should be deployed 
 	 * @param array $options		Various options used for configuring the step 
-	 * @return string 			Shell output 
+	 * @return string 				Shell output 
      */			
 	function runStep($step = null, $project_id = null, $options = array()) {
 		if ( $step == null && !in_array($step, $this->$process) )
 			return false;
 			
-		// Check  
+		$t1 = getMicrotime();
+
+		if ( $project_id == null || !($project = $this->Project->read(null, $project_id)) ) 
+			$res = false;
+		else 
+			$output = $this->{$step}($project, $options);	
+			
+		$this->lastExecutionTime = round((getMicrotime() - $t1) , 3);
 		
-		$this->{$step}($project_id,$options);	
+		return $output;
 	}// runStep
 		
 	//  Private Step -----------------------------------------------------------
-	/**
-	 * Step 1 of the deployment process: Initialize
-	 * @param int $project_id 	Id of the project that should be deployed 
-	 * @param array $options	Various options used for configuring the step 
-	 * @return string 			Shell output 
-     */
-	private function initialize($project_id = null, $options = array()) {
-
-		if ( $project_id == null || !($project = $this->Project->read(null, $project_id))
-				|| !$this->isConfigAvailable($project['Project']['name'])) 
-			return false;		
-
-		include_once (_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php");
-			
-		$default_options = array(
-			'XXX' 	=> 	false
-		);
-		$options = array_merge($default_options, $options);
-		$output = '';
-
-		// Perform the job 
-		
-		return $output;
-	}// initialize
+//	/**
+//	 * Step 1 of the deployment process: Initialize
+//	 * @param array $project 	Project that should be deployed 
+//	 * @param array $options	Various options used for configuring the step 
+//	 * @return string 			Shell output 
+//   */
+//	private function initialize($project = null, $options = array()) {
+//		if ($project===null) 
+//			return false;
+//		
+//		set_time_limit(_TIMELIMIT_INITIALIZE);
+//
+//		return '';
+//	}// initialize
 	
 	/**
 	 * Step 2 of the deployment process: Export
-	 * @param int $project_id 	Id of the project that should be deployed 
+	 * @param array $project 	Project that should be deployed 
 	 * @param array $options	Various options used for configuring the step 
 	 * @return string 			Shell output 
      */
 	
-	private function export($project_id = null, $options = array()) {
-	
-		if ( $project_id == null || !($project = $this->Project->read(null, $project_id))
-				|| !$this->isConfigAvailable($project['Project']['name'])) 
-			return false;		
+	private function export($project = null, $options = array()) {
+		if ($project===null) 
+			return false;
 
-		include_once (_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php");
-			
+		set_time_limit(_TIMELIMIT_EXPORT);
+				
 		$default_options = array(
 			'revision' 	=> 	null,
 			'user' 		=> 	_SVNUSER,
@@ -142,8 +157,6 @@ class Deployment extends AppModel {
 				$output .= "-[".LANG_CREATINGDIRECTORY. " " . _DEPLOYBACKUPDIR . "]\n";
 		}
 
-		$project = $this->Project->read(null, $project_id);
-
 		//dossier temporaire d'export SVN pour le projet
 		if (is_dir(_DEPLOYTMPDIR . DS . $project['Project']['name'])) {
 			// on le vide si il existe
@@ -164,17 +177,18 @@ class Deployment extends AppModel {
 		//on se place dans le dossier temporaire pour faire le svn export
 		chdir(_DEPLOYTMPDIR . DS . $project['Project']['name']);
 		$output .= "-[".LANG_SVNEXPORT."]\n";
-		if ( $options['revision'] == null ) 
+		if ( $options['revision'] != null ) 
 			$revision = ' -r ' . $options['revision'];
 		else 
 			$revision = '';
 
 		$authentication = ' --username ' . $options['user'] . ' --password ' . $options['password'];
-
-        //echo "svn export" . $revision . $authentication . " " . $project['Project']['svn_url'] . " tmpDir";
-		 
+			  
 		// svn export
-		$output .= shell_exec("svn export" . $revision . $authentication . " " . $project['Project']['svn_url'] . " tmpDir");
+		$command = "svn export" . $revision . $authentication . " " . $project['Project']['svn_url'] . " tmpDir 2>&1";
+		if ( Configure::read() > 0 )
+			CakeLog::write('debug', '[export] ' . $command);
+		$output .= shell_exec($command);
 		
 		return $output;
 	}// export
@@ -182,16 +196,16 @@ class Deployment extends AppModel {
 	/**
 	 * Step 3 of the deployment process: Synchronize
 	 * Synchronize the exported source code from snv with the code located in the target directory
-	 * @param int $project_id 	Id of the project that should be deployed 
+	 * @param array $project 	Project that should be deployed 
 	 * @param array $options	Various options used for configuring the step 
 	 * @return string 			Shell output 
      */
-	private function synchronize($project_id =null, $options = array()) {
-		
-		if ( $project_id == null || !($project = $this->Project->read(null, $project_id))
-				|| !$this->isConfigAvailable($project['Project']['name'])) 
+	private function synchronize($project = null, $options = array()) {
+		if ( $project == null || !$this->isConfigAvailable($project['Project']['name'])) 
 			return false;		
 
+		set_time_limit(_TIMELIMIT_RSYNC);
+			
 		include_once (_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php");
 			
 		$default_options = array(
@@ -216,13 +230,15 @@ class Deployment extends AppModel {
 		fclose($handle);
 
 		// Backup current code
-		if ($options['backup'])
-			if (!$this->_backup($project, $output))
+		if ($options['backup'] === true)
+			if ( ($output = $this->backup($project)) === false) {
 				// Backup error
+				$this->lastError = "Unable to backup";
 				return false;
+			}
 			
 		// Setting up Rsync options
-		if ($options['simulation'] == 1) {
+		if ($options['simulation'] === true) {
 			// Simulation mode
 			$option = 'rtOvn';
 		} else {
@@ -232,7 +248,7 @@ class Deployment extends AppModel {
 			// Create a log entry for the pending deployement 
 			$data = array (
 				'DeploymentLog' => array (
-					'project_id'	=> 	$this->data['Project']['id'],
+					'project_id'	=> 	$project['Project']['id'],
 					'title' 		=> 	$project['Project']['name'] . ' - ' . $_SESSION['User']['login'],
 					'user_id' 		=> 	$_SESSION['User']['id'],
 					'comment' 		=> 	$options['comment'],
@@ -248,23 +264,29 @@ class Deployment extends AppModel {
 		$target = $this->_pathConverter($project['Project']['prd_path']);
 
 		// Execute command
+		$command = "rsync -$option --delete --exclude-from=$exclude_file_name $source $target 2>&1";
+		if ( Configure::read() > 0 )
+			CakeLog::write('debug', '[synchronize] ' . $command);
+		$output .= shell_exec($command);
+		
 		chdir(_DEPLOYDIR);
-		$output .= shell_exec("rsync -$option --delete --exclude-from=$exclude_file_name $source $target");
+		$output .= shell_exec($command);
 		
 		return $output;
 	}// synchronize
 
 	/**
 	 * Step 4 of the deployment process: Finalize
-	 * @param int $project_id 	Id of the project that should be deployed 
+	 * @param int $project 		Project that should be deployed 
 	 * @param array $options	Various options used for configuring the step 
 	 * @return string 			Shell output 
      */
-	private function finalize($project_id = null, $options = array()) {
-		if ( $project_id == null || !($project = $this->Project->read(null, $project_id))
-				|| !$this->isConfigAvailable($project['Project']['name'])) 
-			return false;		
-
+	private function finalize($project = null, $options = array()) {
+		if ( $project == null || !$this->isConfigAvailable($project['Project']['name'])) 
+			return false;	
+		
+		set_time_limit(_TIMELIMIT_FINALIZE);
+		
 		include_once (_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php");
 			
 		$default_options = array(
@@ -317,12 +339,12 @@ class Deployment extends AppModel {
 
 	/**
 	 * Optional step in the deployment process: Backup
-	 * @param int $project_id 	Id of the project that should be deployed 
-	 * @param array $options	Various options used for configuring the step 
+	 * @param array $project 	Project that should be deployed 
 	 * @return string 			Shell output 
      */
-	private function backup($project, $output) {
-
+	private function backup($project) {
+		$output = '';
+		
 		if (!is_dir(_DEPLOYBACKUPDIR)) {
 			if (mkdir(_DEPLOYBACKUPDIR, octdec(_DIRMODE), TRUE))
 				$output .= "-[".LANG_CREATINGDIRECTORY. " " . _DEPLOYBACKUPDIR . "]\n";
@@ -359,9 +381,28 @@ class Deployment extends AppModel {
 	 * @return boolean  			True or false
 	 */ 
 	function isConfigAvailable(	$projectName ) {
-		return @ file_exists(_DEPLOYTMPDIR . DS . $projectName . DS . "tmpDir" . DS . "deploy.php");
+		$res = @ file_exists(_DEPLOYTMPDIR . DS . $projectName . DS . "tmpDir" . DS . "deploy.php");
+		if ($res === false)
+			$this->lastError = "Unable to find 'deploy.php' file";
+		return $res;
 	}// isConfigAvailable
-	
+
+	/**
+	 * Get the execution time of the last operation (step or process) 
+	 * @return int 	Last execution time
+	 */ 
+	function getLastExecutionTime () {
+		return $this->lastExecutionTime;
+	}//getLastExecutionTime
+
+	/**
+	 * Get the error of the last operation (step or process) 
+	 * @return int 	Last execution time
+	 */ 
+	function getLastError () {
+		return $this->lastError;
+	}//getLastExecutionTime
+
 	// Private --------------------------------------------------------------------------------
 	/**
 	 * Convert if necessary a path to a cygwin/linux format 

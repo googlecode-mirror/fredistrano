@@ -49,7 +49,7 @@
  * With the other debug levels you get to click the "flash message" to continue.
  *
  */
-	define('DEBUG', 0);
+	define('DEBUG', 1);
 /**
  * Turn of caching checking wide.
  * You must still use the controller var cacheAction inside you controller class.

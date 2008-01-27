@@ -1,17 +1,17 @@
 <div class="deploymentLogs">
-<h2>Logs des déploiements</h2>
+<h2>Deployment logs</h2>
 
 <?php 
 if (!isset($this->params['url']['showArchived'])){
-	echo $html->link('[inclure les logs archivés]','/deploymentLogs/list_all?showArchived' ); 
+	echo $html->link('[All logs]','/deploymentLogs/list_all?showArchived' ); 
 }else{
-	echo $html->link('[ignorer les logs archivés]','/deploymentLogs/list_all' ); 
+	echo $html->link('[Ignore archived logs]','/deploymentLogs/list_all' ); 
 }
-?>
+?><br/>
 <?php
 
  	if (!sizeof($logs)) {
- 		echo 'Pas de logs enregistrés<br/><br/><br/><br/>';
+ 		echo '<em>No logs in database</em><br/><br/><br/><br/>';
  	} else {
  		if (!empty($filter)) {
  			echo 'Résultats filtrés par : ';
@@ -29,7 +29,7 @@ if (!isset($this->params['url']['showArchived'])){
  			$created = strtotime($log['DeploymentLog']['created']);
  			$newdate = date("d/m/Y",$created);
  			$com = $log['DeploymentLog']['comment'];
- 			$com = (strlen($com) > 10 )? substr($com, 0, 20).'...':$com;
+ 			$com = (strlen($com) > 20 )? substr($com, 0, 20).'...':$com;
  			if ($newdate != $lastdate) {
  				$lastdate = $newdate;
  				echo '<h3>'.$newdate.'</h3>';

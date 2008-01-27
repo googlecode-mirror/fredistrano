@@ -2,7 +2,7 @@
 		<li class="<?php echo ($this->params['controller'] == 'home')?"active":"first";?>"><?php echo $html->link(LANG_HOME,'/'); ?></li>
 		<li class="<?php echo (in_array($this->params['controller'], array('projects','deploymentLogs')))?"active":"first";?>"><?php echo $html->link(LANG_PROJECTS,'/projects'); ?></li>
 		<li class="<?php echo (in_array($this->params['controller'], array('administration','users','groups','control_objects','acl_management')))?"active":"first";?>"><?php echo $html->link(LANG_ADMINISTRATION,'/administration'); ?></li>
-		<li class="<?php echo ($this->params['controller'] == 'pages')?"active":"first";?>"><?php echo $html->link(LANG_HELP,'/files/'.LANG_DOCUMENTATIONFILE); ?></li>
+		<li class="<?php echo ($this->params['controller'] == 'pages')?"active":"first";?>"><?php echo $html->link(LANG_HELP,'/pages/help'); ?></li>
 </ul>
 
 

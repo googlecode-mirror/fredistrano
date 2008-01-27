@@ -1,24 +1,30 @@
-<h1><?php echo LANG_WELCOMETITLE;?></h1>
-  
-  <em><?php echo LANG_VERSION; ?></em>
-  <br />
-  <br />
-  <p><?php echo LANG_YOUCANFIND.' '.$html->link(LANG_THISLINK,'/files/'.LANG_DOCUMENTATIONFILE); ?> </p>
-   
-  <p><?php echo LANG_REPORTBUG; ?> 
-  <a href="http://code.google.com/p/fredistrano/issues/list">http://code.google.com/p/fredistrano/issues/list</a>. 
-  </p>
-  <p><?php echo LANG_NEEDHELP; ?> <a href="http://www.fbollon.net/forum/25">forum</a>.
-  </p>
-  <br />
-  <br />
-  <br />
-  <br />
-  <br />
-  <br />
-  <br />
-  <br />
-  <br />
-  <br />
+<h1>Welcome to Fredistrano</h1>
+<p>Use Fredistrano to deploy your web applications.</p>
 
+<!--
+<div id='quick_start'>
+<p>Start working with one of the link below:</p>
+<ul>
+<li><?php echo $html->link('Select a project','/projects'); ?></li>
+<li><?php echo $html->link('Create a new project','/projects/add'); ?></li>
+</ul>
+</div>
+-->
 
+<div id='logsOverview'>
+<p>Overview of the last 10 deployments:</p>
+<ul>
+<?php 
+if (empty($logs))
+	echo '<li><em>No logs in database</em></li>';
+else {
+ 	foreach ($logs as $log) {
+		$created = strtotime($log['DeploymentLog']['created']);
+ 			$line = date("H:i:s",$created).' : Deployment of <b>'.
+ 				$log['Project']['name'].'</b> by <b>'. $log['User']['login'] . '</b>';
+ 			echo '<li>'.$line.'</li>';
+	}
+}
+?>
+</ul>
+</div>

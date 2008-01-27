@@ -19,9 +19,9 @@ foreach ($data as $output)
 {
     $tr = array (
         $output['Project']['name'],
-        $output['Project']['svn_url'],
+        $adixen->truncateString( $output['Project']['svn_url'], 30 ),
         //$output['Project']['prd_url'],
-        $output['Project']['prd_path'] 
+        $adixen->truncateString($output['Project']['prd_path'], 30 ) 
     );
 
     echo $html->tableCells($tr, array('class' => 'altRow', 'onmouseover' => "this.className='trOver'", 'onmouseout' => "this.className='table1'", 'onclick' => "document.location='".$this->base."/projects/view/".$output['Project']['id']."';"), array('class' => 'evenRow', 'onmouseover' => "this.className='trOver'", 'onmouseout' => "this.className='table1'", 'onclick' => "document.location='".$this->base."/projects/view/".$output['Project']['id']."';"));

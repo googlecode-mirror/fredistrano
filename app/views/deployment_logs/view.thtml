@@ -44,7 +44,7 @@
 
 <tr>
 <th class="sub">Commentaire</th>
-<td>&nbsp;<?php echo $log['DeploymentLog']['comment']?></td>
+<td>&nbsp;<?php echo nl2br($log['DeploymentLog']['comment']); ?></td>
 </tr>
 
 </tbody>
