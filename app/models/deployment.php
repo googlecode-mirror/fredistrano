@@ -228,20 +228,12 @@ class Deployment extends AppModel {
 		$handle = fopen($exclude_file_name, "w");
 		fwrite($handle, $exclude_string);
 		fclose($handle);
-
-		// Backup current code
-		if ($options['backup'] === true)
-			if ( ($output = $this->backup($project)) === false) {
-				// Backup error
-				$this->lastError = "Unable to backup";
-				return false;
-			}
 			
 		// Setting up Rsync options
 		if ($options['simulation'] === true) {
 			// Simulation mode
 			$option = 'rtOvn';
-		} else {
+		} else {			
 			// Live mode
 			$option = 'rtOv';
 
@@ -256,6 +248,14 @@ class Deployment extends AppModel {
 				)
 			);
 			$this->DeploymentLog->save($data);
+			
+			// Backup
+			if ($options['backup'] === true)
+				if ( ($output .= $this->backup($project)) === false) {
+					// Backup error
+					$this->lastError = "Unable to backup";
+					return false;
+				}
 		}
 
 		// Preparing pathes
@@ -267,7 +267,6 @@ class Deployment extends AppModel {
 		$command = "rsync -$option --delete --exclude-from=$exclude_file_name $source $target 2>&1";
 		if ( Configure::read() > 0 )
 			CakeLog::write('debug', '[synchronize] ' . $command);
-		$output .= shell_exec($command);
 		
 		chdir(_DEPLOYDIR);
 		$output .= shell_exec($command);
@@ -361,7 +360,7 @@ class Deployment extends AppModel {
 		$output .= "-[".LANG_BACKUPCURRENTPRODVERSION."]\n";
 		if (is_dir($project['Project']['prd_path'])) {
 			// rsync pour le backup
-			$output .= shell_exec("rsync -av " . $project['Project']['prd_path'] . " " . _DEPLOYBACKUPDIR . DS);
+			$output .= shell_exec("rsync -av " . $project['Project']['prd_path'] . " " . _DEPLOYBACKUPDIR . DS . " 2>&1");
 			$output .= shell_exec("chmod -R " . _DIRMODE . " " . _DEPLOYBACKUPDIR);
 
 		} else {

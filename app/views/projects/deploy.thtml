@@ -45,9 +45,12 @@
 				<label for="ProjectSimulation"><b><?php e(LANG_SIMULATION);?></b>
 					<!--<b>Simulation</b>-->	<?php e($html->checkbox('Project/simulation', LANG_RSYNCSIMULATION, array('checked' => 'checked', 'value' => true, 'class' => 'f-checkbox')));	?>
 				<br />
-				
 				</label>
-				
+
+				<label for="ProjectBackup"><b><?php e('Backup');?></b>
+				<?php e($html->checkbox('Project/backup', null, array('class' => 'f-checkbox'))); ?>
+				<br />
+				</label>
 					
 				<label for="DeploymentLogComment"><b><?php echo LANG_COMMENT; ?></b>
 		 		<?php echo $html->textarea('DeploymentLog/comment', array( 'rows' => 5, 'class' => 'f-name'));?>

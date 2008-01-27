@@ -75,9 +75,10 @@ class DeploymentsController extends AppController {
 		}
 		
 		$this->layout = 'ajax';
-
+		
 		$options = array();
-		$options['simulation'] = ($this->data['Project']['simulation'] == 1);
+		$options['simulation'] 	= ($this->data['Project']['simulation'] == 1);
+		$options['backup'] 		= ($this->data['Project']['backup'] == 1);
 		if ($this->data['DeploymentLog']['comment'] != null) $options['comment'] = $this->data['DeploymentLog']['comment'];
 				
 		$output = $this->Deployment->runStep('synchronize', $this->data['Project']['id'], $options);
