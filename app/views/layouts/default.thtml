@@ -63,7 +63,8 @@ http://creativecommons.org/licenses/GPL/2.0/
 		<?php
 			if(isset($_SESSION['User'])){
 				echo "<p>".LANG_WELCOME." ".$_SESSION['User']['login']." ";
-				echo $html->link(LANG_LOGOUT,'/users/logout')."</p>";
+				echo $html->link(LANG_LOGOUT,'/users/logout');
+				echo "<br />".$html->link('Change password','/users/change_password/'.$_SESSION['User']['id'])."</p>";
 			}else{
 				echo $this->renderElement('login'); 
 			 } ?>

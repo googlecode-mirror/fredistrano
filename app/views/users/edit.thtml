@@ -8,6 +8,11 @@
 
 		<?php echo $this->renderElement('_form_user');?>
 		
+		<!-- will be removed when user management will be improved -->
+		<?php echo $form->labelTag('User/password', '<b>Password</b>');?>
+	 	<?php echo $html->password('User/password', array('size' => '60', 'class' => 'f-name'));?>
+		<?php echo $error->showMessage('User/password');?>
+		
 		<div class="f-submit-wrap">
 			<?php echo $html->submit('Modifier', array('class' => 'f-submit')) ?>
 		</div>

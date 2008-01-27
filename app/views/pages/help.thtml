@@ -7,16 +7,16 @@ Check for news and updates about Fredistrano on its <?php echo $html->link('home
 <ul>
 	<li>Documentation [ <?php echo $html->link('PDF-En','/files/'.LANG_DOCUMENTATIONFILE); ?> ]</li>
 	<li><?php echo $html->link('Knoweldge base','http://code.google.com/p/fredistrano/wiki'); ?> with detailled installation instructions, FAQS and solutions to common problems</li>
-	<li>Share your experience and problems directly on the <?php echo $html->link('Fredistrano forum','http://www.fbollon.net/forum/63'); ?></li>
+	<li>Share your experience and problems directly on the <?php echo $html->link('Fredistrano forum','http://www.fbollon.net/forum/25'); ?></li>
 	<li>Report <?php echo $html->link('bugs and enhancements','http://code.google.com/p/fredistrano/issues/list'); ?> to the development team</li>
 </ul>	
 
 <h3>Developpement team</h3>
 <ul>
-	<li><a href="http://www.fbollon.net/user/1">fbollon</a> - Project leader</li>
+	<li><a href="http://www.fbollon.net/about">fbollon</a> - Project leader</li>
 	<li><a href="http://www.fbollon.net/user/3">Dia</a> - Developement, beta test</li>
 	<li><a href="http://www.fbollon.net/user/2">euphrate_ylb</a> - Developement</li>
 </ul>
 
 <h3>Acknowledgments</h3>
-Thanks to you, fredistrano's users, for using using this appliction to deploy your source code. 	
+Thanks to you, fredistrano's users, for using this appliction to deploy your source code. 	

@@ -114,9 +114,16 @@ class UsersController extends AppController {
 	}
 
 	function change_password($id = null) {
+		
 		if (!$id or !$this->User->read(null, $id)) {
 			$this->Session->setFlash(LANG_INVALIDID);
 			$this->redirect('/users/index');
+			exit;
+		}
+		
+		if ($_SESSION['User']['id'] != $id) {
+			$this->Session->setFlash(LANG_INVALIDID);
+			$this->redirect('/');
 			exit;
 		}
 
@@ -199,7 +206,7 @@ class UsersController extends AppController {
 		$this->Session->delete('User');
 		$this->Session->delete('user_alias');
 		$this->Session->setFlash(LANG_YOURARENOWDISCONNECTED);
-		$this->redirect($this->referer());
+		$this->redirect('/');
 	}
 
 	/**

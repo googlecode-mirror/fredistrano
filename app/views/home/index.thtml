@@ -1,29 +1,37 @@
 <h1>Welcome to Fredistrano</h1>
 <p>Use Fredistrano to deploy your web applications.</p>
 
-<!--
-<div id='quick_start'>
-<p>Start working with one of the link below:</p>
-<ul>
-<li><?php echo $html->link('Select a project','/projects'); ?></li>
-<li><?php echo $html->link('Create a new project','/projects/add'); ?></li>
-</ul>
-</div>
--->
+<?php if(!empty($_SESSION['User'])): ?>
+	<div id='quick_start'>
+	<h3>Start working with one of the link below:</h3>
+	<ul>
+	<li><?php echo $html->link('Select a project','/projects'); ?></li>
+	<li><?php echo $html->link('Create a new project','/projects/add'); ?></li>
+	</ul>
+	</div>
+<?php endif; ?>
 
 <div id='logsOverview'>
-<p>Overview of the last 10 deployments:</p>
+<h3>Overview of the last 10 deployments:</h3>
 <ul>
 <?php 
 if (empty($logs))
 	echo '<li><em>No logs in database</em></li>';
 else {
- 	foreach ($logs as $log) {
-		$created = strtotime($log['DeploymentLog']['created']);
+	$lastdate = null;
+	foreach($logs as $log) {
+ 			$created = strtotime($log['DeploymentLog']['created']);
+ 			$newdate = date("d/m/Y",$created);
+ 			$com = $log['DeploymentLog']['comment'];
+ 			$com = (strlen($com) > 20 )? substr($com, 0, 20).'...':$com;
+ 			if ($newdate != $lastdate) {
+ 				$lastdate = $newdate;
+ 				echo '<h5>'.$newdate.'</h5>';
+ 			}
  			$line = date("H:i:s",$created).' : Deployment of <b>'.
  				$log['Project']['name'].'</b> by <b>'. $log['User']['login'] . '</b>';
  			echo '<li>'.$line.'</li>';
-	}
+		}
 }
 ?>
 </ul>
