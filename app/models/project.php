@@ -11,6 +11,8 @@ class Project extends AppModel {
 			)
 			,
 			array (array('isUnique', array('name')), LANG_PROJECTNAMEALREADYEXISTS)
+			,
+			array (array('noSpace', array('name')), 'The project name can not contain space')
 		),
 		'svn_url' => array (
 			array (
@@ -41,6 +43,15 @@ class Project extends AppModel {
 			'dependent' => false
 		)
 	);
+	
+	function noSpace(){
+		$tmp = strpbrk($this->data['Project']['name'], " ");
+		
+		if ($tmp === false)
+			return true;
+		else
+			return false;	
+	}
 
 
 }
