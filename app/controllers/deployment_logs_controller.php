@@ -34,6 +34,11 @@ class DeploymentLogsController extends AppController {
 			'text' => LANG_PROJECTLIST,
 			'link' => '/projects'
 		);
+		
+		$tab[] = array (
+			'text' => 'Rss Feed',
+			'link' => '/rss/deploymentLogs'
+		);
 
 		// On passe le tableau de lien dans la variable links pour l'élément context_menu.thtml
 		$this->set("context_menu", $tab);
