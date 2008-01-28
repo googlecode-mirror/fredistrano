@@ -4,7 +4,7 @@
 <tr>
 
 <th colspan="3">
-	<span class="tabletoptitle">Détails d'un log de déploiment</span>
+	<span class="tabletoptitle">Deployment log details</span>
 	<!--
 	<span class="tabletoplink">
 	<?php echo $ajax->link($html->image( 'arrow_switch.png', array('alt' => 'Déployer le projet', 'title' => 'Déployer le projet')).' Déployer', 
@@ -23,27 +23,27 @@
 <tbody>
 
 <tr>
-<th class="sub">Id</th>
+<th class="sub">ID</th>
 <td>&nbsp;<?php echo $log['DeploymentLog']['id']?></td>
 </tr>
 
 <tr>
-<th class="sub">Nom du projet associé</th>
+<th class="sub">Related project</th>
 <td>&nbsp;<?php echo $html->link($log['Project']['name'],'/projects/view/'.$log['Project']['id'], array('target' => '_blank'), false, true, false)?></td>
 </tr>
 
 <tr>
-<th class="sub">Nom de la personne ayant fait l'opération</th>
+<th class="sub">Responsible person</th>
 <td>&nbsp;<?php echo $log['User']['login']?></td>
 </tr>
 
 <tr>
-<th class="sub">Date du déploiement</th>
+<th class="sub">Deployment datet</th>
 <td>&nbsp;<?php  echo $log['DeploymentLog']['created'] ?></td>
 </tr>
 
 <tr>
-<th class="sub">Commentaire</th>
+<th class="sub">Comment</th>
 <td>&nbsp;<?php echo nl2br($log['DeploymentLog']['comment']); ?></td>
 </tr>
 

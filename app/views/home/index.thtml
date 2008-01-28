@@ -18,17 +18,9 @@
 if (empty($logs))
 	echo '<li><em>No logs in database</em></li>';
 else {
-	$lastdate = null;
 	foreach($logs as $log) {
  			$created = strtotime($log['DeploymentLog']['created']);
- 			$newdate = date("d/m/Y",$created);
- 			$com = $log['DeploymentLog']['comment'];
- 			$com = (strlen($com) > 20 )? substr($com, 0, 20).'...':$com;
- 			if ($newdate != $lastdate) {
- 				$lastdate = $newdate;
- 				echo '<h5>'.$newdate.'</h5>';
- 			}
- 			$line = date("H:i:s",$created).' : Deployment of <b>'.
+ 			$line = date("m/d/Y - H:i:s",$created).' : Deployment of <b>'.
  				$log['Project']['name'].'</b> by <b>'. $log['User']['login'] . '</b>';
  			echo '<li>'.$line.'</li>';
 		}

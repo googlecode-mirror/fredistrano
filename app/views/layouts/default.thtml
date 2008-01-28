@@ -35,7 +35,7 @@ http://creativecommons.org/licenses/GPL/2.0/
 <div id="wrap">
 
 	<div id="header">
-		<div id="site-name">Fredistrano <span class="smallInTitle">   -   0.3.2 rc1 ( CakeFest edition ) </span></div>
+		<div id="site-name">Fredistrano</div>
 		<div id="search">
 			<!--<form action="">
 			<label for="searchsite">Recherche :</label>

@@ -1,5 +1,5 @@
 <h1>Help</h1>
-<p><em><?php echo LANG_VERSION; ?></em></p>
+<p><em>Version <?php echo _VERSION.' (cakefest edition) - '. _RELEASEDATE; ?></em></p>
 
 Check for news and updates about Fredistrano on its <?php echo $html->link('homepage','http://code.google.com/p/fredistrano'); ?>	
 	
@@ -19,4 +19,4 @@ Check for news and updates about Fredistrano on its <?php echo $html->link('home
 </ul>
 
 <h3>Acknowledgments</h3>
-Thanks to you, fredistrano's users, for using this appliction to deploy your source code. 	
+And finally, thank you, fredistrano's users, for using this application to deploy your source code. 	

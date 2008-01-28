@@ -19,10 +19,13 @@ class UsersController extends AppController {
 		parent::beforeRender();
 		// Tableau de liens pour la création du menu contextuel
 		$tab[] = array('text' => 'Actions');
-		if ($this->action != 'index')
+		if ($this->action != 'index' && $this->action != 'change_password')
 			$tab[] = array('text' => LANG_USERLIST, 'link' => '/users/index');
-		if ($this->action != 'add')
+		if ($this->action != 'add' && $this->action != 'change_password')
 			$tab[] = array('text' => LANG_USERADD, 'link' => '/users/add');
+
+		if (sizeof($tab)< 2)
+			$tab = array();
 		$this->set("context_menu", $tab);
 	}
 

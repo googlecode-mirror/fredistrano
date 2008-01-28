@@ -93,6 +93,9 @@
 <?php e(LANG_MODIFIEDON);?> <?php echo $project['Project']['modified']?></div> 
 
 </div>
+
+<br/><br/><br/>
+
 <!--<div class="featurebox">-->
 <div id="deploy_area"  >
 </div>

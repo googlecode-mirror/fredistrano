@@ -16,7 +16,7 @@
 	    $pages = $pagination->pageNumbers(' ');
 	    
 	    echo '<div class="pagin_nav">'.$prev.' '.$pages.' '.$next.'</div>';
-	    echo '<div class="pagin_datas">' . $pagination->result() . '&nbsp;&nbsp;&nbsp;&nbsp;'
+	    echo '<div class="pagin_datas">' . $pagination->result('Results: ',' of ') . '&nbsp;&nbsp;&nbsp;&nbsp;'
 	    	. LANG_NUMBERPERPAGE.' : ' . $pagination->resultsPerPage(NULL, ' ') . '</div>';
     endif;
 	?>

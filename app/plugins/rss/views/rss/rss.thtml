@@ -5,16 +5,16 @@
     $rss->title = $feedTitle;
     $rss->description = "";
     $rss->link = FULL_BASE_URL;
-    $rss->syndicationURL = FULL_BASE_URL + '/rss' + $modelName;
+    $rss->syndicationURL = FULL_BASE_URL . $this->base . $modelName;
     $rss->cssStyleSheet = "";
 
     foreach ($rssData as $new) {
-			$item = new FeedItem();
-			$item->title = $new['title'];
-			$item->link = FULL_BASE_URL . $new['link'];
-			$item->guid = FULL_BASE_URL . $new['link'];
-			$item->description = $new['desc'];
-			$item->date = $time->toRSS($new['created']);
+		$item = new FeedItem();
+		$item->title = $new['title'];
+		$item->link = FULL_BASE_URL . $this->base . '/..' . $new['link'];
+		$item->guid = FULL_BASE_URL . $this->base . '/..' .$new['link'];
+		$item->description = $new['desc'];
+		$item->date = $time->toRSS($new['created']);
     	$rss->addItem($item);
     }
 
