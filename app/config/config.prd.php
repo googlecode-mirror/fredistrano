@@ -1,6 +1,6 @@
 <?php
-define("_VERSION",				'0.3.2');				//enabled https
-define("_RELEASEDATE",			'01/31/2008');				//enabled https
+define("_VERSION",				'0.3.2');		
+define("_RELEASEDATE",			'01/31/2008');	
 
 //HTTPS authentification
 define("_HTTPSENABLED",			0);							//enabled https 0 = never, 1 = login, 2 = always
@@ -39,7 +39,7 @@ require_once (APP . 'locale' . DS . LANG_DEFAULT . DS . 'LC_MESSAGES' . DS . 'de
 
 // Auth
 define("_AUTHENTICATIONTYPE",		"2");	
-//SPECIFIQUE -sera supprimé dans une prochaine version=
+//SPECIFIC - will be removed in a futur version
 define("_WS_SSL_TRUSTEDCA_FILE",    "");
 define("_WEBSERVICESSERVER",		""); 			
 define("_AUTHENTICATIONTDIRECTORY",	"20");	
