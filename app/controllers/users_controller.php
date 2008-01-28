@@ -188,7 +188,7 @@ class UsersController extends AppController {
 
 			} else {
 				// L'utilisateur n'existe pas dans la base
-				$this->Session->setFlash('LANG_IDENTIFICATIONWRONG !');
+				$this->Session->setFlash(LANG_IDENTIFICATIONWRONG);
 			}
 
 			// Affichage
