@@ -80,7 +80,7 @@ define('LANG_HTTPSREQUIREBUTUNVALAIBLE',"HTTPS required but unavailable!");
 define('LANG_ID',"Id");
 define('LANG_IDENTIFICATION',"Identification");
 define('LANG_IDENTIFICATIONACCEPTED',"Identification accepted.");
-define('LANG_IDENTIFICATIONWRONG',"Identification wrong !");
+define('LANG_IDENTIFICATIONWRONG',"Wrong credentials supplied!");
 define('LANG_IDPERMISSIONUNKNOWN',"Id permission unknown.");
 define('LANG_IMPORTDATAINTOOBJECTSMASTERSACLS',"Imports data into objects masters ACLs.");
 define('LANG_IMPORTFINISHED',"Import finished.");
