@@ -183,12 +183,12 @@ class UsersController extends AppController {
 
 				} else {
 					//Authentification échouée
-					$this->Session->setFlash(LANG_IDENTIFICATIONWRONG);
+					$this->Session->setFlash(LANG_INVALIDCREDENTIALS);
 				}
 
 			} else {
 				// L'utilisateur n'existe pas dans la base
-				$this->Session->setFlash(LANG_IDENTIFICATIONWRONG);
+				$this->Session->setFlash(LANG_INVALIDCREDENTIALS);
 			}
 
 			// Affichage

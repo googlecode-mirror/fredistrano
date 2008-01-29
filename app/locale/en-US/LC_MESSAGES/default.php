@@ -85,7 +85,7 @@ define('LANG_IDPERMISSIONUNKNOWN',"Id permission unknown.");
 define('LANG_IMPORTDATAINTOOBJECTSMASTERSACLS',"Imports data into objects masters ACLs.");
 define('LANG_IMPORTFINISHED',"Import finished.");
 define('LANG_INCORRECTOLDPASSWORD',"Incorect old password.");
-define('LANG_INVALIDCREDENTIALS',"Invalid credential.");
+define('LANG_INVALIDCREDENTIALS',"Invalid credentials.");
 define('LANG_INVALIDID',"Invalid id.");
 define('LANG_INVALIDLOGID',"Invalid log id => ");
 define('LANG_INVALIDPROJECTID',"Invalid Project id => ");
