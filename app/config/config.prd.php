@@ -37,6 +37,9 @@ define("_CYGWINROOT",			"/cygdrive/");									//only for cygwin windows server 
 define('LANG_DEFAULT',			'en-US'); 					//available languages :  en-US, fr-FR
 require_once (APP . 'locale' . DS . LANG_DEFAULT . DS . 'LC_MESSAGES' . DS . 'default.php');
 
+// Feed
+define("_PUBLISHFEED", 			true);
+
 // Auth
 define("_AUTHENTICATIONTYPE",		"2");	
 //SPECIFIC - will be removed in a futur version

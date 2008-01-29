@@ -10,7 +10,7 @@
 
     foreach ($rssData as $new) {
 		$item = new FeedItem();
-		$item->title = $time->nice($new['created']) . " - " . $new['title'];
+		$item->title = $new['title'];
 		$item->link = FULL_BASE_URL . $this->base . '/..' . $new['link'];
 		$item->guid = FULL_BASE_URL . $this->base . '/..' .$new['link'];
 		$item->description = $new['desc'];

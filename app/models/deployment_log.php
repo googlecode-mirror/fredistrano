@@ -13,15 +13,22 @@ class DeploymentLog extends AppModel {
 			'foreignKey' => 'user_id'
 		)
 	);
-	
-	var $feed = array(
-	    'titleField' => 'DeploymentLog.title',
-	    'descField' => 'DeploymentLog.comment',
-	    'link' => '/deploymentLogs/view/%s',
-	    'orderby' => array('DeploymentLog.created' => 'DESC'),
-	    'limit' => 20
-	);
-	
+
+	var $feed = null;
+
+	function __construct(){
+		parent::__construct();
+		
+		if (defined('_PUBLISHFEED') && _PUBLISHFEED === true ) {
+			$this->feed = array(
+			    'titleField'	=> 	'DeploymentLog.title',
+			    'descField' 	=> 	'DeploymentLog.comment',
+			    'link' 			=> 	'/deploymentLogs/view/%s',
+			    'orderby' 		=> 	array('DeploymentLog.created' => 'DESC'),
+			    'limit' 		=> 	20
+			);
+		}
+	}
 	/** 
 	 * Archivage des logs 
 	 */

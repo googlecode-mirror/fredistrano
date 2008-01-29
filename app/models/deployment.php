@@ -241,7 +241,7 @@ class Deployment extends AppModel {
 			$data = array (
 				'DeploymentLog' => array (
 					'project_id'	=> 	$project['Project']['id'],
-					'title' 		=> 	$project['Project']['name'] . ' - ' . $_SESSION['User']['login'],
+					'title' 		=> 	date("D, M jS Y, H:i") . ' - ' . $project['Project']['name'],
 					'user_id' 		=> 	$_SESSION['User']['id'],
 					'comment' 		=> 	$options['comment'],
 					'archive' 		=> 	0
