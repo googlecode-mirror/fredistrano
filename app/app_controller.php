@@ -59,20 +59,26 @@ class AppController extends Controller {
 
 	function beforeRender() {
 		$this->set('referer', $this->referer());
+		//disable cache due to a proxy issue
+		$this->disableCache();
 		
 		// pour construire l'url https du formulaire de login
 		$this->set('serverName', $_SERVER['SERVER_NAME']);
 		$this->set('appPath', str_replace('/app/webroot/index.php', '', $_SERVER['SCRIPT_NAME']));
 	}
 	
-//	function beforeFilter(){
-//		// Default lang 
-//		if (!defined('LANG_DEFAULT'))
-//			define('LANG_DEFAULT','en-US');
-//	
-//		// Load the required lang file
-//		$lang = isset ($_SESSION['userPreferedLanguage']) ? $_SESSION['userPreferedLanguage'] : LANG_DEFAULT;
-//		require_once (APP . 'locale' . DS . $lang . DS . 'LC_MESSAGES' . DS . 'default.php');
-//	}
+	/**
+	* Tells the browser not to cache the results of the current request by sending headers
+	*
+	* @access public
+	*/
+    function disableCache() {
+		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+	    header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+	    header("Cache-Control: no-store, no-cache, must-revalidate");
+		header("Cache-Control: post-check=0, pre-check=0", false);
+		header("Pragma: no-cache");
+	}
+	
 }
 ?>
