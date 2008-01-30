@@ -160,8 +160,8 @@ class Deployment extends AppModel {
 		//dossier temporaire d'export SVN pour le projet
 		if (is_dir(_DEPLOYTMPDIR . DS . $project['Project']['name'])) {
 			// on le vide si il existe
-			$output .= "-[".LANG_DUMPDIRECTORY." " . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "]\n";
-			$output .= shell_exec('rm -rf ' . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "/*");
+			$command = 'rm -rf ' . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "/*";
+			$output .= $this->executeCommand($command, LANG_DUMPDIRECTORY." " . _DEPLOYTMPDIR . DS . $project['Project']['name'],'export');
 		} else {
 			// on le crée si il n'existe pas
 			if (mkdir(_DEPLOYTMPDIR . DS . $project['Project']['name'], octdec(_DIRMODE), TRUE))
@@ -176,7 +176,6 @@ class Deployment extends AppModel {
 
 		//on se place dans le dossier temporaire pour faire le svn export
 		chdir(_DEPLOYTMPDIR . DS . $project['Project']['name']);
-		$output .= "-[".LANG_SVNEXPORT."]\n";
 		if ( $options['revision'] != null ) 
 			$revision = ' -r ' . $options['revision'];
 		else 
@@ -186,9 +185,7 @@ class Deployment extends AppModel {
 			  
 		// svn export
 		$command = "svn export" . $revision . $authentication . " " . $project['Project']['svn_url'] . " tmpDir 2>&1";
-		if ( Configure::read() > 0 )
-			CakeLog::write('debug', '[export] ' . $command);
-		$output .= shell_exec($command);
+		$output .= $this->executeCommand($command, LANG_SVNEXPORT,'export');
 		
 		return $output;
 	}// export
@@ -263,13 +260,10 @@ class Deployment extends AppModel {
 		$source = $this->_pathConverter(_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS);
 		$target = $this->_pathConverter($project['Project']['prd_path']);
 
-		// Execute command
-		$command = "rsync -$option --delete --exclude-from=$exclude_file_name $source $target 2>&1";
-		if ( Configure::read() > 0 )
-			CakeLog::write('debug', '[synchronize] ' . $command);
-		
+		// Execute command		
 		chdir(_DEPLOYDIR);
-		$output .= shell_exec($command);
+		$command = "rsync -$option --delete --exclude-from=$exclude_file_name $source $target 2>&1";	
+		$output .= $this->executeCommand($command,'Deploying new version','synchronize');
 		
 		return $output;
 	}// synchronize
@@ -309,26 +303,28 @@ class Deployment extends AppModel {
 	
 		if ($options['renamePrdFile'] === true) {
 			// Rename file type from .prd.xxx into .xxx
-			$output .= "\n-[".LANG_RENAMEFILES." '.prd.']\n";
-			$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.prd.*' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -vf 's/\.prd\./\./i' {} \;".$suffix);				
+			$command = $prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.prd.*' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -vf 's/\.prd\./\./i' {} \;".$suffix;
+			$output .= $this->executeCommand($command, LANG_RENAMEFILES . '.prd.', 'finalize');
 		}
 		
 		if ($options['changeFileMode'] === true) {
-			// Adjust file mode
-			$output .= "\n-[".LANG_UPDATINGFILESMODES."] ".LANG_NEWFILESMODE.": " . _FILEMODE;
-			$output .= shell_exec("chmod -R " ._FILEMODE . "  ".$this->_pathConverter($project['Project']['prd_path']));	
-			$output .= "\n-[".LANG_UPDATINGDIRMODE." ] ".LANG_NEWDIRMODES.": " . _DIRMODE;
-			$output .= shell_exec("chmod " ._DIRMODE . "  ".$this->_pathConverter($project['Project']['prd_path']));
-			$output .= shell_exec($prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -type d -exec chmod " . _DIRMODE . " {} \;".$suffix);
+			$command = "chmod -R " ._FILEMODE . "  ".$this->_pathConverter($project['Project']['prd_path']);
+			$output .= $this->executeCommand($command, LANG_UPDATINGFILESMODES . ' > ' . _FILEMODE, 'finalize');
+						
+			$command = "chmod " ._DIRMODE . "  ".$this->_pathConverter($project['Project']['prd_path']);
+			$output .= $this->executeCommand($command, LANG_UPDATINGDIRMODE . '1/2 > ' . _DIRMODE, 'finalize');
+						
+			$command = $prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -type d -exec chmod " . _DIRMODE . " {} \;".$suffix;
+			$output .= $this->executeCommand($command, LANG_UPDATINGDIRMODE . '2/2 > ' . _DIRMODE, 'finalize');
 		}
 		
 		if ($options['giveWriteMode'] === true) {
 			// Give write permissions to some folder
-			$output .= "\n-[".LANG_ADDWRITABLEMODE."]\n";
 			$writable = $this->_getConfig()->writable;
 			if (sizeof($writable) > 0) {
 				for ($i = 0; $i < sizeof($writable); $i++) {
-					$output .= shell_exec("chmod -vR " ._WRITEMODE . "  ".$this->_pathConverter($project['Project']['prd_path'] . $writable[$i] ));
+					$command = "chmod -vR " ._WRITEMODE . "  ".$this->_pathConverter($project['Project']['prd_path'] . $writable[$i] );
+					$output .= $this->executeCommand($command, 'Setting write permissions', 'finalize');
 				}
 			}
 		}
@@ -359,10 +355,15 @@ class Deployment extends AppModel {
 		//
 		$output .= "-[".LANG_BACKUPCURRENTPRODVERSION."]\n";
 		if (is_dir($project['Project']['prd_path'])) {
+			$source = $this->_pathConverter($project['Project']['prd_path'] );
+			$target = $this->_pathConverter(_DEPLOYBACKUPDIR . DS);
+		
 			// rsync pour le backup
-			$output .= shell_exec("rsync -av " . $project['Project']['prd_path'] . " " . _DEPLOYBACKUPDIR . DS . " 2>&1");
-			$output .= shell_exec("chmod -R " . _DIRMODE . " " . _DEPLOYBACKUPDIR);
-
+			$command = "rsync -av $source $target 2>&1";
+			$output .= $this->executeCommand($command, LANG_BACKUPCURRENTPRODVERSION, 'backup');
+			
+			$command = "chmod -R " . _DIRMODE . " " . _DEPLOYBACKUPDIR;
+			$output .= $this->executeCommand($command, LANG_UPDATINGDIRMODE . ' > ' . _DIRMODE, 'backup');
 		} else {
 			$output .= "-[".LANG_NOBACKUPNEEDED." " . $project['Project']['prd_path'] . " ".LANG_DOESNTEXIST."]\n";
 		}
@@ -433,6 +434,16 @@ class Deployment extends AppModel {
 
 		return $instance;
 	}// _getConfig
+	
+	private function executeCommand( $command = null, $comment = 'none', $context = 'none' ){
+		if ($command == null)
+			return 'No command supplied';
+			
+		$output = "\n-[".$comment."]\n";
+		if ( Configure::read() > 0 )
+			CakeLog::write('debug', "[$context] " . $command);
+		return $output. shell_exec($command);
+	}// executeCommand
 	
 }// Deployment
 ?>

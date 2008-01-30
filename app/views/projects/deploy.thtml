@@ -43,12 +43,12 @@
 				<fieldset class="f-name">
 					<fieldset>
 				<label for="ProjectSimulation"><b><?php e(LANG_SIMULATION);?></b>
-					<!--<b>Simulation</b>-->	<?php e($html->checkbox('Project/simulation', LANG_RSYNCSIMULATION, array('checked' => 'checked', 'value' => true, 'class' => 'f-checkbox')));	?>
+					<!--<b>Simulation</b>-->	<?php e($html->checkbox('Project/simulation', LANG_RSYNCSIMULATION, array(  'onClick' => 'if ($(\'ProjectBackup\').disabled) {$(\'ProjectBackup\').disabled = false; }else{ $(\'ProjectBackup\').disabled = true;  $(\'ProjectBackup\').checked = false;}', 'checked' => 'checked', 'value' => true, 'class' => 'f-checkbox')));	?>
 				<br />
 				</label>
 
 				<label for="ProjectBackup"><b><?php e('Backup');?></b>
-				<?php e($html->checkbox('Project/backup', null, array('class' => 'f-checkbox'))); ?>
+				<?php e($html->checkbox('Project/backup', null, array('disabled' => 'true', 'class' => 'f-checkbox'))); ?>
 				<br />
 				</label>
 					
