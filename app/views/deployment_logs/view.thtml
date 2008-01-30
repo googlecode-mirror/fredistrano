@@ -38,7 +38,7 @@
 </tr>
 
 <tr>
-<th class="sub">Deployment datet</th>
+<th class="sub">Deployment date</th>
 <td>&nbsp;<?php  echo $log['DeploymentLog']['created'] ?></td>
 </tr>
 
