@@ -63,13 +63,13 @@
 </tr>
 
 <tr>
-<th class="sub"><?php e(LANG_APPLICATIONURL);?></th>
-<td>&nbsp;<?php echo $html->link($project['Project']['prd_url'], $project['Project']['prd_url'], array('target' => '_blank'), false, true, false) ?></td>
+<th class="sub"><?php e(LANG_PROJECTABSOLUTEPATH);?></th>
+<td>&nbsp;<?php echo $project['Project']['prd_path']?></td>
 </tr>
 
 <tr>
-<th class="sub"><?php e(LANG_PROJECTABSOLUTEPATH);?></th>
-<td>&nbsp;<?php echo $project['Project']['prd_path']?></td>
+<th class="sub"><?php e(LANG_APPLICATIONURL);?></th>
+<td>&nbsp;<?php echo $html->link($project['Project']['prd_url'], $project['Project']['prd_url'], array('target' => '_blank'), false, true, false) ?></td>
 </tr>
 
 <tr>

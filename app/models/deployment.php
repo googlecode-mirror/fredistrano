@@ -356,7 +356,7 @@ class Deployment extends AppModel {
 		$output .= "-[".LANG_BACKUPCURRENTPRODVERSION."]\n";
 		if (is_dir($project['Project']['prd_path'])) {
 			$source = $this->_pathConverter($project['Project']['prd_path'] );
-			$target = $this->_pathConverter(_DEPLOYBACKUPDIR . DS);
+			$target = $this->_pathConverter(_DEPLOYBACKUPDIR . DS . $project['Project']['name']);
 		
 			// rsync pour le backup
 			$command = "rsync -av $source $target 2>&1";

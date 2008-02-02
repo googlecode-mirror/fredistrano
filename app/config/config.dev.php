@@ -1,6 +1,6 @@
 <?php
 define("_VERSION",				'0.3.2');		
-define("_RELEASEDATE",			'01/31/2008');		
+define("_RELEASEDATE",			'02/02/2008');		
 
 //HTTPS authentification
 define("_HTTPSENABLED",			0);							//enabled https 0 = never, 1 = login, 2 = always

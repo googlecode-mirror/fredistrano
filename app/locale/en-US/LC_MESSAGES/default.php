@@ -14,7 +14,7 @@ define('LANG_ALERTS',	"Alerts");
 define('LANG__DELETE',"Delete");
 define('LANG__EDIT',"Edit");
 define('LANG__VIEW',"View");
-define('LANG_ABSOLUTEPATH',"Applcation absolute path");
+define('LANG_ABSOLUTEPATH',"Application absolute path");
 define('LANG_ACCESSDENIED',"Access denied");
 define('LANG_ACLITEHOMEPAGE',"AcLite home page");
 define('LANG_ACLMANAGEMENT',"ACL management");

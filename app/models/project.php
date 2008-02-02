@@ -52,6 +52,15 @@ class Project extends AppModel {
 		else
 			return false;	
 	}
+	
+	function beforeSave(){
+		$this->data['Project']['prd_path'] = preg_replace('#[\\\/]#', DS, $this->data['Project']['prd_path']);
+		
+		if(substr($this->data['Project']['prd_path'], -1, 1) != DS)
+			$this->data['Project']['prd_path'] .= DS ;
+			
+		return true;	
+	}
 
 
 }

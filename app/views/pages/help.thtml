@@ -1,5 +1,5 @@
 <h1>Help</h1>
-<p><em>Version <?php echo _VERSION.' (cakefest edition) - '. _RELEASEDATE; ?> - </em></p>
+<p><em>Version <?php echo _VERSION.' (CakeFest edition) - '. _RELEASEDATE; ?> - </em></p>
 
 Check for news and updates about Fredistrano on its <?php echo $html->link('homepage','http://code.google.com/p/fredistrano'); ?>	
 	

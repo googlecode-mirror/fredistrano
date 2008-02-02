@@ -101,7 +101,7 @@ class ProjectsController extends AppController {
 			$this->cleanUpFields();
 			if ($this->Project->save($this->data)) {
 				$this->Session->setFlash(LANG_PROJECTSAVED);
-				$this->redirect('/projects/index');
+				$this->redirect('/projects/view/'.$this->Project->getInsertID());
 			} else {
 				$this->Session->setFlash(LANG_CORRECTERRORSBELOW);
 			}
