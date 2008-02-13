@@ -1,5 +1,5 @@
 <?php
-/* SVN FILE: $Id: paths.php 4409 2007-02-02 13:20:59Z phpnut $ */
+/* SVN FILE: $Id: paths.php 6311 2008-01-02 06:33:52Z phpnut $ */
 /**
  * Short description for file.
  *
@@ -8,7 +8,7 @@
  * PHP versions 4 and 5
  *
  * CakePHP(tm) :  Rapid Development Framework <http://www.cakephp.org/>
- * Copyright 2005-2007, Cake Software Foundation, Inc.
+ * Copyright 2005-2008, Cake Software Foundation, Inc.
  *								1785 E. Sahara Avenue, Suite 490-204
  *								Las Vegas, Nevada 89104
  *
@@ -16,14 +16,14 @@
  * Redistributions of files must retain the above copyright notice.
  *
  * @filesource
- * @copyright		Copyright 2005-2007, Cake Software Foundation, Inc.
+ * @copyright		Copyright 2005-2008, Cake Software Foundation, Inc.
  * @link				http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
  * @package			cake
  * @subpackage		cake.cake.app.config
  * @since			CakePHP(tm) v 0.2.9
- * @version			$Revision: 4409 $
+ * @version			$Revision: 6311 $
  * @modifiedby		$LastChangedBy: phpnut $
- * @lastmodified	$Date: 2007-02-02 07:20:59 -0600 (Fri, 02 Feb 2007) $
+ * @lastmodified	$Date: 2008-01-02 00:33:52 -0600 (Wed, 02 Jan 2008) $
  * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 /**
@@ -32,14 +32,14 @@
  * directory we will define ROOT there, otherwise we set it
  * here.
  */
-	if(!defined('ROOT')) {
+	if (!defined('ROOT')) {
 		define ('ROOT', '../');
 	}
-	if(!defined('WEBROOT_DIR')) {
+	if (!defined('WEBROOT_DIR')) {
 		define ('WEBROOT_DIR', 'webroot');
 	}
 /**
- * Path to the application's directory.
+ * Path to the cake directory.
  */
 	define ('CAKE', CORE_PATH.'cake'.DS);
 /**
@@ -51,11 +51,15 @@
  */
 	define ('MODELS', APP.'models'.DS);
 /**
+ * Path to model behaviors directory.
+ */
+	define ('BEHAVIORS', MODELS.'behaviors'.DS);
+/**
  * Path to the application's controllers directory.
  */
 	define ('CONTROLLERS', APP.'controllers'.DS);
 /**
- * Path to the application's controllers directory.
+ * Path to the application's components directory.
  */
 	define ('COMPONENTS', CONTROLLERS.'components'.DS);
 /**
@@ -89,21 +93,27 @@
  */
 	define ('LIBS', CAKE.'libs'.DS);
 /**
- * Path to the public directory.
+ * Path to the public CSS directory.
  */
 	define ('CSS', WWW_ROOT.'css'.DS);
 /**
- * Path to the public directory.
+ * Path to the public JavaScript directory.
  */
 	define ('JS', WWW_ROOT.'js'.DS);
 /**
- * Path to the scripts direcotry.
+ * Path to the public images directory.
  */
-	define('SCRIPTS', CAKE.'scripts'.DS);
+	define ('IMAGES', WWW_ROOT.'img'.DS);
+/**
+ * Path to the console libs direcotry.
+ */
+	define('CONSOLE_LIBS', CAKE.'console'.DS.'libs'.DS);
 /**
  * Path to the tests directory.
  */
+if (!defined('TESTS')) {
 	define ('TESTS', APP.'tests'.DS);
+}
 /**
  * Path to the controller test directory.
  */
@@ -123,11 +133,13 @@
 /**
  * Path to the lib test directory.
  */
-	define ('LIB_TESTS', TESTS.'lib'.DS);
+	define ('LIB_TESTS', CAKE.'tests'.DS.'lib'.DS);
 /**
  * Path to the temporary files directory.
  */
+if (!defined('TMP')) {
 	define ('TMP', APP.'tmp'.DS);
+}
 /**
  * Path to the logs directory.
  */
@@ -139,7 +151,9 @@
 /**
  * Path to the vendors directory.
  */
+if (!defined('VENDORS')) {
 	define ('VENDORS', CAKE_CORE_INCLUDE_PATH.DS.'vendors'.DS);
+}
 /**
  * Path to the Pear directory
  * The purporse is to make it easy porting Pear libs into Cake
@@ -163,13 +177,19 @@
 /**
  * Web path to the public images directory.
  */
+if (!defined('IMAGES_URL')) {
 	define ('IMAGES_URL', 'img/');
+}
 /**
  * Web path to the CSS files directory.
  */
+if (!defined('CSS_URL')) {
 	define ('CSS_URL', 'css/');
+}
 /**
  * Web path to the js files directory.
  */
+if (!defined('JS_URL')) {
 	define ('JS_URL', 'js/');
+}
 ?>

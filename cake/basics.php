@@ -1,5 +1,5 @@
 <?php
-/* SVN FILE: $Id: basics.php 4450 2007-02-05 05:18:05Z phpnut $ */
+/* SVN FILE: $Id: basics.php 6311 2008-01-02 06:33:52Z phpnut $ */
 /**
  * Basic Cake functionality.
  *
@@ -8,7 +8,7 @@
  * PHP versions 4 and 5
  *
  * CakePHP(tm) :  Rapid Development Framework <http://www.cakephp.org/>
- * Copyright 2005-2007, Cake Software Foundation, Inc.
+ * Copyright 2005-2008, Cake Software Foundation, Inc.
  *								1785 E. Sahara Avenue, Suite 490-204
  *								Las Vegas, Nevada 89104
  *
@@ -16,14 +16,14 @@
  * Redistributions of files must retain the above copyright notice.
  *
  * @filesource
- * @copyright		Copyright 2005-2007, Cake Software Foundation, Inc.
+ * @copyright		Copyright 2005-2008, Cake Software Foundation, Inc.
  * @link				http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
  * @package			cake
  * @subpackage		cake.cake
  * @since			CakePHP(tm) v 0.2.9
- * @version			$Revision: 4450 $
+ * @version			$Revision: 6311 $
  * @modifiedby		$LastChangedBy: phpnut $
- * @lastmodified	$Date: 2007-02-04 23:18:05 -0600 (Sun, 04 Feb 2007) $
+ * @lastmodified	$Date: 2008-01-02 00:33:52 -0600 (Wed, 02 Jan 2008) $
  * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 /**
@@ -37,398 +37,80 @@
 	define('MONTH', 30 * DAY);
 	define('YEAR', 365 * DAY);
 /**
- * Patch for PHP < 4.3
+ * Patch for PHP < 5.0
  */
-	if (!function_exists("ob_get_clean")) {
-		function ob_get_clean() {
-			$ob_contents = ob_get_contents();
-			ob_end_clean();
-			return $ob_contents;
-		}
+if (!function_exists('clone')) {
+	if (version_compare(phpversion(), '5.0') < 0) {
+		eval ('
+		function clone($object)
+		{
+			return $object;
+		}');
 	}
+}
 /**
- * Loads all models.
- */
-	function loadModels() {
-		if(!class_exists('Model')){
-			require LIBS . 'model' . DS . 'model.php';
-		}
-		$path = Configure::getInstance();
-		if (!class_exists('AppModel')) {
-			if (file_exists(APP . 'app_model.php')) {
-				require(APP . 'app_model.php');
-			} else {
-				require(CAKE . 'app_model.php');
-			}
-			if (phpversion() < 5 && function_exists("overload")) {
-				overload('AppModel');
-			}
-		}
-
-		foreach($path->modelPaths as $path) {
-			foreach(listClasses($path)as $model_fn) {
-				list($name) = explode('.', $model_fn);
-				$className = Inflector::camelize($name);
-
-				if (!class_exists($className)) {
-					require($path . $model_fn);
-
-					if (phpversion() < 5 && function_exists("overload")) {
-						overload($className);
-					}
-				}
-			}
-		}
-	}
-/**
- * Loads all plugin models.
+ * Get CakePHP basic paths as an indexed array.
+ * Resulting array will contain array of paths
+ * indexed by: Models, Behaviors, Controllers,
+ * Components, and Helpers.
  *
- * @param  string  $plugin Name of plugin
- * @return
+ * @return array Array of paths indexed by type
  */
-	function loadPluginModels($plugin) {
-		if(!class_exists('AppModel')){
-			loadModel();
+	function paths() {
+		$directories = Configure::getInstance();
+		$paths = array();
+
+		foreach ($directories->modelPaths as $path) {
+			$paths['Models'][] = $path;
 		}
-		$pluginAppModel = Inflector::camelize($plugin . '_app_model');
-		$pluginAppModelFile = APP . 'plugins' . DS . $plugin . DS . $plugin . '_app_model.php';
-		if (!class_exists($pluginAppModel)) {
-			if (file_exists($pluginAppModelFile)) {
-				require($pluginAppModelFile);
-			} else {
-				die('Plugins must have a class named ' . $pluginAppModel);
-			}
-			if (phpversion() < 5 && function_exists("overload")) {
-				overload($pluginAppModel);
-			}
+		foreach ($directories->behaviorPaths as $path) {
+			$paths['Behaviors'][] = $path;
+		}
+		foreach ($directories->controllerPaths as $path) {
+			$paths['Controllers'][] = $path;
+		}
+		foreach ($directories->componentPaths as $path) {
+			$paths['Components'][] = $path;
+		}
+		foreach ($directories->helperPaths as $path) {
+			$paths['Helpers'][] = $path;
 		}
 
-		$pluginModelDir = APP . 'plugins' . DS . $plugin . DS . 'models' . DS;
-
-		foreach(listClasses($pluginModelDir)as $modelFileName) {
-			list($name) = explode('.', $modelFileName);
-			$className = Inflector::camelize($name);
-
-			if (!class_exists($className)) {
-				require($pluginModelDir . $modelFileName);
-
-				if (phpversion() < 5 && function_exists("overload")) {
-					overload($className);
-				}
-			}
+		if (!class_exists('Folder')) {
+			App::import('Core', 'Folder');
 		}
-	}
-/**
- * Loads custom view class.
- *
- */
-	function loadView($viewClass) {
-		if (!class_exists($viewClass . 'View')) {
-			$paths = Configure::getInstance();
-			$file = Inflector::underscore($viewClass) . '.php';
 
-			foreach($paths->viewPaths as $path) {
-				if (file_exists($path . $file)) {
-					return require($path . $file);
-				}
-			}
+		$folder =& new Folder(APP.'plugins'.DS);
+		$plugins = $folder->ls();
+		$classPaths = array('models', 'models'.DS.'behaviors',  'controllers', 'controllers'.DS.'components', 'views'.DS.'helpers');
 
-			if ($viewFile = fileExistsInPath(LIBS . 'view' . DS . $file)) {
-				if (file_exists($viewFile)) {
-					require($viewFile);
-					return true;
+		foreach ($plugins[0] as $plugin) {
+			foreach ($classPaths as $path) {
+				if (strpos($path, DS) !== false) {
+					$key = explode(DS, $path);
+					$key = $key[1];
 				} else {
-					return false;
+					$key = $path;
 				}
+				$folder->path = APP.'plugins'.DS.$plugin.DS.$path;
+				$paths[Inflector::camelize($plugin)][Inflector::camelize($key)][] = $folder->path;
 			}
 		}
+		return $paths;
 	}
 /**
- * Loads a model by CamelCase name.
- */
-	function loadModel($name = null) {
-		if(!class_exists('Model')){
-			require LIBS . 'model' . DS . 'model.php';
-		}
-		if (!class_exists('AppModel')) {
-			if (file_exists(APP . 'app_model.php')) {
-				require(APP . 'app_model.php');
-			} else {
-				require(CAKE . 'app_model.php');
-			}
-			if (phpversion() < 5 && function_exists("overload")) {
-				overload('AppModel');
-			}
-		}
-
-		if (!is_null($name) && !class_exists($name)) {
-			$className = $name;
-			$name = Inflector::underscore($name);
-			$paths = Configure::getInstance();
-
-			foreach($paths->modelPaths as $path) {
-				if (file_exists($path . $name . '.php')) {
-					require($path . $name . '.php');
-					if (phpversion() < 5 && function_exists("overload")) {
-						overload($className);
-					}
-					return true;
-				}
-			}
-			return false;
-		} else {
-			return true;
-		}
-	}
-/**
- * Loads all controllers.
- */
-	function loadControllers() {
-		$paths = Configure::getInstance();
-		if (!class_exists('AppController')) {
-			if (file_exists(APP . 'app_controller.php')) {
-				require(APP . 'app_controller.php');
-			} else {
-				require(CAKE . 'app_controller.php');
-			}
-		}
-		$loadedControllers = array();
-
-		foreach($paths->controllerPaths as $path) {
-			foreach(listClasses($path) as $controller) {
-				list($name) = explode('.', $controller);
-				$className = Inflector::camelize($name);
-				if (loadController($name)) {
-					$loadedControllers[$controller] = $className;
-				}
-			}
-		}
-		return $loadedControllers;
-	}
-/**
- * Loads a controller and its helper libraries.
- *
- * @param  string  $name Name of controller
- * @return boolean Success
- */
-	function loadController($name) {
-		$paths = Configure::getInstance();
-		if (!class_exists('AppController')) {
-			if (file_exists(APP . 'app_controller.php')) {
-				require(APP . 'app_controller.php');
-			} else {
-				require(CAKE . 'app_controller.php');
-			}
-		}
-
-		if ($name === null) {
-			return true;
-		}
-
-		if (!class_exists($name . 'Controller')) {
-			$name = Inflector::underscore($name);
-
-			foreach($paths->controllerPaths as $path) {
-				if (file_exists($path . $name . '_controller.php')) {
-					require($path . $name . '_controller.php');
-					return true;
-				}
-			}
-
-			if ($controller_fn = fileExistsInPath(LIBS . 'controller' . DS . $name . '_controller.php')) {
-				if (file_exists($controller_fn)) {
-					require($controller_fn);
-					return true;
-				} else {
-					return false;
-				}
-			}
-		} else {
-			return false;
-		}
-	}
-/**
- * Loads a plugin's controller.
- *
- * @param  string  $plugin Name of plugin
- * @param  string  $controller Name of controller to load
- * @return boolean Success
- */
-	function loadPluginController($plugin, $controller) {
-		$pluginAppController = Inflector::camelize($plugin . '_app_controller');
-		$pluginAppControllerFile = APP . 'plugins' . DS . $plugin . DS . $plugin . '_app_controller.php';
-		if (!class_exists($pluginAppController)) {
-			if (file_exists($pluginAppControllerFile)) {
-				require($pluginAppControllerFile);
-			} else {
-				return false;
-			}
-		}
-
-		if (empty($controller)) {
-			if (!class_exists($plugin . 'Controller')) {
-				if (file_exists(APP . 'plugins' . DS . $plugin . DS . 'controllers' . DS . $plugin . '_controller.php')) {
-					require(APP . 'plugins' . DS . $plugin . DS . 'controllers' . DS . $plugin . '_controller.php');
-					return true;
-				}
-			}
-		}
-
-		if (!class_exists($controller . 'Controller')) {
-			$controller = Inflector::underscore($controller);
-			$file = APP . 'plugins' . DS . $plugin . DS . 'controllers' . DS . $controller . '_controller.php';
-
-			if (file_exists($file)) {
-				require($file);
-				return true;
-			}  elseif (!class_exists(Inflector::camelize($plugin . '_controller'))) {
-				if(file_exists(APP . 'plugins' . DS . $plugin . DS . 'controllers' . DS . $plugin . '_controller.php')) {
-					require(APP . 'plugins' . DS . $plugin . DS . 'controllers' . DS . $plugin . '_controller.php');
-					return true;
-				} else {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-/**
- * Loads a helper
- *
- * @param  string  $name Name of helper
- * @return boolean Success
- */
-	function loadHelper($name) {
-		$paths = Configure::getInstance();
-
-		if ($name === null) {
-			return true;
-		}
-
-		if (!class_exists($name . 'Helper')) {
-			$name=Inflector::underscore($name);
-
-			foreach($paths->helperPaths as $path) {
-				if (file_exists($path . $name . '.php')) {
-					require($path . $name . '.php');
-					return true;
-				}
-			}
-
-			if ($helper_fn = fileExistsInPath(LIBS . 'view' . DS . 'helpers' . DS . $name . '.php')) {
-				if (file_exists($helper_fn)) {
-					require($helper_fn);
-					return true;
-				} else {
-					return false;
-				}
-			}
-		} else {
-			return true;
-		}
-	}
-/**
- * Loads a plugin's helper
- *
- * @param  string  $plugin Name of plugin
- * @param  string  $helper Name of helper to load
- * @return boolean Success
- */
-	function loadPluginHelper($plugin, $helper) {
-		if (!class_exists($helper . 'Helper')) {
-			$helper = Inflector::underscore($helper);
-			$file = APP . 'plugins' . DS . $plugin . DS . 'views' . DS . 'helpers' . DS . $helper . '.php';
-			if (file_exists($file)) {
-				require($file);
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return true;
-		}
-	}
-/**
- * Loads a component
- *
- * @param  string  $name Name of component
- * @return boolean Success
- */
-	function loadComponent($name) {
-		$paths = Configure::getInstance();
-
-		if ($name === null) {
-			return true;
-		}
-
-		if (!class_exists($name . 'Component')) {
-			$name=Inflector::underscore($name);
-
-			foreach($paths->componentPaths as $path) {
-				if (file_exists($path . $name . '.php')) {
-					require($path . $name . '.php');
-					return true;
-				}
-			}
-
-			if ($component_fn = fileExistsInPath(LIBS . 'controller' . DS . 'components' . DS . $name . '.php')) {
-				if (file_exists($component_fn)) {
-					require($component_fn);
-					return true;
-				} else {
-					return false;
-				}
-			}
-		} else {
-			return true;
-		}
-	}
-/**
- * Loads a plugin's component
- *
- * @param  string  $plugin Name of plugin
- * @param  string  $helper Name of component to load
- * @return boolean Success
- */
-	function loadPluginComponent($plugin, $component) {
-		if (!class_exists($component . 'Component')) {
-			$component = Inflector::underscore($component);
-			$file = APP . 'plugins' . DS . $plugin . DS . 'controllers' . DS . 'components' . DS . $component . '.php';
-			if (file_exists($file)) {
-				require($file);
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return true;
-		}
-	}
-/**
- * Returns an array of filenames of PHP files in given directory.
- *
- * @param  string $path Path to scan for files
- * @return array  List of files in directory
- */
-	function listClasses($path) {
-		$dir = opendir($path);
-		$classes=array();
-		while(false !== ($file = readdir($dir))) {
-			if ((substr($file, -3, 3) == 'php') && substr($file, 0, 1) != '.') {
-				$classes[] = $file;
-			}
-		}
-		closedir($dir);
-		return $classes;
-	}
-/**
- * Loads configuration files
+ * Loads configuration files. Receives a set of configuration files
+ * to load.
+ * Example:
+ * <code>
+ * config('config1', 'config2');
+ * </code>
  *
  * @return boolean Success
  */
 	function config() {
 		$args = func_get_args();
-		foreach($args as $arg) {
+		foreach ($args as $arg) {
 			if (('database' == $arg) && file_exists(CONFIGS . $arg . '.php')) {
 				include_once(CONFIGS . $arg . '.php');
 			} elseif (file_exists(CONFIGS . $arg . '.php')) {
@@ -446,51 +128,71 @@
 		return true;
 	}
 /**
- * Loads component/components from LIBS.
+ * Loads component/components from LIBS. Takes optional number of parameters.
  *
  * Example:
  * <code>
  * uses('flay', 'time');
  * </code>
  *
- * @uses LIBS
+ * @param string $name Filename without the .php part
  */
 	function uses() {
 		$args = func_get_args();
-		foreach($args as $arg) {
-			require_once(LIBS . strtolower($arg) . '.php');
+		foreach ($args as $file) {
+			require_once(LIBS . strtolower($file) . '.php');
 		}
 	}
 /**
  * Require given files in the VENDORS directory. Takes optional number of parameters.
  *
  * @param string $name Filename without the .php part.
- *
  */
-	function vendor($name) {
+	function vendor() {
 		$args = func_get_args();
-		foreach($args as $arg) {
+		$c = func_num_args();
+
+		for ($i = 0; $i < $c; $i++) {
+			$arg = $args[$i];
+
+			if (strpos($arg, '.') !== false) {
+				$file = explode('.', $arg);
+				$plugin = Inflector::underscore($file[0]);
+				unset($file[0]);
+				$file = implode('.', $file);
+				if (file_exists(APP . 'plugins' . DS . $plugin . DS . 'vendors' . DS . $file . '.php')) {
+					require_once(APP . 'plugins' . DS . $plugin . DS . 'vendors' . DS . $file . '.php');
+					continue;
+				}
+			}
+
 			if (file_exists(APP . 'vendors' . DS . $arg . '.php')) {
 				require_once(APP . 'vendors' . DS . $arg . '.php');
-			} else {
+			} elseif (file_exists(VENDORS . $arg . '.php')) {
 				require_once(VENDORS . $arg . '.php');
+			} else {
+				return false;
 			}
 		}
+		return true;
 	}
 /**
  * Prints out debug information about given variable.
  *
- * Only runs if DEBUG level is non-zero.
+ * Only runs if debug level is non-zero.
  *
- * @param boolean $var		Variable to show debug information for.
- * @param boolean $show_html	If set to true, the method prints the debug data in a screen-friendly way.
+ * @param boolean $var Variable to show debug information for.
+ * @param boolean $showHtml If set to true, the method prints the debug data in a screen-friendly way.
+ * @param boolean $showFrom If set to true, the method prints from where the function was called.
  */
-	function debug($var = false, $showHtml = false) {
+	function debug($var = false, $showHtml = false, $showFrom = true) {
 		if (Configure::read() > 0) {
-			print "\n<pre class=\"cake_debug\">\n";
-			ob_start();
-			print_r($var);
-			$var = ob_get_clean();
+			if ($showFrom) {
+				$calledFrom = debug_backtrace();
+				print "<strong>".substr(r(ROOT, "", $calledFrom[0]['file']), 1)."</strong> (line <strong>".$calledFrom[0]['line']."</strong>)";
+			}
+			print "\n<pre class=\"cake-debug\">\n";
+			$var = print_r($var, true);
 
 			if ($showHtml) {
 				$var = str_replace('<', '&lt;', str_replace('>', '&gt;', $var));
@@ -498,33 +200,33 @@
 			print "{$var}\n</pre>\n";
 		}
 	}
+	if (!function_exists('getMicrotime')) {
 /**
  * Returns microtime for execution time checking
  *
- * @return integer
+ * @return float Microtime
  */
-	if (!function_exists('getMicrotime')) {
 		function getMicrotime() {
 			list($usec, $sec) = explode(" ", microtime());
 			return ((float)$usec + (float)$sec);
 		}
 	}
+	if (!function_exists('sortByKey')) {
 /**
  * Sorts given $array by key $sortby.
  *
- * @param  array	$array
- * @param  string  $sortby
- * @param  string  $order  Sort order asc/desc (ascending or descending).
- * @param  integer $type
- * @return mixed
+ * @param array $array Array to sort
+ * @param string $sortby Sort by this key
+ * @param string $order  Sort order asc/desc (ascending or descending).
+ * @param integer $type Type of sorting to perform
+ * @return mixed Sorted array
  */
-	if (!function_exists('sortByKey')) {
 		function sortByKey(&$array, $sortby, $order = 'asc', $type = SORT_NUMERIC) {
 			if (!is_array($array)) {
 				return null;
 			}
 
-			foreach($array as $key => $val) {
+			foreach ($array as $key => $val) {
 				$sa[$key] = $val[$sortby];
 			}
 
@@ -534,21 +236,21 @@
 				arsort($sa, $type);
 			}
 
-			foreach($sa as $key => $val) {
+			foreach ($sa as $key => $val) {
 				$out[] = $array[$key];
 			}
 			return $out;
 		}
 	}
+	if (!function_exists('array_combine')) {
 /**
  * Combines given identical arrays by using the first array's values as keys,
  * and the second one's values as values. (Implemented for back-compatibility with PHP4)
  *
- * @param  array $a1
- * @param  array $a2
+ * @param array $a1 Array to use for keys
+ * @param array $a2 Array to use for values
  * @return mixed Outputs either combined array or false.
  */
-	if (!function_exists('array_combine')) {
 		function array_combine($a1, $a2) {
 			$a1 = array_values($a1);
 			$a2 = array_values($a2);
@@ -563,7 +265,7 @@
 			}
 
 			$output=array();
-			for($i = 0; $i < $c1; $i++) {
+			for ($i = 0; $i < $c1; $i++) {
 				$output[$a1[$i]] = $a2[$i];
 			}
 			return $output;
@@ -572,8 +274,8 @@
 /**
  * Convenience method for htmlspecialchars.
  *
- * @param string $text
- * @return string
+ * @param string $text Text to wrap through htmlspecialchars
+ * @return string Wrapped text
  */
 	function h($text) {
 		if (is_array($text)) {
@@ -594,7 +296,7 @@
  * array('a', 'b')
  * </code>
  *
- * @return array
+ * @return array Array of given parameters
  */
 	function a() {
 		$args = func_get_args();
@@ -613,11 +315,11 @@
  * array('a'=>'b')
  * </code>
  *
- * @return array
+ * @return array Associative array
  */
 	function aa() {
 		$args = func_get_args();
-		for($l = 0, $c = count($args); $l < $c; $l++) {
+		for ($l = 0, $c = count($args); $l < $c; $l++) {
 			if ($l + 1 < count($args)) {
 				$a[$args[$l]] = $args[$l + 1];
 			} else {
@@ -639,6 +341,7 @@
  * Convenience method for strtolower().
  *
  * @param string $str String to lowercase
+ * @return string Lowercased string
  */
 	function low($str) {
 		return strtolower($str);
@@ -647,6 +350,7 @@
  * Convenience method for strtoupper().
  *
  * @param string $str String to uppercase
+ * @return string Uppercased string
  */
 	function up($str) {
 		return strtoupper($str);
@@ -657,6 +361,7 @@
  * @param string $search String to be replaced
  * @param string $replace String to insert
  * @param string $subject String to search
+ * @return string Replaced string
  */
 	function r($search, $replace, $subject) {
 		return str_replace($search, $replace, $subject);
@@ -666,7 +371,8 @@
  * the output of given array. Similar to debug().
  *
  * @see	debug()
- * @param array	$var
+ * @param array $var Variable to print out
+ * @param boolean $showFrom If set to true, the method prints from where the function was called
  */
 	function pr($var) {
 		if (Configure::read() > 0) {
@@ -678,7 +384,7 @@
 /**
  * Display parameter
  *
- * @param  mixed  $p Parameter as string or array
+ * @param mixed $p Parameter as string or array
  * @return string
  */
 	function params($p) {
@@ -703,7 +409,7 @@
  */
 	function am() {
 		$r = array();
-		foreach(func_get_args()as $a) {
+		foreach (func_get_args()as $a) {
 			if (!is_array($a)) {
 				$a = array($a);
 			}
@@ -712,40 +418,31 @@
 		return $r;
 	}
 /**
- * Returns the REQUEST_URI from the server environment, or, failing that,
- * constructs a new one, using the PHP_SELF constant and other variables.
+ * see Dispatcher::uri();
  *
- * @return string URI
+ * @deprecated
  */
 	function setUri() {
-		if (env('HTTP_X_REWRITE_URL')) {
-			$uri = env('HTTP_X_REWRITE_URL');
-		} elseif(env('REQUEST_URI')) {
-			$uri = env('REQUEST_URI');
-		} else {
-			if (env('argv')) {
-				$uri = env('argv');
-
-				if (defined('SERVER_IIS')) {
-					$uri = BASE_URL . $uri[0];
-				} else {
-					$uri = env('PHP_SELF') . '/' . $uri[0];
-				}
-			} else {
-				$uri = env('PHP_SELF') . '/' . env('QUERY_STRING');
-			}
-		}
-		return $uri;
+		return null;
 	}
 /**
- * Gets an environment variable from available sources.
- * Used as a backup if $_SERVER/$_ENV are disabled.
+ * see Dispatcher::getUrl();
+ *
+ * @deprecated
+ */
+	function setUrl() {
+		return null;
+	}
+/**
+ * Gets an environment variable from available sources, and provides emulation
+ * for unsupported or inconsisten environment variables (i.e. DOCUMENT_ROOT on
+ * IIS, or SCRIPT_NAME in CGI mode).  Also exposes some additional custom
+ * environment information.
  *
  * @param  string $key Environment variable name.
  * @return string Environment variable setting.
  */
 	function env($key) {
-
 		if ($key == 'HTTPS') {
 			if (isset($_SERVER) && !empty($_SERVER)) {
 				return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on');
@@ -754,55 +451,58 @@
 			}
 		}
 
-		if (isset($_SERVER[$key])) {
-			return $_SERVER[$key];
-		} elseif (isset($_ENV[$key])) {
-			return $_ENV[$key];
-		} elseif (getenv($key) !== false) {
-			return getenv($key);
+		if ($key == 'SCRIPT_NAME') {
+			if (env('CGI_MODE') && isset($_ENV['SCRIPT_URL'])) {
+				$key = 'SCRIPT_URL';
+			}
 		}
 
-		if ($key == 'DOCUMENT_ROOT') {
-			$offset = 0;
-			if (!strpos(env('SCRIPT_NAME'), '.php')) {
-				$offset = 4;
-			}
-			return substr(env('SCRIPT_FILENAME'), 0, strlen(env('SCRIPT_FILENAME')) - (strlen(env('SCRIPT_NAME')) + $offset));
+		$val = null;
+		if (isset($_SERVER[$key])) {
+			$val = $_SERVER[$key];
+		} elseif (isset($_ENV[$key])) {
+			$val = $_ENV[$key];
+		} elseif (getenv($key) !== false) {
+			$val = getenv($key);
 		}
-		if ($key == 'PHP_SELF') {
-			return r(env('DOCUMENT_ROOT'), '', env('SCRIPT_FILENAME'));
+
+		if ($key == 'REMOTE_ADDR' && $val == env('SERVER_ADDR')) {
+			$addr = env('HTTP_PC_REMOTE_ADDR');
+			if ($addr != null) {
+				$val = $addr;
+			}
+		}
+
+		if ($val !== null) {
+			return $val;
+		}
+
+		switch ($key) {
+			case 'SCRIPT_FILENAME':
+				if (defined('SERVER_IIS') && SERVER_IIS === true){
+					return str_replace('\\\\', '\\', env('PATH_TRANSLATED') );
+				}
+			break;
+			case 'DOCUMENT_ROOT':
+				$offset = 0;
+				if (!strpos(env('SCRIPT_NAME'), '.php')) {
+					$offset = 4;
+				}
+				return substr(env('SCRIPT_FILENAME'), 0, strlen(env('SCRIPT_FILENAME')) - (strlen(env('SCRIPT_NAME')) + $offset));
+			break;
+			case 'PHP_SELF':
+				return r(env('DOCUMENT_ROOT'), '', env('SCRIPT_FILENAME'));
+			break;
+			case 'CGI_MODE':
+				return (substr(php_sapi_name(), 0, 3) == 'cgi');
+			break;
+			case 'HTTP_BASE':
+				return preg_replace ('/^([^.])*/i', null, env('HTTP_HOST'));
+			break;
 		}
 		return null;
 	}
-/**
- * Returns contents of a file as a string.
- *
- * @param  string  $fileName		Name of the file.
- * @param  boolean $useIncludePath Wheter the function should use the include path or not.
- * @return mixed	Boolean false or contents of required file.
- */
-	if (!function_exists('file_get_contents')) {
-		function file_get_contents($fileName, $useIncludePath = false) {
-			$res=fopen($fileName, 'rb', $useIncludePath);
-
-			if ($res === false) {
-				trigger_error('file_get_contents() failed to open stream: No such file or directory', E_USER_WARNING);
-				return false;
-			}
-			clearstatcache();
-
-			if ($fileSize = @filesize($fileName)) {
-				$data = fread($res, $fileSize);
-			} else {
-				$data = '';
-
-				while(!feof($res)) {
-					$data .= fread($res, 8192);
-				}
-			}
-			return "$data\n";
-		}
-	}
+	if (!function_exists('file_put_contents')) {
 /**
  * Writes data into file.
  *
@@ -810,8 +510,8 @@
  *
  * @param string $fileName File name.
  * @param mixed  $data String or array.
+ * @return boolean Success
  */
-	if (!function_exists('file_put_contents')) {
 		function file_put_contents($fileName, $data) {
 			if (is_array($data)) {
 				$data = join('', $data);
@@ -819,12 +519,14 @@
 			$res = @fopen($fileName, 'w+b');
 			if ($res) {
 				$write = @fwrite($res, $data);
-				if($write === false) {
+				if ($write === false) {
 					return false;
 				} else {
+					@fclose($res);
 					return $write;
 				}
 			}
+			return false;
 		}
 	}
 /**
@@ -837,38 +539,43 @@
  * @return mixed  The contents of the temporary file.
  */
 	function cache($path, $data = null, $expires = '+1 day', $target = 'cache') {
+		if (Configure::read('Cache.disable')) {
+			return null;
+		}
 		$now = time();
+
 		if (!is_numeric($expires)) {
 			$expires = strtotime($expires, $now);
 		}
 
-		switch(strtolower($target)) {
+		switch(low($target)) {
 			case 'cache':
 				$filename = CACHE . $path;
 			break;
 			case 'public':
 				$filename = WWW_ROOT . $path;
 			break;
+			case 'tmp':
+				$filename = TMP . $path;
+			break;
 		}
-
 		$timediff = $expires - $now;
 		$filetime = false;
-		if(file_exists($filename)) {
+
+		if (file_exists($filename)) {
 			$filetime = @filemtime($filename);
 		}
 
 		if ($data === null) {
-			// Read data from file
 			if (file_exists($filename) && $filetime !== false) {
 				if ($filetime + $timediff < $now) {
-					// File has expired
 					@unlink($filename);
 				} else {
-					$data = file_get_contents($filename);
+					$data = @file_get_contents($filename);
 				}
 			}
-		} else {
-			file_put_contents($filename, $data);
+		} elseif (is_writable(dirname($filename))) {
+			@file_put_contents($filename, $data);
 		}
 		return $data;
 	}
@@ -891,14 +598,14 @@
 			if (is_file($cache . $ext)) {
 				@unlink($cache . $ext);
 				return true;
-			} else if(is_dir($cache)) {
+			} elseif (is_dir($cache)) {
 				$files = glob("$cache*");
 
 				if ($files === false) {
 					return false;
 				}
 
-				foreach($files as $file) {
+				foreach ($files as $file) {
 					if (is_file($file)) {
 						@unlink($file);
 					}
@@ -911,7 +618,7 @@
 				if ($files === false) {
 					return false;
 				}
-				foreach($files as $file) {
+				foreach ($files as $file) {
 					if (is_file($file)) {
 						@unlink($file);
 					}
@@ -919,16 +626,16 @@
 				return true;
 			}
 		} elseif (is_array($params)) {
-			foreach($params as $key => $file) {
+			foreach ($params as $key => $file) {
 				$file = preg_replace('/\/\//', '/', $file);
 				$cache = CACHE . $type . DS . '*' . $file . '*' . $ext;
 				$files[] = glob($cache);
 			}
 
 			if (!empty($files)) {
-				foreach($files as $key => $delete) {
+				foreach ($files as $key => $delete) {
 					if (is_array($delete)) {
-						foreach($delete as $file) {
+						foreach ($delete as $file) {
 							if (is_file($file)) {
 								@unlink($file);
 							}
@@ -946,8 +653,8 @@
 /**
  * Recursively strips slashes from all values in an array
  *
- * @param unknown_type $value
- * @return unknown
+ * @param array $value Array of values to strip slashes
+ * @return mixed What is returned from calling stripslashes
  */
 	function stripslashes_deep($value) {
 		if (is_array($value)) {
@@ -959,41 +666,265 @@
 		}
 	}
 /**
- * Returns a translated string if one is found,
- * or the submitted message if not found.
+ * Returns a translated string if one is found, or the submitted message if not found.
  *
- * @param  unknown_type $msg
- * @param  unknown_type $return
- * @return unknown
- * @todo Not implemented fully till 2.0
+ * @param string $singular Text to translate
+ * @param boolean $return Set to true to return translated string, or false to echo
+ * @return mixed translated string if $return is false string will be echoed
  */
-	function __($msg, $return = null) {
-		if (is_null($return)) {
-			echo($msg);
+	function __($singular, $return = false) {
+		if (!$singular) {
+			return;
+		}
+		if (!class_exists('I18n')) {
+			App::import('Core', 'i18n');
+		}
+
+		if ($return === false) {
+			echo I18n::translate($singular);
 		} else {
-			return $msg;
+			return I18n::translate($singular);
 		}
 	}
 /**
- * Counts the dimensions of an array
+ * Returns correct plural form of message identified by $singular and $plural for count $count.
+ * Some languages have more than one form for plural messages dependent on the count.
  *
- * @param array $array
- * @return int The number of dimensions in $array
+ * @param string $singular Singular text to translate
+ * @param string $plural Plural text
+ * @param integer $count Count
+ * @param boolean $return true to return, false to echo
+ * @return mixed plural form of translated string if $return is false string will be echoed
  */
-	function countdim($array) {
-		if (is_array(reset($array))) {
-			$return = countdim(reset($array)) + 1;
-		} else {
-			$return = 1;
+	function __n($singular, $plural, $count, $return = false) {
+		if (!$singular) {
+			return;
 		}
-		return $return;
+		if (!class_exists('I18n')) {
+			App::import('Core', 'i18n');
+		}
+
+		if ($return === false) {
+			echo I18n::translate($singular, $plural, null, 5, $count);
+		} else {
+			return I18n::translate($singular, $plural, null, 5, $count);
+		}
+	}
+/**
+ * Allows you to override the current domain for a single message lookup.
+ *
+ * @param string $domain Domain
+ * @param string $msg String to translate
+ * @param string $return true to return, false to echo
+ * @return translated string if $return is false string will be echoed
+ */
+	function __d($domain, $msg, $return = false) {
+		if (!$msg) {
+			return;
+		}
+		if (!class_exists('I18n')) {
+			App::import('Core', 'i18n');
+		}
+
+		if ($return === false) {
+			echo I18n::translate($msg, null, $domain);
+		} else {
+			return I18n::translate($msg, null, $domain);
+		}
+    }
+/**
+ * Allows you to override the current domain for a single plural message lookup
+ * Returns correct plural form of message identified by $singular and $plural for count $count
+ * from domain $domain
+ *
+ * @param string $domain Domain
+ * @param string $singular Singular string to translate
+ * @param string $plural Plural
+ * @param integer $count Count
+ * @param boolean $return true to return, false to echo
+ * @return plural form of translated string if $return is false string will be echoed
+ */
+	function __dn($domain, $singular, $plural, $count, $return = false) {
+		if (!$singular) {
+			return;
+		}
+		if (!class_exists('I18n')) {
+			App::import('Core', 'i18n');
+		}
+
+		if ($return === false) {
+			echo I18n::translate($singular, $plural, $domain, 5, $count);
+		} else {
+			return I18n::translate($singular, $plural, $domain, 5, $count);
+		}
+	}
+/**
+ * Allows you to override the current domain for a single message lookup.
+ * It also allows you to specify a category.
+ *
+ * The category argument allows a specific category of the locale settings to be used for fetching a message.
+ * Valid categories are: LC_CTYPE, LC_NUMERIC, LC_TIME, LC_COLLATE, LC_MONETARY, LC_MESSAGES and LC_ALL.
+ *
+ * Note that the category must be specified with a numeric value, instead of the constant name.  The values are:
+ * LC_CTYPE     0
+ * LC_NUMERIC   1
+ * LC_TIME      2
+ * LC_COLLATE   3
+ * LC_MONETARY  4
+ * LC_MESSAGES  5
+ * LC_ALL       6
+ *
+ * @param string $domain Domain
+ * @param string $msg Message to translate
+ * @param integer $category Category
+ * @param boolean $return true to return, false to echo
+ * @return translated string if $return is false string will be echoed
+ */
+	function __dc($domain, $msg, $category, $return = false) {
+		if (!$msg) {
+			return;
+		}
+		if (!class_exists('I18n')) {
+			App::import('Core', 'i18n');
+		}
+
+		if ($return === false) {
+			echo I18n::translate($msg, null, $domain, $category);
+		} else {
+			return I18n::translate($msg, null, $domain, $category);
+		}
+	}
+/**
+ * Allows you to override the current domain for a single plural message lookup.
+ * It also allows you to specify a category.
+ * Returns correct plural form of message identified by $singular and $plural for count $count
+ * from domain $domain
+ *
+ * The category argument allows a specific category of the locale settings to be used for fetching a message.
+ * Valid categories are: LC_CTYPE, LC_NUMERIC, LC_TIME, LC_COLLATE, LC_MONETARY, LC_MESSAGES and LC_ALL.
+ *
+ * Note that the category must be specified with a numeric value, instead of the constant name.  The values are:
+ * LC_CTYPE     0
+ * LC_NUMERIC   1
+ * LC_TIME      2
+ * LC_COLLATE   3
+ * LC_MONETARY  4
+ * LC_MESSAGES  5
+ * LC_ALL       6
+ *
+ * @param string $domain Domain
+ * @param string $singular Singular string to translate
+ * @param string $plural Plural
+ * @param integer $count Count
+ * @param integer $category Category
+ * @param boolean $return true to return, false to echo
+ * @return plural form of translated string if $return is false string will be echoed
+ */
+	function __dcn($domain, $singular, $plural, $count, $category, $return = false) {
+		if (!$singular) {
+			return;
+		}
+		if (!class_exists('I18n')) {
+			App::import('Core', 'i18n');
+		}
+
+		if ($return === false) {
+			echo I18n::translate($singular, $plural, $domain, $category, $count);
+		} else {
+			return I18n::translate($singular, $plural, $domain, $category, $count);
+		}
+	}
+/**
+ * The category argument allows a specific category of the locale settings to be used for fetching a message.
+ * Valid categories are: LC_CTYPE, LC_NUMERIC, LC_TIME, LC_COLLATE, LC_MONETARY, LC_MESSAGES and LC_ALL.
+ *
+ * Note that the category must be specified with a numeric value, instead of the constant name.  The values are:
+ * LC_CTYPE     0
+ * LC_NUMERIC   1
+ * LC_TIME      2
+ * LC_COLLATE   3
+ * LC_MONETARY  4
+ * LC_MESSAGES  5
+ * LC_ALL       6
+ *
+ * @param string $msg String to translate
+ * @param integer $category Category
+ * @param string $return true to return, false to echo
+ * @return translated string if $return is false string will be echoed
+ */
+	function __c($msg, $category, $return = false) {
+		if (!$msg) {
+			return;
+		}
+		if (!class_exists('I18n')) {
+			App::import('Core', 'i18n');
+		}
+
+		if ($return === false) {
+			echo I18n::translate($msg, null, null, $category);
+		} else {
+			return I18n::translate($msg, null, null, $category);
+		}
+    }
+/**
+ * Computes the difference of arrays using keys for comparison
+ *
+ * @param array First array
+ * @param array Second array
+ * @return array Array with different keys
+ */
+	if (!function_exists('array_diff_key')) {
+		function array_diff_key() {
+			$valuesDiff = array();
+
+			if (func_num_args() < 2) {
+				return false;
+			}
+
+			foreach (func_get_args() as $param) {
+				if (!is_array($param)) {
+					return false;
+				}
+			}
+
+			$args = func_get_args();
+			foreach ($args[0] as $valueKey => $valueData) {
+				for ($i = 1; $i < func_num_args(); $i++) {
+					if (isset($args[$i][$valueKey])) {
+						continue 2;
+					}
+				}
+				$valuesDiff[$valueKey] = $valueData;
+			}
+			return $valuesDiff;
+		}
+	}
+/**
+ * Computes the intersection of arrays using keys for comparison
+ *
+ * @param array First array
+ * @param array Second array
+ * @return array Array with interesected keys
+ */
+	if (!function_exists('array_intersect_key')) {
+		function array_intersect_key($arr1, $arr2) {
+			$res = array();
+			foreach ($arr1 as $key=>$value) {
+				if (array_key_exists($key, $arr2)) {
+					$res[$key] = $arr1[$key];
+				}
+			}
+			return $res;
+		}
 	}
 /**
  * Shortcut to Log::write.
+ *
+ * @param string $message Message to write to log
  */
 	function LogError($message) {
 		if (!class_exists('CakeLog')) {
-			uses('cake_log');
+			App::import('Core', 'CakeLog');
 		}
 		$bad = array("\n", "\r", "\t");
 		$good = ' ';
@@ -1002,12 +933,12 @@
 /**
  * Searches include path for files
  *
- * @param string $file
+ * @param string $file File to look for
  * @return Full path to file if exists, otherwise false
  */
 	function fileExistsInPath($file) {
 		$paths = explode(PATH_SEPARATOR, ini_get('include_path'));
-		foreach($paths as $path) {
+		foreach ($paths as $path) {
 			$fullPath = $path . DIRECTORY_SEPARATOR . $file;
 
 			if (file_exists($fullPath)) {
@@ -1021,7 +952,7 @@
 /**
  * Convert forward slashes to underscores and removes first and last underscores in a string
  *
- * @param string
+ * @param string String to convert
  * @return string with underscore remove from start and end of string
  */
 	function convertSlash($string) {
@@ -1030,61 +961,217 @@
 		$string = str_replace('/', '_', $string);
 		return $string;
 	}
-
 /**
- * chmod recursively on a directory
+ * Implements http_build_query for PHP4.
  *
- * @param string $path
- * @param int $mode
- * @return boolean
+ * @param string $data Data to set in query string
+ * @param string $prefix If numeric indices, prepend this to index for elements in base array.
+ * @param string $argSep String used to separate arguments
+ * @param string $baseKey Base key
+ * @return string URL encoded query string
+ * @see http://php.net/http_build_query
  */
-	function chmodr($path, $mode = 0755) {
-		if (!is_dir($path)) {
-			return chmod($path, $mode);
-		}
-		$dir = opendir($path);
+	if (!function_exists('http_build_query')) {
+		function http_build_query($data, $prefix = null, $argSep = null, $baseKey = null) {
+			if (empty($argSep)) {
+				$argSep = ini_get('arg_separator.output');
+			}
+			if (is_object($data)) {
+				$data = get_object_vars($data);
+			}
+			$out = array();
 
-		while($file = readdir($dir)) {
-			if ($file != '.' && $file != '..') {
-				$fullpath = $path . '/' . $file;
+			foreach ((array)$data as $key => $v) {
+				if (is_numeric($key) && !empty($prefix)) {
+					$key = $prefix . $key;
+				}
+				$key = urlencode($key);
 
-				if (!is_dir($fullpath)) {
-					if (!chmod($fullpath, $mode)) {
-						return false;
-					}
+				if (!empty($baseKey)) {
+					$key = $baseKey . '[' . $key . ']';
+				}
+
+				if (is_array($v) || is_object($v)) {
+					$out[] = http_build_query($v, $prefix, $argSep, $key);
 				} else {
-					if (!chmodr($fullpath, $mode)) {
-						return false;
-					}
+					$out[] = $key . '=' . urlencode($v);
 				}
 			}
-		}
-		closedir($dir);
-
-		if (chmod($path, $mode)) {
-			return true;
-		} else {
-			return false;
+			return implode($argSep, $out);
 		}
 	}
 /**
- * removed the plugin name from the base url
+ * Wraps ternary operations. If $condition is a non-empty value, $val1 is returned, otherwise $val2.
+ * Don't use for isset() conditions, or wrap your variable with @ operator:
+ * Example:
+ * <code>
+ * ife(isset($variable), @$variable, 'default');
+ * </code>
  *
- * @param string $base
- * @param string $plugin
- * @return base url with plugin name removed if present
+ * @param mixed $condition Conditional expression
+ * @param mixed $val1 Value to return in case condition matches
+ * @param mixed $val2 Value to return if condition doesn't match
+ * @return mixed $val1 or $val2, depending on whether $condition evaluates to a non-empty expression.
  */
-	function strip_plugin($base, $plugin){
-		if ($plugin != null) {
-			$base = preg_replace('/' . $plugin . '/', '', $base);
-			$base = str_replace('//', '', $base);
-			$pos1 = strrpos($base, '/');
-			$char = strlen($base) - 1;
-
-			if ($pos1 == $char) {
-				$base = substr($base, 0, $char);
+	function ife($condition, $val1 = null, $val2 = null) {
+		if (!empty($condition)) {
+			return $val1;
+		}
+		return $val2;
+	}
+/**
+ * @deprecated
+ * @see App::import('View', 'ViewName');
+ */
+	function loadView($name) {
+		trigger_error('loadView is deprecated see App::import(\'View\', \'ViewName\');', E_USER_WARNING);
+		return App::import('View', $name);
+	}
+/**
+ * @deprecated
+ * @see App::import('Model', 'ModelName');
+ */
+	function loadModel($name = null) {
+		trigger_error('loadModel is deprecated see App::import(\'Model\', \'ModelName\');', E_USER_WARNING);
+		return App::import('Model', $name);
+	}
+/**
+ * @deprecated
+ * @see App::import('Controller', 'ControllerName');
+ */
+	function loadController($name) {
+		trigger_error('loadController is deprecated see App::import(\'Controller\', \'ControllerName\');', E_USER_WARNING);
+		return App::import('Controller', $name);
+	}
+/**
+ * @deprecated
+ * @see App::import('Helper', 'HelperName');
+ */
+	function loadHelper($name) {
+		trigger_error('loadHelper is deprecated see App::import(\'Helper\', \'PluginName.HelperName\');', E_USER_WARNING);
+		return App::import('Helper', $name);
+	}
+/**
+ * @deprecated
+ * @see App::import('Helper', 'PluginName.HelperName');
+ */
+	function loadPluginHelper($plugin, $helper) {
+		trigger_error('loadPluginHelper is deprecated see App::import(\'Helper\', \'PluginName.HelperName\');', E_USER_WARNING);
+		return App::import('Helper', $plugin . '.' . $helper);
+	}
+/**
+ * @deprecated
+ * @see App::import('Component', 'ComponentName');
+ */
+	function loadComponent($name) {
+		trigger_error('loadComponent is deprecated see App::import(\'Component\', \'ComponentName\');', E_USER_WARNING);
+		return App::import('Component', $name);
+	}
+/**
+ * @deprecated
+ * @see App::import('Component', 'PluginName.ComponentName');
+ */
+	function loadPluginComponent($plugin, $component) {
+		trigger_error('loadPluginComponent is deprecated see App::import(\'Component\', \'PluginName.ComponentName\');', E_USER_WARNING);
+		return App::import('Component', $plugin . '.' . $component);
+	}
+/**
+ * @deprecated
+ * @see App::import('Behavior', 'BehaviorrName');
+ */
+	function loadBehavior($name) {
+		trigger_error('loadBehavior is deprecated see App::import(\'Behavior\', $name);', E_USER_WARNING);
+		return App::import('Behavior', $name);
+	}
+/**
+ * @deprecated
+ * @see $model = Configure::listObjects('model'); and App::import('Model', $models);
+ *      or App::import('Model', array(List of Models));
+ */
+	function loadModels() {
+		$loadModels = array();
+		if (func_num_args() > 0) {
+			$args = func_get_args();
+			foreach($args as $arg) {
+				if (is_array($arg)) {
+					$loadModels = am($loadModels, $arg);
+				} else {
+					$loadModels[] = $arg;
+				}
 			}
 		}
-		return $base;
+
+		if (empty($loadModels)) {
+			$loadModels = Configure::listObjects('model');
+		}
+		App::import('Model', $loadModels);
+		trigger_error('loadModels is deprecated see $model = Configure::listObjects(\'model\'); and App::import(\'Model\', $models);', E_USER_WARNING);
+		return $loadModels;
+	}
+/**
+ * @deprecated
+ * @see App::import('Model', 'PluginName.PluginModel');
+ */
+	function loadPluginModels($plugin) {
+		if (!class_exists('AppModel')) {
+			loadModel();
+		}
+		$plugin = Inflector::underscore($plugin);
+		$pluginAppModel = Inflector::camelize($plugin . '_app_model');
+		$pluginAppModelFile = APP . 'plugins' . DS . $plugin . DS . $plugin . '_app_model.php';
+
+		if (!class_exists($pluginAppModel)) {
+			if (file_exists($pluginAppModelFile)) {
+				require($pluginAppModelFile);
+				Overloadable::overload($pluginAppModel);
+			}
+		}
+
+		$pluginModelDir = APP . 'plugins' . DS . $plugin . DS . 'models' . DS;
+		if (is_dir($pluginModelDir)) {
+			foreach (listClasses($pluginModelDir)as $modelFileName) {
+				list($name) = explode('.', $modelFileName);
+				$className = Inflector::camelize($name);
+
+				if (!class_exists($className)) {
+					require($pluginModelDir . $modelFileName);
+					Overloadable::overload($className);
+				}
+			}
+		}
+		trigger_error('loadPluginModels is deprecated see App::import(\'Model\', \'PluginName.PluginModel\');', E_USER_WARNING);
+	}
+/**
+ * @deprecated
+ * @see $controllers = Configure::listObjects('controller'); and App::import('Controller', $controllers);
+ *      or App::import('Controller', array(List of Controllers);
+ */
+	function loadControllers() {
+		$loadControllers = array();
+		if (func_num_args() > 0) {
+			$args = func_get_args();
+			foreach($args as $arg) {
+				if (is_array($arg)) {
+					$loadControllers = am($loadControllers, $arg);
+				} else {
+					$loadControllers[] = $arg;
+				}
+			}
+		}
+
+		if (empty($loadControllers)) {
+			$loadControllers = Configure::listObjects('controller');
+		}
+		App::import('Controller', $loadControllers);
+		trigger_error('loadControllers is deprecated see $controllers = Configure::listObjects(\'controller\'); and App::import(\'Controller\', $controllers);', E_USER_WARNING);
+		return $loadControllers;
+	}
+/**
+ * @deprecated
+ * @see Configure::listObjects('file', $path);
+ */
+	function listClasses($path ) {
+		trigger_error('listClasses is deprecated see Configure::listObjects(\'file\', $path);', E_USER_WARNING);
+		return Configure::listObjects('file', $path);
 	}
 ?>

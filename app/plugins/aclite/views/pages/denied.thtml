@@ -1,5 +1,0 @@
-<h1><?php echo $html->image( 'lock.png', array('alt' => 'denied', 'title' => 'denied'));?><?php e(LANG_ACCESSDENIED);?></h1>
-<?php echo '<b>'.LANG_DETAILS.'</b> : '.$denialDetails."<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>"; ?>
-  
-  
-  

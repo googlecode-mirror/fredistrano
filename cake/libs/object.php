@@ -1,5 +1,5 @@
 <?php
-/* SVN FILE: $Id: object.php 4409 2007-02-02 13:20:59Z phpnut $ */
+/* SVN FILE: $Id: object.php 6311 2008-01-02 06:33:52Z phpnut $ */
 /**
  * Object class, allowing __construct and __destruct in PHP4.
  *
@@ -9,7 +9,7 @@
  * PHP versions 4 and 5
  *
  * CakePHP(tm) :  Rapid Development Framework <http://www.cakephp.org/>
- * Copyright 2005-2007, Cake Software Foundation, Inc.
+ * Copyright 2005-2008, Cake Software Foundation, Inc.
  *								1785 E. Sahara Avenue, Suite 490-204
  *								Las Vegas, Nevada 89104
  *
@@ -17,14 +17,14 @@
  * Redistributions of files must retain the above copyright notice.
  *
  * @filesource
- * @copyright		Copyright 2005-2007, Cake Software Foundation, Inc.
+ * @copyright		Copyright 2005-2008, Cake Software Foundation, Inc.
  * @link				http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
  * @package			cake
  * @subpackage		cake.cake.libs
  * @since			CakePHP(tm) v 0.2.9
- * @version			$Revision: 4409 $
+ * @version			$Revision: 6311 $
  * @modifiedby		$LastChangedBy: phpnut $
- * @lastmodified	$Date: 2007-02-02 07:20:59 -0600 (Fri, 02 Feb 2007) $
+ * @lastmodified	$Date: 2008-01-02 00:33:52 -0600 (Wed, 02 Jan 2008) $
  * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 /**
@@ -36,7 +36,7 @@
  * @package		cake
  * @subpackage	cake.cake.libs
  */
-class Object{
+class Object {
 /**
  * Log object
  *
@@ -51,7 +51,6 @@ class Object{
  * which (if present) should call parent::__construct()
  *
  * @return Object
- * @access public
  */
 	function Object() {
 		$args = func_get_args();
@@ -62,9 +61,6 @@ class Object{
 	}
 /**
  * Class constructor, overridden in descendant classes.
- *
- * @abstract
- * @access public
  */
 	function __construct() {
 	}
@@ -81,21 +77,20 @@ class Object{
 		return $class;
 	}
 /**
- * Calls a controller's method from any location. Allows for
- * controllers to communicate with each other.
+ * Calls a controller's method from any location.
  *
  * @param string $url  URL in the form of Cake URL ("/controller/method/parameter")
  * @param array $extra If array includes the key "return" it sets the AutoRender to true.
- * @return boolean  Success
+ * @return mixed  Success (true/false) or contents if 'return' is set in $extra
  * @access public
  */
 	function requestAction($url, $extra = array()) {
 		if (!empty($url)) {
-			$dispatcher =& new Dispatcher();
-			if(isset($this->plugin)){
-				$extra['plugin'] = $this->plugin;
+			if (!class_exists('dispatcher')) {
+				require CAKE . 'dispatcher.php';
 			}
-			if (in_array('return', $extra)) {
+			$dispatcher =& new Dispatcher();
+			if (in_array('return', $extra, true)) {
 				$extra['return'] = 0;
 				$extra['bare'] = 1;
 				$extra['requested'] = 1;
@@ -117,8 +112,8 @@ class Object{
  * API for logging events.
  *
  * @param string $msg Log message
- * @param int $type Error type constant. Defined in app/config/core.php.
- * @access
+ * @param integer $type Error type constant. Defined in app/config/core.php.
+ * @access public
  */
 	function log($msg, $type = LOG_ERROR) {
 		if (!class_exists('CakeLog')) {
@@ -130,19 +125,24 @@ class Object{
 		}
 
 		if (!is_string($msg)) {
-			ob_start();
-			print_r ($msg);
-			$msg=ob_get_contents();
-			ob_end_clean();
+			$msg = print_r ($msg, true);
 		}
-
-		switch($type) {
-			case LOG_DEBUG:
-				return $this->_log->write('debug', $msg);
-			break;
-			default:
-				return $this->_log->write('error', $msg);
-			break;
+		return $this->_log->write($type, $msg);
+	}
+/**
+ * Allows setting of multiple properties of the object in a single line of code.
+ *
+ * @param array $properties An associative array containing properties and corresponding values.
+ * @access protected
+ */
+	function _set($properties = array()) {
+		if (is_array($properties) && !empty($properties)) {
+			$vars = get_object_vars($this);
+			foreach ($properties as $key => $val) {
+				if (array_key_exists($key, $vars)) {
+					$this->{$key} = $val;
+				}
+			}
 		}
 	}
 /**
@@ -173,17 +173,14 @@ class Object{
 /**
  * Checks for a persistent class file, if found file is opened and true returned
  * If file is not found a file is created and false returned
+ * If used in other locations of the model you should choose a unique name for the persistent file
+ * There are many uses for this method, see manual for examples
  *
- * There are many uses for this method, see manual for examples also art of
- * the cache system
- *
- * @param string $name name of class to persist
- * @param boolean $return
- * @param object $object
- * @param string $type
- * @return boolean
- * @todo add examples to manual
+ * @param string $name name of the class to persist
+ * @param string $object the object to persist
+ * @return boolean Success
  * @access protected
+ * @todo add examples to manual
  */
 	function _persist($name, $return = null, &$object, $type = null) {
 		$file = CACHE . 'persistent' . DS . strtolower($name) . '.php';
@@ -206,8 +203,7 @@ class Object{
 /**
  * You should choose a unique name for the persistent file
  *
- * There are many uses for this method, see manual for examples also part of
- * the cache system
+ * There are many uses for this method, see manual for examples
  *
  * @param string $name name used for object to cache
  * @param object $object the object to persist
@@ -223,11 +219,10 @@ class Object{
 	}
 /**
  * Open the persistent class file for reading
- * Used by Object::_persist(), part of the cache
- * system
+ * Used by Object::_persist()
  *
- * @param string $name Name of the persistant file
- * @param string $type
+ * @param string $name Name of persisted class
+ * @param string $type Type of persistance (e.g: registry)
  * @access private
  */
 	function __openPersistent($name, $type = null) {
@@ -237,12 +232,16 @@ class Object{
 		switch($type) {
 			case 'registry':
 				$vars = unserialize(${$name});
-				foreach($vars['0'] as $key => $value) {
-					loadModel(Inflector::classify($key));
+				foreach ($vars['0'] as $key => $value) {
+					if(strpos($key, '_behavior')) {
+						loadBehavior(Inflector::classify(str_replace('_behavior', '', $key)));
+					} else {
+						loadModel(Inflector::classify($key));
+					}
 				}
 				unset($vars);
 				$vars = unserialize(${$name});
-				foreach($vars['0'] as $key => $value) {
+				foreach ($vars['0'] as $key => $value) {
 					ClassRegistry::addObject($key, $value);
 					unset ($value);
 				}

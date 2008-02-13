@@ -1,5 +1,5 @@
 <?php
-/* SVN FILE: $Id: inflector.php 4409 2007-02-02 13:20:59Z phpnut $ */
+/* SVN FILE: $Id: inflector.php 6311 2008-01-02 06:33:52Z phpnut $ */
 /**
  * Pluralize and singularize English words.
  *
@@ -8,7 +8,7 @@
  * PHP versions 4 and 5
  *
  * CakePHP(tm) :  Rapid Development Framework <http://www.cakephp.org/>
- * Copyright 2005-2007, Cake Software Foundation, Inc.
+ * Copyright 2005-2008, Cake Software Foundation, Inc.
  *								1785 E. Sahara Avenue, Suite 490-204
  *								Las Vegas, Nevada 89104
  *
@@ -16,14 +16,14 @@
  * Redistributions of files must retain the above copyright notice.
  *
  * @filesource
- * @copyright		Copyright 2005-2007, Cake Software Foundation, Inc.
+ * @copyright		Copyright 2005-2008, Cake Software Foundation, Inc.
  * @link				http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
  * @package			cake
  * @subpackage		cake.cake.libs
  * @since			CakePHP(tm) v 0.2.9
- * @version			$Revision: 4409 $
+ * @version			$Revision: 6311 $
  * @modifiedby		$LastChangedBy: phpnut $
- * @lastmodified	$Date: 2007-02-02 07:20:59 -0600 (Fri, 02 Feb 2007) $
+ * @lastmodified	$Date: 2008-01-02 00:33:52 -0600 (Wed, 02 Jan 2008) $
  * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 /**
@@ -33,6 +33,7 @@
 	if (!class_exists('Object')) {
 		 uses('object');
 	}
+	uses('Set');
 /**
  * Pluralize and singularize English words.
  *
@@ -43,7 +44,7 @@
  * @package		cake
  * @subpackage	cake.cake.libs
  */
-class Inflector extends Object{
+class Inflector extends Object {
 /**
  * Constructor.
  *
@@ -55,12 +56,13 @@ class Inflector extends Object{
  * Gets a reference to the Inflector object instance
  *
  * @return object
+ * @access public
  */
 	function &getInstance() {
 		static $instance = array();
 
 		if (!isset($instance[0]) || !$instance[0]) {
-			$instance[0] = &new Inflector();
+			$instance[0] =& new Inflector();
 		}
 
 		return $instance[0];
@@ -69,37 +71,37 @@ class Inflector extends Object{
  * Initializes plural inflection rules
  *
  * @access protected
- * @return void
  */
 	function __initPluralRules() {
 		$_this =& Inflector::getInstance();
 		$corePluralRules = array('/(s)tatus$/i' => '\1\2tatuses',
-									'/^(ox)$/i' => '\1\2en', # ox
-									'/([m|l])ouse$/i' => '\1ice', # mouse, louse
-									'/(matr|vert|ind)ix|ex$/i' => '\1ices', # matrix, vertex, index
-									'/(x|ch|ss|sh)$/i' => '\1es', # search, switch, fix, box, process, address
-									'/([^aeiouy]|qu)y$/i' => '\1ies', # query, ability, agency
-									'/(hive)$/i' => '\1s', # archive, hive
-									'/(?:([^f])fe|([lr])f)$/i' => '\1\2ves', # half, safe, wife
-									'/sis$/i' => 'ses', # basis, diagnosis
-									'/([ti])um$/i' => '\1a', # datum, medium
-									'/(p)erson$/i' => '\1eople', # person, salesperson
-									'/(m)an$/i' => '\1en', # man, woman, spokesman
-									'/(c)hild$/i' => '\1hildren', # child
-									'/(buffal|tomat)o$/i' => '\1\2oes', # buffalo, tomato
-									'/us$/' => 'uses', # us
-									'/(alias)/i' => '\1es', # alias
-									'/(octop|vir)us$/i' => '\1i', # octopus, virus - virus has no defined plural (according to Latin/dictionary.com), but viri is better than viruses/viruss
-									'/(ax|cri|test)is$/i' => '\1es', # axis, crisis
-									'/s$/' => 's', # no change (compatibility)
-									'/$/' => 's');
+									'/(quiz)$/i' => '\1zes',
+									'/^(ox)$/i' => '\1\2en',
+									'/([m|l])ouse$/i' => '\1ice',
+									'/(matr|vert|ind)(ix|ex)$/i'  => '\1ices',
+									'/(x|ch|ss|sh)$/i' => '\1es',
+									'/([^aeiouy]|qu)y$/i' => '\1ies',
+									'/(hive)$/i' => '\1s',
+									'/(?:([^f])fe|([lr])f)$/i' => '\1\2ves',
+									'/sis$/i' => 'ses',
+									'/([ti])um$/i' => '\1a',
+									'/(p)erson$/i' => '\1eople',
+									'/(m)an$/i' => '\1en',
+									'/(c)hild$/i' => '\1hildren',
+									'/(buffal|tomat)o$/i' => '\1\2oes',
+									'/(alumn|bacill|cact|foc|fung|nucle|radi|stimul|syllab|termin|vir)us$/i' => '\1i',
+									'/us$/' => 'uses',
+									'/(alias)$/i' => '\1es',
+									'/(ax|cri|test)is$/i' => '\1es',
+									'/s$/' => 's',
+									'/$/' => 's',);
 
 		$coreUninflectedPlural = array('.*[nrlm]ese', '.*deer', '.*fish', '.*measles', '.*ois', '.*pox', '.*sheep', 'Amoyese',
 											'bison', 'Borghese', 'bream', 'breeches', 'britches', 'buffalo', 'cantus', 'carp', 'chassis', 'clippers',
 											'cod', 'coitus', 'Congoese', 'contretemps', 'corps', 'debris', 'diabetes', 'djinn', 'eland', 'elk',
 											'equipment', 'Faroese', 'flounder', 'Foochowese', 'gallows', 'Genevese', 'Genoese', 'Gilbertese', 'graffiti',
 											'headquarters', 'herpes', 'hijinks', 'Hottentotese', 'information', 'innings', 'jackanapes', 'Kiplingese',
-											'Kongoese', 'Lucchese', 'mackerel', 'Maltese', 'mews', 'moose', 'mumps', 'Nankingese', 'news',
+											'Kongoese', 'Lucchese', 'mackerel', 'Maltese', 'media', 'mews', 'moose', 'mumps', 'Nankingese', 'news',
 											'nexus', 'Niasese', 'Pekingese', 'Piedmontese', 'pincers', 'Pistoiese', 'pliers', 'Portuguese', 'proceedings',
 											'rabies', 'rice', 'rhinoceros', 'salmon', 'Sarawakese', 'scissors', 'sea[- ]bass', 'series', 'Shavese', 'shears',
 											'siemens', 'species', 'swine', 'testes', 'trousers', 'trout', 'tuna', 'Vermontese', 'Wenchowese',
@@ -141,9 +143,9 @@ class Inflector extends Object{
 
 		if (file_exists(CONFIGS . 'inflections.php')) {
 			include(CONFIGS.'inflections.php');
-			$pluralRules = array_merge($corePluralRules, $pluralRules);
-			$uninflected = array_merge($coreUninflectedPlural, $uninflectedPlural);
-			$irregular = array_merge($coreIrregularPlural, $irregularPlural);
+			$pluralRules = Set::pushDiff($pluralRules, $corePluralRules);
+			$uninflected = Set::pushDiff($uninflectedPlural, $coreUninflectedPlural);
+			$irregular = Set::pushDiff($irregularPlural, $coreIrregularPlural);
 		}
 		$_this->pluralRules = array('pluralRules' => $pluralRules, 'uninflected' => $uninflected, 'irregular' => $irregular);
 		$_this->pluralized = array();
@@ -153,6 +155,8 @@ class Inflector extends Object{
  *
  * @param string $word Word in singular
  * @return string Word in plural
+ * @access public
+ * @static
  */
 	function pluralize($word) {
 
@@ -173,17 +177,17 @@ class Inflector extends Object{
 			$_this->pluralRules['regexIrregular'] = $regexIrregular;
 		}
 
+		if (preg_match('/(.*)\\b(' . $regexIrregular . ')$/i', $word, $regs)) {
+			$_this->pluralized[$word] = $regs[1] . substr($word, 0, 1) . substr($irregular[strtolower($regs[2])], 1);
+			return $_this->pluralized[$word];
+		}
+
 		if (preg_match('/^(' . $regexUninflected . ')$/i', $word, $regs)) {
 			$_this->pluralized[$word] = $word;
 			return $word;
 		}
 
-		if (preg_match('/(.*)\\b(' . $regexIrregular . ')$/i', $word, $regs)) {
-			$_this->pluralized[$word] = $regs[1] . $irregular[strtolower($regs[2])];
-			return $_this->pluralized[$word];
-		}
-
-		foreach($pluralRules as $rule => $replacement) {
+		foreach ($pluralRules as $rule => $replacement) {
 			if (preg_match($rule, $word)) {
 				$_this->pluralized[$word] = preg_replace($rule, $replacement, $word);
 				return $_this->pluralized[$word];
@@ -196,20 +200,22 @@ class Inflector extends Object{
  * Initializes singular inflection rules
  *
  * @access protected
- * @return void
  */
 	function __initSingularRules() {
 
 		$_this =& Inflector::getInstance();
 		$coreSingularRules = array('/(s)tatuses$/i' => '\1\2tatus',
+									'/^(.*)(menu)s$/i' => '\1\2',
+									'/(quiz)zes$/i' => '\\1',
 									'/(matr)ices$/i' => '\1ix',
 									'/(vert|ind)ices$/i' => '\1ex',
 									'/^(ox)en/i' => '\1',
-									'/(alias)es$/i' => '\1',
-									'/([octop|vir])i$/i' => '\1us',
+									'/(alias)(es)*$/i' => '\1',
+									'/(alumn|bacill|cact|foc|fung|nucle|radi|stimul|syllab|termin|viri?)i$/i' => '\1us',
 									'/(cris|ax|test)es$/i' => '\1is',
 									'/(shoe)s$/i' => '\1',
 									'/(o)es$/i' => '\1',
+									'/ouses$/' => 'ouse',
 									'/uses$/' => 'us',
 									'/([m|l])ice$/i' => '\1ouse',
 									'/(x|ch|ss|sh)es$/i' => '\1',
@@ -228,14 +234,15 @@ class Inflector extends Object{
 									'/(m)en$/i' => '\1an',
 									'/(c)hildren$/i' => '\1\2hild',
 									'/(n)ews$/i' => '\1\2ews',
+									'/^(.*us)$/' => '\\1',
 									'/s$/i' => '');
 
-		$coreUninflectedSingular = array('.*[nrlm]ese', '.*deer', '.*fish', '.*measles', '.*ois', '.*pox', '.*sheep', '.*us', '.*ss', 'Amoyese',
+		$coreUninflectedSingular = array('.*[nrlm]ese', '.*deer', '.*fish', '.*measles', '.*ois', '.*pox', '.*sheep', '.*ss', 'Amoyese',
 											'bison', 'Borghese', 'bream', 'breeches', 'britches', 'buffalo', 'cantus', 'carp', 'chassis', 'clippers',
 											'cod', 'coitus', 'Congoese', 'contretemps', 'corps', 'debris', 'diabetes', 'djinn', 'eland', 'elk',
 											'equipment', 'Faroese', 'flounder', 'Foochowese', 'gallows', 'Genevese', 'Genoese', 'Gilbertese', 'graffiti',
 											'headquarters', 'herpes', 'hijinks', 'Hottentotese', 'information', 'innings', 'jackanapes', 'Kiplingese',
-											'Kongoese', 'Lucchese', 'mackerel', 'Maltese', 'mews', 'moose', 'mumps', 'Nankingese', 'news',
+											'Kongoese', 'Lucchese', 'mackerel', 'Maltese', 'media', 'mews', 'moose', 'mumps', 'Nankingese', 'news',
 											'nexus', 'Niasese', 'Pekingese', 'Piedmontese', 'pincers', 'Pistoiese', 'pliers', 'Portuguese', 'proceedings',
 											'rabies', 'rice', 'rhinoceros', 'salmon', 'Sarawakese', 'scissors', 'sea[- ]bass', 'series', 'Shavese', 'shears',
 											'siemens', 'species', 'swine', 'testes', 'trousers', 'trout', 'tuna', 'Vermontese', 'Wenchowese',
@@ -277,9 +284,9 @@ class Inflector extends Object{
 
 		if (file_exists(CONFIGS . 'inflections.php')) {
 			include(CONFIGS.'inflections.php');
-			$singularRules = array_merge($coreSingularRules, $singularRules);
-			$uninflected = array_merge($coreUninflectedSingular, $uninflectedSingular);
-			$irregular = array_merge($coreIrregularSingular, $irregularSingular);
+			$singularRules = Set::pushDiff($singularRules, $coreSingularRules);
+			$uninflected = Set::pushDiff($uninflectedSingular, $coreUninflectedSingular);
+			$irregular = Set::pushDiff($irregularSingular, $coreIrregularSingular);
 		}
 		$_this->singularRules = array('singularRules' => $singularRules, 'uninflected' => $uninflected, 'irregular' => $irregular);
 		$_this->singularized = array();
@@ -289,9 +296,10 @@ class Inflector extends Object{
  *
  * @param string $word Word in plural
  * @return string Word in singular
+ * @access public
+ * @static
  */
 	function singularize($word) {
-
 		$_this =& Inflector::getInstance();
 		if (!isset($_this->singularRules) || empty($_this->singularRules)) {
 			$_this->__initSingularRules();
@@ -309,17 +317,17 @@ class Inflector extends Object{
 			$_this->singularRules['regexIrregular'] = $regexIrregular;
 		}
 
+		if (preg_match('/(.*)\\b(' . $regexIrregular . ')$/i', $word, $regs)) {
+			$_this->singularized[$word] = $regs[1] . substr($word, 0, 1) . substr($irregular[strtolower($regs[2])], 1);
+			return $_this->singularized[$word];
+		}
+
 		if (preg_match('/^(' . $regexUninflected . ')$/i', $word, $regs)) {
 			$_this->singularized[$word] = $word;
 			return $word;
 		}
 
-		if (preg_match('/(.*)\\b(' . $regexIrregular . ')$/i', $word, $regs)) {
-			$_this->singularized[$word] = $regs[1] . $irregular[strtolower($regs[2])];
-			return $_this->singularized[$word];
-		}
-
-		foreach($singularRules as $rule => $replacement) {
+		foreach ($singularRules as $rule => $replacement) {
 			if (preg_match($rule, $word)) {
 				$_this->singularized[$word] = preg_replace($rule, $replacement, $word);
 				return $_this->singularized[$word];
@@ -333,6 +341,8 @@ class Inflector extends Object{
  *
  * @param string $lower_case_and_underscored_word Word to camelize
  * @return string Camelized word. likeThis.
+ * @access public
+ * @static
  */
 	function camelize($lowerCaseAndUnderscoredWord) {
 		$replace = str_replace(" ", "", ucwords(str_replace("_", " ", $lowerCaseAndUnderscoredWord)));
@@ -343,6 +353,8 @@ class Inflector extends Object{
  *
  * @param string $camel_cased_word Camel-cased word to be "underscorized"
  * @return string Underscore-syntaxed version of the $camel_cased_word
+ * @access public
+ * @static
  */
 	function underscore($camelCasedWord) {
 		$replace = strtolower(preg_replace('/(?<=\\w)([A-Z])/', '_\\1', $camelCasedWord));
@@ -354,6 +366,8 @@ class Inflector extends Object{
  *
  * @param string $lower_case_and_underscored_word String to be made more readable
  * @return string Human-readable string
+ * @access public
+ * @static
  */
 	function humanize($lowerCaseAndUnderscoredWord) {
 		$replace = ucwords(str_replace("_", " ", $lowerCaseAndUnderscoredWord));
@@ -364,6 +378,8 @@ class Inflector extends Object{
  *
  * @param string $class_name Name of class to get database table name for
  * @return string Name of the database table for given class
+ * @access public
+ * @static
  */
 	function tableize($className) {
 		$replace = Inflector::pluralize(Inflector::underscore($className));
@@ -374,6 +390,8 @@ class Inflector extends Object{
  *
  * @param string $tableName Name of database table to get class name for
  * @return string
+ * @access public
+ * @static
  */
 	function classify($tableName) {
 		$replace = Inflector::camelize(Inflector::singularize($tableName));
@@ -384,6 +402,8 @@ class Inflector extends Object{
  *
  * @param string $string
  * @return string
+ * @access public
+ * @static
  */
 	function variable($string) {
 		$string = Inflector::camelize(Inflector::underscore($string));
@@ -391,13 +411,25 @@ class Inflector extends Object{
 		$variable = preg_replace('/\\w/', $replace, $string, 1);
 		return $variable;
 	}
-}
-
 /**
- * Enter description here...
+ * Returns a string with all spaces converted to $replacement and non word characters removed.
  *
- * @param unknown_type $string
- * @return unknown
+ * @param string $string
+ * @param string $replacement
+ * @return string
+ * @access public
+ * @static
+ */
+	function slug($string, $replacement = '_') {
+		$string = preg_replace(array('/[^\w\s]/', '/\\s+/') , array(' ', $replacement), $string);
+		return $string;
+	}
+}
+/**
+ * Enclose a string for preg matching.
+ *
+ * @param string $string String to enclose
+ * @return string Enclosed string
  */
 	function __enclose($string) {
 		return '(?:' . $string . ')';

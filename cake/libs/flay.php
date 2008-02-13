@@ -1,5 +1,5 @@
 <?php
-/* SVN FILE: $Id: flay.php 4409 2007-02-02 13:20:59Z phpnut $ */
+/* SVN FILE: $Id: flay.php 6311 2008-01-02 06:33:52Z phpnut $ */
 /**
  * Text-to-HTML parser.
  *
@@ -8,7 +8,7 @@
  * PHP versions 4 and 5
  *
  * CakePHP(tm) :  Rapid Development Framework <http://www.cakephp.org/>
- * Copyright 2005-2007, Cake Software Foundation, Inc.
+ * Copyright 2005-2008, Cake Software Foundation, Inc.
  *								1785 E. Sahara Avenue, Suite 490-204
  *								Las Vegas, Nevada 89104
  *
@@ -16,14 +16,14 @@
  * Redistributions of files must retain the above copyright notice.
  *
  * @filesource
- * @copyright		Copyright 2005-2007, Cake Software Foundation, Inc.
+ * @copyright		Copyright 2005-2008, Cake Software Foundation, Inc.
  * @link				http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
  * @package			cake
  * @subpackage		cake.cake.libs
  * @since			CakePHP(tm) v 0.2.9
- * @version			$Revision: 4409 $
+ * @version			$Revision: 6311 $
  * @modifiedby		$LastChangedBy: phpnut $
- * @lastmodified	$Date: 2007-02-02 07:20:59 -0600 (Fri, 02 Feb 2007) $
+ * @lastmodified	$Date: 2008-01-02 00:33:52 -0600 (Wed, 02 Jan 2008) $
  * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 /**
@@ -46,18 +46,20 @@ class Flay extends Object{
  * Text to be parsed.
  *
  * @var string
+ * @access public
  */
 	var $text = null;
 /**
  * Set this to allow HTML in the markup.
  *
  * @var boolean
+ * @access public
  */
 	var $allow_html = false;
 /**
  * Constructor.
  *
- * @param string $text
+ * @param string $text Text to transform
  */
 	function __construct($text = null) {
 		$this->text = $text;
@@ -70,6 +72,7 @@ class Flay extends Object{
  * @param boolean $bare	Set this to only do <p> transforms and > to &gt;, no typography additions.
  * @param boolean $allowHtml Set this to trim whitespace and disable all HTML
  * @return string Formatted text
+ * @access public
  */
 	function toHtml($text = null, $bare = false, $allowHtml = false) {
 		if (empty($text) && empty($this->text)) {
@@ -95,14 +98,14 @@ class Flay extends Object{
 		$text=preg_replace('#[\n]{1}#', "%LINEBREAK%", $text);
 		$out ='';
 
-		foreach(split('%PARAGRAPH%', $text)as $line) {
+		foreach (split('%PARAGRAPH%', $text)as $line) {
 			if ($line) {
 				if (!$bare) {
 					$links = array();
 					$regs = null;
 
 					if (preg_match_all('#\[([^\[]{4,})\]#', $line, $regs)) {
-						foreach($regs[1] as $reg) {
+						foreach ($regs[1] as $reg) {
 							$links[] = $reg;
 							$line = str_replace("[{$reg}]", '%LINK' . (count($links) - 1) . '%', $line);
 						}
@@ -121,7 +124,7 @@ class Flay extends Object{
 				// guess e-mails
 				$emails = null;
 				if (preg_match_all("#([_A-Za-z0-9+-+]+(?:\.[_A-Za-z0-9+-]+)*@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*)#", $line, $emails)) {
-					foreach($emails[1] as $email) {
+					foreach ($emails[1] as $email) {
 						$line = str_replace($email, "<a href=\"mailto:{$email}\">{$email}</a>", $line);
 					}
 				}
@@ -129,19 +132,19 @@ class Flay extends Object{
 				if (!$bare) {
 					$urls = null;
 					if (preg_match_all("#((?:http|https|ftp|nntp)://[^ ]+)#", $line, $urls)) {
-						foreach($urls[1] as $url) {
+						foreach ($urls[1] as $url) {
 							$line = str_replace($url, "<a href=\"{$url}\">{$url}</a>", $line);
 						}
 					}
 
 					if (preg_match_all("#(www\.[^\n\%\ ]+[^\n\%\,\.\ ])#", $line, $urls)) {
-						foreach($urls[1] as $url) {
+						foreach ($urls[1] as $url) {
 							$line = str_replace($url, "<a href=\"http://{$url}\">{$url}</a>", $line);
 						}
 					}
 
 					if (count($links)) {
-						for($ii = 0; $ii < count($links); $ii++) {
+						for ($ii = 0; $ii < count($links); $ii++) {
 							if (preg_match("#^(http|https|ftp|nntp)://#", $links[$ii])) {
 								$prefix = null;
 							} else {
@@ -184,6 +187,7 @@ class Flay extends Object{
  *
  * @param string $string
  * @return array Array of words
+ * @access public
  */
 	function extractWords($string) {
 		$split = preg_split('/[\s,\.:\/="!\(\)<>~\[\]]+/', $string);
@@ -195,16 +199,17 @@ class Flay extends Object{
  * @param array $words			Words to look for and markup
  * @param string $string		String to look in
  * @param integer $max_snippets	Max number of snippets to extract
- * @return string
+ * @return string String with words marked
  * @see colorMark
+ * @access public
  */
 	function markedSnippets($words, $string, $max_snippets = 5) {
 		$string = strip_tags($string);
 		$snips = array();
 		$rest = $string;
-		foreach($words as $word) {
+		foreach ($words as $word) {
 			if (preg_match_all("/[\s,]+.{0,40}{$word}.{0,40}[\s,]+/i", $rest, $r)) {
-				foreach($r as $result) {
+				foreach ($r as $result) {
 					$rest = str_replace($result, '', $rest);
 				}
 				$snips = array_merge($snips, $r[0]);
@@ -223,12 +228,13 @@ class Flay extends Object{
  *
  * @param array $words Array of words to be colorized
  * @param string $string Text in which the words might be found
- * @return string
+ * @return string String with words colorized
+ * @access public
  */
 	function colorMark($words, $string) {
 		$colors=array('yl', 'gr', 'rd', 'bl', 'fu', 'cy');
 		$nextColorIndex = 0;
-		foreach($words as $word) {
+		foreach ($words as $word) {
 			$string = preg_replace("/({$word})/i", '<em class="' . $colors[$nextColorIndex % count($colors)] . "\">\\1</em>", $string);
 			$nextColorIndex++;
 		}
@@ -237,8 +243,9 @@ class Flay extends Object{
 /**
  * Returns given text with tags stripped out.
  *
- * @param string $text
- * @return string
+ * @param string $text Text to clean
+ * @return string Cleaned text
+ * @access public
  */
 	function toClean($text) {
 		$strip = strip_tags(html_entity_decode($text, ENT_QUOTES));
@@ -247,8 +254,9 @@ class Flay extends Object{
 /**
  * Return parsed text with tags stripped out.
  *
- * @param string $text
- * @return string
+ * @param string $text Text to parse and clean
+ * @return string Cleaned text
+ * @access public
  */
 	function toParsedAndClean($text) {
 		return $this->toClean(Flay::toHtml($text));
@@ -259,7 +267,8 @@ class Flay extends Object{
  * @param string $text		Text to be truncated.
  * @param integer $length	Max length of text.
  * @param string $ellipsis	Sign to print after truncated text.
- * @return string
+ * @return string Fragment
+ * @access public
  */
 	function fragment($text, $length, $ellipsis = '...') {
 		$soft = $length - 5;
