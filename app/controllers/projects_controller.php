@@ -6,7 +6,8 @@ class ProjectsController extends AppController {
 	var $helpers = array (
 		'Html',
 		'Form',
-		'Ajax'
+		'Ajax',
+		'Fbollon'
 	);
 	
 
@@ -92,7 +93,7 @@ class ProjectsController extends AppController {
 		} else {
 			$this->cleanUpFields();
 			if ($this->Project->save($this->data)) {
-				$this->Session->setFlash(__('Project saved.'));
+				$this->Session->setFlash(__('Project saved.', true));
 				$this->redirect('/projects/view/'.$this->Project->getInsertID());
 			} else {
 				$this->Session->setFlash(__('Please correct errors below.', true));
@@ -114,7 +115,7 @@ class ProjectsController extends AppController {
 		} else {
 			$this->cleanUpFields();
 			if ($this->Project->save($this->data)) {
-				$this->Session->setFlash(__('Project saved.'));
+				$this->Session->setFlash(__('Project saved.', true));
 				$this->redirect('/projects/view/' . $id);
 			} else {
 				$this->Session->setFlash(__('Please correct errors below.', true));

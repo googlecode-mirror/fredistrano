@@ -86,9 +86,9 @@ http://creativecommons.org/licenses/GPL/2.0/
 			<?php endif; ?>
 
 			<?php if(isset($_SERVER['HTTP_REFERER'])){?>
-			<div id="backlink"><?php echo $html->link($html->image( 'arrow_left.png', array('alt' => __('Previous'), 
-																							'title' => __('Previous'))).
-																							'<span> '.__('back').'</span>',
+			<div id="backlink"><?php echo $html->link($html->image( 'arrow_left.png', array('alt' => __('Previous',true), 
+																							'title' => __('Previous',true))).
+																							'<span> '.__('back',true).'</span>',
 				$_SERVER['HTTP_REFERER'],
 				null,
 				false,
