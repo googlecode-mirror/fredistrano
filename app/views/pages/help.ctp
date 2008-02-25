@@ -5,7 +5,7 @@ Check for news and updates about Fredistrano on its <?php echo $html->link('home
 	
 <h3>Support</h3>
 <ul>
-	<li>Documentation [ <?php echo $html->link('PDF-En','/files/'.LANG_DOCUMENTATIONFILE); ?> ]</li>
+	<li>Documentation [ <?php echo $html->link('PDF-En','/files/'.__('Fredistrano-documentation-EN.pdf', true)); ?> ]</li>
 	<li><?php echo $html->link('Knoweldge base','http://code.google.com/p/fredistrano/wiki'); ?> with detailled installation instructions, FAQS and solutions to common problems</li>
 	<li>Share your experience and problems directly on the <?php echo $html->link('Fredistrano forum','http://www.fbollon.net/forum/25'); ?></li>
 	<li>Report <?php echo $html->link('bugs and enhancements','http://code.google.com/p/fredistrano/issues/list'); ?> to the development team</li>
