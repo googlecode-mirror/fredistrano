@@ -23,10 +23,10 @@ class Deployment extends AppModel {
 	function __construct() {
 		parent::__construct();
 		
-		loadModel('Project');
+		App::import('Model','Project');
 		$this->Project = new Project(); 
 		
-		loadModel('DeploymentLog');
+		App::import('Model','DeploymentLog');
 		$this->DeploymentLog = new DeploymentLog();
 
 		if ( Configure::read() > 0 )

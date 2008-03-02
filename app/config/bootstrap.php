@@ -43,4 +43,6 @@
  *
  */
 //EOF
+
+   require_once(APP.'config'.DS.'config.php');
 ?>
