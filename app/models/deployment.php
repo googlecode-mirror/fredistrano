@@ -146,32 +146,32 @@ class Deployment extends AppModel {
 		// si les répertoires temporaires et backup nécessaires à Fredistrano n'existent pas, on le crée
 		if (!is_dir(_DEPLOYDIR)) {
 			if (mkdir(_DEPLOYDIR, octdec(_DIRMODE), TRUE))
-				$output .= "-[".LANG_CREATINGDIRECTORY." " . _DEPLOYDIR . "]\n";
+				$output .= "-[".__('creating directory')." " . _DEPLOYDIR . "]\n";
 		}
 		if (!is_dir(_DEPLOYTMPDIR)) {
 			if (mkdir(_DEPLOYTMPDIR, octdec(_DIRMODE), TRUE))
-				$output .= "-[".LANG_CREATINGDIRECTORY." " . _DEPLOYTMPDIR . "]\n";
+				$output .= "-[".__('creating directory')." " . _DEPLOYTMPDIR . "]\n";
 		}
 		if (!is_dir(_DEPLOYBACKUPDIR)) {
 			if (mkdir(_DEPLOYBACKUPDIR, octdec(_DIRMODE), TRUE))
-				$output .= "-[".LANG_CREATINGDIRECTORY. " " . _DEPLOYBACKUPDIR . "]\n";
+				$output .= "-[".__('creating directory'). " " . _DEPLOYBACKUPDIR . "]\n";
 		}
 
 		//dossier temporaire d'export SVN pour le projet
 		if (is_dir(_DEPLOYTMPDIR . DS . $project['Project']['name'])) {
 			// on le vide si il existe
 			$command = 'rm -rf ' . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "/*";
-			$output .= $this->executeCommand($command, LANG_DUMPDIRECTORY." " . _DEPLOYTMPDIR . DS . $project['Project']['name'],'export');
+			$output .= $this->executeCommand($command, __('dump directory')." " . _DEPLOYTMPDIR . DS . $project['Project']['name'],'export');
 		} else {
 			// on le crée si il n'existe pas
 			if (mkdir(_DEPLOYTMPDIR . DS . $project['Project']['name'], octdec(_DIRMODE), TRUE))
-				$output .= "-[".LANG_CREATINGDIRECTORY. " " . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "]\n";
+				$output .= "-[".__('creating directory'). " " . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "]\n";
 		}
 
 		// création du répertoire de l'application si il n'existe pas
 		if (!is_dir($project['Project']['prd_path'])) {
 			if (@ mkdir($project['Project']['prd_path'], octdec(_DIRMODE), TRUE))
-				$output .= "-[".LANG_CREATINGDIRECTORY. " " . $project['Project']['prd_path'] . "]\n";
+				$output .= "-[".__('creating directory'). " " . $project['Project']['prd_path'] . "]\n";
 		}
 
 		//on se place dans le dossier temporaire pour faire le svn export
@@ -185,7 +185,7 @@ class Deployment extends AppModel {
 			  
 		// svn export
 		$command = "svn export" . $revision . $authentication . " " . $project['Project']['svn_url'] . " tmpDir 2>&1";
-		$output .= $this->executeCommand($command, LANG_SVNEXPORT,'export');
+		$output .= $this->executeCommand($command, __('svn export'),'export');
 		
 		return $output;
 	}// export
@@ -304,18 +304,18 @@ class Deployment extends AppModel {
 		if ($options['renamePrdFile'] === true) {
 			// Rename file type from .prd.xxx into .xxx
 			$command = $prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.prd.*' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -vf 's/\.prd\./\./i' {} \;".$suffix;
-			$output .= $this->executeCommand($command, LANG_RENAMEFILES . '.prd.', 'finalize');
+			$output .= $this->executeCommand($command, __('Rename files') . '.prd.', 'finalize');
 		}
 		
 		if ($options['changeFileMode'] === true) {
 			$command = "chmod -R " ._FILEMODE . "  ".$this->_pathConverter($project['Project']['prd_path']);
-			$output .= $this->executeCommand($command, LANG_UPDATINGFILESMODES . ' > ' . _FILEMODE, 'finalize');
+			$output .= $this->executeCommand($command, __('updating files modes') . ' > ' . _FILEMODE, 'finalize');
 						
 			$command = "chmod " ._DIRMODE . "  ".$this->_pathConverter($project['Project']['prd_path']);
-			$output .= $this->executeCommand($command, LANG_UPDATINGDIRMODE . '1/2 > ' . _DIRMODE, 'finalize');
+			$output .= $this->executeCommand($command, __('updating dir mode') . '1/2 > ' . _DIRMODE, 'finalize');
 						
 			$command = $prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -type d -exec chmod " . _DIRMODE . " {} \;".$suffix;
-			$output .= $this->executeCommand($command, LANG_UPDATINGDIRMODE . '2/2 > ' . _DIRMODE, 'finalize');
+			$output .= $this->executeCommand($command, __('updating dir mode') . '2/2 > ' . _DIRMODE, 'finalize');
 		}
 		
 		if ($options['giveWriteMode'] === true) {
@@ -342,30 +342,30 @@ class Deployment extends AppModel {
 		
 		if (!is_dir(_DEPLOYBACKUPDIR)) {
 			if (mkdir(_DEPLOYBACKUPDIR, octdec(_DIRMODE), TRUE))
-				$output .= "-[".LANG_CREATINGDIRECTORY. " " . _DEPLOYBACKUPDIR . "]\n";
+				$output .= "-[".__('creating directory'). " " . _DEPLOYBACKUPDIR . "]\n";
 		}
 
 		// création du répertoire pour la sauvegarde
 		if (!is_dir(_DEPLOYBACKUPDIR . DS . $project['Project']['name'])) {
 			if (mkdir(_DEPLOYBACKUPDIR . DS . $project['Project']['name'], octdec(_DIRMODE), TRUE)) {
-				$output .= "-[".LANG_CREATINGDIRECTORY. " " . _DEPLOYBACKUPDIR . DS . $project['Project']['name'] . "]\n";
+				$output .= "-[".__('creating directory'). " " . _DEPLOYBACKUPDIR . DS . $project['Project']['name'] . "]\n";
 			}
 		}
 
 		//
-		$output .= "-[".LANG_BACKUPCURRENTPRODVERSION."]\n";
+		$output .= "-[".__('backup current prod version')."]\n";
 		if (is_dir($project['Project']['prd_path'])) {
 			$source = $this->_pathConverter($project['Project']['prd_path'] );
 			$target = $this->_pathConverter(_DEPLOYBACKUPDIR . DS . $project['Project']['name']);
 		
 			// rsync pour le backup
 			$command = "rsync -av $source $target 2>&1";
-			$output .= $this->executeCommand($command, LANG_BACKUPCURRENTPRODVERSION, 'backup');
+			$output .= $this->executeCommand($command, __('backup current prod version'), 'backup');
 			
 			$command = "chmod -R " . _DIRMODE . " " . _DEPLOYBACKUPDIR;
-			$output .= $this->executeCommand($command, LANG_UPDATINGDIRMODE . ' > ' . _DIRMODE, 'backup');
+			$output .= $this->executeCommand($command, __('updating dir mode') . ' > ' . _DIRMODE, 'backup');
 		} else {
-			$output .= "-[".LANG_NOBACKUPNEEDED." " . $project['Project']['prd_path'] . " ".LANG_DOESNTEXIST."]\n";
+			$output .= "-[".__('no backup needed')." " . $project['Project']['prd_path'] . " ".__('does not exist')."]\n";
 		}
 
 		if (is_dir(_DEPLOYBACKUPDIR . DS . $project['Project']['name'])) {
@@ -437,7 +437,7 @@ class Deployment extends AppModel {
 	
 	private function executeCommand( $command = null, $comment = 'none', $context = 'none' ){
 		if ($command == null)
-			return 'No command supplied';
+			return __('No command supplied');
 			
 		$output = "\n-[".$comment."]\n";
 		if ( Configure::read() > 0 )
