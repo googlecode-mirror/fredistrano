@@ -183,19 +183,20 @@ class UsersController extends AppController {
 
 				} else {
 					//Authentification échouée
-					$this->Session->setFlash(__('Invalid credentials'));
+					$this->Session->setFlash(__('Invalid credentials', true));
 				}
 
 			} else {
 				// L'utilisateur n'existe pas dans la base
-				$this->Session->setFlash(__('Invalid credentials'));
+				$this->Session->setFlash(__('Invalid credentials', true));
 			}
 
 			// Affichage
             $tmp = empty($_SERVER['HTTP_REFERER'])?'/':$_SERVER['HTTP_REFERER'];
             if (Configure::read('httpsenabled') == 2)
             		$tmp = preg_replace('/(http):\/\//','${1}s://',$tmp);
-		    
+		    		
+		
             $this->redirect($tmp);
             exit;		
 		}
