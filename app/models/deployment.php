@@ -308,14 +308,14 @@ class Deployment extends AppModel {
 		}
 		
 		if ($options['changeFileMode'] === true) {
-			$command = "chmod -R " ._FILEMODE . "  ".$this->_pathConverter($project['Project']['prd_path']);
-			$output .= $this->executeCommand($command, LANG_UPDATINGFILESMODES . ' > ' . _FILEMODE, 'finalize');
-						
-			$command = "chmod " ._DIRMODE . "  ".$this->_pathConverter($project['Project']['prd_path']);
-			$output .= $this->executeCommand($command, LANG_UPDATINGDIRMODE . '1/2 > ' . _DIRMODE, 'finalize');
-						
-			$command = $prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -type d -exec chmod " . _DIRMODE . " {} \;".$suffix;
-			$output .= $this->executeCommand($command, LANG_UPDATINGDIRMODE . '2/2 > ' . _DIRMODE, 'finalize');
+			$command = $prefix."find " . self :: pathConverter($project['Project']['prd_path']) . " -type f -exec chmod " . _FILEMODE . " {} \;".$suffix;
+			$output .= $this->executeCommand($command, LANG_UPDATINGFILESMODES.' > '._FILEMODE, 'finalize');
+			
+			$command = "chmod " ._DIRMODE . "  ". self :: pathConverter($project['Project']['prd_path']);
+			$output .= $this->executeCommand($command, LANG_UPDATINGDIRMODE.'1/2 > '._DIRMODE, 'finalize');
+
+			$command = $prefix."find " . self :: pathConverter($project['Project']['prd_path']) . " -type d -exec chmod " . _DIRMODE . " {} \;".$suffix;
+			$output .= $this->executeCommand($command, LANG_UPDATINGDIRMODE.'2/2 > '._DIRMODE, 'finalize');
 		}
 		
 		if ($options['giveWriteMode'] === true) {
