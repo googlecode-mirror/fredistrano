@@ -156,7 +156,7 @@ class UsersController extends AppController {
 
 	function login() {
 		// We only accept HTTPS requests
-		if (!env('HTTPS') && Configure::read('httpsenabled')) {
+		if (!env('HTTPS') && Configure::read('Security.https')) {
 			$this->Session->setFlash(__('HTTPS required but unavailable', true));
 			$this->redirect('/');
 			exit ();
@@ -193,7 +193,7 @@ class UsersController extends AppController {
 
 			// Affichage
             $tmp = empty($_SERVER['HTTP_REFERER'])?'/':$_SERVER['HTTP_REFERER'];
-            if (Configure::read('httpsenabled') == 2)
+            if (Configure::read('Security.https') == 2)
             		$tmp = preg_replace('/(http):\/\//','${1}s://',$tmp);
 		    		
 		

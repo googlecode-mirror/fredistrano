@@ -35,7 +35,7 @@ class DeploymentLogsController extends AppController {
 			'link' => '/projects'
 		);
 		
-		if (defined('_PUBLISHFEED') && _PUBLISHFEED === true ) {
+		if ( Configure::read('Feeds.enabled') === true ) {
 			$tab[] = array (
 				'text' => 'Rss Feed',
 				'link' => '/rss/deploymentLogs'

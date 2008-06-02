@@ -1,8 +1,8 @@
 <?php 
 $action = $serverName . $appPath . "/users/login";
-if ( env('HTTPS') || (!env('HTTPS') && (Configure::read('httpsenabled') == 0)) ){  
+if ( env('HTTPS') || (!env('HTTPS') && (Configure::read('Security.https') == 0)) ){  
 	$action = 'http://'. $action;
-} else if (!env('HTTPS') && (Configure::read('httpsenabled') > 0)){
+} else if (!env('HTTPS') && (Configure::read('Security.https') > 0)){
 	$action = 'https://'. $action;
 }
 ?>

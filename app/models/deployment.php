@@ -16,6 +16,8 @@ class Deployment extends AppModel {
 		3 => 'finalize'
 	);
 	
+	var $uuid = '';
+	
 	var $lastExecutionTime = 0;
 	
 	var $lastError = '';
@@ -86,18 +88,43 @@ class Deployment extends AppModel {
 	 * @param array $options		Various options used for configuring the step 
 	 * @return string 				Shell output 
      */			
-	function runStep($step = null, $project_id = null, $options = array()) {
-		if ( $step == null && !in_array($step, $this->$process) )
+	function runStep($step = null, $project_id = null, $uuid = null, $options = array()) {
+		if ( ($step == null && !in_array($step, $this->$process)) || $uuid == null ) {
 			return false;
+		}
+		
+		$this->uuid = $uuid;
 			
 		$t1 = getMicrotime();
 
-		if ( $project_id == null || !($project = $this->Project->read(null, $project_id)) ) 
-			$res = false;
-		else 
-			$output = $this->{$step}($project, $options);	
-			
+		// Prepare log output
+		$header = date('Y-m-d H:i:s') . " Output of " . strtoupper($step);
+		$filename = _DEPLOYLOGDIR . DS . $uuid . '.log';
+		clearstatcache(); // Prevent pb with is_dir() function (see PHPDoc)
+		if (!is_dir(_DEPLOYLOGDIR)) {
+			if (@mkdir(_DEPLOYLOGDIR, octdec(_DIRMODE), TRUE)) {
+				$output .= "-[".__('creating directory', true)." " . _DEPLOYLOGDIR . "]\n";
+			} else {
+				$this->triggerError( "Unable to create directory "._DEPLOYLOGDIR );
+				return false;
+			}
+		}
+		$log = new File($filename, true);
+
+		// Execute step
+ 		if ( $project_id == null || !($project = $this->Project->read(null, $project_id)) )  {
+			$text = $this->lastError = 'Invalid input parameters';
+			$output = false;
+		} else {
+			$text = $output = $this->{$step}($project, $options);
+		} 
+		
 		$this->lastExecutionTime = round((getMicrotime() - $t1) , 3);
+		
+		// Log text
+		if ($log->writable()) {
+			$log->append($header." executed in ".$this->lastExecutionTime."s\n<<<<\n".$text."\n>>>>\n");
+		}
 		
 		return $output;
 	}// runStep
@@ -126,66 +153,78 @@ class Deployment extends AppModel {
      */
 	
 	private function export($project = null, $options = array()) {
-		if ($project===null) 
+		if ($project===null) {
 			return false;
-
+		}
+		
+		// Set a time limit	
 		set_time_limit(_TIMELIMIT_EXPORT);
 				
+		// Define step options
 		$default_options = array(
 			'revision' 	=> 	null,
-			'user' 		=> 	_SVNUSER,
-			'password' 	=> 	_SVNPASS
+			'user' 		=> 	Configure::read('Subversion.user'),
+			'password' 	=> 	Configure::read('Subversion.passwd')
 		);
 		$options = array_merge($default_options, $options);
 		$output = '';
 		
-		// Perform the job
-		//	on efface le cache de stat() sinon problème avec la fonction is_dir() - voir la doc Php
-		clearstatcache();
-
-		// si les répertoires temporaires et backup nécessaires à Fredistrano n'existent pas, on le crée
+		// Create temporary folders for Fredistrano (if required)
 		if (!is_dir(_DEPLOYDIR)) {
-			if (mkdir(_DEPLOYDIR, octdec(_DIRMODE), TRUE))
-				$output .= "-[".__('creating directory')." " . _DEPLOYDIR . "]\n";
+			if (@mkdir(_DEPLOYDIR, octdec(_DIRMODE), TRUE)) {
+				$output .= "-[".__('creating directory', true)." " . _DEPLOYDIR . "]\n";
+			} else {
+				$this->triggerError( "Unable to create directory "._DEPLOYDIR." during export step" );
+				return false;
+			}
 		}
 		if (!is_dir(_DEPLOYTMPDIR)) {
-			if (mkdir(_DEPLOYTMPDIR, octdec(_DIRMODE), TRUE))
-				$output .= "-[".__('creating directory')." " . _DEPLOYTMPDIR . "]\n";
+			if (@mkdir(_DEPLOYTMPDIR, octdec(_DIRMODE), TRUE)) {
+				$output .= "-[".__('creating directory', true)." " . _DEPLOYTMPDIR . "]\n";				
+			} else {
+				$this->triggerError( "Unable to create directory "._DEPLOYTMPDIR." during export step");
+				return false;
+			}
 		}
 		if (!is_dir(_DEPLOYBACKUPDIR)) {
-			if (mkdir(_DEPLOYBACKUPDIR, octdec(_DIRMODE), TRUE))
-				$output .= "-[".__('creating directory'). " " . _DEPLOYBACKUPDIR . "]\n";
+			if (@mkdir(_DEPLOYBACKUPDIR, octdec(_DIRMODE), TRUE)) {
+				$output .= "-[".__('creating directory', true). " " . _DEPLOYBACKUPDIR . "]\n";
+			} else {
+				$this->triggerError( "Unable to create directory "._DEPLOYBACKUPDIR." during export step");
+				return false;
+			}
 		}
-
-		//dossier temporaire d'export SVN pour le projet
+		
+		// Create temporary folders for the current project (if required)
 		if (is_dir(_DEPLOYTMPDIR . DS . $project['Project']['name'])) {
-			// on le vide si il existe
+			// IF exists THEN cleared
 			$command = 'rm -rf ' . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "/*";
-			$output .= $this->executeCommand($command, __('dump directory')." " . _DEPLOYTMPDIR . DS . $project['Project']['name'],'export');
+			$output .= $this->executeCommand($command, __('delete directory', true)." " . _DEPLOYTMPDIR . DS . $project['Project']['name'],'export');
 		} else {
-			// on le crée si il n'existe pas
-			if (mkdir(_DEPLOYTMPDIR . DS . $project['Project']['name'], octdec(_DIRMODE), TRUE))
-				$output .= "-[".__('creating directory'). " " . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "]\n";
+			// ELSE created
+			if (@mkdir(_DEPLOYTMPDIR . DS . $project['Project']['name'], octdec(_DIRMODE), TRUE)) {
+				$output .= "-[".__('creating directory', true). " " . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "]\n";
+			} else {
+				$this->triggerError("Unable to create directory "._DEPLOYTMPDIR . DS . $project['Project']['name']." during export step");
+				return false;
+			}
 		}
 
-		// création du répertoire de l'application si il n'existe pas
+		// Create target dir (if required)
 		if (!is_dir($project['Project']['prd_path'])) {
-			if (@ mkdir($project['Project']['prd_path'], octdec(_DIRMODE), TRUE))
-				$output .= "-[".__('creating directory'). " " . $project['Project']['prd_path'] . "]\n";
+			if (@mkdir($project['Project']['prd_path'], octdec(_DIRMODE), TRUE)) {
+				$output .= "-[".__('creating directory', true). " " . $project['Project']['prd_path'] . "]\n";
+			} else {
+				$this->triggerError("Unable to create directory ".$project['Project']['prd_path']." during export step");
+				return false;
+			}
 		}
-
-		//on se place dans le dossier temporaire pour faire le svn export
-		chdir(_DEPLOYTMPDIR . DS . $project['Project']['name']);
-		if ( $options['revision'] != null ) 
-			$revision = ' -r ' . $options['revision'];
-		else 
-			$revision = '';
-
+		
+		// Export code from SVN
+		$revision = ($options['revision']!=null)?' -r ' . $options['revision']:'';
 		$authentication = ' --username ' . $options['user'] . ' --password ' . $options['password'];
-			  
-		// svn export
 		$command = "svn export" . $revision . $authentication . " " . $project['Project']['svn_url'] . " tmpDir 2>&1";
-		$output .= $this->executeCommand($command, __('svn export'),'export');
+		$output .= $this->executeCommand($command, __('svn export',true),'export', _DEPLOYTMPDIR . DS . $project['Project']['name']);
 		
 		return $output;
 	}// export
@@ -198,27 +237,32 @@ class Deployment extends AppModel {
 	 * @return string 			Shell output 
      */
 	private function synchronize($project = null, $options = array()) {
-		if ( $project == null || !$this->isConfigAvailable($project['Project']['name'])) 
-			return false;		
-
+		if ( $project == null || !$this->isConfigAvailable($project['Project']['name'])) {
+			return false;			
+		}
+			
+		// Set a time limit
 		set_time_limit(_TIMELIMIT_RSYNC);
 			
+		// Inculde deployment config file
 		include_once (_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php");
 			
+		// Define step options
 		$default_options = array(
 			'backup'		=>	true,
 			'simulation' 	=> 	true,
+			'user'			=> 	'unknown',
 			'comment' 		=> 	'none'
 		);
 		$options = array_merge($default_options, $options);
 		$output = '';
 
-		// Perform the job 
 		// Generate exclusion file
 		$exclude = $this->_getConfig()->exclude;
 		$exclude_string = "";
-		for ($i = 0; $i < sizeof($exclude); $i++) 
-			$exclude_string .= "- ".$exclude[$i] . "\n";
+		for ($i = 0; $i < sizeof($exclude); $i++) {
+			$exclude_string .= "- ".$exclude[$i] . "\n";			
+		}
 		$exclude_string .= "- deploy.php\n";
 		$exclude_string .= "- **.dev.**\n";
 		$exclude_file_name = _DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "exclude_file.txt";
@@ -229,41 +273,42 @@ class Deployment extends AppModel {
 		// Setting up Rsync options
 		if ($options['simulation'] === true) {
 			// Simulation mode
-			$option = 'rtOvn';
+			$option = 'rtvn'; //'rtOvn';
 		} else {			
 			// Live mode
-			$option = 'rtOv';
+			$option = 'rtv'; //'rtOv'; 
 
 			// Create a log entry for the pending deployement 
 			$data = array (
 				'DeploymentLog' => array (
 					'project_id'	=> 	$project['Project']['id'],
+					'user_id' 		=> 	$options['user'],
+					'uuid'			=> 	$this->uuid,
 					'title' 		=> 	date("D, M jS Y, H:i") . ' - ' . $project['Project']['name'],
-					'user_id' 		=> 	$_SESSION['User']['id'],
 					'comment' 		=> 	$options['comment'],
 					'archive' 		=> 	0
 				)
 			);
-			$this->DeploymentLog->save($data);
+			if (!$this->DeploymentLog->save($data) ) {
+				$this->triggerError('Unable to log deployment');				
+				return false;				
+			}
 			
-			// Backup
-			if ($options['backup'] === true)
+			// Backup (if required)
+			if ($options['backup'] === true) {
 				if ( ($output .= $this->backup($project)) === false) {
-					// Backup error
-					$this->lastError = "Unable to backup";
+					$this->triggerError('Unable to backup');	
 					return false;
 				}
+			}
 		}
 
-		// Preparing pathes
+		// Execute command		
 		$exclude_file_name = $this->_pathConverter($exclude_file_name);
 		$source = $this->_pathConverter(_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS);
 		$target = $this->_pathConverter($project['Project']['prd_path']);
-
-		// Execute command		
-		chdir(_DEPLOYDIR);
 		$command = "rsync -$option --delete --exclude-from=$exclude_file_name $source $target 2>&1";	
-		$output .= $this->executeCommand($command,'Deploying new version','synchronize');
+		$output .= $this->executeCommand($command,__('Deploying new version',true), 'synchronize', _DEPLOYDIR);
 		
 		return $output;
 	}// synchronize
@@ -275,13 +320,17 @@ class Deployment extends AppModel {
 	 * @return string 			Shell output 
      */
 	private function finalize($project = null, $options = array()) {
-		if ( $project == null || !$this->isConfigAvailable($project['Project']['name'])) 
+		if ( $project == null || !$this->isConfigAvailable($project['Project']['name'])) {
 			return false;	
+		}
 		
+		// Set a time limit
 		set_time_limit(_TIMELIMIT_FINALIZE);
 		
+		// Inculde deployment config file
 		include_once (_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php");
 			
+		// Define step options
 		$default_options = array(
 			'renamePrdFile' 	=> 	false,
 			'changeFileMode' 	=> 	false,
@@ -290,34 +339,27 @@ class Deployment extends AppModel {
 		$options = array_merge($default_options, $options);
 		$output = '';
 		
-		// Perform the job 
-		chdir(_DEPLOYDIR);
-		if (_WINOS === true) {
-			//couche cygwin
-			$prefix = "bash.exe --login -c '";
-			$suffix = "'";
-		} else {
-			$prefix = "";
-			$suffix = "";
-		}
-	
+		// Rename file type from .prd.xxx into .xxx
 		if ($options['renamePrdFile'] === true) {
-			// Rename file type from .prd.xxx into .xxx
 			$command = $prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.prd.*' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -vf 's/\.prd\./\./i' {} \;".$suffix;
-			$output .= $this->executeCommand($command, __('Rename files') . '.prd.', 'finalize');
+			$output .= $this->executeCommand($command, __('Rename files') . '.prd.', 'finalize', _DEPLOYDIR);
 		}
-		
+
+		// Change file mode
+		// TODO Rewrite code (Too slow) 
 		if ($options['changeFileMode'] === true) {
 			$command = "chmod -R " ._FILEMODE . "  ".$this->_pathConverter($project['Project']['prd_path']);
-			$output .= $this->executeCommand($command, __('updating files modes') . ' > ' . _FILEMODE, 'finalize');
+			$output .= $this->executeCommand($command, __('updating files modes') . ' > ' . _FILEMODE, 'finalize', _DEPLOYDIR);
 						
 			$command = "chmod " ._DIRMODE . "  ".$this->_pathConverter($project['Project']['prd_path']);
-			$output .= $this->executeCommand($command, __('updating dir mode') . '1/2 > ' . _DIRMODE, 'finalize');
+			$output .= $this->executeCommand($command, __('updating dir mode') . '1/2 > ' . _DIRMODE, 'finalize', _DEPLOYDIR);
 						
 			$command = $prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -type d -exec chmod " . _DIRMODE . " {} \;".$suffix;
 			$output .= $this->executeCommand($command, __('updating dir mode') . '2/2 > ' . _DIRMODE, 'finalize');
 		}
 		
+		// Change directory mode
+		// TODO Rewrite code (Too slow) 
 		if ($options['giveWriteMode'] === true) {
 			// Give write permissions to some folder
 			$writable = $this->_getConfig()->writable;
@@ -405,24 +447,6 @@ class Deployment extends AppModel {
 
 	// Private --------------------------------------------------------------------------------
 	/**
-	 * Convert if necessary a path to a cygwin/linux format 
-	 * @param string $path 		Path to be converted
-	 * @return string 			Converted path
-	 */ 
-	private function _pathConverter($path) {
-		$pathForRsync = $path;
-		if (_WINOS) {
-			$pattern = '/^([A-Za-z]):/';
-			preg_match($pattern, $path, $matches, PREG_OFFSET_CAPTURE);
-			if (!empty ($matches[1][0])) {
-				$windowsLetter = strtolower($matches[1][0]);
-				$pathForRsync = strtr(_CYGWINROOT . $windowsLetter . substr($path, 2), "\\", "/");
-			}	
-		}
-		return $pathForRsync;
-	}// _pathConverter
-
-	/**
 	 * Retrieve deploy configuration
 	 * @return 
 	 */
@@ -435,15 +459,55 @@ class Deployment extends AppModel {
 		return $instance;
 	}// _getConfig
 	
-	private function executeCommand( $command = null, $comment = 'none', $context = 'none' ){
-		if ($command == null)
+	/**
+	 * Convert if necessary a path to a cygwin/linux format 
+	 * @param string $path 		Path to be converted
+	 * @return string 			Converted path
+	 */ 
+	private function _pathConverter($path) {
+		$pathForRsync = $path;
+		if ( Configure::read('OS.type') == 'WIN') {
+			$pattern = '/^([A-Za-z]):/';
+			preg_match($pattern, $path, $matches, PREG_OFFSET_CAPTURE);
+			if (!empty ($matches[1][0])) {
+				$windowsLetter = strtolower($matches[1][0]);
+				$pathForRsync = strtr(Configure::read('OS.Cygwin.rootDir') . $windowsLetter . substr($path, 2), "\\", "/");
+			}	
+		}
+		return $pathForRsync;
+	}// _pathConverter
+	
+	function executeCommand( $command = null, $comment = 'none', $context = 'none', $newDir = null ){
+		if ($command == null) {
 			return __('No command supplied');
+		}
+		
+		if ($newDir != null) {
+			chdir($newDir);			
+		}
 			
 		$output = "\n-[".$comment."]\n";
-		if ( Configure::read() > 0 )
-			CakeLog::write('debug', "[$context] " . $command);
-		return $output. shell_exec($command);
+		if ( Configure::read() > 0 ){
+			CakeLog::write('debug', "[$context] " . $command);			
+		}
+		
+		if ( Configure::read('OS.type') == 'WIN' ) {
+			$prefix = "bash.exe --login -c '";
+			$suffix = "'";
+		} else {
+			$prefix = "";
+			$suffix = "";
+		}
+		$shell = shell_exec( $prefix.$command.$suffix );
+		
+		return $output . $shell;
 	}// executeCommand
+	
+	
+	function triggerError($error) {
+		$this->lastError = $error;
+		CakeLog::write(LOG_ERROR, $this->lastError);
+	}// triggerError
 	
 }// Deployment
 ?>

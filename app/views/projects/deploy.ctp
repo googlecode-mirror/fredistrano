@@ -43,7 +43,7 @@
 				</fieldset>
 				<div class="f-submit-wrap">
 					<?php e($ajax->submit(__('Step 2 - synchronization', true), array('class' => 'f-submit','url' => '/deployments/synchronize','update' => 'deploy_result', 'loading' => "Element.show('spinning_image2');", 'complete' => "(document.getElementById('ProjectSimulation').checked)?Element.hide('step3'):Element.show('step3');", 'loaded' => "Element.hide('spinning_image2');")));?>
-					<?php e($html->image('loading_orange.gif','Loading...',array('id'=>'spinning_image2','style'=>'display:none'))); ?>
+					<?php e($html->image('loading_orange.gif', array('alt' => 'Loading...', 'id'=>'spinning_image2','style'=>'display:none'))); ?>
 				</div>
 	<?php echo $form->end();?>
 </div>
@@ -71,7 +71,7 @@
 				
 				<div class="f-submit-wrap">
 					<?php e($ajax->submit(__('Step 3 - finalization', true), array('class' => 'f-submit','url' => '/deployments/finalize','update' => 'deploy_result', 'loading' => "Element.show('spinning_image3');", 'complete' => "Element.hide('spinning_image3');")));?>
-					<?php e($html->image('loading_orange.gif','Loading...',array('id'=>'spinning_image3','style'=>'display:none'))); ?>
+					<?php e($html->image('loading_orange.gif',array('alt' => 'Loading...', 'id'=>'spinning_image3','style'=>'display:none'))); ?>
 				</div>
 			</fieldset>	
 	<?php echo $form->end();?>

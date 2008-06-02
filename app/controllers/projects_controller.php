@@ -67,6 +67,17 @@ class ProjectsController extends AppController {
 	 * @param string $id ID of the project to be deployed
 	 */
 	function deploy($id = null) {
+		if ($id == null ) {
+			$this->Session->setFlash(__('Invalid id.', true));
+			$this->redirect('/projects/index');
+			exit();
+		}
+		
+		// Give an ID to current deployment 
+		$deploymentUuid = md5( 'YLB:'.$id .':'.time() ); 
+		$this->Session->write('Deployment.uuid', $deploymentUuid);
+				
+		// View
 		$this->layout = 'ajax';
 		$this->set('id', $id);
 	}// deploy
@@ -79,6 +90,7 @@ class ProjectsController extends AppController {
 		if (!$id) {
 			$this->Session->setFlash(__('Invalid id.', true));
 			$this->redirect('/projects/index');
+			exit();
 		}
 		$project = $this->Project->read(null, $id);
 		$this->set('project', $project);

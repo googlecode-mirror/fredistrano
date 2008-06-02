@@ -137,6 +137,7 @@ CREATE TABLE IF NOT EXISTS `deployment_logs` (
   `id` int(11) NOT NULL auto_increment,
   `project_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
+  `uuid` varchar(50) default NULL,
   `title` varchar(100) default NULL,
   `created` datetime NOT NULL,
   `comment` text,

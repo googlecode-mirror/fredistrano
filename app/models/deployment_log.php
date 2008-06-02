@@ -19,7 +19,7 @@ class DeploymentLog extends AppModel {
 	function __construct(){
 		parent::__construct();
 		
-		if (defined('_PUBLISHFEED') && _PUBLISHFEED === true ) {
+		if ( Configure::read('Feeds.enabled') === true ) {
 			$this->feed = array(
 			    'titleField'	=> 	'DeploymentLog.title',
 			    'descField' 	=> 	'DeploymentLog.comment',

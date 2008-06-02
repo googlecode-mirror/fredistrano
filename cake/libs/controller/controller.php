@@ -707,7 +707,7 @@ class Controller extends Object {
 				}
 			}
 		}
-
+		
 		$this->autoRender = false;
 		return $this->__viewClass->render($action, $layout, $file);
 	}
