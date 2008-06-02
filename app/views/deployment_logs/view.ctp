@@ -5,16 +5,6 @@
 
 <th colspan="3">
 	<span class="tabletoptitle">Deployment log details</span>
-	<!--
-	<span class="tabletoplink">
-	<?php echo $ajax->link($html->image( 'arrow_switch.png', array('alt' => 'Déployer le projet', 'title' => 'Déployer le projet')).' Déployer', 
-			'/projects/deploy/' . $project['Project']['id'], 
-			array('update' => 'deploy_area'),
-			null,
-			false,
-			false);?>
-	</span>
-	-->
 </th>
 
 </tr>
@@ -28,23 +18,28 @@
 </tr>
 
 <tr>
-<th class="sub">Related project</th>
+<th class="sub"><?php __('Related project', true) ?></th>
 <td>&nbsp;<?php echo $html->link($log['Project']['name'],'/projects/view/'.$log['Project']['id'], array('target' => '_blank'), false, true, false)?></td>
 </tr>
 
 <tr>
-<th class="sub">Responsible person</th>
+<th class="sub"><?php __('Responsible person', true) ?></th>
 <td>&nbsp;<?php echo $log['User']['login']?></td>
 </tr>
 
 <tr>
-<th class="sub">Deployment date</th>
+<th class="sub"><?php __('Deployment date', true) ?></th>
 <td>&nbsp;<?php  echo $log['DeploymentLog']['created'] ?></td>
 </tr>
 
 <tr>
-<th class="sub">Comment</th>
+<th class="sub"><?php __('Comment', true) ?></th>
 <td>&nbsp;<?php echo nl2br($log['DeploymentLog']['comment']); ?></td>
+</tr>
+
+<tr>
+<th class="sub"><?php __('Unique identifier', true) ?></th>
+<td>&nbsp;<?php echo nl2br($log['DeploymentLog']['uuid']); ?></td>
 </tr>
 
 </tbody>

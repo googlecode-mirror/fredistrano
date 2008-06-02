@@ -26,12 +26,12 @@ class DeploymentLogsController extends AppController {
 
 		if ($this->action != 'list_all')
 			$tab[] = array (
-				'text' => LANG_DISPLAYFULLHISTORY,
+				'text' => __('Display full history', true),
 				'link' => '/deploymentLogs/list_all'
 			);
 
 		$tab[] = array (
-			'text' => LANG_PROJECTLIST,
+			'text' => __('List projects', true),
 			'link' => '/projects'
 		);
 		
@@ -60,7 +60,7 @@ class DeploymentLogsController extends AppController {
 	function list_all($op = null, $id = null) {
 		$archived = $this->_archive();
 		if ($archived > 0) 
-			$this->Session->setFlash(sprintf(LANG_AUTOLOGARCHIVE,$archived));
+			$this->Session->setFlash(sprintf(__("%d logs have been archived", true),$archived));
 
 		switch ($op) {
 			case null :
@@ -73,7 +73,7 @@ class DeploymentLogsController extends AppController {
 				$this->_listByProject($id);
 				break;
 			default :
-				$this->Session->setFlash(LANG_UNSUPPORTEDACTION . $op);
+				$this->Session->setFlash(__('Unsupported action ', true) . $op);
 				$this->redirect('/deploymentLogs/list_all');
 				break;
 		} // switch
@@ -85,7 +85,7 @@ class DeploymentLogsController extends AppController {
 	 */
 	function view($id) {
 		if (!$id or !$this->DeploymentLog->read(null, $id)) {
-			$this->Session->setFlash(LANG_INVALIDLOGID.$id);
+			$this->Session->setFlash(__('Invalid id', true));
 			$this->redirect('/deploymentLogs/list_all');
 		}
 		$this->set('log', $this->DeploymentLog->read(null, $id));
@@ -107,7 +107,7 @@ class DeploymentLogsController extends AppController {
 		$this->DeploymentLog->delAll();
 
 		// Afichage
-		$this->Session->setFlash(LANG_ALLLOGSDELETED);
+		$this->Session->setFlash(__('All logs deleted', true));
 		$this->redirect('/deploymentLogs/list_all');
 	} //_ reset
 
@@ -142,8 +142,9 @@ class DeploymentLogsController extends AppController {
 	 */
 	private function _listByProject($id = null) {
 		if (!$id or !$this->Project->read(null, $id)) {
-			$this->Session->setFlash(LANG_INVALIDPROJECTID.$id);
+			$this->Session->setFlash(__('Invalid id', true));
 			$this->redirect('/deploymentLogs/list_all');
+			exit;
 		}
 		
 		$filter = array('project' => $id);		

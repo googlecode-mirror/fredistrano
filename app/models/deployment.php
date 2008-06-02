@@ -66,9 +66,7 @@ class Deployment extends AppModel {
 		$filename = _DEPLOYLOGDIR . DS . $uuid . '.log';
 		clearstatcache(); // Prevent pb with is_dir() function (see PHPDoc)
 		if (!is_dir(_DEPLOYLOGDIR)) {
-			if (@mkdir(_DEPLOYLOGDIR, octdec(_DIRMODE), TRUE)) {
-				$output .= "-[".__('creating directory', true)." " . _DEPLOYLOGDIR . "]\n";
-			} else {
+			if (!@mkdir(_DEPLOYLOGDIR, octdec(_DIRMODE), TRUE)) {
 				$this->triggerError( "Unable to create directory "._DEPLOYLOGDIR );
 				return false;
 			}
@@ -149,9 +147,7 @@ class Deployment extends AppModel {
 		$filename = _DEPLOYLOGDIR . DS . $uuid . '.log';
 		clearstatcache(); // Prevent pb with is_dir() function (see PHPDoc)
 		if (!is_dir(_DEPLOYLOGDIR)) {
-			if (@mkdir(_DEPLOYLOGDIR, octdec(_DIRMODE), TRUE)) {
-				$output .= "-[".__('creating directory', true)." " . _DEPLOYLOGDIR . "]\n";
-			} else {
+			if (!@mkdir(_DEPLOYLOGDIR, octdec(_DIRMODE), TRUE)) {
 				$this->triggerError( "Unable to create directory "._DEPLOYLOGDIR );
 				return false;
 			}
