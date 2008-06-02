@@ -141,5 +141,30 @@ class DeploymentsController extends AppController {
 		}
 	}// finalize
 	
+	function fastDeploy($id = null) {
+		$this->layout = 'ajax';
+		if ($id == null ) {
+			$this->Session->setFlash(__('Invalid id.', true));
+			$this->redirect('/projects/index');
+			exit();
+		}
+
+		// Give an ID to current deployment 
+		$deploymentUuid = md5( 'YLB:'.$id .':'.time() ); 
+
+		// Run step	
+		$output = $this->Deployment->runProcess($this->data['Project']['id'], $deploymentUuid);
+
+		// Process output
+		if ( $output === false ) {
+			$this->set('errorMessage', 	$this->Deployment->getLastError());
+			$this->render('error');
+			exit();
+		} else {
+			$this->set('output', 	$output);
+			$this->set('took', 		$this->Deployment->getLastExecutionTime());
+		}
+	}// fastDeploy
+	
 }// DeploymentsController
 ?>

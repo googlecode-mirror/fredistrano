@@ -81,7 +81,7 @@ class ProjectsController extends AppController {
 		$this->layout = 'ajax';
 		$this->set('id', $id);
 	}// deploy
-
+	
 	/**
 	 * View properties of a specified project
 	 * @param string $id ID of the project to be viewed

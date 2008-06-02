@@ -79,7 +79,11 @@
 <?php echo $form->hidden('Project/id', array('value' => $project['Project']['id']))?>
 <div class="f-submit-wrap" style="clear:right;float:right;">
 				<?php e($html->image('loading_orange.gif',array('alt' => 'Loading...', 'id' => 'spinning_image0','style' => 'display:none'))); ?>
-				<?php echo $ajax->submit(__('Deploy the project', true), array('class' => 'f-submit','url' => '/projects/deploy/' . $project['Project']['id'],'update' => 'deploy_area', 'loading' => "Element.show('spinning_image0');", 'loaded' => "Element.hide('spinning_image0');"));?>
+				<?php echo $ajax->submit(__('Deploy', true), array('class' => 'f-submit','url' => '/projects/deploy/' . $project['Project']['id'],'update' => 'deploy_area', 'loading' => "Element.show('spinning_image0');", 'loaded' => "Element.hide('spinning_image0');"));?>
+				<?php 
+				// TODO Demander une confirmation + affichage
+				echo $ajax->submit(__('Fast deploy', true), array('class' => 'f-submit','url' => '/deployments/fastDeploy/' . $project['Project']['id'],'update' => 'deploy_area', 'loading' => "Element.show('spinning_image0');", 'loaded' => "Element.hide('spinning_image0');"));
+				?>
 </div>
 </form>
 
@@ -89,7 +93,7 @@
 </tbody>
 </table>
 
-<div class="smalldateblock"><?php __('Deploy the project');?> <?php echo $project['Project']['created']?><br />
+<div class="smalldateblock"><?php __('Deploy');?> <?php echo $project['Project']['created']?><br />
 <?php __('Modified on');?> <?php echo $project['Project']['modified']?></div> 
 
 </div>

@@ -43,12 +43,12 @@ class Deployment extends AppModel {
 	 * @param array $options		Various options used for configuring the step 
 	 * @return string 			Shell output 
      */	
-	function runProcess($project_id = null, $options = array()) {
-		if ( $project_id == null || !($project = $this->Project->read(null, $project_id)) ) { 
+	function runProcess($project_id = null, $uuid = null, $options = array()) {
+		if ( $project_id == null || !($project = $this->Project->read(null, $project_id)) || $uuid == null ) { 
 			$this->lastExecutionTime = 0;
 			return false;		
 		}
-		
+				
 		$t1 = getMicrotime();
 		
 		// Init options
@@ -60,23 +60,70 @@ class Deployment extends AppModel {
 			'giveWriteMode'		=> 	false
 		);
 		$options = array_merge($default_options, $options);
-
+	
+		// Prepare log output
+		$header = date('Y-m-d H:i:s') . " Performing fast deploy\n";
+		$filename = _DEPLOYLOGDIR . DS . $uuid . '.log';
+		clearstatcache(); // Prevent pb with is_dir() function (see PHPDoc)
+		if (!is_dir(_DEPLOYLOGDIR)) {
+			if (@mkdir(_DEPLOYLOGDIR, octdec(_DIRMODE), TRUE)) {
+				$output .= "-[".__('creating directory', true)." " . _DEPLOYLOGDIR . "]\n";
+			} else {
+				$this->triggerError( "Unable to create directory "._DEPLOYLOGDIR );
+				return false;
+			}
+		}
+		$log = new File($filename, true);
+		if ($log->writable()) {
+			$log->append($header);
+		}
+		
 		// Performs successively each step
 		//$output = "> Initialize:\n";
 		//$output .= $this->initialize($project, $options);
 		
-		$output = "> Export:\n";
-		$output .= $this->export($project, $options);
-		preg_match('/ ([0-9]+)\.$/', $output, $matches);
-		$options['comment'] = 'Revision exported ' . $matches[1];	
+		$output = '';
+		
+		$output .= "\n> Performing step Export:\n";
+		if ($shell = $this->runStep('export', $project_id, $uuid, $options)) {
+			$output .= $shell;
+			preg_match('/ ([0-9]+)\.$/', $output, $matches);
+			if (isset($matches[1])) {
+				$options['comment'] = 'Revision exported ' . $matches[1];			
+			}
+		} else {
+			if ($log->writable()) {
+				$log->append("Process aborted (see error.log for further details)");
+			}
+			return false;
+		}	
 
-		$output = "> Synchronize:\n";
-		$output .= $this->synchronize($project, $options);
-
-		$output = "> Finalize:\n";
-		$output .= $this->finalize($project, $options);
+		$output .= "\n> Performing step Synchronize:\n";
+		if ($shell = $this->runStep('synchronize', $project_id, $uuid, $options)) {
+			$output .= $shell;
+		} else {
+			if ($log->writable()) {
+				$log->append("Process aborted (see error.log for further details)");
+			}
+			return false;
+		}
+		
+		$output = "\n> Performing step Finalize:\n";
+		if ($shell = $this->runStep('finalize', $project_id, $uuid, $options)) {
+			$output .= $shell;
+		} else {
+			if ($log->writable()) {
+				$log->append("Process aborted (see error.log for further details)");
+			}
+			return false;
+		}
 		
 		$this->lastExecutionTime = round((getMicrotime() - $t1) , 3);
+		
+		// Log text
+		if ($log->writable()) {
+			$log->append("Process executed in ".$this->lastExecutionTime."s");
+		}
 		
 		return $output;
 	}// runProcess
@@ -98,7 +145,7 @@ class Deployment extends AppModel {
 		$t1 = getMicrotime();
 
 		// Prepare log output
-		$header = date('Y-m-d H:i:s') . " Output of " . strtoupper($step);
+		$header = date('Y-m-d H:i:s') . " Output of " . strtoupper($step)."\n";
 		$filename = _DEPLOYLOGDIR . DS . $uuid . '.log';
 		clearstatcache(); // Prevent pb with is_dir() function (see PHPDoc)
 		if (!is_dir(_DEPLOYLOGDIR)) {
@@ -110,7 +157,9 @@ class Deployment extends AppModel {
 			}
 		}
 		$log = new File($filename, true);
-
+		if ($log->writable()) {
+			$log->append($header);
+		}
 		// Execute step
  		if ( $project_id == null || !($project = $this->Project->read(null, $project_id)) )  {
 			$text = $this->lastError = 'Invalid input parameters';
@@ -123,7 +172,7 @@ class Deployment extends AppModel {
 		
 		// Log text
 		if ($log->writable()) {
-			$log->append($header." executed in ".$this->lastExecutionTime."s\n<<<<\n".$text."\n>>>>\n");
+			$log->append("\n<<<<\n".$text."\n>>>> Step executed in ".$this->lastExecutionTime."s\n");
 		}
 		
 		return $output;
@@ -424,10 +473,16 @@ class Deployment extends AppModel {
 	 */ 
 	function isConfigAvailable(	$projectName ) {
 		$res = @ file_exists(_DEPLOYTMPDIR . DS . $projectName . DS . "tmpDir" . DS . "deploy.php");
-		if ($res === false)
-			$this->lastError = "Unable to find 'deploy.php' file";
+		if ($res === false) {
+			$this->triggerError("Unable to find 'deploy.php' file");
+		}
 		return $res;
 	}// isConfigAvailable
+
+	function triggerError($error) {
+		$this->lastError = $error;
+		CakeLog::write(LOG_ERROR, $this->lastError);
+	}// triggerError
 
 	/**
 	 * Get the execution time of the last operation (step or process) 
@@ -502,12 +557,6 @@ class Deployment extends AppModel {
 		
 		return $output . $shell;
 	}// executeCommand
-	
-	
-	function triggerError($error) {
-		$this->lastError = $error;
-		CakeLog::write(LOG_ERROR, $this->lastError);
-	}// triggerError
 	
 }// Deployment
 ?>
