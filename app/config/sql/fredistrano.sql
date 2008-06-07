@@ -208,6 +208,7 @@ CREATE TABLE IF NOT EXISTS `projects` (
   `svn_url` varchar(255) collate utf8_unicode_ci NOT NULL,
   `prd_url` varchar(255) collate utf8_unicode_ci NOT NULL,
   `prd_path` varchar(255) collate utf8_unicode_ci NOT NULL,
+  `log_path` varchar(255) collate utf8_unicode_ci NULL,
   `created` timestamp NULL default NULL,
   `modified` timestamp NULL default NULL,
   PRIMARY KEY  (`id`)

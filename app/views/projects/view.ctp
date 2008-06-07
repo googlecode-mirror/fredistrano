@@ -26,6 +26,11 @@
 <th colspan="2">
 	<div class="tabletoplink">
 		<ul>
+			<li><?php echo $html->link($html->image( 'b_search.png', array('alt' => __('Open in log viewer', true), 'title' => __('Open in log viewer', true))).' '.__('Open in log viewer', true), 
+					'/logs/index/' . $project['Project']['id'], 
+					null,
+					false,
+					false);?></li>					
 			<li><?php echo $html->link($html->image( 'date.png', array('alt' => __('History', true), 'title' => __('History', true))).' '.__('History', true), 
 					'/deploymentLogs/list_all/project/' . $project['Project']['id'], 
 					null,
@@ -70,6 +75,11 @@
 <tr>
 <th class="sub"><?php __('Application Url');?></th>
 <td>&nbsp;<?php echo $html->link($project['Project']['prd_url'], $project['Project']['prd_url'], array('target' => '_blank'), false, true, false) ?></td>
+</tr>
+
+<tr>
+<th class="sub"><?php __('Log pathes');?></th>
+<td>&nbsp;<?php echo $project['Project']['log_path']?></td>
 </tr>
 
 <tr>
