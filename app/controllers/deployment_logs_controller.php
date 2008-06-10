@@ -84,11 +84,22 @@ class DeploymentLogsController extends AppController {
 	 * @param string $id ID of the log to be viewed
 	 */
 	function view($id) {
-		if (!$id or !$this->DeploymentLog->read(null, $id)) {
+		if (!$id or !($deployLog = $this->DeploymentLog->read(null, $id)) ) {
 			$this->Session->setFlash(__('Invalid id', true));
 			$this->redirect('/deploymentLogs/list_all');
 		}
-		$this->set('log', $this->DeploymentLog->read(null, $id));
+		
+		$options = array(
+			'reverse'			=>	false,
+			'logPath'			=> _DEPLOYLOGDIR.DS.$deployLog['DeploymentLog']['uuid'].'.log'
+		);
+		$output = $this->Project->readLog($deployLog['DeploymentLog']['project_id'], $options);
+		
+		$this->set('deployLog', $deployLog);
+		$this->set('project', 	$this->Project->read(null, $this->data['Search']['project_id']));
+		$this->set('log',	 	$output);
+		$this->set('size', 		$this->Project->lastReadSize);
+		$this->set('logPath', 	$options['logPath']);
 	} // view
 
 	// Private functions ----------------------------------------------------------------------------------

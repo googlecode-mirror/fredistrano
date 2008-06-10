@@ -14,35 +14,38 @@
 
 <tr>
 <th class="sub">ID</th>
-<td>&nbsp;<?php echo $log['DeploymentLog']['id']?></td>
+<td>&nbsp;<?php echo $deployLog['DeploymentLog']['id']?></td>
 </tr>
 
 <tr>
-<th class="sub"><?php __('Related project', true) ?></th>
-<td>&nbsp;<?php echo $html->link($log['Project']['name'],'/projects/view/'.$log['Project']['id'], array('target' => '_blank'), false, true, false)?></td>
+<th class="sub"><?php __('Related project') ?></th>
+<td>&nbsp;<?php echo $html->link($deployLog['Project']['name'],'/projects/view/'.$deployLog['Project']['id'], array('target' => '_blank'), false, true, false)?></td>
 </tr>
 
 <tr>
-<th class="sub"><?php __('Responsible person', true) ?></th>
-<td>&nbsp;<?php echo $log['User']['login']?></td>
+<th class="sub"><?php __('Responsible person') ?></th>
+<td>&nbsp;<?php echo $deployLog['User']['login']?></td>
 </tr>
 
 <tr>
-<th class="sub"><?php __('Deployment date', true) ?></th>
-<td>&nbsp;<?php  echo $log['DeploymentLog']['created'] ?></td>
+<th class="sub"><?php __('Deployment date') ?></th>
+<td>&nbsp;<?php  echo $deployLog['DeploymentLog']['created'] ?></td>
 </tr>
 
 <tr>
-<th class="sub"><?php __('Comment', true) ?></th>
-<td>&nbsp;<?php echo nl2br($log['DeploymentLog']['comment']); ?></td>
+<th class="sub"><?php __('Comment') ?></th>
+<td>&nbsp;<?php echo nl2br($deployLog['DeploymentLog']['comment']); ?></td>
 </tr>
 
+<!-- 
 <tr>
-<th class="sub"><?php __('Unique identifier', true) ?></th>
-<td>&nbsp;<?php echo nl2br($log['DeploymentLog']['uuid']); ?></td>
+<th class="sub"><?php __('Unique identifier') ?></th>
+<td>&nbsp;<?php echo nl2br($deployLog['DeploymentLog']['uuid']); ?></td>
 </tr>
-
+-->
 </tbody>
 </table>
-
 </div>
+<br/>
+
+<?php 	e($this->renderElement('_log_viewer')); ?>

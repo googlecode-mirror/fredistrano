@@ -42,50 +42,25 @@ class LogsController extends AppController {
 	function view() {
 		$this->layout = 'ajax';
 		if (!empty($this->data) && !empty($this->data['Search']['project_id'])) {
-			
-			$project = $this->Project->read(null, $this->data['Search']['project_id']);
-			
-			if ($project['Project']['name'] == '#WebAS') {
-				if ($handle = opendir($project['Project']['log_path'])) {
-					$tmpLog = "error.log.0";
-					while (false !== ($filename = readdir($handle))) {
-        				if	( strpos($filename, 'error.log.') !== false && strcasecmp($filename,$tmpLog) > 0) {
-        					$tmpLog = $filename;
-				     	}
-				 	}
-				}
-			    closedir($handle);
-				$project['Project']['log_path'] = $project['Project']['log_path'].$tmpLog;
+			// Size
+			if (!empty($this->data['Search']['maxsize'])) {
+				Configure::write('Log.maxSize', $this->data['Search']['maxsize']);
 			}
-		
-			if (file_exists($project['Project']['log_path'])) {
-				
-				$file = fopen($project['Project']['log_path'],'r');  
-				$maxsize =(!empty($this->data['Search']['maxsize']))?$this->data['Search']['maxsize']:_MAXLOGSIZE;
-				if ( ($size = filesize ($project['Project']['log_path'])) > $maxsize ) {
-					fseek( $file, $size - $maxsize);
-				}
-				$this->set('size', $size);
-				$output = fread( $file, $maxsize ); 
-				fclose($file);
-				
-				if (!empty($this->data['Search']['pattern'])) {
-					$pattern =  ($this->data['Search']['pattern'][0] == '/') ? $this->data['Search']['pattern'] : '/('.$this->data['Search']['pattern'].')/i';
-					$output = preg_replace( $pattern , "<span class='highlight'>$1</span>" , $output );
-				} 
-				
-				if ($this->data['Search']['reverse']) {
-					$output = array_reverse(explode("\n", $output));
-					array_pop($output);
-					$output = implode("\n",$output);
-				}
-								
-				$output = nl2br($output);
-			} else {
-				$output = 'Log not found : File (<em>'.$project['Project']['log_path'].'</em>) doesn\'t exist';
+			
+			$options = array();
+			if (!empty($this->data['Search']['pattern'])) {
+				$options['pattern'] = $this->data['Search']['pattern'];
 			}
-			$this->set('project', $project);
-			$this->set('log',$output);
+			$options['reverse'] = $this->data['Search']['reverse'];
+			$output = $this->Project->readLog($this->data['Search']['project_id'], $options);
+			if ( $output === false ) {
+				die();
+			}
+
+			$this->set('project', 	$this->Project->read(null, $this->data['Search']['project_id']));
+			$this->set('log',	 	$output);
+			$this->set('size', 		$this->Project->lastReadSize); 
+			$this->set('logPath', 	$project['Project']['log_path']);		
 		} else {
 			die();
 		}

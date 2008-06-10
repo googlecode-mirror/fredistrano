@@ -25,13 +25,8 @@
 
 <th colspan="2">
 	<div class="tabletoplink">
-		<ul>
-			<li><?php echo $html->link($html->image( 'b_search.png', array('alt' => __('Open in log viewer', true), 'title' => __('Open in log viewer', true))).' '.__('Open in log viewer', true), 
-					'/logs/index/' . $project['Project']['id'], 
-					null,
-					false,
-					false);?></li>					
-			<li><?php echo $html->link($html->image( 'date.png', array('alt' => __('History', true), 'title' => __('History', true))).' '.__('History', true), 
+		<ul>					
+			<li><?php echo $html->link($html->image( 'date.png', array('alt' => __('View deployment history', true), 'title' => __('View deployment history', true))).' '.__('View deployment history', true), 
 					'/deploymentLogs/list_all/project/' . $project['Project']['id'], 
 					null,
 					false,
@@ -79,7 +74,11 @@
 
 <tr>
 <th class="sub"><?php __('Log pathes');?></th>
-<td>&nbsp;<?php echo $project['Project']['log_path']?></td>
+<td>&nbsp;<?php echo $html->link($project['Project']['log_path'], 
+			'/logs/index/' . $project['Project']['id'], 
+			null,
+			false,
+			false);?></td>
 </tr>
 
 <tr>
@@ -89,10 +88,10 @@
 <?php echo $form->hidden('Project/id', array('value' => $project['Project']['id']))?>
 <div class="f-submit-wrap" style="clear:right;float:right;">
 				<?php e($html->image('loading_orange.gif',array('alt' => 'Loading...', 'id' => 'spinning_image0','style' => 'display:none'))); ?>
-				<?php echo $ajax->submit(__('Deploy', true), array('class' => 'f-submit','url' => '/projects/deploy/' . $project['Project']['id'],'update' => 'deploy_area', 'loading' => "Element.show('spinning_image0');", 'loaded' => "Element.hide('spinning_image0');"));?>
+				<?php echo $ajax->submit(__('Deploy', true), array('class' => 'f-submit','url' => '/projects/deploy/' . $project['Project']['id'],'update' => 'deploy_area', 'loading' => "Element.show('spinning_image0');", 'loaded' => "Element.hide('spinning_image0');",'style' => 'float:right;margin:10px'));?>
 				<?php 
 				// TODO Demander une confirmation + affichage
-				echo $ajax->submit(__('Fast deploy', true), array('class' => 'f-submit','url' => '/deployments/fastDeploy/' . $project['Project']['id'],'update' => 'deploy_area', 'loading' => "Element.show('spinning_image0');", 'loaded' => "Element.hide('spinning_image0');"));
+				echo $ajax->submit(__('Fast deploy', true), array('class' => 'f-submit','url' => '/deployments/fastDeploy/' . $project['Project']['id'],'update' => 'deploy_area', 'loading' => "Element.show('spinning_image0');", 'loaded' => "Element.hide('spinning_image0');",'style' => 'float:right;margin:10px'));
 				?>
 </div>
 </form>

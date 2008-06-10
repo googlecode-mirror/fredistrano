@@ -45,8 +45,7 @@ class Group extends AppModel {
 			'className' => 'Group',
 			'foreignKey' => 'parent_id',
 			
-		),
-		
+		)		
 	);
 	
 }

@@ -318,10 +318,10 @@ class Deployment extends AppModel {
 		// Setting up Rsync options
 		if ($options['simulation'] === true) {
 			// Simulation mode
-			$option = 'rtvn'; //'rtOvn';
+			$option = 'rtvn';
 		} else {			
 			// Live mode
-			$option = 'rtv'; //'rtOv'; 
+			$option = 'rtv';
 
 			// Create a log entry for the pending deployement 
 			$data = array (
@@ -334,6 +334,12 @@ class Deployment extends AppModel {
 					'archive' 		=> 	0
 				)
 			);
+			
+			//The rsync option "O" not yet supported on Mac
+			if (Configure::read('OS.type') != 'DAR') {
+				$option .= 'O';
+			}
+			
 			if (!$this->DeploymentLog->save($data) ) {
 				$this->triggerError('Unable to log deployment');				
 				return false;				
