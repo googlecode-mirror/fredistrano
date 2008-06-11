@@ -1,0 +1,381 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: fredsitrano\n"
+"POT-Creation-Date: 2008-06-10 10:29+0200\n"
+"PO-Revision-Date: \n"
+"Last-Translator: euphrate_ylb <email_ylb-php@yahoo.fr>\n"
+"Language-Team: fbollon.net\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: French\n"
+
+#: /controllers/deployment_logs_controller.php:29
+#: /controllers/projects_controller.php:51
+msgid "Display full history"
+msgstr "Afficher tout l'historique"
+
+#: /controllers/deployment_logs_controller.php:34
+msgid "List projects"
+msgstr "Lister les projets"
+
+#: /controllers/deployment_logs_controller.php:63
+msgid "%d logs have been archived"
+msgstr "%d logs have been archived"
+
+#: /controllers/deployment_logs_controller.php:76
+msgid "Unsupported action "
+msgstr "Unsupported action "
+
+#: /controllers/deployment_logs_controller.php:88;145
+msgid "Invalid id"
+msgstr "Invalid id"
+
+#: /controllers/deployment_logs_controller.php:110
+msgid "All logs deleted"
+msgstr "All logs deleted"
+
+#: /controllers/deployments_controller.php:147
+#: /controllers/projects_controller.php:71;91;123;144
+msgid "Invalid id."
+msgstr "Invalid id."
+
+#: /controllers/projects_controller.php:40
+#: /views/projects/index.ctp:5
+msgid "Project list"
+msgstr "Project list"
+
+#: /controllers/projects_controller.php:46
+msgid "Add project"
+msgstr "Add project"
+
+#: /controllers/projects_controller.php:108;130
+msgid "Project saved."
+msgstr "Project saved."
+
+#: /controllers/projects_controller.php:111;133
+msgid "Please correct errors below."
+msgstr "Please correct errors below."
+
+#: /controllers/projects_controller.php:148
+msgid "Project deleted."
+msgstr "Project deleted."
+
+#: /controllers/users_controller.php:23
+msgid "User list"
+msgstr "User list"
+
+#: /controllers/users_controller.php:25
+msgid "Add user"
+msgstr "Add user"
+
+#: /controllers/users_controller.php:160
+msgid "HTTPS required but unavailable"
+msgstr "HTTPS required but unavailable"
+
+#: /controllers/users_controller.php:182
+msgid "Identification accepted"
+msgstr "Identification accepted"
+
+#: /controllers/users_controller.php:186;191
+msgid "Invalid credentials"
+msgstr "Invalid credentials"
+
+#: /controllers/users_controller.php:209
+msgid "Your are now disconnected."
+msgstr "Your are now disconnected."
+
+#: /models/deployment.php:220;228;236;251;261;432;438
+msgid "creating directory"
+msgstr "creating directory"
+
+#: /models/deployment.php:247
+msgid "delete directory"
+msgstr "delete directory"
+
+#: /models/deployment.php:272
+msgid "svn export"
+msgstr "svn export"
+
+#: /models/deployment.php:356
+msgid "Deploying new version"
+msgstr "Deploying new version"
+
+#: /models/deployment.php:390
+#: /views/projects/deploy.ctp:58
+msgid "Rename files"
+msgstr "Rename files"
+
+#: /models/deployment.php:397
+msgid "updating files modes"
+msgstr "updating files modes"
+
+#: /models/deployment.php:400;403;453
+msgid "updating dir mode"
+msgstr "updating dir mode"
+
+#: /models/deployment.php:443;450
+msgid "backup current prod version"
+msgstr "backup current prod version"
+
+#: /models/deployment.php:455
+msgid "no backup needed"
+msgstr "no backup needed"
+
+#: /models/deployment.php:455
+msgid "does not exist"
+msgstr "does not exist"
+
+#: /models/deployment.php:533
+msgid "No command supplied"
+msgstr "No command supplied"
+
+#: /views/administration/index.ctp:6
+msgid "Users"
+msgstr "Users"
+
+#: /views/administration/index.ctp:7
+msgid "Groups"
+msgstr "Groups"
+
+#: /views/administration/index.ctp:8
+msgid "Authorizations"
+msgstr "Authorizations"
+
+#: /views/administration/index.ctp:9
+msgid "Control objects"
+msgstr "Control objects"
+
+#: /views/deployment_logs/view.ctp:21
+msgid "Related project"
+msgstr "Related project"
+
+#: /views/deployment_logs/view.ctp:26
+msgid "Responsible person"
+msgstr "Responsible person"
+
+#: /views/deployment_logs/view.ctp:31
+msgid "Deployment date"
+msgstr "Deployment date"
+
+#: /views/deployment_logs/view.ctp:36
+#: /views/projects/deploy.ctp:41
+msgid "Comment"
+msgstr "Comment"
+
+#: /views/deployment_logs/view.ctp:41
+msgid "Unique identifier"
+msgstr "Unique identifier"
+
+#: /views/elements/_form_project.ctp:1
+#: /views/projects/index.ctp:12
+#: /views/projects/view.ctp:61
+msgid "Project name"
+msgstr "Project name"
+
+#: /views/elements/_form_project.ctp:2
+#: /views/projects/index.ctp:13
+#: /views/projects/view.ctp:66
+msgid "SVN Url"
+msgstr "SVN Url"
+
+#: /views/elements/_form_project.ctp:3
+msgid "Application absolute path"
+msgstr "Application absolute path"
+
+#: /views/elements/_form_project.ctp:4
+#: /views/projects/view.ctp:76
+msgid "Application Url"
+msgstr "Application Url"
+
+#: /views/elements/_form_project.ctp:5
+msgid "Log pathes (;)"
+msgstr "Log pathes (;)"
+
+#: /views/elements/login.ctp:13
+msgid "Identification"
+msgstr "Identification"
+
+#: /views/elements/login.ctp:14
+msgid "Username"
+msgstr "Utilisateur"
+
+#: /views/elements/login.ctp:15
+#: /views/projects/deploy.ctp:16
+msgid "Password"
+msgstr "Mot de passe"
+
+#: /views/elements/login.ctp:16
+msgid "Login"
+msgstr "Login"
+
+#: /views/elements/menu.ctp:2
+msgid "Home"
+msgstr "Accueil"
+
+#: /views/elements/menu.ctp:3
+msgid "Projects"
+msgstr "Projets"
+
+#: /views/elements/menu.ctp:4
+msgid "Logs"
+msgstr "Logs"
+
+#: /views/elements/menu.ctp:5
+msgid "Administration"
+msgstr "Administration"
+
+#: /views/elements/menu.ctp:6
+msgid "Help"
+msgstr "Help"
+
+#: /views/layouts/default.ctp:66
+msgid "Welcome"
+msgstr "Welcome"
+
+#: /views/layouts/default.ctp:89;90
+msgid "Previous"
+msgstr "Previous"
+
+#: /views/layouts/default.ctp:91
+msgid "back"
+msgstr "back"
+
+#: /views/logs/index.ctp:5
+msgid "Enter a search pattern"
+msgstr "Enter a search pattern"
+
+#: /views/logs/index.ctp:7
+msgid "Max load size (in bytes)"
+msgstr "Max load size (in bytes)"
+
+#: /views/pages/help.ctp:8
+msgid "Fredistrano-documentation-EN.pdf"
+msgstr "Fredistrano-documentation-EN.pdf"
+
+#: /views/projects/add.ctp:2
+#: /views/projects/edit.ctp:3
+msgid "Required fields"
+msgstr "Required fields"
+
+#: /views/projects/add.ctp:4
+msgid "New project"
+msgstr "New project"
+
+#: /views/projects/add.ctp:7
+#: /views/projects/edit.ctp:12
+msgid "Save"
+msgstr "Save"
+
+#: /views/projects/deploy.ctp:7
+msgid "Subversion export"
+msgstr "Subversion export"
+
+#: /views/projects/deploy.ctp:8
+msgid "Revision"
+msgstr "Revision"
+
+#: /views/projects/deploy.ctp:11
+msgid "Specify SVN login"
+msgstr "Specify SVN login"
+
+#: /views/projects/deploy.ctp:13
+msgid "User"
+msgstr "User"
+
+#: /views/projects/deploy.ctp:23
+msgid "Step 1 - svn export"
+msgstr "Step 1 - svn export"
+
+#: /views/projects/deploy.ctp:31
+msgid "Synchronizing with production server"
+msgstr "Synchronizing with production server"
+
+#: /views/projects/deploy.ctp:33
+msgid "Rsync simulation"
+msgstr "Rsync simulation"
+
+#: /views/projects/deploy.ctp:37
+msgid "Backup"
+msgstr "Backup"
+
+#: /views/projects/deploy.ctp:45
+msgid "Step 2 - synchronization"
+msgstr "Step 2 - synchronization"
+
+#: /views/projects/deploy.ctp:54
+msgid "Finalization of deployment"
+msgstr "Finalization of deployment"
+
+#: /views/projects/deploy.ctp:62
+msgid "Adjusting modes"
+msgstr "Adjusting modes"
+
+#: /views/projects/deploy.ctp:66
+msgid "Writing mode"
+msgstr "Writing mode"
+
+#: /views/projects/deploy.ctp:73
+msgid "Step 3 - finalization"
+msgstr "Step 3 - finalization"
+
+#: /views/projects/edit.ctp:5
+msgid "Edit project"
+msgstr "Edit project"
+
+#: /views/projects/index.ctp:14
+msgid "Target"
+msgstr "Target"
+
+#: /views/projects/view.ctp:7
+msgid "Project details"
+msgstr "Project details"
+
+#: /views/projects/view.ctp:10;10;10;92;106
+msgid "Deploy"
+msgstr "Deploy"
+
+#: /views/projects/view.ctp:29;29;29
+msgid "Open in log viewer"
+msgstr "Open in log viewer"
+
+#: /views/projects/view.ctp:34;34;34
+msgid "History"
+msgstr "History"
+
+#: /views/projects/view.ctp:39;39;39
+msgid "Edit"
+msgstr "Edit"
+
+#: /views/projects/view.ctp:44;44;44
+msgid "Delete"
+msgstr "Delete"
+
+#: /views/projects/view.ctp:47
+msgid "Are you sure you want to delete"
+msgstr "Are you sure you want to delete"
+
+#: /views/projects/view.ctp:56
+msgid "Id"
+msgstr "Id"
+
+#: /views/projects/view.ctp:71
+msgid "Project absolute path"
+msgstr "Project absolute path"
+
+#: /views/projects/view.ctp:81
+msgid "Log pathes"
+msgstr "Log pathes"
+
+#: /views/projects/view.ctp:95
+msgid "Fast deploy"
+msgstr "Fast deploy"
+
+#: /views/projects/view.ctp:107
+msgid "Modified on"
+msgstr "Modified on"
+
+#: /webroot/test.php:75
+msgid "Debug setting does not allow access to this url."
+msgstr "Debug setting does not allow access to this url."
+

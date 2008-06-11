@@ -44,6 +44,12 @@ class AppController extends Controller {
 			'Javascript'
 			);
 			
+	function beforeFilter() {
+		uses('L10n');
+		$this->L10n = new L10n();
+		$this->L10n->__setLanguage(); //get('en');
+	}
+			
 	function beforeRender() {
 		$this->set('referer', $this->referer());
 		//disable cache due to a proxy issue
