@@ -392,21 +392,21 @@ class Deployment extends AppModel {
 		
 		// Rename file type from .prd.xxx into .xxx
 		if ($options['renamePrdFile'] === true) {
-			$command = $prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.prd.*' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -vf 's/\.prd\./\./i' {} \;".$suffix;
-			$output .= $this->executeCommand($command, __('Rename files') . '.prd.', 'finalize', _DEPLOYDIR);
+			$command = "find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.prd.*' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -vf 's/\.prd\./\./i' {} \;";
+			$output .= $this->executeCommand($command, __('Rename files', true) . '.prd.', 'finalize', _DEPLOYDIR);
 		}
 
 		// Change file mode
 		// TODO Rewrite code (Too slow) 
 		if ($options['changeFileMode'] === true) {
 			$command = "chmod -R " ._FILEMODE . "  ".$this->_pathConverter($project['Project']['prd_path']);
-			$output .= $this->executeCommand($command, __('updating files modes') . ' > ' . _FILEMODE, 'finalize', _DEPLOYDIR);
+			$output .= $this->executeCommand($command, __('updating files modes', true) . ' > ' . _FILEMODE, 'finalize', _DEPLOYDIR);
 						
 			$command = "chmod " ._DIRMODE . "  ".$this->_pathConverter($project['Project']['prd_path']);
-			$output .= $this->executeCommand($command, __('updating dir mode') . '1/2 > ' . _DIRMODE, 'finalize', _DEPLOYDIR);
+			$output .= $this->executeCommand($command, __('updating dir mode', true) . '1/2 > ' . _DIRMODE, 'finalize', _DEPLOYDIR);
 						
-			$command = $prefix."find " . $this->_pathConverter($project['Project']['prd_path']) . " -type d -exec chmod " . _DIRMODE . " {} \;".$suffix;
-			$output .= $this->executeCommand($command, __('updating dir mode') . '2/2 > ' . _DIRMODE, 'finalize');
+			$command = "find " . $this->_pathConverter($project['Project']['prd_path']) . " -type d -exec chmod " . _DIRMODE . " {} \;";
+			$output .= $this->executeCommand($command, __('updating dir mode', true) . '2/2 > ' . _DIRMODE, 'finalize');
 		}
 		
 		// Change directory mode

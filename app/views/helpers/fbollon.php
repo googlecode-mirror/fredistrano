@@ -102,12 +102,13 @@ class FbollonHelper extends Helper {
 	function helpButton ($divId){
 		return "<a href=\"#\" onclick=\"Element.toggle('$divId'); return false;\">".$this->Html->image('help.png', array (
 			'alt' => 'Afficher/masquer l\'aide',
-			'title' => 'Afficher/masquer l\'aide'
+			'title' => 'Afficher/masquer l\'aide',
+			'style' => 'float:right;margin:15px 0px'
 			))."</a>";
 	}
 
 	function displayHelp ($divId, $helpStr){
-		return "<p class=\"error_message\" id=\"".$divId."\" style=\"display:none\">".$helpStr."</p>";
+		return "<p class=\"error_message\" id=\"".$divId."\" style=\"display:none;float:right;margin:15px 0px\">".$helpStr."</p>";
 	}
 
 	

@@ -153,7 +153,17 @@ class DeploymentsController extends AppController {
 		$deploymentUuid = md5( 'YLB:'.$id .':'.time() ); 
 
 		// Run step	
-		$output = $this->Deployment->runProcess($this->data['Project']['id'], $deploymentUuid);
+		$output = $this->Deployment->runProcess(
+												$this->data['Project']['id'], 
+												$deploymentUuid, 
+												array(
+													'backup'			=>	false,
+													'simulation' 		=> 	false,
+													'renamePrdFile' 	=> 	true,
+													'changeFileMode' 	=> 	true,
+													'giveWriteMode'		=> 	true
+													)
+												);
 
 		// Process output
 		if ( $output === false ) {

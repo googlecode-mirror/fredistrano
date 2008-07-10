@@ -1,0 +1,28 @@
+-= database migration =-
+
+
+
+depuis la console cake /Users/fred/Sites/dev/fredistrano_12/cake/console :
+
+
+sh cake -app /Users/fred/Sites/dev/fredistrano_12/app schema_fredistrano generate
+
+
+
+supprimer une table
+créer une table
+modifier un champ
+ajouter un champ
+
+
+
+pendant le déploiement
+
+create pas de drop, update de celles qui existaient 
+donc create+update avec option par défaut sans intéraction
+possibilité de dump dans /files/backup commande shell mysqldump 
+
+run update = modif entre les tables et schema.php
+
+
+
