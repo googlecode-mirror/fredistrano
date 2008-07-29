@@ -1,24 +1,21 @@
-<hr>
+<hr />
 <div class="pagination">
-	<?php
-	    if ($pagination->setPaging($paging)):
-	    // $leftArrow = $html->image('nav/arrowleft.gif', Array('height' => 15));
-	    // $rightArrow = $html->image('nav/arrowright.gif', Array('height' => 15));
-
-		$leftArrow = "<strong>".LANG_PREVIOUS."</strong>";
-	    $rightArrow = "<strong>".LANG_NEXT."</strong>";
-
-	    $prev = $pagination->prevPage($leftArrow, false);
-	    $prev = $prev?$prev:$leftArrow;
-	    $next = $pagination->nextPage($rightArrow, false);
-	    $next = $next?$next:$rightArrow;
-
-	    $pages = $pagination->pageNumbers(' ');
-	    
-	    echo '<div class="pagin_nav">'.$prev.' '.$pages.' '.$next.'</div>';
-	    echo '<div class="pagin_datas">' . $pagination->result('Results: ',' of ') . '&nbsp;&nbsp;&nbsp;&nbsp;'
-	    	. LANG_NUMBERPERPAGE.' : ' . $pagination->resultsPerPage(NULL, ' ') . '</div>';
-    endif;
-	?>
+		<div id="spinner" style="display:none;float:right;margin:0 10px;">
+			<?php echo $html->image('loading_orange.gif'); ?>
+		</div>
+		<?php
+		$paginator->options(array('update' => 'content', 'indicator' => 'spinner'));
+   		echo $paginator->prev(__('« Previous ', true), null, null, array('class' => 'disabled'));
+	   	echo $paginator->numbers(array('separator' => ' '));
+	   	echo $paginator->next(__(' Next »', true), null, null, array('class' => 'disabled'));
+		echo '<br /><p><em>';
+		echo $paginator->counter(array(
+									'format' => __('Page %page% of %pages%, showing %current% records out of 
+									%count% total', true)
+									));
+		echo '</em></p>';
+		//exemple d'affichage possible :							
+		//'format' => 'Page %page% of %pages%, showing %current% records out of %count% total, starting on record %start%, ending on %end%'
+	   ?>
+	
 </div>
-

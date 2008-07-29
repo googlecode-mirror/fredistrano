@@ -1,5 +1,4 @@
 <?php
-	
 	// Version
 	define("_VERSION",				'0.4.0');		
 	define("_RELEASEDATE",			'XX/XX/2008');

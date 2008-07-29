@@ -171,14 +171,23 @@ hr {margin: 1em 0;background:#f2f2f2;height:1px;color:#f2f2f2;border:none;clear:
 	.pagination * {margin:0}
 	.pagination h4 {margin-top:-1.45em;padding:0;border:none}*/
 
-	.pagination {background: #f2f2f2;color:#666;padding: 4px 2px 4px 7px;border: 1px solid #ddd;margin: 0 0 1.5em}
+/*	.pagination {background: #f2f2f2;color:#666;padding: 4px 2px 4px 7px;border: 1px solid #ddd;margin: 0 0 1.5em}
 	.pagination div.pagin_nav a:link, .pagination div.pagin_nav a:visited, .pagination div.pagin_nav a:hover, .pagination div.pagin_nav a:active {text-decoration:none;background:#fff;padding:2px 5px;border: 1px solid #ccc}
 	.pagination div.pagin_nav a:hover {background:#FF6100;color:#fff;}
 	.pagination div.pagin_nav span {text-decoration:none;background:#fff;padding:2px 5px;border: 1px solid #ccc;color:#ccc}
 	.pagination * {margin:0}
 	.pagination h4 {margin-top:-1.45em;padding:0;border:none}
 	.pagination div.pagin_nav {float: right;}
-	.pagination div.pagin_nav {position: relative; text-align: right;}
+	.pagination div.pagin_nav {position: relative; text-align: right;}*/
+	
+	.pagination {width: 100%; font-size: 90%;background: #f2f2f2;color:#666;padding: 8px 2px 4px 5px;border: 1px solid #ddd;margin: 0 0 1.5em}
+	.pagination a:link, .pagination a:visited, .pagination a:hover, .pagination a:active {text-decoration:none;background:#fff;padding:2px 4px;margin:1px;border: 1px solid #ccc}
+	.pagination a:hover {background:#FF6100;color:#fff;}
+	.pagination * {margin:0}
+	.pagination h4 {margin-top:-1.45em;padding:0;border:none}
+	.pagination {float: left;}
+	.pagination {position: relative; text-align: left;} 
+	.pagination p {font-size:80%;padding: 6px 0px 0px 20px;}	
 
 	#resultslist-wrap {margin: 0 0 1.5em;font-size:92%}
 	#resultslist-wrap dt, #resultslist-wrap dl {margin: 0}

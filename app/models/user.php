@@ -10,23 +10,15 @@ class User extends AppModel {
 //		)
 //	);
 
+	var $displayField = 'login';
+	
 	var $hasAndBelongsToMany = array (
 		'Group' => array (
 			'className' => 'Group',
 			'joinTable' => 'groups_users',
 			'foreignKey' => 'user_id',
-			'associationForeignKey' => 'group_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'unique' => '',
-			'finderQuery' => '',
-			'deleteQuery' => '',
-			'insertQuery' => ''
-		),
-		
+			'associationForeignKey' => 'group_id'
+		)
 	);
 
 	function beforeSave() {

@@ -1,9 +1,26 @@
-<?php echo $form->labelTag('Group/name', '<b>'.LANG_NAME.'<span class="req">*</span></b>') ?>
-<?php echo $html->input('Group/name', array('size' => '60', 'class' => 'f-name')) ?>
-<?php echo $error->showMessage('Group/name') ?>
-	
-<?php echo $html->hidden('Group/id') ?>
+<?php
+	$nameErrorMessage = null;
+	if (isset($this->validationErrors['Group']) && isset($this->validationErrors['Group']['name'])) {
+		($this->validationErrors['Group']['name'] == 'rule1')?
+			$nameErrorMessage = __('The name field is required', true):
+			$nameErrorMessage = __('This name is already used', true);
+	}
+?>
 
-<?php echo $form->labelTag('Group/parent_id', '<b>'.LANG_PARENT.'</b>');?>
-<?php echo $html->selectTag('Group/parent_id', $groups);?>
-<?php echo $error->showMessage('Group/parent_id') ?>
+<?php echo $form->input('name', array( 
+								'label' => '<b>' . __('Name', true). '<span class="req">*</span></b>',
+								'size' => '60',
+								'class' => 'f-name',
+								'error' => $nameErrorMessage
+								));
+?>
+	
+<?php echo $form->hidden('id') ?>
+
+<?php echo $form->input('parent_id', array(
+									'options' => $groups, 
+									'label' => '<b>' . __('Parent', true). '</b>',
+									'empty' => '--',
+									'class' => 'f-name'
+									)); ?>
+
