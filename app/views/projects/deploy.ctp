@@ -69,8 +69,8 @@
 	
 <div id="step2" style="display:none">
 	<?php echo $form->create('Project', array('url' => '/deployments/synchronize', 'method' => 'post', 'class' => 'f-wrap-1'));?>
-				<h3><?php __('Synchronizing with production server');?></h3>
-				<fieldset class="f-name">
+	<fieldset>
+			<h3><?php __('Synchronizing with production server');?></h3>
 					<label for="ProjectSimulation"><b><?php __('Rsync simulation');?></b>
 						<?php e($form->checkbox(
 											'Project.simulation',  
@@ -108,7 +108,6 @@
 								);?>
 				 		
 						<?php e($form->hidden('Project.id', array('value' => $id)))?>
-				</fieldset>
 				
 				<div class="f-submit-wrap">
 					<?php e($ajax->submit(__('Step 2 - synchronization', true), 
@@ -124,6 +123,7 @@
 							);?>
 					<?php e($html->image('loading_orange.gif', array('alt' => 'Loading...', 'id'=>'spinning_image2','style'=>'display:none'))); ?>
 				</div>
+			</fieldset>
 	<?php echo $form->end();?>
 </div>
 

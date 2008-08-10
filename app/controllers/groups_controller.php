@@ -177,9 +177,6 @@ class GroupsController extends AppController {
 			$this->set('group', $group);
 			$this->set('personList',$personList);
 			$this->set('members', $members);
-			
-			// debug($personList);
-			// debug($members);
 				
 		}else {
 			if ($this->Group->updateMembership($this->data)){

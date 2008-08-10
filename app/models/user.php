@@ -10,7 +10,7 @@ class User extends AppModel {
 //		)
 //	);
 
-	var $displayField = 'login';
+	// var $displayField = 'login';
 	
 	var $hasAndBelongsToMany = array (
 		'Group' => array (

@@ -109,7 +109,7 @@
 										);
 				?>
 				<?php e($fbollon->helpButton('normal_deploy')) ?>
-				<?php e($fbollon->displayHelp ('normal_deploy', __('Use the deploy button to deploy step by step', true))) ?>
+				<?php //e($fbollon->displayHelp ('normal_deploy', __('Use the deploy button to deploy step by step', true))) ?>
 				
 				<?php 
 				// TODO Demander une confirmation + affichage
@@ -136,7 +136,9 @@
 						) ?>
 <!-- </div> -->
 </form>
-
+<div>
+<?php e($fbollon->displayHelp ('normal_deploy', __('Use the deploy button to deploy step by step', true))) ?>
+</div>
 </td>
 </tr>
 

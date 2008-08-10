@@ -17,8 +17,8 @@ if ( env('HTTPS') || (!env('HTTPS') && (Configure::read('Security.https') == 0))
 
 	    <fieldset>
 		    <!--<h6><?php __('Identification');?></h6>-->
-		    <?php echo $form->input('login', array('label' => __('Username', true), 'size' => 15, 'class' => 'f-name'));?>
-		    <?php echo $form->password('password', array('label' => __('Password', false), 'size' => 15, 'class' => 'f-name'));?>
+		    <?php echo $form->input('login', array('label' => __('Username', true), 'size' => 20, 'class' => 'f-name'));?>
+		    <?php echo $form->password('password', array('label' => __('Password', false), 'size' => 20, 'class' => 'f-name'));?>
 		    <?php echo $form->submit('login', array('class' => 'f-submit', 'label' => __('Login', true))) ?>
 		</fieldset>
 	<?php echo $form->end();?>

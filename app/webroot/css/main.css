@@ -49,7 +49,7 @@ label br {clear:left}
 		form.f-wrap-1 label select {width: 15.5em}
 		form.f-wrap-1 label textarea.f-comments {width: 20em}
 		form.f-wrap-1 div.f-submit-wrap {padding: 5px 0 5px 8em}
-		form.f-wrap-1 input.f-submit {margin: 0 0 0 10px}
+		form.f-wrap-1 input.f-submit {margin:25px 45px 20px;}
 
 		form.f-wrap-1 fieldset.f-checkbox-wrap, form.f-wrap-1 fieldset.f-radio-wrap {clear:left;float:left;width:32em;border:none;margin:0;padding-bottom:.7em}
 		form.f-wrap-1 fieldset.f-checkbox-wrap b, form.f-wrap-1 fieldset.f-radio-wrap b {float:left;width:8em;line-height: 1.7;display:block;position:relative;padding-top:.3em}
