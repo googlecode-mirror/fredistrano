@@ -106,7 +106,7 @@ class Deployment extends AppModel {
 			return false;
 		}
 		
-		$output = "\n> Performing step Finalize:\n";
+		$output .= "\n> Performing step Finalize:\n";
 		if ($shell = $this->runStep('finalize', $project_id, $uuid, $options)) {
 			$output .= $shell;
 		} else {
@@ -360,7 +360,31 @@ class Deployment extends AppModel {
 		$target = $this->_pathConverter($project['Project']['prd_path']);
 		$command = "rsync -$option --delete --exclude-from=$exclude_file_name $source $target 2>&1";	
 		$output .= $this->executeCommand($command,__('Deploying new version',true), 'synchronize', _DEPLOYDIR);
+
+		// Create files list and directories list for chmod step
+		$list = explode("\n", $output);
+		$size = count($list);
+		if ($size > 0) {
+			$files_to_chmod = _DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "files_to_chmod.txt";
+			$dir_to_chmod = _DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "dir_to_chmod.txt";
+			$handle_f = fopen($files_to_chmod, "w");
+			$handle_d = fopen($dir_to_chmod, "w");
+
+			for ($i = 4; $i < $size ; $i++) { 
+				if (empty($list[$i])) {
+					break;
+				}
 		
+				if (is_file($target . $list[$i])) {
+					$tmp_str = $list[$i];
+					fwrite($handle_f, $target.$list[$i] . "\n");
+				} else {
+					fwrite($handle_d, $target.$list[$i] . "\n");
+				}
+			}
+			fclose($handle_f);
+			fclose($handle_d);
+		}
 		return $output;
 	}// synchronize
 
@@ -383,31 +407,70 @@ class Deployment extends AppModel {
 			
 		// Define step options
 		$default_options = array(
-			'renamePrdFile' 	=> 	false,
-			'changeFileMode' 	=> 	false,
-			'giveWriteMode'		=> 	false
+			'renamePrdFile' 		=> 	false,
+			'changeFileMode' 		=> 	false,
+			'giveWriteMode'			=> 	false,
+			'modifiedFileOnly'		=> 	false
+			
 		);
 		$options = array_merge($default_options, $options);
 		$output = '';
 		
 		// Rename file type from .prd.xxx into .xxx
-		if ($options['renamePrdFile'] === true) {
+		if ($options['renamePrdFile'] === true) {			
 			$command = "find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.prd.*' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -vf 's/\.prd\./\./i' {} \;";
 			$output .= $this->executeCommand($command, __('Rename files', true) . '.prd.', 'finalize', _DEPLOYDIR);
 		}
 
 		// Change file mode
-		// TODO Rewrite code (Too slow) 
-		if ($options['changeFileMode'] === true) {
-			$command = "chmod -R " ._FILEMODE . "  ".$this->_pathConverter($project['Project']['prd_path']);
-			$output .= $this->executeCommand($command, __('updating files modes', true) . ' > ' . _FILEMODE, 'finalize', _DEPLOYDIR);
+
+		if ($options['changeFileMode'] === true) {			
+			
+			// change file mode only for modified files
+			if ($options['modifiedFileOnly'] === true) {
+				$path = _DEPLOYTMPDIR . DS . $project['Project']['name'] . DS;
+				$command = "chmod " ._FILEMODE . "  $(<". $path . "files_to_chmod.txt)";
+				$output .= $this->executeCommand(
+											$command, 
+											__('updating files modes', true) . ' > ' . htmlspecialchars($command), 
+											'finalize', 
+											_DEPLOYDIR
+											);
+				
+				$command = "chmod " ._DIRMODE . "  $(<". $path . "dir_to_chmod.txt)";
+				$output .= $this->executeCommand(
+											$command, 
+											__('updating dir mode', true) . ' > ' . htmlspecialchars($command), 
+											'finalize', 
+											_DEPLOYDIR
+											);
+			
+			// change file mode on all the project files
+			} else {
+				$command = "chmod -R " ._FILEMODE . "  ".$this->_pathConverter($project['Project']['prd_path']);
+				$output .= $this->executeCommand(
+											$command, 
+											__('updating files modes', true) . ' > ' . _FILEMODE, 
+											'finalize', 
+											_DEPLOYDIR
+											);
 						
-			$command = "chmod " ._DIRMODE . "  ".$this->_pathConverter($project['Project']['prd_path']);
-			$output .= $this->executeCommand($command, __('updating dir mode', true) . '1/2 > ' . _DIRMODE, 'finalize', _DEPLOYDIR);
+				$command = "chmod " ._DIRMODE . "  ".$this->_pathConverter($project['Project']['prd_path']);
+				$output .= $this->executeCommand(
+											$command, 
+											__('updating dir mode', true) . '1/2 > ' . _DIRMODE, 
+											'finalize', 
+											_DEPLOYDIR
+											);
 						
-			$command = "find " . $this->_pathConverter($project['Project']['prd_path']) . " -type d -exec chmod " . _DIRMODE . " {} \;";
-			$output .= $this->executeCommand($command, __('updating dir mode', true) . '2/2 > ' . _DIRMODE, 'finalize');
+				$command = "find " . $this->_pathConverter($project['Project']['prd_path']) . " -type d -exec chmod " . _DIRMODE . " {} \;";
+				$output .= $this->executeCommand($command, __('updating dir mode', true) . '2/2 > ' . _DIRMODE, 'finalize');
+			}
+			
+			
+		
 		}
+		
 		
 		// Change directory mode
 		// TODO Rewrite code (Too slow) 

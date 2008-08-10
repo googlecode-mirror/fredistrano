@@ -122,10 +122,10 @@ class DeploymentsController extends AppController {
 						
 		// Define options
 		$options = array();
-		$options['renamePrdFile'] 	= 	($this->data['Project']['RenamePrdFile'] == 1);
-		$options['changeFileMode'] 	= 	($this->data['Project']['ChangeFileMode'] == 1);
-		$options['giveWriteMode'] 	= 	($this->data['Project']['GiveWriteMode'] == 1);
-			
+		$options['renamePrdFile'] 		= 	($this->data['Project']['RenamePrdFile'] == 1);
+		$options['changeFileMode'] 		= 	($this->data['Project']['ChangeFileMode'] == 1);
+		$options['giveWriteMode'] 		= 	($this->data['Project']['GiveWriteMode'] == 1);
+		$options['modifiedFileOnly'] 	= 	($this->data['Project']['ModifiedFileOnly'] == 1);
 		// Run step	
 		$output = $this->Deployment->runStep('finalize', $this->data['Project']['id'], $uuid, $options);
 
@@ -160,7 +160,8 @@ class DeploymentsController extends AppController {
 													'simulation' 		=> 	false,
 													'renamePrdFile' 	=> 	true,
 													'changeFileMode' 	=> 	true,
-													'giveWriteMode'		=> 	true
+													'giveWriteMode'		=> 	true,
+													'modifiedFileOnly'	=>	true
 													)
 												);
 

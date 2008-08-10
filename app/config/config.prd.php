@@ -68,9 +68,10 @@
 	define("_TIMELIMIT_INITIALIZE", 5 * 60);					//max execution time before deploy
 
 	// Default finalize options
-	define("_RENAMEPRDFILE", 		true);						//rename ".prd." file
-	define("_CHANGEMODE", 			true);						//change file and directory mode 
-	define("_GIVEWRITEMODE", 		true);						//give write access on directories define in deploy.php in $writable
+	define("_RENAMEPRDFILE", 			true);			//rename ".prd." file
+	define("_CHANGEMODE", 				true);			//change file and directory mode 
+	define("_GIVEWRITEMODE", 			true);			//give write access on directories define in deploy.php in $writable
+	define("_CHANGEMODEMODIFIEDONLY", 	true);			//change file and directory mode only for modified file and dir
 
 	// Default permissions
 	define("_DIRMODE", 				'755');						//directories mode after deployment 

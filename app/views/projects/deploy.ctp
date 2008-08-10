@@ -159,6 +159,18 @@
 								);	?>
 					<br />
 					</label>
+					<label for="ChangeFileMode"><b><?php __('Restrict adjusting modes to modified files only');?></b>
+						<?php e($form->checkbox('Project.ModifiedFileOnly',  
+												array(
+													'class' => 'f-checkbox', 
+													'type' => 'checkbox',
+													(_CHANGEMODEMODIFIEDONLY === true)?"'checked' => 'checked'":null, 
+													'value' => true
+													)
+												)
+								);	?>
+					<br />
+					</label>
 					<label for="GiveWriteMode"><b><?php __('Writing mode');?></b>
 						<?php e($form->checkbox('Project.GiveWriteMode', 
 												array(
