@@ -43,11 +43,13 @@ class AppController extends Controller {
 			'Form',
 			'Javascript'
 			);
-			
+
+	// var $components = array ('Aclite');
+				
 	function beforeFilter() {
 		uses('L10n');
 		$this->L10n = new L10n();
-		$this->L10n->__setLanguage('en'); //get('en');
+		$this->L10n->get('fr'); //get('en');
 	}
 			
 	function beforeRender() {

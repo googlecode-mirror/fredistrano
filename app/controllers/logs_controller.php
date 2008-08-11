@@ -56,11 +56,9 @@ class LogsController extends AppController {
 			if ( $output === false ) {
 				die();
 			}
-
 			$this->set('project', 	$this->Project->read(null, $this->data['Search']['project_id']));
 			$this->set('log',	 	$output);
 			$this->set('size', 		$this->Project->lastReadSize); 
-			$this->set('logPath', 	$project['Project']['log_path']);		
 		} else {
 			die();
 		}
