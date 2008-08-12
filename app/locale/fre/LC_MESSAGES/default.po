@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: fredsitrano\n"
-"POT-Creation-Date: 2008-08-11 13:41+0200\n"
+"POT-Creation-Date: 2008-08-12 02:49+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Frédéric BOLLON <contact@fbollon.net>\n"
 "Language-Team: fbollon.net\n"
@@ -165,21 +165,54 @@ msgstr "n'existe pas"
 msgid "No command supplied"
 msgstr "Pas de commande fournie"
 
+#: /views/administration/index.ctp:1
+#: /views/elements/menu.ctp:5
+msgid "Administration"
+msgstr "Administration"
+
+#: /views/administration/index.ctp:2
+msgid "Use the links provided on this page to configure Fredistrano."
+msgstr "Utilisez les liens sur cette page pour configurer Fredistrano"
+
+#: /views/administration/index.ctp:3
+msgid "Authorization management"
+msgstr "Gestion des authorisations"
+
+#: /views/administration/index.ctp:4
+msgid "To adapt Fredistrano to your needs, simply create new users and add them to the predefined groups (REGULAR, PREMIUM, ADMIN)."
+msgstr "Pour adapter Fredistrano à vos besoins, créer des nouveaux utilisateurs et ajouter les aux groupes prédéfinis (REGULAR, PREMIUM, ADMIN)."
+
 #: /views/administration/index.ctp:6
 msgid "Users"
 msgstr "Utilisateurs"
+
+#: /views/administration/index.ctp:6
+msgid "manage users and group memberships"
+msgstr "Gérer les utilisateurs et leur appartenance aux groupes"
 
 #: /views/administration/index.ctp:7
 msgid "Groups"
 msgstr "Groupes"
 
+#: /views/administration/index.ctp:7
+msgid "manage groups (for advanced users)"
+msgstr "gestion des groupes (pour utilisateurs avancés)"
+
 #: /views/administration/index.ctp:8
 msgid "Authorizations"
 msgstr "Authorisations"
 
+#: /views/administration/index.ctp:8
+msgid "manage permissions (for advanced users)"
+msgstr "gestion des permissions (pour utilisateurs avancés)"
+
 #: /views/administration/index.ctp:9
 msgid "Control objects"
 msgstr "Objets de contrôle"
+
+#: /views/administration/index.ctp:9
+msgid "manage control objects (for developers only)"
+msgstr "gestion des objets de contrôle (pour développeur uniquement)"
 
 #: /views/deployment_logs/view.ctp:21
 msgid "Related project"
@@ -281,11 +314,8 @@ msgstr "Projets"
 msgid "Logs"
 msgstr "Logs"
 
-#: /views/elements/menu.ctp:5
-msgid "Administration"
-msgstr "Administration"
-
 #: /views/elements/menu.ctp:6
+#: /views/pages/help.ctp:1
 msgid "Help"
 msgstr "Aide"
 
@@ -386,6 +416,34 @@ msgstr "Liste des membres du groupe"
 msgid "Manage group members"
 msgstr "Gérer les membres du groupe"
 
+#: /views/home/index.ctp:1
+msgid "Welcome to Fredistrano"
+msgstr "Bienvenue dans Fredistrano"
+
+#: /views/home/index.ctp:2
+msgid "Use Fredistrano to deploy your web applications."
+msgstr "Utiliser Fredistrano pour déployer vos applications web."
+
+#: /views/home/index.ctp:8
+msgid "Access an existing project: "
+msgstr "Accéder à un projet existant:"
+
+#: /views/home/index.ctp:17
+msgid "Create a new project"
+msgstr "Créer un nouveau projet"
+
+#: /views/home/index.ctp:23
+msgid "Deployment history (10 last)"
+msgstr "Historique de déploiement (10 derniers)"
+
+#: /views/home/index.ctp:27
+msgid "No logs in database"
+msgstr "Pas de log dans la base de données"
+
+#: /views/home/index.ctp:31
+msgid "Deployment of"
+msgstr "Déploiement de"
+
 #: /views/layouts/default.ctp:66
 msgid "Welcome"
 msgstr "Bienvenue"
@@ -414,9 +472,61 @@ msgstr "Inverser l'ordre"
 msgid "Max load size (in bytes)"
 msgstr "Taille maxi à charger (en bytes)"
 
+#: /views/pages/help.ctp:2
+msgid "Version"
+msgstr "Version"
+
+#: /views/pages/help.ctp:4
+msgid "Check for news and updates about Fredistrano on its"
+msgstr "Consulter les dernières nouvelles et mise à jour de Fredistrano sur sa"
+
+#: /views/pages/help.ctp:6
+msgid "Support"
+msgstr "Support"
+
+#: /views/pages/help.ctp:8
+msgid "Documentation"
+msgstr "Documentation"
+
 #: /views/pages/help.ctp:8
 msgid "Fredistrano-documentation-EN.pdf"
 msgstr "Fredistrano-documentation-EN.pdf"
+
+#: /views/pages/help.ctp:9
+msgid "Knoweldge base"
+msgstr "Base de connaissance"
+
+#: /views/pages/help.ctp:9
+msgid "with detailled installation instructions, FAQS and solutions to common problems"
+msgstr "avec les instructions d'installation détaillées, FAQS et les solutions aux problèmes courants"
+
+#: /views/pages/help.ctp:10
+msgid "Share your experience and problems directly on the"
+msgstr "Partagez votre expèrience et vos problèmes directement sur le"
+
+#: /views/pages/help.ctp:11
+msgid "Report"
+msgstr "Rapporter"
+
+#: /views/pages/help.ctp:11
+msgid "bugs and enhancements"
+msgstr "bugs et améliorations"
+
+#: /views/pages/help.ctp:11
+msgid "to the development team"
+msgstr "à l'équipe de développement"
+
+#: /views/pages/help.ctp:14
+msgid "Developpement team"
+msgstr "Equipe de développement"
+
+#: /views/pages/help.ctp:21
+msgid "Acknowledgments"
+msgstr "Remerciements"
+
+#: /views/pages/help.ctp:22
+msgid "And finally, thank you, fredistrano users, for using this application to deploy your source code."
+msgstr "Et finallement, merci, aux utilisateurs de Fredistrano, pour utiliser cette application pour déployer leur code source."
 
 #: /views/projects/add.ctp:4
 msgid "New project"
