@@ -3,6 +3,8 @@ class UsersController extends AppController {
 
 	var $name = 'Users';
 
+	var $uses = array ('User', 'Group');	
+
 	var $helpers = array ();
 
 	var $components = array ();
@@ -14,32 +16,37 @@ class UsersController extends AppController {
 			'logout'=> array('public')
 		)
 	);
+	
+	var $paginate = array(
+		'limit' => 10,
+		'format' => 'pages'
+	);
+	
 
 	function beforeRender() {
 		parent::beforeRender();
 		// Tableau de liens pour la création du menu contextuel
 		$tab[] = array('text' => 'Actions');
 		if ($this->action != 'index' && $this->action != 'change_password')
-			$tab[] = array('text' => __('User list'), 'link' => '/users/index');
+			$tab[] = array('text' => __('User list', true), 'link' => '/users/index');
 		if ($this->action != 'add' && $this->action != 'change_password')
-			$tab[] = array('text' => __('Add user'), 'link' => '/users/add');
+			$tab[] = array('text' => __('Add user', true), 'link' => '/users/add');
+			
+		$tab[] = array('text' => __('Manage groups', true), 'link' => '/groups/index');
 
 		if (sizeof($tab)< 2)
-			$tab = array();
+				$tab = array();
 		$this->set("context_menu", $tab);
 	}
 
 	function index() {
-		$criteria = NULL;
-		list ($order, $limit, $page) = $this->Pagination->init($criteria);
-		$data = $this->User->findAll($criteria, NULL, $order, $limit, $page);
-		$this->User->_formatAll($data);
-		$this->set('data', $data);
+		$data = $this->paginate('User');
+		$this->set(compact('data'));
 	}
 
 	function view($id = null) {
 		if (!$id or !$this->User->read(null, $id)) {
-			$this->Session->setFlash(LANG_INVALIDID);
+			$this->Session->setFlash(__('Invalid id.', true));
 			$this->redirect('/users/index');
 			exit;
 		}
@@ -50,18 +57,17 @@ class UsersController extends AppController {
 
 	function add() {
 		if (empty ($this->data)) {
-			$this->set('groups', $this->User->Group->generateList());
+			$this->set('groups', $this->Group->find('list'));
 			$this->set('selectedGroups', null);
 			$this->render();
 		} else {
-			$this->cleanUpFields();
 			if ($this->User->save($this->data)) {
 				$this->Aclite->reloadsAcls('Aro');
-				$this->Session->setFlash(LANG_USERCREATED);
+				$this->Session->setFlash(__('The user has been created', true));
 				$this->redirect('/users/index');
 			} else {
-				$this->Session->setFlash(LANG_CORRECTERRORSBELOW);
-				$this->set('groups', $this->User->Group->generateList());
+				$this->Session->setFlash(__('Please correct errors below.', true));
+				$this->set('groups', $this->Group->find('list'));
 				if (empty ($this->data['Group']['Group'])) {
 					$this->data['Group']['Group'] = null;
 				}
@@ -73,25 +79,23 @@ class UsersController extends AppController {
 	function edit($id = null) {
 		if (empty ($this->data)) {
 			if (!$id or !$this->User->read(null, $id)) {
-				$this->Session->setFlash(LANG_INVALIDID);
+				$this->Session->setFlash(__('Invalid id.', true));
 				$this->redirect('/users/index');
 				exit;
 			}
 			$this->data = $this->User->read(null, $id);
-			$this->set('groups', $this->User->Group->generateList());
+			$this->set('groups', $this->Group->find('list'));
 			if (empty ($this->data['Group'])) {
 				$this->data['Group'] = null;
 			}
-			$this->set('selectedGroups', $this->_selectedArray($this->data['Group']));
 		} else {
-			$this->cleanUpFields();
 			if ($this->User->save($this->data)) {
 				$this->Aclite->reloadsAcls('Aro');
-				$this->Session->setFlash(LANG_USERUPDATED);
+				$this->Session->setFlash(__('The user has been updated', true));
 				$this->redirect('/users/view/' . $id);
 			} else {
-				$this->Session->setFlash(LANG_CORRECTERRORSBELOW);
-				$this->set('groups', $this->User->Group->generateList());
+				$this->Session->setFlash(__('Please correct errors below.', true));
+				$this->set('groups', $this->Group->find('list'));
 				if (empty ($this->data['Group']['Group'])) {
 					$this->data['Group']['Group'] = null;
 				}
@@ -102,32 +106,38 @@ class UsersController extends AppController {
 
 	function delete($id = null) {
 		if (!$id or !$this->User->read(null, $id)) {
-			$this->Session->setFlash(LANG_INVALIDID);
+			$this->Session->setFlash(__('Invalid id.', true));
 			$this->redirect('/users/index');
 			exit;
 		}
 		if ($this->User->del($id)) {
 			$this->Aclite->reloadsAcls('Aro');
-			$this->Session->setFlash(LANG_USERDELETED);
+			$this->Session->setFlash(__('The user has been deleted', true));			
 			$this->redirect('/users/index');
 		} else {
-			$this->Session->setFlash(LANG_ERRORDURINGDELETION);
+			$this->Session->setFlash(__('Error during deletion.', true));
 			$this->redirect('/users/view/' . $id);
 		}
 	}
 
 	function change_password($id = null) {
 		
+		/*
+			TODO to be protected with aclite
+		*/
+		
 		if (!$id or !$this->User->read(null, $id)) {
-			$this->Session->setFlash(LANG_INVALIDID);
+			$this->Session->setFlash(__('Invalid id.', true));
 			$this->redirect('/users/index');
 			exit;
 		}
 		
-		if ($_SESSION['User']['id'] != $id) {
-			$this->Session->setFlash(LANG_INVALIDID);
-			$this->redirect('/');
-			exit;
+		if (!isset($_SESSION['isAdmin'])) {
+			if ($_SESSION['User']['User']['id'] != $id) {
+				$this->Session->setFlash(__('Invalid id.', true));
+				$this->redirect('/');
+				exit;
+			}
 		}
 
 		if (!empty ($this->data)) {
@@ -135,20 +145,20 @@ class UsersController extends AppController {
 
 			// le mot de passe n'est pas obligatoire donc l'ancien mdp peut être vide
 			if (empty ($this->data['User']['password']) or empty ($this->data['User']['confirm_password'])) {
-				$this->Session->setFlash(LANG_PLEASEFILLINALLFIELDS);
+				$this->Session->setFlash(__('Please fill in all fields.', true));
 			}
 			elseif (md5($this->data['User']['old_password']) != $user['User']['password']) {
-				$this->Session->setFlash(LANG_INCORRECTOLDPASSWORD);
+				$this->Session->setFlash('Incorrect old password.');
 			}
 			elseif ($this->data['User']['password'] != $this->data['User']['confirm_password']) {
-				$this->Session->setFlash(LANG_NOTENTEREDTWICETHESAMEPASSWORD);
+				$this->Session->setFlash('Not entered twice the same password');
 			} else {
 				$this->User->id = $user['User']['id'];
 				if ($this->User->saveField('password', $this->data['User']['password'], true)) {
-					$this->Session->setFlash(LANG_PASSWORDCHANGED);
+					$this->Session->setFlash(__('The password has been changed.', true));
 					$this->redirect('/users/view/' . $id);
 				} else {
-					$this->Session->setFlash(LANG_ERRORDURINGDELETION . mysql_error());
+					$this->Session->setFlash(__('Error during update : ', true) . mysql_error());
 				}
 			}
 		}
@@ -171,23 +181,29 @@ class UsersController extends AppController {
 				if ($this->_authenticate($this->data['User']['login'], $this->data['User']['password']) === true) {
 					// Authentification réussie
 					$someone = $this->User->findByLogin($this->data['User']['login']);
+					
 					$userSession['id'] = $someone['User']['id'];
 					$userSession['login'] = $someone['User']['login'];
 					if (empty ($someone['Group']))
-						$someone['Group'][0]['name'] = 'member';
-					$userSession['group'] = $someone['Group'][0]['name'];
-					$this->Session->write('user_alias', $someone['User']['login']);
-					$this->Session->write('User', $userSession);
-					$this->log($someone['User']['login'] . " - Connexion", LOG_DEBUG);
-					$this->Session->setFlash(__('Identification accepted', true));
+						$someone['Group'][] = array('name' => 'member');
+						
+					foreach ($someone['Group'] as $group) {
+							if($group['name'] == 'admin')
+								$this->Session->write('isAdmin', true);
+							if($group['name'] == 'premium')
+								$this->Session->write('isPremium', true);
+					}
 
+					$this->Session->write('User', $someone);
+					$this->log($this->data['User']['login'] . " - Connexion", LOG_DEBUG);
+					$this->Session->setFlash(__('Identification accepted', true));
 				} else {
-					//Authentification échouée
+					//Authentification failed
 					$this->Session->setFlash(__('Invalid credentials', true));
 				}
 
 			} else {
-				// L'utilisateur n'existe pas dans la base
+				// The use doesn't exist
 				$this->Session->setFlash(__('Invalid credentials', true));
 			}
 
@@ -196,7 +212,6 @@ class UsersController extends AppController {
             if (Configure::read('Security.https') == 2)
             		$tmp = preg_replace('/(http):\/\//','${1}s://',$tmp);
 		    		
-		
             $this->redirect($tmp);
             exit;		
 		}
@@ -205,9 +220,12 @@ class UsersController extends AppController {
 	function logout() {
 		$this->log($this->Session->read('User.login') . " - Déconnexion", LOG_DEBUG);
 		$this->Session->delete('User');
+		$this->Session->delete('isAdmin');
+		$this->Session->delete('isPremium');
 		$this->Session->delete('user_alias');
 		$this->Session->setFlash(__('Your are now disconnected.', true));
-		$this->redirect('/');
+		$this->redirect($this->referer());
+		exit;
 	}
 
 	/**

@@ -3,12 +3,30 @@ class User extends AppModel {
 
 	var $name = 'User';
 
-//	var $validate = array (
-//		'login' => array (
-//			array (VALID_NOT_EMPTY, LANG_PLEASEENTERALOGIN),
-//			array (array('isUnique', array('login')), LANG_LOGINALREADYUSED)
-//		)
-//	);
+	var $validate = array(
+	    'login' => array(
+	        'rule1' => array(
+	            'rule' => 'alphaNumeric',
+	            'required' => true
+	        ),
+	        'rule2' => array(
+	            'rule' => 'isUnique'
+	        )
+	    ),
+	    'password' => array(
+	        'rule1' => array(
+	            'rule' => 'alphaNumeric',
+	            'required' => true
+	        ),
+	        'rule2' => array(
+	            'rule' => array('minLength', 6)
+	        )
+	    ),
+		 'email' => array(
+		    'rule' => array('email', true),
+		  	// 'message' => 'Please supply a valid email address.'
+		    )
+	);
 
 	// var $displayField = 'login';
 	

@@ -13,7 +13,7 @@ class GroupsController extends AppController {
 		'RequestHandler'
 	);
 
-	//configuration des authorisations
+	configuration des authorisations
 	var $authLocal = array (
 		'Groups' => array (
 			'authorizations'

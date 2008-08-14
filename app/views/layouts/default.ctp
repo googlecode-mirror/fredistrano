@@ -63,8 +63,7 @@ http://creativecommons.org/licenses/GPL/2.0/
 		
 		<?php
 			if(isset($_SESSION['User'])){
-				echo "<center><p>".__('Welcome', true)." ".$_SESSION['User']['login']." ";
-				echo "<br />[ ".$html->link('Settings','/users/change_password/'.$_SESSION['User']['id'])."  -  ".$html->link('Logout','/users/logout')." ]</p></center>";
+				echo $this->renderElement('logout');
 			}else{
 				echo $this->renderElement('login'); 
 			 } ?>
@@ -85,7 +84,7 @@ http://creativecommons.org/licenses/GPL/2.0/
 				</script>
 			<?php endif; ?>
 
-			<?php if(isset($_SERVER['HTTP_REFERER'])){?>
+<!--			<?php if(isset($_SERVER['HTTP_REFERER'])){?>
 			<div id="backlink"><?php echo $html->link($html->image( 'arrow_left.png', array('alt' => __('Previous',true), 
 																							'title' => __('Previous',true))).
 																							'<span> '.__('back',true).'</span>',
@@ -94,7 +93,7 @@ http://creativecommons.org/licenses/GPL/2.0/
 				false,
 				false)?></div>
 			<?php } ?>
-
+-->
 			<?php echo $content_for_layout;	?>
 	
 			<div id="footer">

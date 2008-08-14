@@ -1,21 +1,55 @@
-<?php echo $form->labelTag('User/login', '<b>'.LANG_LOGIN.'<span class="req">*</span></b>');?>
-<?php echo $html->input('User/login', array('size' => '60', 'class' => 'f-name'));?>
-<?php echo $error->showMessage('User/login');?>
+<?php
+	$loginErrorMessage = null;
+	if (isset($this->validationErrors['User']) && isset($this->validationErrors['User']['login'])) {
+		($this->validationErrors['User']['login'] == 'rule1')?
+			$loginErrorMessage = __('The login field is required', true):
+			$loginErrorMessage = __('This login is already used', true);
+	}
+	
+	$passwordErrorMessage = null;
+	if (isset($this->validationErrors['User']) && isset($this->validationErrors['User']['password'])) {
+		($this->validationErrors['User']['password'] == 'rule1')?
+			$passwordErrorMessage = __('The password field is required', true):
+			$passwordErrorMessage = __('the password must have a minimal length of 6 characters', true);
+	}
+	
+	
+	
+?>
 
-<?php echo $form->labelTag('User/first_name', '<b>'.LANG_FIRSTNAME.'</b>');?>
-<?php echo $html->input('User/first_name', array('size' => '60', 'class' => 'f-name'));?>
-<?php echo $error->showMessage('User/first_name');?>
+<?php echo $form->hidden('id') ?>
 
-<?php echo $form->labelTag('User/last_name', '<b>'.LANG_LASTNAME.'</b>');?>
-<?php echo $html->input('User/last_name', array('size' => '60', 'class' => 'f-name'));?>
-<?php echo $error->showMessage('User/last_name');?>
-
-<?php echo $form->labelTag('User/email', '<b>'.LANG_MAIL.'</b>');?>
-<?php echo $html->input('User/email', array('size' => '60', 'class' => 'f-name'));?>
-<?php echo $error->showMessage('User/email');?>
-
-<?php echo $html->hidden('User/id')?>
-
-<?php echo $form->labelTag('Group/Group', '<b>'.LANG_ASSOCIATEDGROUPS.'</b>') ?>
-<?php echo $html->selectTag('Group/Group', $groups, $selectedGroups, array('multiple' => 'multiple', 'class' => 'f-name selectMultiple'), null, false) ?>
-<?php echo $error->showMessage('Group/Group') ?>
+<?php echo $form->input('login', array( 
+								'label' => '<b>' . __('Login', true). '<span class="req">*</span></b>',
+								'size' => '60',
+								'class' => 'f-name',
+								'error' => $loginErrorMessage
+								));
+?>
+<?php echo $form->input('first_name', array( 
+								'label' => '<b>' . __('First name', true). '</b>',
+								'size' => '60',
+								'class' => 'f-name'
+								));
+?>
+<?php echo $form->input('last_name', array( 
+								'label' => '<b>' . __('Last name', true). '</b>',
+								'size' => '60',
+								'class' => 'f-name'
+								));
+?>
+<?php echo $form->input('email', array( 
+								'label' => '<b>' . __('email', true). '<span class="req">*</span></b>',
+								'size' => '60',
+								'class' => 'f-name', 
+								'error' => __('Please supply a valid email address.', true)
+								));
+?>
+	<!-- will be removed when user management will be improved -->
+	<?php echo $form->input('password', array( 
+									'label' => '<b>' . __('Password', true). '<span class="req">*</span></b>',
+									'size' => '60',
+									'class' => 'f-name', 
+									'error' => $passwordErrorMessage
+									));
+	?>
