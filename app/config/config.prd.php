@@ -19,6 +19,16 @@
 	Configure::write('Authentication.type', 	2);
 	
 	/**
+	 * Enable  public feeds
+	 */
+	Configure::write('Feeds.enabled',			true);
+	
+	/**
+	 * Enable  public feeds
+	 */
+	Configure::write('Log.maxSize',				50000);
+	
+	/**
 	 * Is cygwin required (ex. for using Fredistrano on Windows)
 	 */
 	Configure::write('OS.type',					strtoupper(substr(PHP_OS,0,3)));
@@ -27,11 +37,6 @@
 	 * Cygwin root directory for drive
 	 */
 	Configure::write('OS.Cygwin.rootDir',		'/cygdrive/');
-	
-	/**
-	 * Enable  public feeds
-	 */
-	Configure::write('Feeds.enabled',			true);
 	
 	/**
 	 * Enabled https

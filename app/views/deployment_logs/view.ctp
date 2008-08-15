@@ -37,15 +37,13 @@
 <td>&nbsp;<?php echo nl2br($deployLog['DeploymentLog']['comment']); ?></td>
 </tr>
 
-<!-- 
-<tr>
-<th class="sub"><?php __('Unique identifier') ?></th>
-<td>&nbsp;<?php echo nl2br($deployLog['DeploymentLog']['uuid']); ?></td>
-</tr>
--->
 </tbody>
 </table>
 </div>
 <br/>
 
-<?php 	e($this->renderElement('_log_viewer')); ?>
+<?php 	
+	e($this->renderElement('_log_viewer')); 
+?>
+
+<br/>

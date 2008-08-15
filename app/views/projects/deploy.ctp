@@ -1,72 +1,68 @@
-<hr>
-<?php echo $form->create('Project', array('url' => '/deployments/export', 'method' => 'post', 'class' => 'f-wrap-1'));?>
-
-	<div class="req">
-	</div>
-		<fieldset>
-			<h3><?php __('Subversion export');?></h3>
+<hr/>
+<div id="step1">
+	<?php echo $form->create('Project', array('url' => '/deployments/export', 'method' => 'post', 'class' => 'f-wrap-1'));?>
+	<fieldset>
+		<h3><?php __('Subversion export');?></h3>
  				<?php echo $form->input('Project.revision', 
-										array(
-											'label' => '<b>'.__('Revision', true).'</b>',
-											'size' => '8', 
-											'class' => 'f-name', 
-											'tabindex=1'
-											)
-										);?>
-			 	<br />
-			
-			<small>
-				<a href="#" onclick="Effect.toggle('connectionSettings','slide',{delay: 0.5, duration: 1.5}); return false">
-					<?php __('Specify SVN login');?>
-				</a>
-			</small>
-			
-			  <div id="connectionSettings" style="display: none;">
- 					<?php echo $form->input('Project.user', 
-											array(
-												'label' => '<b>'.__('User', true).'</b>',
-												'size' => '20', 
-												'class' => 'f-name'
-												)
-											);?>
-					<br />
-			
- 					<?php echo $form->input('Project.password', 
-											array(
-												'label' => '<b>'.__('Password', true).'</b>',
-												'size' => '20', 
-												'class' => 'f-name'
-												)
-											);?>
-					<br />
-			  </div>
-			
-			<?php echo $form->hidden('Project.id', array('value' => $id))?>
-	
-			<div class="f-submit-wrap">
-				<?php echo $ajax->submit(
-										__('Step 1 - svn export', true), 
-										array(
-												'class' => 'f-submit',
-												'url' => '/deployments/export',
-												'update' => 'deploy_result', 
-												'loading' => "Element.show('spinning_image');", 
-												'complete' => "Element.show('step2');", 
-												'loaded' => "Element.hide('spinning_image');"
-												)
-											);?>
+								array(
+									'label' => '<b>'.__('Revision', true).'</b>',
+									'size' => '8', 
+									'class' => 'f-name', 
+									'tabindex=1'
+								)
+					  );
+				?>
+		<small>
+			<a href="#" onclick="Effect.toggle('connectionSettings','slide',{delay: 0.5, duration: 1.5}); return false">
+				<?php __('Specify SVN login');?>
+			</a>
+		</small>
+		<div id="connectionSettings" style="display: none;">
+ 			<?php 
+			    echo $form->input('Project.user', 
+					array(
+						'label' => '<b>'.__('User', true).'</b>',
+						'size' => '20', 
+						'class' => 'f-name'
+					)
+				);
+				echo $form->input('Project.password', 
+					array(
+						'label' => '<b>'.__('Password', true).'</b>',
+						'size' => '20', 
+						'class' => 'f-name'
+					)
+				);
+			?>
+		</div>
+		<?php echo $form->hidden('Project.id', array('value' => $id))?>
+		<div class="f-submit-wrap">
+				<?php 
+					echo $ajax->submit(
+						__('Step 1 - svn export', true), 
+						array(
+							'class' => 'f-submit',
+							'url' => '/deployments/export',
+							'update' => 'deploy_result', 
+							'loading' => "Element.show('spinning_image');", 
+							'complete' => "Element.show('step2');", 
+							'loaded' => "Element.hide('spinning_image');"
+						)
+					);
+				?>
 				<?php e($html->image('loading_orange.gif', 
-									array(
-										'alt' => 'Loading...', 
-										'id' => 'spinning_image',
-										'style' => 'display:none'
-										)
-									)
-						); ?>
-			</div>
-		</fieldset>
-<?php echo $form->end();?>
-	
+							array(
+								'alt' => 'Loading...', 
+								'id' => 'spinning_image',
+								'style' => 'display:none'
+								)
+							)
+						); 
+				?>
+		</div>
+	</fieldset>
+	<?php echo $form->end();?>
+</div>
 <div id="step2" style="display:none">
 	<?php echo $form->create('Project', array('url' => '/deployments/synchronize', 'method' => 'post', 'class' => 'f-wrap-1'));?>
 	<fieldset>
@@ -126,7 +122,6 @@
 			</fieldset>
 	<?php echo $form->end();?>
 </div>
-
 <div id="step3" style="display:none">
 	<?php echo $form->create('Project', array('url' => '/deployments/finalize', 'method' => 'post', 'class' => 'f-wrap-1'));?>
 			<fieldset>
@@ -198,8 +193,6 @@
 							);?>
 					<?php e($html->image('loading_orange.gif',array('alt' => 'Loading...', 'id'=>'spinning_image3','style'=>'display:none'))); ?>
 				</div>
-				
 			</fieldset>	
 	<?php echo $form->end();?>
 </div>
-

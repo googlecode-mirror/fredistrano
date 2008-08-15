@@ -93,13 +93,17 @@ class DeploymentLogsController extends AppController {
 			'reverse'			=>	false,
 			'logPath'			=> _DEPLOYLOGDIR.DS.$deployLog['DeploymentLog']['uuid'].'.log'
 		);
-		$output = $this->Project->readLog($deployLog['DeploymentLog']['project_id'], $options);
-		
-		$this->set('deployLog', $deployLog);
-		$this->set('project', 	$this->Project->read(null, $this->data['Search']['project_id']));
+		$output = $this->Project->readAssociatedLog($deployLog['DeploymentLog']['project_id'], $options);
+		if ( $output === false ) {
+			$this->set('error', 	$this->Project->lastReadError);
+		} else {
+			$this->set('project', 	$this->Project->read(null, $this->data['Search']['project_id']));
+			$this->set('size', 		$this->Project->lastReadSize);
+			$this->set('logPath',	$options['logPath']); 
+		}
 		$this->set('log',	 	$output);
-		$this->set('size', 		$this->Project->lastReadSize);
-		$this->set('logPath', 	$options['logPath']);
+		$this->set('deployLog', $deployLog);
+		$this->set('project', 	$this->Project->read(null, $this->data['Search']['project_id']));		
 	} // view
 
 	// Private functions ----------------------------------------------------------------------------------

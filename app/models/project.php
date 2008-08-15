@@ -34,6 +34,10 @@ class Project extends AppModel {
 //		)
 //	);
 	
+	var $lastReadSize = 0;
+
+	var $lastReadError = 0;
+
 	var $hasMany = array (
 		'DeploymentLog' => array (
 			'className' => 'DeploymentLog',
@@ -64,8 +68,7 @@ class Project extends AppModel {
 		return true;	
 	}
 
-
-	function readLog ( $projectId = null, $options = null ) {
+	function readAssociatedLog ( $projectId = null, $options = null ) {
 		if ( is_null($projectId) || !($project = $this->read(null, $projectId))){
 			return false;
 		}
@@ -73,9 +76,9 @@ class Project extends AppModel {
 		$default_options = array(
 			'reverse'			=>	false,
 			'pattern' 			=> 	null,
-			'logPath'			=> $project['Project']['log_path']
+			'logPath'			=> 	null
 		);
-		$options = array_merge($default_options, $options);
+		$options = array_merge($default_options, $options);		
 		
 		if (file_exists($options['logPath'])) {	
 			// Read log file		
@@ -83,9 +86,10 @@ class Project extends AppModel {
 			$maxSize = Configure::read('Log.maxSize');
 			if ( ($size = filesize ($options['logPath'])) > $maxSize ) {
 				fseek( $file, $size - $maxSize);
+				$size = $maxSize;
 			}
 			$this->lastReadSize = $size;
-			$output = fread( $file, $maxSize ); 
+			$output = fread( $file, $size ); 
 			fclose($file);
 			
 			// Highlight pattern
@@ -103,7 +107,10 @@ class Project extends AppModel {
 
 			return nl2br($output);
 		} else {
-			return 'Log not found : File (<em>'.$project['Project']['log_path'].'</em>) doesn\'t exist';
+			$this->lastReadSize = 0;
+			$this->lastReadError = 'Log not found : File (<em>'.$options['logPath'].'</em>) doesn\'t exist';
+
+			return false;
 		}
 	}
 

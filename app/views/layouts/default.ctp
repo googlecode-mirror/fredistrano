@@ -37,17 +37,7 @@ http://creativecommons.org/licenses/GPL/2.0/
 
 	<div id="header">
 		<div id="site-name">Fredistrano</div>
-		<div id="search">
-			<!--<form action="">
-			<label for="searchsite">Recherche :</label>
-			<input id="searchsite" name="searchsite" type="text" />
-			<input type="submit" value="Go" class="f-submit" />
-			</form>-->
-		</div>
-		
-		<!-- app/views/elements/menu.thtml -->
-		<?php echo $this->renderElement('menu') ?>
-		
+			<?php echo $this->renderElement('menu') ?>
 		</div>
 
 	<div id="content-wrap">
@@ -60,20 +50,18 @@ http://creativecommons.org/licenses/GPL/2.0/
         <?php echo $html->link( $html->image( 'en.gif', array('alt' => 'english', 'title' => 'english')), '/home/switchLanguage/en-US', null, false, false ); ?>
 		</div>-->
 		<div id="utility">
-		
-		<?php
-			if(isset($_SESSION['User'])){
-				echo $this->renderElement('logout');
-			}else{
-				echo $this->renderElement('login'); 
-			 } ?>
+			<?php
+				if(isset($_SESSION['User'])){
+					echo $this->renderElement('logout');
+				}else{
+					echo $this->renderElement('login'); 
+				}
+			?>
 
-			<!-- app/views/elements/menu.thtml -->
 			<?php echo $this->renderElement('context_menu') ?>					
 		</div>
 		
 		<div id="content">
-			
 			<?php 
 			if ($session->check('Message.flash')):
 				$session->flash();
@@ -84,26 +72,13 @@ http://creativecommons.org/licenses/GPL/2.0/
 				</script>
 			<?php endif; ?>
 
-<!--			<?php if(isset($_SERVER['HTTP_REFERER'])){?>
-			<div id="backlink"><?php echo $html->link($html->image( 'arrow_left.png', array('alt' => __('Previous',true), 
-																							'title' => __('Previous',true))).
-																							'<span> '.__('back',true).'</span>',
-				$_SERVER['HTTP_REFERER'],
-				null,
-				false,
-				false)?></div>
-			<?php } ?>
--->
 			<?php echo $content_for_layout;	?>
 	
 			<div id="footer">
 			<p>&copy; 2007 <a href="http://fbollon.net">fbollon.net</a> </p>
 			</div>
-
 		</div>
-
 	</div>
-
 </div>
 </body>
 </html>

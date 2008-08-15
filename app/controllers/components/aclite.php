@@ -14,9 +14,10 @@ class AcliteComponent extends Object {
 	function startup(& $controller) {		
 		// Is aclite globally disabled (see config)?
 		// if ( defined("_ACLITEDISABLED") && _ACLITEDISABLED === true )
-		if (Configure::read('Security.aclitedisabled') === true) {
-			return ;
-		}
+		return true;
+		// if (Configure::read('Security.aclitedisabled') === true) {
+		// 	return ;
+		// }
 			
 		$this->controller = & $controller;
 		

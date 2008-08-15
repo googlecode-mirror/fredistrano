@@ -2,7 +2,6 @@
 <table class="table1">
 <thead>
 <tr>
-
 <th colspan="3">
 	<span class="tabletoptitle"><?php __('Project details');?></span>
 	<!--
@@ -16,13 +15,10 @@
 	</span>
 	-->
 </th>
-
 </tr>
 </thead>
-
 <tbody>
 <tr>
-
 <th colspan="2">
 	<div class="tabletoplink">
 		<ul>					
@@ -44,122 +40,104 @@
 		</ul>
 	</div>
 </th>
-
+</tr>
+<tr>
+	<th class="sub"><?php __('Id');?></th>
+	<td>&nbsp;<?php echo $project['Project']['id']?></td>
 </tr>
 
 <tr>
-<th class="sub"><?php __('Id');?></th>
-<td>&nbsp;<?php echo $project['Project']['id']?></td>
+	<th class="sub"><?php __('Project name');?></th>
+	<td>&nbsp;<?php echo $project['Project']['name']?></td>
 </tr>
 
 <tr>
-<th class="sub"><?php __('Project name');?></th>
-<td>&nbsp;<?php echo $project['Project']['name']?></td>
+	<th class="sub"><?php __('SVN Url');?></th>
+	<td>&nbsp;<?php echo $project['Project']['svn_url']?></td>
 </tr>
 
 <tr>
-<th class="sub"><?php __('SVN Url');?></th>
-<td>&nbsp;<?php echo $project['Project']['svn_url']?></td>
-</tr>
-
-<tr>
-<th class="sub"><?php __('Project absolute path');?></th>
-<td>&nbsp;<?php echo $project['Project']['prd_path']?></td>
+	<th class="sub"><?php __('Project absolute path');?></th>
+	<td>&nbsp;<?php echo $project['Project']['prd_path']?></td>
 </tr>
 
 <tr>
 <th class="sub"><?php __('Application Url');?></th>
-<td>&nbsp;<?php echo $html->link($project['Project']['prd_url'], $project['Project']['prd_url'], array('target' => '_blank'), false, true, false) ?></td>
+	<td>&nbsp;<?php echo $html->link($project['Project']['prd_url'], $project['Project']['prd_url'], array('target' => '_blank'), false, true, false) ?></td>
 </tr>
 
 <tr>
 <th class="sub"><?php __('Log pathes');?></th>
-<td>&nbsp;<?php echo $html->link($project['Project']['log_path'], 
+	<td>&nbsp;<?php echo $html->link($project['Project']['log_path'], 
 			'/logs/index/' . $project['Project']['id'], 
 			null,
 			false,
-			false);?></td>
+			false);?>
+	</td>
 </tr>
 
 <tr>
-<th class="sub">&nbsp;</th>
+	<th class="sub">&nbsp;</th>
 <td>
+	
 <form action="<?php echo $html->url('/projects/deploy'); ?>" method="post">
 <?php echo $form->hidden('Project/id', array('value' => $project['Project']['id']))?>
-<!-- <div class="f-submit-wrap" style="clear:right;float:right;"> -->
-				<?php e($html->image('loading_orange.gif',
-									array(
-										'alt' => 'Loading...', 
-										'id' => 'spinning_image0',
-										'style' => 'display:none'
-										)
+	<?php e($html->image('loading_orange.gif',
+						array(
+							'alt' => 'Loading...', 
+							'id' => 'spinning_image0',
+							'style' => 'display:none'
+							)
+						)
+			); ?>
+	<?php 
+		echo $ajax->submit(
+							__('Deploy', true), 
+							array(
+								'class' => 'f-submit',
+								'url' => '/projects/deploy/' . $project['Project']['id'],
+								'update' => 'deploy_area', 
+								'loading' => "Element.show('spinning_image0');", 
+								'loaded' => "Element.hide('spinning_image0');",
+								 'style' => 'float:right;margin:10px'
+								)
+							);
+	?>
+	<?php e($ajax->submit(
+						__('Fast deploy', true), 
+						array(
+							'class' => 'f-submit',
+							'url' => '/deployments/fastDeploy/' . $project['Project']['id'],
+							'update' => 'deploy_area', 
+							'loading' => "Element.show('spinning_image0');", 
+							'loaded' => "Element.hide('spinning_image0');",
+							'style' => 'float:right;margin:10px'
+							)
+						)
+		);
+	// TODO Demander une confirmation + affichage
+	?>
+	<?php e($fbollon->displayHelp ('fast_deploy', 
+									__('Use the Fast deploy button to deploy in one click with standart options: svn export, synchronisation and finalization',
+									 true
 									)
-						); ?>
-				<?php 
-					echo $ajax->submit(
-										__('Deploy', true), 
-										array(
-											'class' => 'f-submit',
-											'url' => '/projects/deploy/' . $project['Project']['id'],
-											'update' => 'deploy_area', 
-											'loading' => "Element.show('spinning_image0');", 
-											'loaded' => "Element.hide('spinning_image0');",
-											 'style' => 'float:right;margin:10px'
-											)
-										);
-				?>
-				<?php e($fbollon->helpButton('normal_deploy')) ?>
-				<?php //e($fbollon->displayHelp ('normal_deploy', __('Use the deploy button to deploy step by step', true))) ?>
-				
-				<?php 
-				// TODO Demander une confirmation + affichage
-				echo $ajax->submit(
-									__('Fast deploy', true), 
-									array(
-										'class' => 'f-submit',
-										'url' => '/deployments/fastDeploy/' . $project['Project']['id'],
-										'update' => 'deploy_area', 
-										'loading' => "Element.show('spinning_image0');", 
-										'loaded' => "Element.hide('spinning_image0');",
-										'style' => 'float:right;margin:10px'
-										)
-									);
-				?>
-				
-				<?php e($fbollon->helpButton('fast_deploy')) ?>
-				<?php e($fbollon->displayHelp (
-												'fast_deploy', 
-												__('Use the Fast deploy button to deploy in one click with standart options: svn export, synchronisation and finalization',
-												 true
-												)
-											)
-						) ?>
-<!-- </div> -->
+								)
+			); 
+	?>
+	<?php e($fbollon->helpButton('normal_deploy')) ?>
 </form>
-<div>
-<?php e($fbollon->displayHelp ('normal_deploy', __('Use the deploy button to deploy step by step', true))) ?>
-</div>
+<div><?php e($fbollon->displayHelp ('normal_deploy', __('Use the deploy button to deploy step by step', true))) ?></div>
 </td>
 </tr>
-
 </tbody>
 </table>
 
-<div class="smalldateblock"><?php __('Deploy');?> <?php echo $project['Project']['created']?><br />
-<?php __('Modified on');?> <?php echo $project['Project']['modified']?></div> 
+<div class="smalldateblock">
+	<?php __('Deploy');?> <?php echo $project['Project']['created']?><br />
+	<?php __('Modified on');?> <?php echo $project['Project']['modified']?>
+</div> 
 
-</div>
+<div id="deploy_area"></div>
+<div id="deploy_result"></div>
 
-<br/><br/><br/>
-
-<!--<div class="featurebox">-->
-<div id="deploy_area"  >
-</div>
-
-
-
-<div id="deploy_result"  >
-</div>
-
-<!--</div>-->
-
+<br/><br/>
