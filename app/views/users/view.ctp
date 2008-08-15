@@ -2,7 +2,7 @@
 	<table class="table1">
 		<thead>
 			<tr>
-				<th colspan="2">Détails d'un utilisateur</th>
+				<th colspan="2"><?php __('User details') ?></th>
 			</tr>
 		</thead>
 		
@@ -13,22 +13,29 @@
 						<ul>
 							<li>
 								<?php echo $html->link(
-									$html->image('b_edit.png', array('alt' => 'Modifier', 'title' => 'Modifier', 'class' => 'action')) . 'Modifier',
+									$html->image('b_edit.png', array('alt' => __('Edit', true), 'title' => __('Edit', true), 'class' => 'action')) . __('Edit', true),
 									'/users/edit/' . $user['User']['id'], 
 									null, false, false) ?>
 							</li>
+<!--							<li>
+								<?php echo $html->link(
+									$html->image('users.png', array('alt' => __('manage groups for the current user', true), 'title' => __('manage groups for the current user', true), 'class' => 'action')) . __('Group management', true),
+									'/groups/affectUsers/' . $user['User']['login'],
+									null, false, false) ?>
+							</li>
+-->
 							<li>
 								<?php echo $html->link(
-									$html->image('key.png', array('alt' => 'Changer le mot de passe', 'title' => 'Changer le mot de passe', 'class' => 'action')) . 'Changer le mot de passe',
+									$html->image('key.png', array('alt' => __('Change password', true), 'title' => __('Change password', true), 'class' => 'action')) . __('Change password', true),
 									'/users/change_password/' . $user['User']['id'],
 									null, false, false) ?>
 							</li>
 							<li>
 								<?php echo $html->link(
-									$html->image('b_drop.png', array('alt' => 'Supprimer', 'title' => 'Supprimer', 'class' => 'action')) . 'Supprimer', 
+									$html->image('b_drop.png', array('alt' => __('Delete', true), 'title' => __('Delete', true), 'class' => 'action')) . __('Delete', true), 
 									'/users/delete/' . $user['User']['id'], 
 									null, 
-									'Etes vous certain de vouloir supprimer : ' . $user['User']['login'] . ' ?',
+									__('Are you sure you want to delete', true) .' : ' . $user['User']['login'] . ' ?',
 									false) ?>
 							</li>
 						</ul>
@@ -60,11 +67,23 @@
 				<th class="sub">Email</th>
 				<td><?php echo $user['User']['email'] ?></td>
 			</tr>
-			
-			<tr>
-				<th class="sub">Groupes associés</th>
-				<td><?php echo $user['User']['groups'] ?></td>
-			</tr>
 		</tbody>
 	</table>
 </div>
+
+<?php
+if (!empty($user)){
+	e('<h3>Liste des groupes pour l\'utilisateur sélectionné : "'.$user['User']['login'].'"</h3>');
+	
+	if (!empty($user['Group'])){
+		e('<ul>');
+			foreach ($user['Group'] as $key => $value) {
+				e('<li>'.$value['name'].' - '.$html->link('[modifier]','/groups/affectUsers/'.$value['id']).'</li>');
+			}//foreach
+		e('</ul>');
+	}else{	
+		e('<p>Pas de groupe pour l\'utilisateur '.$user['User']['login'].'</p>');
+		echo '<p>'.$html->link('Gestions des groupes', '/groups/index').'</p>';
+	}
+}
+?>

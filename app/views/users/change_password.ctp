@@ -17,7 +17,8 @@ echo $form->create('User', array('method' => 'post', 'class' => 'f-wrap-1', 'act
 										'label' => '<b>' . __('Password', true). '<span class="req">*</span></b>',
 										'size' => '60',
 										'class' => 'f-name', 
-										'error' => $passwordErrorMessage
+										'error' => $passwordErrorMessage, 
+										'type' => 'password'
 										));
 		?>
 		<?php echo $form->input('password', array( 
@@ -31,7 +32,8 @@ echo $form->create('User', array('method' => 'post', 'class' => 'f-wrap-1', 'act
 										'label' => '<b>' . __('Confirm new password', true). '<span class="req">*</span></b>',
 										'size' => '60',
 										'class' => 'f-name', 
-										'error' => $passwordErrorMessage
+										'error' => $passwordErrorMessage, 
+										'type' => 'password'
 										));
 		?>
 		

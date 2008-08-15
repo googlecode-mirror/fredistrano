@@ -19,7 +19,7 @@ class User extends AppModel {
 	            'required' => true
 	        ),
 	        'rule2' => array(
-	            'rule' => array('minLength', 6)
+	            'rule' => array('minLength', 4)
 	        )
 	    ),
 		 'email' => array(
@@ -56,19 +56,19 @@ class User extends AppModel {
 		return !empty($tmp);
 	}// isValid
 	
-	function _format(& $user) {
-		$groups = null;
-		if (!empty ($user['Group']))
-			foreach ($user['Group'] as $group)
-				$groups .= $group['name'] . ' ; ';
-		$user['User']['groups'] = $groups;
-		unset ($user['Group']);
-	}
-
-	function _formatAll(& $users) {
-		foreach ($users as & $user)
-			$this->_format($user);
-	}
+	// function _format(& $user) {
+	// 	$groups = null;
+	// 	if (!empty ($user['Group']))
+	// 		foreach ($user['Group'] as $group)
+	// 			$groups .= $group['name'] . ' ; ';
+	// 	$user['User']['groups'] = $groups;
+	// 	unset ($user['Group']);
+	// }
+	// 
+	// function _formatAll(& $users) {
+	// 	foreach ($users as & $user)
+	// 		$this->_format($user);
+	// }
 	
 }
 ?>

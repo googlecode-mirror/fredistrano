@@ -12,8 +12,9 @@ class UsersController extends AppController {
 	var $authLocal = array(
 		'Users' => array('authorizations'),
 		'except' => array (
-			'login'=> array('public'),
-			'logout'=> array('public')
+			'login'				=> array('public'),
+			'logout'			=> array('public'),
+			'change_password'	=> array('password')
 		)
 	);
 	
@@ -21,6 +22,14 @@ class UsersController extends AppController {
 		'limit' => 10,
 		'format' => 'pages'
 	);
+	
+	function beforeAuthorize(){
+		if ($this->params['action'] == 'change_password'){
+			if (isset($_SESSION['User']['User']['id']) && ($_SESSION['User']['User']['id'] == $this->params['pass'][0])){
+				$this->Session->write('dynamicGroup', array( array( 'name' => 'currentUser' )));
+			}
+		}
+	}
 	
 
 	function beforeRender() {
@@ -50,8 +59,7 @@ class UsersController extends AppController {
 			$this->redirect('/users/index');
 			exit;
 		}
-		$user = $this->User->read(null, $id);
-		$this->User->_format($user);
+		$user = $this->User->findById($id);
 		$this->set('user', $user);
 	}
 
@@ -113,7 +121,7 @@ class UsersController extends AppController {
 		if ($this->User->del($id)) {
 			$this->Aclite->reloadsAcls('Aro');
 			$this->Session->setFlash(__('The user has been deleted', true));			
-			$this->redirect('/users/index');
+			$this->redirect('/users/index', null, true);
 		} else {
 			$this->Session->setFlash(__('Error during deletion.', true));
 			$this->redirect('/users/view/' . $id);
@@ -122,22 +130,10 @@ class UsersController extends AppController {
 
 	function change_password($id = null) {
 		
-		/*
-			TODO to be protected with aclite
-		*/
-		
 		if (!$id or !$this->User->read(null, $id)) {
 			$this->Session->setFlash(__('Invalid id.', true));
 			$this->redirect('/users/index');
 			exit;
-		}
-		
-		if (!isset($_SESSION['isAdmin'])) {
-			if ($_SESSION['User']['User']['id'] != $id) {
-				$this->Session->setFlash(__('Invalid id.', true));
-				$this->redirect('/');
-				exit;
-			}
 		}
 
 		if (!empty ($this->data)) {
@@ -154,8 +150,11 @@ class UsersController extends AppController {
 				$this->Session->setFlash('Not entered twice the same password');
 			} else {
 				$this->User->id = $user['User']['id'];
-				if ($this->User->saveField('password', $this->data['User']['password'], true)) {
+				if ($this->User->saveField('password', $this->data['User']['password'])) {
 					$this->Session->setFlash(__('The password has been changed.', true));
+					if (isset($_SESSION['dynamicGroup']) && $_SESSION['dynamicGroup'][0]['name'] == 'currentUser') {
+						$this->redirect('/', null, true);
+					}
 					$this->redirect('/users/view/' . $id);
 				} else {
 					$this->Session->setFlash(__('Error during update : ', true) . mysql_error());

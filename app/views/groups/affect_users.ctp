@@ -23,6 +23,8 @@
 	
 		<select multiple name="data[User][]" id="toBox">
 			<?php 
+			debug($members);
+			
 			foreach ($members as $id => $login) {
 				e('<option value="'.$id.'">'.$login.'</option>');
 			} 

@@ -15,7 +15,7 @@
 							$paginator->sort(__('Last name', true), 'last_name'),
 							$paginator->sort(__('Email', true), 'email'),
 							// __('Groups', true),
-				            'Actions'
+				            // 'Actions'
 				); 
 				echo $html->tableHeaders($th); 
 				
@@ -27,20 +27,20 @@
 				        $output['User']['first_name'],
 						$output['User']['last_name'],
 						$output['User']['email'],
-						$html->link(
-							$html->image('b_search.png', array('alt' => 'Afficher', 'title' => 'Afficher', 'class' => 'action')),
-							'/users/view/' . $output['User']['id'],
-							null, false, false) .
-						$html->link(
-							$html->image('b_edit.png', array('alt' => 'Modifier', 'title' => 'Modifier', 'class' => 'action')),
-							'/users/edit/' . $output['User']['id'],
-							null, false, false) .
-						$html->link(
-							$html->image('b_drop.png', array('alt' => 'Supprimer', 'title' => 'Supprimer', 'class' => 'action')), 
-							'/users/delete/' . $output['User']['id'], 
-							null, 
-							__('Please confirm the deletion of user :', true) . $output['User']['login'] . ' ?',
-							false)
+						// $html->link(
+						// 							$html->image('b_search.png', array('alt' => 'Afficher', 'title' => 'Afficher', 'class' => 'action')),
+						// 							'/users/view/' . $output['User']['id'],
+						// 							null, false, false) .
+						// 						$html->link(
+						// 							$html->image('b_edit.png', array('alt' => 'Modifier', 'title' => 'Modifier', 'class' => 'action')),
+						// 							'/users/edit/' . $output['User']['id'],
+						// 							null, false, false) .
+						// 						$html->link(
+						// 							$html->image('b_drop.png', array('alt' => 'Supprimer', 'title' => 'Supprimer', 'class' => 'action')), 
+						// 							'/users/delete/' . $output['User']['id'], 
+						// 							null, 
+						// 							__('Please confirm the deletion of user :', true) . $output['User']['login'] . ' ?',
+						// 							false)
 				    );
 
 					echo $html->tableCells($tr, array('class' => 'altRow', 

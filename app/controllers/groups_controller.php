@@ -13,7 +13,6 @@ class GroupsController extends AppController {
 		'RequestHandler'
 	);
 
-	configuration des authorisations
 	var $authLocal = array (
 		'Groups' => array (
 			'authorizations'
@@ -165,13 +164,15 @@ class GroupsController extends AppController {
 			}
 				
 			$group = $this->Group->find('first', array('id' => $id));
-			
 			$personList = $this->User->find('list', array('fields' => array('User.id', 'User.login')));
 
-			$members = array_combine(
-				Set::extract($group, 'User.{n}.id'),
-				Set::extract($group, 'User.{n}.login')
-				);
+			$members = array();
+			if (!empty($group['User'])) {
+				$members = array_combine(
+								Set::extract($group, 'User.{n}.id'),
+								Set::extract($group, 'User.{n}.login')
+								);
+			}
 			
 			$personList = array_diff($personList, $members);
 			$this->set('group', $group);

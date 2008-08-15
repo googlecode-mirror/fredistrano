@@ -22,7 +22,7 @@ class AcliteComponent extends Object {
 		
 		// Dynamic aclite   
 		$this->Session->delete('dynamicGroup');
-		if (method_exists($this->controller, $tmp = 'beforeAuthenticate'))
+		if (method_exists($this->controller, $tmp = 'beforeAuthorize'))
 			$this->controller->{$tmp}();
 			
 		// Init aclite
