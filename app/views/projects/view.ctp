@@ -68,12 +68,7 @@
 
 <tr>
 <th class="sub"><?php __('Log pathes');?></th>
-	<td>&nbsp;<?php echo $html->link($project['Project']['log_path'], 
-			'/logs/index/' . $project['Project']['id'], 
-			null,
-			false,
-			false);?>
-	</td>
+<td><?php echo $fbollon->logsLinks($project['Project']['log_path'], $project['Project']['id']); ?>&nbsp;</td>
 </tr>
 
 <tr>
@@ -139,5 +134,5 @@
 
 <div id="deploy_area"></div>
 <div id="deploy_result"></div>
-
 <br/><br/>
+

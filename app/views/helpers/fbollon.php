@@ -139,5 +139,22 @@ class FbollonHelper extends Helper {
 		
 		return ltrim($string);	
 	}
+	
+	function logsLinks($string, $projectId){
+		$ret = '';
+		$aryLinks = explode("\n", $string);
+		if (!empty($aryLinks[0])) {
+			foreach ($aryLinks as $key => $value) {
+				$ret .= trim($value).'&nbsp;'.$this->Html->link($this->Html->image('edit-find.png') , 
+							'/logs/index/'.$projectId.'/'.$key, 
+							null,
+							false,
+							false) . "<br />";
+			}
+		}
+		return substr($ret, 0, -6);
+	}
+	
+	
 }
 ?>

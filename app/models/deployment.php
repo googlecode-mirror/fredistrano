@@ -59,6 +59,7 @@ class Deployment extends AppModel {
 			'changeFileMode' 	=> 	false,
 			'giveWriteMode'		=> 	false
 		);
+		
 		$options = array_merge($default_options, $options);
 	
 		// Prepare log output
@@ -208,8 +209,8 @@ class Deployment extends AppModel {
 		// Define step options
 		$default_options = array(
 			'revision' 	=> 	null,
-			'user' 		=> 	Configure::read('Subversion.user'),
-			'password' 	=> 	Configure::read('Subversion.passwd')
+			'user_svn' 		=> 	Configure::read('Subversion.user'),
+			'password_svn' 	=> 	Configure::read('Subversion.passwd')
 		);
 		$options = array_merge($default_options, $options);
 		$output = '';
@@ -267,10 +268,10 @@ class Deployment extends AppModel {
 		
 		// Export code from SVN
 		$revision = ($options['revision']!=null)?' -r ' . $options['revision']:'';
-		$authentication = ' --username ' . $options['user'] . ' --password ' . $options['password'];
+		$authentication = ' --username ' . $options['user_svn'] . ' --password ' . $options['password_svn'];
 		$command = "svn export" . $revision . $authentication . " " . $project['Project']['svn_url'] . " tmpDir 2>&1";
 		$output .= $this->executeCommand($command, __('svn export',true),'export', _DEPLOYTMPDIR . DS . $project['Project']['name']);
-		
+	
 		return $output;
 	}// export
 	
@@ -282,15 +283,16 @@ class Deployment extends AppModel {
 	 * @return string 			Shell output 
      */
 	private function synchronize($project = null, $options = array()) {
+		
 		if ( $project == null || !$this->isConfigAvailable($project['Project']['name'])) {
 			return false;			
 		}
-			
 		// Set a time limit
 		set_time_limit(_TIMELIMIT_RSYNC);
 			
 		// Inculde deployment config file
 		include_once (_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php");
+		
 			
 		// Define step options
 		$default_options = array(
@@ -322,7 +324,6 @@ class Deployment extends AppModel {
 		} else {			
 			// Live mode
 			$option = 'rtv';
-
 			// Create a log entry for the pending deployement 
 			$data = array (
 				'DeploymentLog' => array (

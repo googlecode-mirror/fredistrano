@@ -83,6 +83,6 @@ http://creativecommons.org/licenses/GPL/2.0/
 </body>
 </html>
 <?php
-debug($_SESSION);
+// debug($_SESSION);
 
 ?>

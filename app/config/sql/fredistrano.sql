@@ -1,3 +1,9 @@
+/*
+	TODO update this file before the next release
+*/
+
+
+
 -- phpMyAdmin SQL Dump
 -- version 2.10.3deb1
 -- http://www.phpmyadmin.net

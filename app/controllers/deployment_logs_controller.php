@@ -58,9 +58,16 @@ class DeploymentLogsController extends AppController {
 	 * List all logs
 	 */
 	function list_all($op = null, $id = null) {
+		if (isset($this->data['Log']['project_id'])) {
+			$op = 'project';
+			$id = $this->data['Log']['project_id'];
+		}
+		
+		$this->set('projects', $this->Project->find('list'));
 		$archived = $this->_archive();
-		if ($archived > 0) 
+		if ($archived > 0){ 
 			$this->Session->setFlash(sprintf(__("%d logs have been archived", true),$archived));
+			}
 
 		switch ($op) {
 			case null :
@@ -164,7 +171,7 @@ class DeploymentLogsController extends AppController {
 		
 		$filter = array('project' => $id);		
 		$conditions = 'DeploymentLog.project_id = ' . $id;
-		if (!isset($this->params['url']['showArchived'])){
+		if (!isset($this->params['url']['showArchived']) && (!isset($this->data['Log']['showArchived']) || $this->data['Log']['showArchived'] == 0)){
 			$conditions .= ' AND archive=0';
 		}	
 		$fields = array (

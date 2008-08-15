@@ -34,10 +34,19 @@ class LogsController extends AppController {
 	
 	function index($project_id = '') {
 		$projects = $this->Project->find( 'list', array("`Project`.`log_path` != 'NULL'", "`Project`.`log_path` != ''"),'Project.name ASC');
-		
+		$this->set('logs', $this->getLogList($project_id));
 		$this->set('project_id', $project_id);
 		$this->set('projects', $projects);
 	}// index
+	
+	function getLogList($id){
+		Configure::write('debug', 0);
+		$this->Project->unbindModel( array('hasMany' => array ('DeploymentLog')) );
+		$logs = $this->Project->findById($id);
+		$logs = explode("\n", $logs['Project']['log_path']);
+		$this->set('logs', $logs);
+		return $logs;
+	}
 	
 	function view() {
 		$this->layout = 'ajax';

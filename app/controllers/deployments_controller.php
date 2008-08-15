@@ -47,8 +47,8 @@ class DeploymentsController extends AppController {
 			$options['revision'] = $this->data['Project']['revision'];	
 		}
 		if ($this->data['Project']['user'] != null) {
-			$options['user'] = $this->data['Project']['user'];
-			$options['password'] = $this->data['Project']['password'];
+			$options['user_svn'] = $this->data['Project']['user'];
+			$options['password_svn'] = $this->data['Project']['password'];
 		}
 		
 		// Run step
@@ -90,9 +90,9 @@ class DeploymentsController extends AppController {
 		$options['backup'] 		= ($this->data['Project']['backup'] == 1);
 		if ($this->data['DeploymentLog']['comment'] != null) {
 			$options['comment'] = $this->data['DeploymentLog']['comment'];	
-		}		
-		if ($this->Session->read('User.id')) {
-			$options['user'] = $this->Session->read('User.id');
+		}
+		if ($this->Session->read('User.User.id')) {
+			$options['user'] = $this->Session->read('User.User.id');
 		}
 		
 		// Run step
@@ -161,7 +161,8 @@ class DeploymentsController extends AppController {
 													'renamePrdFile' 	=> 	true,
 													'changeFileMode' 	=> 	true,
 													'giveWriteMode'		=> 	true,
-													'modifiedFileOnly'	=>	true
+													'modifiedFileOnly'	=>	true,
+													'user' 		=> 	$this->Session->read('User.User.id')
 													)
 												);
 

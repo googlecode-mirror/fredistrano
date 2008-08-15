@@ -125,7 +125,6 @@ class ProjectsController extends AppController {
 			}
 			$this->data = $this->Project->read(null, $id);
 		} else {
-			$this->cleanUpFields();
 			if ($this->Project->save($this->data)) {
 				$this->Session->setFlash(__('Project saved.', true));
 				$this->redirect('/projects/view/' . $id);
