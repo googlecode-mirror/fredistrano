@@ -38,7 +38,7 @@ class DeploymentsController extends AppController {
 		if (!isset($this->data['Project']['id']) || !($uuid = $this->Session->read('Deployment.uuid'))) {
 			$this->set('errorMessage', 	'Invalid request');
 			$this->render('error');
-			exit();
+			return;
 		}
 		
 		// Define options
@@ -58,7 +58,7 @@ class DeploymentsController extends AppController {
 		if ( $output === false ) {
 			$this->set('errorMessage', 	$this->Deployment->getLastError());
 			$this->render('error');
-			exit();
+			return;
 		} else {
 			preg_match('/ ([0-9]+)\.$/', $output, $matches);
 			
@@ -80,7 +80,7 @@ class DeploymentsController extends AppController {
 		if (!isset($this->data['Project']['id']) || !($uuid = $this->Session->read('Deployment.uuid'))) {
 			$this->set('errorMessage', 	'Invalid request');
 			$this->render('error');
-			exit();
+			return;
 		}
 		
 		// Define options
@@ -102,7 +102,7 @@ class DeploymentsController extends AppController {
 		if ( $output === false ) {
 			$this->set('errorMessage', 	$this->Deployment->getLastError());
 			$this->render('error');
-			exit();
+			return;
 		} else {
 			$this->set('output', 	$output);
 			$this->set('took', 		$this->Deployment->getLastExecutionTime());
@@ -117,7 +117,7 @@ class DeploymentsController extends AppController {
 		if (!isset($this->data['Project']['id']) || !($uuid = $this->Session->read('Deployment.uuid'))) {  
 			$this->set('errorMessage', 	'Invalid request');
 			$this->render('error');
-			exit();
+			return;
 		}
 						
 		// Define options
@@ -133,7 +133,7 @@ class DeploymentsController extends AppController {
 		if ( $output === false ) {
 			$this->set('errorMessage', 	$this->Deployment->getLastError());
 			$this->render('error');
-			exit();
+			return;
 		} else {
 			$this->set('output', 	$output);
 			$this->set('took', 		$this->Deployment->getLastExecutionTime());
@@ -145,7 +145,7 @@ class DeploymentsController extends AppController {
 		if ($id == null ) {
 			$this->Session->setFlash(__('Invalid id.', true));
 			$this->redirect('/projects/index');
-			exit();
+			return;
 		}
 
 		// Give an ID to current deployment 
@@ -170,7 +170,7 @@ class DeploymentsController extends AppController {
 		if ( $output === false ) {
 			$this->set('errorMessage', 	$this->Deployment->getLastError());
 			$this->render('error');
-			exit();
+			return;
 		} else {
 			$this->set('output', 	$output);
 			$this->set('took', 		$this->Deployment->getLastExecutionTime());

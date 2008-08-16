@@ -123,8 +123,6 @@ class FbollonHelper extends Helper {
 			$ret = null;
 		}
 
-		
-			
 		return $this->output($ret, $return);
 	}
 

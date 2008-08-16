@@ -169,7 +169,7 @@ class Deployment extends AppModel {
 		
 		// Log text
 		if ($log->writable()) {
-			$log->append("\n<<<<\n".$text."\n>>>> Step executed in ".$this->lastExecutionTime."s\n");
+			$log->append("<<<<\n".$text."\n>>>> Step executed in ".$this->lastExecutionTime."s\n");
 		}
 		
 		return $output;
@@ -208,70 +208,47 @@ class Deployment extends AppModel {
 				
 		// Define step options
 		$default_options = array(
-			'revision' 	=> 	null,
+			'revision' 		=> 	null,
 			'user_svn' 		=> 	Configure::read('Subversion.user'),
 			'password_svn' 	=> 	Configure::read('Subversion.passwd')
 		);
 		$options = array_merge($default_options, $options);
 		$output = '';
 		
-		// Create temporary folders for Fredistrano (if required)
-		if (!is_dir(_DEPLOYDIR)) {
-			if (@mkdir(_DEPLOYDIR, octdec(_DIRMODE), TRUE)) {
-				$output .= "-[".__('creating directory', true)." " . _DEPLOYDIR . "]\n";
-			} else {
-				$this->triggerError( "Unable to create directory "._DEPLOYDIR." during export step" );
-				return false;
-			}
-		}
-		if (!is_dir(_DEPLOYTMPDIR)) {
-			if (@mkdir(_DEPLOYTMPDIR, octdec(_DIRMODE), TRUE)) {
-				$output .= "-[".__('creating directory', true)." " . _DEPLOYTMPDIR . "]\n";				
-			} else {
-				$this->triggerError( "Unable to create directory "._DEPLOYTMPDIR." during export step");
-				return false;
-			}
-		}
-		if (!is_dir(_DEPLOYBACKUPDIR)) {
-			if (@mkdir(_DEPLOYBACKUPDIR, octdec(_DIRMODE), TRUE)) {
-				$output .= "-[".__('creating directory', true). " " . _DEPLOYBACKUPDIR . "]\n";
-			} else {
-				$this->triggerError( "Unable to create directory "._DEPLOYBACKUPDIR." during export step");
-				return false;
-			}
-		}
-		
 		// Create temporary folders for the current project (if required)
-		if (is_dir(_DEPLOYTMPDIR . DS . $project['Project']['name'])) {
-			// IF exists THEN cleared
-			$command = 'rm -rf ' . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "/*";
-			$output .= $this->executeCommand($command, __('delete directory', true)." " . _DEPLOYTMPDIR . DS . $project['Project']['name'],'export');
-		} else {
-			// ELSE created
-			if (@mkdir(_DEPLOYTMPDIR . DS . $project['Project']['name'], octdec(_DIRMODE), TRUE)) {
-				$output .= "-[".__('creating directory', true). " " . _DEPLOYTMPDIR . DS . $project['Project']['name'] . "]\n";
+		$exportDir = _DEPLOYTMPDIR . DS . $project['Project']['name'];
+		$revision = ($options['revision']!=null)?' -r' . $options['revision']:'';
+		if (is_dir($exportDir)) {
+			// svn update
+			$command = "svn update" . $revision ." tmpDir 2>&1";
+			$output .= $this->executeCommand($command, __('svn update',true), 'export', $exportDir);
+			
+		} else {			
+			// TODO Remove DIRMODE
+			if (@mkdir($exportDir, octdec(_DIRMODE), TRUE)) {
+				$output .= "-[".__('creating directory', true)." $exportDir]\n";
 			} else {
-				$this->triggerError("Unable to create directory "._DEPLOYTMPDIR . DS . $project['Project']['name']." during export step");
+				$this->triggerError("Unable to create directory ".$exportDir." during export step");
 				return false;
 			}
+			
+			// Export code from SVN
+			$authentication = ' --username ' . $options['user_svn'] . ' --password ' . $options['password_svn'];
+			$command = "svn checkout" . $revision . $authentication . " " . $project['Project']['svn_url'] . " tmpDir 2>&1";
+			$output .= $this->executeCommand($command, __('svn checkout',true), 'export', $exportDir);
 		}
 
 		// Create target dir (if required)
 		if (!is_dir($project['Project']['prd_path'])) {
+			// TODO Remove DIRMODE
 			if (@mkdir($project['Project']['prd_path'], octdec(_DIRMODE), TRUE)) {
-				$output .= "-[".__('creating directory', true). " " . $project['Project']['prd_path'] . "]\n";
+				$output .= "-[".__('creating directory', true)." ".$project['Project']['prd_path']."]\n";
 			} else {
 				$this->triggerError("Unable to create directory ".$project['Project']['prd_path']." during export step");
 				return false;
 			}
 		}
 		
-		// Export code from SVN
-		$revision = ($options['revision']!=null)?' -r ' . $options['revision']:'';
-		$authentication = ' --username ' . $options['user_svn'] . ' --password ' . $options['password_svn'];
-		$command = "svn export" . $revision . $authentication . " " . $project['Project']['svn_url'] . " tmpDir 2>&1";
-		$output .= $this->executeCommand($command, __('svn export',true),'export', _DEPLOYTMPDIR . DS . $project['Project']['name']);
-	
 		return $output;
 	}// export
 	
@@ -292,7 +269,6 @@ class Deployment extends AppModel {
 			
 		// Inculde deployment config file
 		include_once (_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php");
-		
 			
 		// Define step options
 		$default_options = array(
@@ -312,6 +288,7 @@ class Deployment extends AppModel {
 		}
 		$exclude_string .= "- deploy.php\n";
 		$exclude_string .= "- **.dev.**\n";
+		$exclude_string .= "- **.svn**\n";	
 		$exclude_file_name = _DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "exclude_file.txt";
 		$handle = fopen($exclude_file_name, "w");
 		fwrite($handle, $exclude_string);
@@ -404,7 +381,7 @@ class Deployment extends AppModel {
 		set_time_limit(_TIMELIMIT_FINALIZE);
 		
 		// Inculde deployment config file
-		include_once (_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php");
+		include_once (_DEPLOYTMPDIR.DS.$project['Project']['name'].DS.'tmpDir'.DS.'deploy.php');
 			
 		// Define step options
 		$default_options = array(
@@ -424,7 +401,6 @@ class Deployment extends AppModel {
 		}
 
 		// Change file mode
-
 		if ($options['changeFileMode'] === true) {			
 			
 			// change file mode only for modified files
@@ -432,55 +408,42 @@ class Deployment extends AppModel {
 				$path = _DEPLOYTMPDIR . DS . $project['Project']['name'] . DS;
 				$command = "chmod " ._FILEMODE . "  $(<". $path . "files_to_chmod.txt)";
 				$output .= $this->executeCommand(
-											$command, 
-											__('updating files modes', true) . ' > ' . htmlspecialchars($command), 
-											'finalize', 
-											_DEPLOYDIR
-											);
+					$command, 
+					__('updating files modes', true) . ' > ' . htmlspecialchars($command), 
+					'finalize', 
+					_DEPLOYDIR
+				);
 				
 				$command = "chmod " ._DIRMODE . "  $(<". $path . "dir_to_chmod.txt)";
 				$output .= $this->executeCommand(
-											$command, 
-											__('updating dir mode', true) . ' > ' . htmlspecialchars($command), 
-											'finalize', 
-											_DEPLOYDIR
-											);
+					$command, 
+					__('updating dir mode', true) . ' > ' . htmlspecialchars($command), 
+					'finalize', 
+					_DEPLOYDIR
+				);
 			
 			// change file mode on all the project files
 			} else {
-				$command = "chmod -R " ._FILEMODE . "  ".$this->_pathConverter($project['Project']['prd_path']);
+				$command = "find " . $this->_pathConverter($project['Project']['prd_path']) . " -type f -exec chmod " . _FILEMODE . " {} \;";
 				$output .= $this->executeCommand(
-											$command, 
-											__('updating files modes', true) . ' > ' . _FILEMODE, 
-											'finalize', 
-											_DEPLOYDIR
-											);
-						
-				$command = "chmod " ._DIRMODE . "  ".$this->_pathConverter($project['Project']['prd_path']);
-				$output .= $this->executeCommand(
-											$command, 
-											__('updating dir mode', true) . '1/2 > ' . _DIRMODE, 
-											'finalize', 
-											_DEPLOYDIR
-											);
-						
+					$command, 
+					__('updating files modes', true) . ' > ' . _FILEMODE, 
+					'finalize', 
+					_DEPLOYDIR
+				);
+	
 				$command = "find " . $this->_pathConverter($project['Project']['prd_path']) . " -type d -exec chmod " . _DIRMODE . " {} \;";
 				$output .= $this->executeCommand($command, __('updating dir mode', true) . '2/2 > ' . _DIRMODE, 'finalize');
 			}
-			
-			
-		
 		}
 		
-		
 		// Change directory mode
-		// TODO Rewrite code (Too slow) 
 		if ($options['giveWriteMode'] === true) {
 			// Give write permissions to some folder
 			$writable = $this->_getConfig()->writable;
 			if (sizeof($writable) > 0) {
 				for ($i = 0; $i < sizeof($writable); $i++) {
-					$command = "chmod -vR " ._WRITEMODE . "  ".$this->_pathConverter($project['Project']['prd_path'] . $writable[$i] );
+					$command = "chmod -vR "._WRITEMODE."  ".$this->_pathConverter($project['Project']['prd_path'].$writable[$i] );
 					$output .= $this->executeCommand($command, 'Setting write permissions', 'finalize');
 				}
 			}
@@ -497,39 +460,34 @@ class Deployment extends AppModel {
 	private function backup($project) {
 		$output = '';
 		
-		if (!is_dir(_DEPLOYBACKUPDIR)) {
-			if (mkdir(_DEPLOYBACKUPDIR, octdec(_DIRMODE), TRUE))
-				$output .= "-[".__('creating directory'). " " . _DEPLOYBACKUPDIR . "]\n";
-		}
-
 		// création du répertoire pour la sauvegarde
-		if (!is_dir(_DEPLOYBACKUPDIR . DS . $project['Project']['name'])) {
-			if (mkdir(_DEPLOYBACKUPDIR . DS . $project['Project']['name'], octdec(_DIRMODE), TRUE)) {
-				$output .= "-[".__('creating directory'). " " . _DEPLOYBACKUPDIR . DS . $project['Project']['name'] . "]\n";
+		$backupDir =_DEPLOYBACKUPDIR.DS.$project['Project']['name'] ;
+		if (!is_dir($backupDir)) {
+			if (mkdir($backupDir, octdec(_DIRMODE), TRUE)) {
+				$output .= "-[".__('creating directory')." $backupDir]\n";
+			} else {
+				$this->triggerError("Unable to create directory $backupDir during export step");
+				return false;
 			}
 		}
 
-		//
 		$output .= "-[".__('backup current prod version')."]\n";
 		if (is_dir($project['Project']['prd_path'])) {
 			$source = $this->_pathConverter($project['Project']['prd_path'] );
-			$target = $this->_pathConverter(_DEPLOYBACKUPDIR . DS . $project['Project']['name']);
+			$target = $this->_pathConverter($backupDir);
 		
 			// rsync pour le backup
 			$command = "rsync -av $source $target 2>&1";
 			$output .= $this->executeCommand($command, __('backup current prod version'), 'backup');
 			
-			$command = "chmod -R " . _DIRMODE . " " . _DEPLOYBACKUPDIR;
+			$command = "chmod -R "._DIRMODE." "._DEPLOYBACKUPDIR;
 			$output .= $this->executeCommand($command, __('updating dir mode') . ' > ' . _DIRMODE, 'backup');
 		} else {
-			$output .= "-[".__('no backup needed')." " . $project['Project']['prd_path'] . " ".__('does not exist')."]\n";
+			$output .= "-[".__('no backup needed')." ".$project['Project']['prd_path']." ".__('does not exist')."]\n";
 		}
 
-		if (is_dir(_DEPLOYBACKUPDIR . DS . $project['Project']['name'])) {
-			return $output;
-		} else {
-			return false;
-		}
+		// TODO Check du backup
+		return $output;
 	}// backup
 
 	/**
@@ -574,8 +532,9 @@ class Deployment extends AppModel {
 	private function &_getConfig() {
 		static $instance;
 
-		if (!isset($instance) || !$instance)
+		if (!isset($instance) || !$instance) {
 			$instance = &new DEPLOY_CONFIG();
+		}
 
 		return $instance;
 	}// _getConfig
@@ -620,7 +579,6 @@ class Deployment extends AppModel {
 			$suffix = "";
 		}
 		$shell = shell_exec( $prefix.$command.$suffix );
-		
 		return $output . $shell;
 	}// executeCommand
 	

@@ -48,31 +48,36 @@ class LogsController extends AppController {
 		return $logs;
 	}
 	
+	// TODO finalize
 	function view() {
 		$this->layout = 'ajax';
-		if (!empty($this->data) && !empty($this->data['Search']['project_id']) && $this->data['Search']['logPath']) {
+		if (!empty($this->data) && !empty($this->data['Log']['project_id']) && !is_null($this->data['Search']['logPath'])) {
 			// Size
 			if (!empty($this->data['Search']['maxsize'])) {
 				Configure::write('Log.maxSize', $this->data['Search']['maxsize']);
 			}
 			
+			$project = $this->Project->read(null, $this->data['Log']['project_id']);
+			$logfiles = explode("\n",$project['Project']['log_path']);
+			
 			$options = array();
 			if (!empty($this->data['Search']['pattern'])) {
 				$options['pattern'] = $this->data['Search']['pattern'];
 			}
-			$options['logPath'] = $this->data['Search']['logPath'];
+			$options['logPath'] = $logfiles[$this->data['Search']['logPath']];
 			$options['reverse'] = $this->data['Search']['reverse'];
-			$output = $this->Project->readAssociatedLog($this->data['Search']['project_id'], $options);
+			$output = $this->Project->readAssociatedLog($this->data['Log']['project_id'], $options);
 			if ( $output === false ) {
 				$this->set('error', 	$this->Project->lastReadError);
 			} else {
-				$this->set('project', 	$this->Project->read(null, $this->data['Search']['project_id']));
+				$this->set('project', 	$project);
 				$this->set('size', 		$this->Project->lastReadSize); 
 				$this->set('logPath',	$options['logPath']);	
 			}
 			$this->set('log', $output);
 		}  else {
-			$this->set('error', 'Invalid request');
+			$this->set('log',		false);
+			$this->set('error', 	'Invalid request');
 		}
 	}// view
 	

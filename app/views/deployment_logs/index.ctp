@@ -4,7 +4,7 @@ if (isset($this->params['pass'][0]) && $this->params['pass'][0] == 'project') {
 	$project_id = $this->params['pass'][1];
 }
 ?>
-	<?php echo $form->create('Log', array('url' => '/deploymentLogs/list_all', 'method' => 'post', 'class' => 'f-wrap-1'));?>
+	<?php echo $form->create('Log', array('url' => '/deploymentLogs', 'method' => 'post', 'class' => 'f-wrap-1'));?>
 	<fieldset>
 		<h3><?php __('Deployment logs') ?></h3>
 		<div>
@@ -23,7 +23,7 @@ if (isset($this->params['pass'][0]) && $this->params['pass'][0] == 'project') {
 										); 
 			?>									
 			</label>	
-			<?php e($form->submit('Search',array( 'url' => '/deploymentLogs/list_all', 'class' => 'f-submit'))); ?>
+			<?php e($form->submit('Search',array( 'url' => '/deploymentLogs', 'class' => 'f-submit'))); ?>
 		</div>
 	</fieldset>
 	<?php echo $form->end();?>
@@ -39,7 +39,7 @@ if (isset($this->params['pass'][0]) && $this->params['pass'][0] == 'project') {
  			$created = strtotime($log['DeploymentLog']['created']);
  			$newdate = date("d/m/Y",$created);
  			$com = $log['DeploymentLog']['comment'];
- 			$com = (strlen($com) > 20 )? substr($com, 0, 20).'...':$com;
+ 			$com = $text->truncate($com, 30);
  			if ($newdate != $lastdate) {
  				$lastdate = $newdate;
  				echo '<h3>'.$newdate.'</h3>';

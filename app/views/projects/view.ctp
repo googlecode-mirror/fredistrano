@@ -39,7 +39,7 @@
 														'title' => __('View deployment history', true)
 														)
 													).' '.__('View deployment history', true), 
-										'/deploymentLogs/list_all/project/' . $project['Project']['id'], 
+										'/deploymentLogs/index/project/' . $project['Project']['id'], 
 										null,
 										false,
 										false);?></li>
@@ -157,6 +157,7 @@
 </div> 
 
 <div id="deploy_area"></div>
+
 <div id="deploy_result"></div>
 <br/><br/>
 

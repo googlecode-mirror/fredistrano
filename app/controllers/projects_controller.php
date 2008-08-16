@@ -9,7 +9,6 @@ class ProjectsController extends AppController {
 		'Ajax',
 		'Fbollon'
 	);
-	
 
     var $paginate = array('limit' => 15, 'page' => 1); 
 
@@ -103,7 +102,6 @@ class ProjectsController extends AppController {
 		if (empty ($this->data)) {
 			$this->render();
 		} else {
-			$this->cleanUpFields();
 			if ($this->Project->save($this->data)) {
 				$this->Session->setFlash(__('Project saved.', true));
 				$this->redirect('/projects/view/'.$this->Project->getInsertID());

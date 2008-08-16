@@ -14,7 +14,7 @@
 											'onchange'	=> 'new Ajax.Updater(\'slave\', \''.$html->url('/logs/getLogList').'/\'+$(\'LogProjectId\')[$(\'LogProjectId\').selectedIndex].value ,{ method: \'get\', asynchronous:true, evalScripts:true});'
 											)); ?>
 		<div id="slave">
-		<?php echo $form->input('logPath', array(
+		<?php echo $form->input('Search/logPath', array(
 											'options' => $logs, 
 											'label' => '<b>' . __('Log file', true). '</b>',
 											'selected' => $this->params['pass'][1],

@@ -3,15 +3,15 @@
 	<?php echo $form->create('Project', array('url' => '/deployments/export', 'method' => 'post', 'class' => 'f-wrap-1'));?>
 	<fieldset>
 		<h3><?php __('Subversion export');?></h3>
- 				<?php echo $form->input('Project.revision', 
-								array(
-									'label' => '<b>'.__('Revision', true).'</b>',
-									'size' => '8', 
-									'class' => 'f-name', 
-									'tabindex=1'
-								)
-					  );
-				?>
+		<?php echo $form->input('Project.revision', 
+					array(
+						'label' => '<b>'.__('Revision', true).'</b>',
+						'size' => '8', 
+						'class' => 'f-name', 
+						'tabindex=1'
+					)
+		  );
+		?>	
 		<small>
 			<a href="#" onclick="Effect.toggle('connectionSettings','slide',{delay: 0.5, duration: 1.5}); return false">
 				<?php __('Specify SVN login');?>
@@ -38,26 +38,24 @@
 		<?php echo $form->hidden('Project.id', array('value' => $id))?>
 		<div class="f-submit-wrap">
 				<?php 
-					echo $ajax->submit(
+					e($ajax->submit(
 						__('Step 1 - svn export', true), 
 						array(
-							'class' => 'f-submit',
-							'url' => '/deployments/export',
-							'update' => 'deploy_result', 
-							'loading' => "Element.show('spinning_image');", 
-							'complete' => "Element.show('step2');", 
-							'loaded' => "Element.hide('spinning_image');"
+							'class' 	=> 'f-submit',
+							'url' 		=> '/deployments/export',
+							'update' 	=> 'deploy_result', 
+							'loading' 	=> "Element.show('spinning_image');", 
+							'complete' 	=> "Element.show('step2');", 
+							'loaded' 	=> "Element.hide('spinning_image');"
 						)
-					);
-				?>
-				<?php e($html->image('loading_orange.gif', 
-							array(
-								'alt' => 'Loading...', 
-								'id' => 'spinning_image',
-								'style' => 'display:none'
-								)
-							)
-						); 
+					));
+		 			e($html->image('loading_orange.gif', 
+						array(
+							'alt' 	=> 'Loading...', 
+							'id' 	=> 'spinning_image',
+							'style' => 'display:none'
+						)
+					)); 
 				?>
 		</div>
 	</fieldset>
@@ -77,8 +75,9 @@
 												'value' => true
 												)
 											)
-								);	?>
-					<br />
+								);	
+						?>
+						<br />
 					</label>
 					
 					<label for="ProjectBackup"><b><?php __('Backup');?></b>	
@@ -89,21 +88,23 @@
 													'disabled' => 'true'
 													)
 												)
-								);	?>
-					<br />
+								);	
+						?>
+						<br />
 					</label>
 					
-						<?php e($form->input('DeploymentLog.comment', 
-												array(
-													'label' => '<b>'.__('Comment', true).'</b>', 
-													'type' => 'textarea', 
-													'rows' => 5, 
-													'class' => 'f-name'
-													)
-											)
-								);?>
-				 		
-						<?php e($form->hidden('Project.id', array('value' => $id)))?>
+					<?php e($form->input('DeploymentLog.comment', 
+											array(
+												'label' => '<b>'.__('Comment', true).'</b>', 
+												'type' => 'textarea', 
+												'rows' => 5, 
+												'class' => 'f-name'
+												)
+										)
+							);
+					?>
+			 		
+					<?php e($form->hidden('Project.id', array('value' => $id)))?>
 				
 				<div class="f-submit-wrap">
 					<?php e($ajax->submit(__('Step 2 - synchronization', true), 

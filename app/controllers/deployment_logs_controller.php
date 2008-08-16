@@ -4,7 +4,8 @@ class DeploymentLogsController extends AppController {
 	var $name = 'DeploymentLogs';
 
 	var $helpers = array (
-		'Html'
+		'Html',
+		'Text'
 	);
 
 	var $uses = array (
@@ -50,14 +51,7 @@ class DeploymentLogsController extends AppController {
 	/**
 	 * List all logs
 	 */
-	function index() {
-		$this->redirect('/deploymentLogs/list_all');
-	} // index
-
-	/**
-	 * List all logs
-	 */
-	function list_all($op = null, $id = null) {
+	function index($op = null, $id = null) {
 		if (isset($this->data['Log']['project_id'])) {
 			$op = 'project';
 			$id = $this->data['Log']['project_id'];
