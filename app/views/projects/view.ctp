@@ -21,22 +21,48 @@
 <tr>
 <th colspan="2">
 	<div class="tabletoplink">
-		<ul>					
-			<li><?php echo $html->link($html->image( 'date.png', array('alt' => __('View deployment history', true), 'title' => __('View deployment history', true))).' '.__('View deployment history', true), 
-					'/deploymentLogs/list_all/project/' . $project['Project']['id'], 
-					null,
-					false,
-					false);?></li>
-			<li><?php echo $html->link($html->image( 'b_edit.png', array('alt' => __('Edit', true), 'title' => __('Edit', true))).' '.__('Edit', true), 
-					'/projects/edit/' . $project['Project']['id'], 
-					null,
-					false,
-					false);?></li>
-			<li><?php echo $html->link($html->image( 'b_drop.png', array('alt' => __('Delete', true), 'title' => __('Delete', true))).' '.__('Delete', true), 
-					'/projects/delete/' . $project['Project']['id'], 
-					null, 
-					__('Are you sure you want to delete', true).' : ' . $project['Project']['name'] . '?',
-					false );?></li>
+		<ul>
+			<li><?php echo $html->link($html->image('arrow_switch.png', 
+													array(
+														'alt' => __('Switch deployment mode (standard / fast)', true), 
+														'title' => __('Switch deployment mode (standard / fast)', true)
+														)
+													).' '.__('Switch deployment mode (standard / fast)', true), 
+										'#',
+										array('onclick'=>"Element.toggle('standardDeploy');Element.toggle('fastDeploy')"),
+										false,
+										false
+										);?></li>				
+			<li><?php echo $html->link($html->image('date.png', 
+													array(
+														'alt' => __('View deployment history', true), 
+														'title' => __('View deployment history', true)
+														)
+													).' '.__('View deployment history', true), 
+										'/deploymentLogs/list_all/project/' . $project['Project']['id'], 
+										null,
+										false,
+										false);?></li>
+			<li><?php echo $html->link($html->image('b_edit.png', 
+													array(
+														'alt' => __('Edit', true), 
+														'title' => __('Edit', true)
+														)
+													).' '.__('Edit', true), 
+										'/projects/edit/' . $project['Project']['id'], 
+										null,
+										false,
+										false);?></li>
+			<li><?php echo $html->link($html->image('b_drop.png', 
+													array(
+														'alt' => __('Delete', true), 
+														'title' => __('Delete', true)
+														)
+													).' '.__('Delete', true), 
+										'/projects/delete/' . $project['Project']['id'], 
+										null, 
+										__('Are you sure you want to delete', true).' : ' . $project['Project']['name'] . '?',
+										false );?></li>
 		</ul>
 	</div>
 </th>
@@ -86,42 +112,40 @@
 						)
 			); ?>
 	<?php 
+		
+		
 		echo $ajax->submit(
 							__('Deploy', true), 
 							array(
-								'class' => 'f-submit',
-								'url' => '/projects/deploy/' . $project['Project']['id'],
-								'update' => 'deploy_area', 
-								'loading' => "Element.show('spinning_image0');", 
-								'loaded' => "Element.hide('spinning_image0');",
-								 'style' => 'float:right;margin:10px'
+								'class' 	=> 'f-submit',
+								'url' 		=> '/projects/deploy/' . $project['Project']['id'],
+								'update' 	=> 'deploy_area', 
+								'loading' 	=> "Element.show('spinning_image0');", 
+								'loaded' 	=> "Element.hide('spinning_image0');",
+								'style' 	=> 'float:right;margin:10px',
+								'id'		=> 'standardDeploy'
 								)
 							);
 	?>
+
 	<?php e($ajax->submit(
-						__('Fast deploy', true), 
-						array(
-							'class' => 'f-submit',
-							'url' => '/deployments/fastDeploy/' . $project['Project']['id'],
-							'update' => 'deploy_area', 
-							'loading' => "Element.show('spinning_image0');", 
-							'loaded' => "Element.hide('spinning_image0');",
-							'style' => 'float:right;margin:10px'
-							)
+							__('Fast deploy', true), 
+							array(
+								'class' 	=> 'f-submit',
+								'url' 		=> '/deployments/fastDeploy/' . $project['Project']['id'],
+								'update' 	=> 'deploy_area', 
+								'loading' 	=> "Element.show('spinning_image0');", 
+								'loaded' 	=> "Element.hide('spinning_image0');",
+								'style' 	=> 'float:right;margin:10px;display:none',
+								'id' 		=> 'fastDeploy'
+								)
 						)
 		);
-	// TODO Demander une confirmation + affichage
 	?>
-	<?php e($fbollon->displayHelp ('fast_deploy', 
-									__('Use the Fast deploy button to deploy in one click with standart options: svn export, synchronisation and finalization',
-									 true
-									)
-								)
-			); 
-	?>
-	<?php e($fbollon->helpButton('normal_deploy')) ?>
+	<?php e($fbollon->helpButton('help_deploy')) ?>
 </form>
-<div><?php e($fbollon->displayHelp ('normal_deploy', __('Use the deploy button to deploy step by step', true))) ?></div>
+<div><?php e($fbollon->displayHelp ('help_deploy', 
+									__('You can switch between standard deployment and fast deployment mode by using the switch mode link', true))) ?></div>
 </td>
 </tr>
 </tbody>

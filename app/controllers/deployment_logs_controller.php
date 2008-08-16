@@ -163,14 +163,15 @@ class DeploymentLogsController extends AppController {
 	 * @param string $id ID of the project
 	 */
 	private function _listByProject($id = null) {
-		if (!$id or !$this->Project->read(null, $id)) {
+		
+		if ($id && !$this->Project->read(null, $id)) {
 			$this->Session->setFlash(__('Invalid id', true));
-			$this->redirect('/deploymentLogs/list_all');
-			exit;
 		}
 		
-		$filter = array('project' => $id);		
-		$conditions = 'DeploymentLog.project_id = ' . $id;
+		$conditions = '1=1';
+		if ($id) {
+			$conditions .= ' AND DeploymentLog.project_id = ' . $id;
+		}
 		if (!isset($this->params['url']['showArchived']) && (!isset($this->data['Log']['showArchived']) || $this->data['Log']['showArchived'] == 0)){
 			$conditions .= ' AND archive=0';
 		}	
@@ -187,7 +188,6 @@ class DeploymentLogsController extends AppController {
 		$logs = $this->DeploymentLog->findAll($conditions, $fields, $order);
 
 		$this->set('logs', $logs);
-		$this->set('filter',$filter);
 	} // _listByProject
 
 } // DeploymentLogs

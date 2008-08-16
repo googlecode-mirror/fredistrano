@@ -33,16 +33,6 @@ if (isset($this->params['pass'][0]) && $this->params['pass'][0] == 'project') {
  	if (!sizeof($logs)) {
  		echo '<em>No logs in database</em><br/><br/><br/><br/>';
  	} else {
- 		// if (!empty($filter)) {
- 		// 	echo 'Results filtered by : ';
- 		// 	if (isset($filter['person'])) {
- 		// 		echo 'person|<b>' . $filter['person'].'</b> ';
- 		// 	}
- 		// 	if (isset($filter['project'])) {
- 		// 		echo 'project|<b>' . $filter['project'].'</b>';
- 		// 	}
- 		// 	echo ' '.$html->link('[X]','/deploymentLogs/list_all' ).'';
- 		// }
  		echo '<ul>';
  		$lastdate = null;
  		foreach($logs as $log) {
