@@ -355,7 +355,7 @@ class Deployment extends AppModel {
 		
 				if (is_file($target . $list[$i])) {
 					$tmp_str = $list[$i];
-					fwrite($handle_f, $target.$list[$i] . "\n");
+					fwrite($handle_f, $target.str_replace(".prd.", ".", $list[$i]) . "\n");
 				} else {
 					fwrite($handle_d, $target.$list[$i] . "\n");
 				}
