@@ -11,7 +11,6 @@
 							$projects, 
 							null, 
 							array('onchange' => "document.location = '".$this->base."/projects/view/'+$('ProjectId').value;"), 
-							null, 
 							true); ?>
 	</li>
 	<li><?php echo $html->link(__('Create a new project', true),'/projects/add'); ?></li>
@@ -28,7 +27,7 @@ if (empty($logs))
 else {
 	foreach($logs as $log) {
  			$created = strtotime($log['DeploymentLog']['created']);
- 			$line = date("m/d/Y - H:i:s",$created).' : '.__('Deployment of', true).' <b>'.
+ 			$line = $html->link(date("Y/m/d - H:i:s",$created),'/deploymentLogs/view/'.$log['DeploymentLog']['id']).' : '.__('Deployment of', true).' <b>'.
  				$log['Project']['name'].'</b> by <b>'. $log['User']['login'] . '</b>';
  			echo '<li>'.$line.'</li>';
 		}

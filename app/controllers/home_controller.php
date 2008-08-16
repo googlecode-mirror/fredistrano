@@ -5,6 +5,32 @@ class HomeController extends AppController {
 		'Project',
 		'DeploymentLog'
 	);
+	
+	function beforeRender() {
+		parent::beforeRender();
+		
+		// Tableau de liens pour la création du menu contextuel
+		$tab[] = array (
+			'text' => 'See also'
+		);
+
+		$tab[] = array (
+			'text' => __('About', true),
+			'link' => '/pages/about'
+		);
+
+		$tab[] = array (
+			'text' => __('Homepage', true),
+			'link' => 'http://code.google.com/p/fredistrano/'
+		);
+
+		$tab[] = array (
+			'text' => __('Donate', true),
+			'link' => 'http://code.google.com/p/fredistrano/wiki/Donation'
+		);
+
+		$this->set("context_menu", $tab);
+	}
 
 	/**
 	 * Display the welcome screen

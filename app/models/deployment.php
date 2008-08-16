@@ -333,9 +333,9 @@ class Deployment extends AppModel {
 		}
 
 		// Execute command		
-		$exclude_file_name = $this->_pathConverter($exclude_file_name);
-		$source = $this->_pathConverter(_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS);
-		$target = $this->_pathConverter($project['Project']['prd_path']);
+		$exclude_file_name = self::pathConverter($exclude_file_name);
+		$source = self::pathConverter(_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS);
+		$target = self::pathConverter($project['Project']['prd_path']);
 		$command = "rsync -$option --delete --exclude-from=$exclude_file_name $source $target 2>&1";	
 		$output .= $this->executeCommand($command,__('Deploying new version',true), 'synchronize', _DEPLOYDIR);
 
@@ -396,7 +396,7 @@ class Deployment extends AppModel {
 		
 		// Rename file type from .prd.xxx into .xxx
 		if ($options['renamePrdFile'] === true) {			
-			$command = "find " . $this->_pathConverter($project['Project']['prd_path']) . " -name '*.prd.*' -exec /usr/bin/perl ".$this->_pathConverter(_DEPLOYDIR)."/renamePrdFile -vf 's/\.prd\./\./i' {} \;";
+			$command = "find " . self::pathConverter($project['Project']['prd_path']) . " -name '*.prd.*' -exec /usr/bin/perl ".self::pathConverter(_DEPLOYDIR)."/renamePrdFile -vf 's/\.prd\./\./i' {} \;";
 			$output .= $this->executeCommand($command, __('Rename files', true) . '.prd.', 'finalize', _DEPLOYDIR);
 		}
 
@@ -424,7 +424,7 @@ class Deployment extends AppModel {
 			
 			// change file mode on all the project files
 			} else {
-				$command = "find " . $this->_pathConverter($project['Project']['prd_path']) . " -type f -exec chmod " . _FILEMODE . " {} \;";
+				$command = "find " . self::pathConverter($project['Project']['prd_path']) . " -type f -exec chmod " . _FILEMODE . " {} \;";
 				$output .= $this->executeCommand(
 					$command, 
 					__('updating files modes', true) . ' > ' . _FILEMODE, 
@@ -432,7 +432,7 @@ class Deployment extends AppModel {
 					_DEPLOYDIR
 				);
 	
-				$command = "find " . $this->_pathConverter($project['Project']['prd_path']) . " -type d -exec chmod " . _DIRMODE . " {} \;";
+				$command = "find " . self::pathConverter($project['Project']['prd_path']) . " -type d -exec chmod " . _DIRMODE . " {} \;";
 				$output .= $this->executeCommand($command, __('updating dir mode', true) . '2/2 > ' . _DIRMODE, 'finalize');
 			}
 		}
@@ -443,7 +443,7 @@ class Deployment extends AppModel {
 			$writable = $this->_getConfig()->writable;
 			if (sizeof($writable) > 0) {
 				for ($i = 0; $i < sizeof($writable); $i++) {
-					$command = "chmod -vR "._WRITEMODE."  ".$this->_pathConverter($project['Project']['prd_path'].$writable[$i] );
+					$command = "chmod -vR "._WRITEMODE."  ".self::pathConverter($project['Project']['prd_path'].$writable[$i] );
 					$output .= $this->executeCommand($command, 'Setting write permissions', 'finalize');
 				}
 			}
@@ -473,8 +473,8 @@ class Deployment extends AppModel {
 
 		$output .= "-[".__('backup current prod version')."]\n";
 		if (is_dir($project['Project']['prd_path'])) {
-			$source = $this->_pathConverter($project['Project']['prd_path'] );
-			$target = $this->_pathConverter($backupDir);
+			$source = self::pathConverter($project['Project']['prd_path'] );
+			$target = self::pathConverter($backupDir);
 		
 			// rsync pour le backup
 			$command = "rsync -av $source $target 2>&1";
@@ -524,6 +524,24 @@ class Deployment extends AppModel {
 		return $this->lastError;
 	}//getLastExecutionTime
 
+	/**
+	 * Convert if necessary a path to a cygwin/linux format 
+	 * @param string $path 		Path to be converted
+	 * @return string 			Converted path
+	 */ 
+	function pathConverter($path) {
+		$pathForRsync = $path;
+		if ( Configure::read('OS.type') == 'WIN') {
+			$pattern = '/^([A-Za-z]):/';
+			preg_match($pattern, $path, $matches, PREG_OFFSET_CAPTURE);
+			if (!empty ($matches[1][0])) {
+				$windowsLetter = strtolower($matches[1][0]);
+				$pathForRsync = strtr(Configure::read('OS.Cygwin.rootDir') . $windowsLetter . substr($path, 2), "\\", "/");
+			}	
+		}
+		return $pathForRsync;
+	}// pathConverter
+
 	// Private --------------------------------------------------------------------------------
 	/**
 	 * Retrieve deploy configuration
@@ -538,24 +556,6 @@ class Deployment extends AppModel {
 
 		return $instance;
 	}// _getConfig
-	
-	/**
-	 * Convert if necessary a path to a cygwin/linux format 
-	 * @param string $path 		Path to be converted
-	 * @return string 			Converted path
-	 */ 
-	private function _pathConverter($path) {
-		$pathForRsync = $path;
-		if ( Configure::read('OS.type') == 'WIN') {
-			$pattern = '/^([A-Za-z]):/';
-			preg_match($pattern, $path, $matches, PREG_OFFSET_CAPTURE);
-			if (!empty ($matches[1][0])) {
-				$windowsLetter = strtolower($matches[1][0]);
-				$pathForRsync = strtr(Configure::read('OS.Cygwin.rootDir') . $windowsLetter . substr($path, 2), "\\", "/");
-			}	
-		}
-		return $pathForRsync;
-	}// _pathConverter
 	
 	function executeCommand( $command = null, $comment = 'none', $context = 'none', $newDir = null ){
 		if ($command == null) {

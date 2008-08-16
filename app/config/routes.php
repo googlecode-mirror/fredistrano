@@ -43,4 +43,7 @@
  * developement.
  */
 	Router::connect('/tests', array('controller' => 'tests', 'action' => 'index'));
+	
+	// RSS stuff
+	Router::parseExtensions();
 ?>

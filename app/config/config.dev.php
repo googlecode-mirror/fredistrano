@@ -2,20 +2,6 @@
 	// Version
 	define("_VERSION",				'0.4.0');		
 	define("_RELEASEDATE",			'XX/XX/2008');
-
-	/**
-	 * Enable Aclite (Authorization checks)
-	 */
-	Configure::write('Aclite.enabled',			false);
-	
-	/**
-	 * Authentication type
-	 *
-	 * 0: disabled
-	 * 1: web service
-	 * 2: MySQL
-	 */
-	Configure::write('Authentication.type', 	2);
 	
 	/**
 	 * Enable  public feeds
@@ -45,6 +31,24 @@
 	 * 2: always
 	 */
 	Configure::write('Security.https',			0);
+	
+	/**
+	 * Enabled https
+	 *
+	 * 0: never
+	 * 1: login
+	 * 2: always
+	 */
+	Configure::write('Security.Authorizations.disable',	true);
+	
+	/**
+	 * Authentication type
+	 *
+	 * 0: disabled
+	 * 1: web service
+	 * 2: MySQL
+	 */
+	Configure::write('Security.Authentication.type', 	2);
 
 	/**
 	 * Subversion default login
@@ -78,8 +82,8 @@
 	define("_CHANGEMODEMODIFIEDONLY", 	true);			//change file and directory mode only for modified file and dir
 
 	// Default permissions
-	define("_DIRMODE", 				'755');						//directories mode after deployment 
-	define("_FILEMODE", 			'644');						//files mode after deployment 
+	define("_DIRMODE", 				'750');						//directories mode after deployment 
+	define("_FILEMODE", 			'640');						//files mode after deployment 
 	define("_WRITEMODE", 			'777');						//writable mode on directories defined in deploy.php in $writable after deployment 
 
 	// Filesytem

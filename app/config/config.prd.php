@@ -3,20 +3,6 @@
 	// Version
 	define("_VERSION",				'0.4.0');		
 	define("_RELEASEDATE",			'XX/XX/2008');
-
-	/**
-	 * Enable Aclite (Authorization checks)
-	 */
-	Configure::write('Aclite.enabled',			false);
-	
-	/**
-	 * Authentication type
-	 *
-	 * 0: disabled
-	 * 1: web service
-	 * 2: MySQL
-	 */
-	Configure::write('Authentication.type', 	2);
 	
 	/**
 	 * Enable  public feeds
@@ -46,6 +32,15 @@
 	 * 2: always
 	 */
 	Configure::write('Security.https',			0);
+	
+	/**
+	 * Authentication type
+	 *
+	 * 0: disabled
+	 * 1: web service
+	 * 2: MySQL
+	 */
+	Configure::write('Security.Authentication.type', 	2);
 
 	/**
 	 * Subversion default login

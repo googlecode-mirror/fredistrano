@@ -1,3 +1,7 @@
+<h1><?php __('Deployable projects') ?></h1>
+
+<p><?php __('The list displays all the web projects configured in Fredistrano. Click on a project to deploy or manage it.') ?></p>
+
 <div class="projects">
 <table class="table1">
 		<thead>
@@ -33,3 +37,5 @@ foreach ($data as $output)
 <?php echo $paginator->numbers(); ?>
 <?php echo $paginator->next(); ?> 
 </div>
+
+<br /><br /><br />

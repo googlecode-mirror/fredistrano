@@ -14,7 +14,10 @@ class DeploymentLogsController extends AppController {
 	);
 
 	var $authLocal = array (
-		'DeploymentLogs'	=> 	array( 'entrance' )
+		'DeploymentLogs'	=> 	array( 'entrance' ),
+		'except' 	=> 	array(
+			'index' 		=> 	array( 'public' )
+		)
 	);
 		
 	function beforeRender() {
@@ -25,10 +28,10 @@ class DeploymentLogsController extends AppController {
 			'text' => 'Actions'
 		);
 
-		if ($this->action != 'list_all')
+		if ($this->action != 'index')
 			$tab[] = array (
 				'text' => __('Display full history', true),
-				'link' => '/deploymentLogs/list_all'
+				'link' => '/deploymentLogs'
 			);
 
 		$tab[] = array (
@@ -39,7 +42,7 @@ class DeploymentLogsController extends AppController {
 		if ( Configure::read('Feeds.enabled') === true ) {
 			$tab[] = array (
 				'text' => 'Rss Feed',
-				'link' => '/rss/deploymentLogs'
+				'link' => '/deploymentLogs/index.rss'
 			);
 		}
 		
@@ -52,6 +55,27 @@ class DeploymentLogsController extends AppController {
 	 * List all logs
 	 */
 	function index($op = null, $id = null) {
+		$limit = null;
+		
+		if (!Configure::read('Feeds.enabled') && $this->RequestHandler->isRss()) {
+			
+		}
+		
+		if ($this->RequestHandler->isRss()) {
+			$limit = 50;
+			
+			if (!Configure::read('Feeds.enabled')) {
+				$this->Session->setFlash(__('Feeds not enabled. To use them, activate them first in the config file.', true));
+				$this->redirect('/deploymentLogs');
+				exit();		
+			}
+			// TODO check token?
+			// 	$this->redirect('/projects/index');
+			// 	exit();
+		} else {
+			$this->Aclite->checkAccess(array('entrance'));
+		}
+		
 		if (isset($this->data['Log']['project_id'])) {
 			$op = 'project';
 			$id = $this->data['Log']['project_id'];
@@ -61,11 +85,11 @@ class DeploymentLogsController extends AppController {
 		$archived = $this->_archive();
 		if ($archived > 0){ 
 			$this->Session->setFlash(sprintf(__("%d logs have been archived", true),$archived));
-			}
+		}
 
 		switch ($op) {
 			case null :
-				$this->_listAll();
+				$this->_listAll($limit);
 				break;
 			case 'person' :
 				$this->_listByPerson($id);
@@ -78,7 +102,7 @@ class DeploymentLogsController extends AppController {
 				$this->redirect('/deploymentLogs/list_all');
 				break;
 		} // switch
-	} // listAll
+	} // index
 
 	/**
 	 * View properties of a specified log
@@ -130,11 +154,12 @@ class DeploymentLogsController extends AppController {
 	/**
 	 * Private function for listing logs
 	 */
-	private function _listAll() {
+	private function _listAll($limit = null) {
 		$filter = array();
 		$conditions = '';
-		if (!isset($this->params['url']['showArchived'])) 
+		if (!isset($this->params['url']['showArchived'])) {
 			$conditions = 'archive=0';
+		}
 		
 		$fields = array (
 			'id',
@@ -146,7 +171,7 @@ class DeploymentLogsController extends AppController {
 			'Project.name'
 		);
 		$order = 'DeploymentLog.created DESC';
-		$logs = $this->DeploymentLog->findAll($conditions, $fields, $order);
+		$logs = $this->DeploymentLog->findAll($conditions, $fields, $order,$limit);
 
 		$this->set('filter', $filter);
 		$this->set('logs', $logs);

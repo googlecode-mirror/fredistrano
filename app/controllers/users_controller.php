@@ -233,11 +233,11 @@ class UsersController extends AppController {
 	 */
 	private function _authenticate($user, $passwd) {
 
-		if (Configure::read('Authentication.type') == 0){
+		if (Configure::read('Security.Authentication.type') == 0){
 			// Accept all
 			return true;
 			
-		} else if (Configure::read('Authentication.type') == 1) {
+		} else if (Configure::read('Security.Authentication.type') == 1) {
 			// WS authentification 
 			
 			$client = new SoapClient( null,
@@ -263,7 +263,7 @@ class UsersController extends AppController {
 			 
 			return $result=='true';
 
-		} else if (Configure::read('Authentication.type') == 2) {
+		} else if (Configure::read('Security.Authentication.type') == 2) {
 			// MySQL authentification 
 			$user = $this->User->findByLogin($user); // requete cachée
 			

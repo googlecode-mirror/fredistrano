@@ -42,9 +42,12 @@ class AppController extends Controller {
 			'Html',
 			'Form',
 			'Javascript'
-			);
+	);
 
-	var $components = array ('Aclite');
+	var $components = array (
+		'Aclite',
+		'RequestHandler'
+	);
 				
 	function beforeFilter() {
 		uses('L10n');

@@ -37,7 +37,7 @@ if (isset($this->params['pass'][0]) && $this->params['pass'][0] == 'project') {
  		$lastdate = null;
  		foreach($logs as $log) {
  			$created = strtotime($log['DeploymentLog']['created']);
- 			$newdate = date("d/m/Y",$created);
+ 			$newdate = date("Y/m/d",$created);
  			$com = $log['DeploymentLog']['comment'];
  			$com = $text->truncate($com, 30);
  			if ($newdate != $lastdate) {
