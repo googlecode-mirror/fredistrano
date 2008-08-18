@@ -75,7 +75,7 @@ http://creativecommons.org/licenses/GPL/2.0/
 			<?php echo $content_for_layout;	?>
 	
 			<div id="footer">
-			<p>&copy; 2007 <a href="http://fbollon.net">fbollon.net</a> </p>
+			<p>&copy; 2007-2008 <a href="http://fbollon.net">fbollon.net</a> </p>
 			</div>
 		</div>
 	</div>

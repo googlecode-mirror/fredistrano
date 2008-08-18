@@ -31,7 +31,7 @@ if (isset($this->params['pass'][0]) && $this->params['pass'][0] == 'project') {
 <div id="deploymentLogs">
 <?php
  	if (!sizeof($logs)) {
- 		echo '<em>No logs in database</em><br/><br/><br/><br/>';
+ 		echo '<em>'.__('No logs in database', true).'</em><br/><br/><br/><br/>';
  	} else {
  		echo '<ul>';
  		$lastdate = null;
@@ -44,8 +44,8 @@ if (isset($this->params['pass'][0]) && $this->params['pass'][0] == 'project') {
  				$lastdate = $newdate;
  				echo '<h3>'.$newdate.'</h3>';
  			}
- 			$line = $html->link(date("H:i:s",$created),'/deploymentLogs/view/'.$log['DeploymentLog']['id']).' : deployment of <b>'.
- 				$log['Project']['name'].'</b> by <b>'. $log['User']['login'].'</b> [<i>'. $com .'</i>]';
+ 			$line = $html->link(date("H:i:s",$created),'/deploymentLogs/view/'.$log['DeploymentLog']['id']).' : '.__('Deployment of', true).' <b>'.
+ 				$log['Project']['name'].'</b> '.__('by', true).' <b>'. $log['User']['login'].'</b> [<i>'. $com .'</i>]';
  			echo '<li>'.$line.'</li>';
 		}
 		echo '</ul>';

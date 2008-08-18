@@ -64,7 +64,7 @@ class LogsController extends AppController {
 			if (!empty($this->data['Search']['pattern'])) {
 				$options['pattern'] = $this->data['Search']['pattern'];
 			}
-			$options['logPath'] = $logfiles[$this->data['Search']['logPath']];
+			$options['logPath'] = trim($logfiles[$this->data['Search']['logPath']]);
 			$options['reverse'] = $this->data['Search']['reverse'];
 			$output = $this->Project->readAssociatedLog($this->data['Log']['project_id'], $options);
 			if ( $output === false ) {
@@ -77,7 +77,7 @@ class LogsController extends AppController {
 			$this->set('log', $output);
 		}  else {
 			$this->set('log',		false);
-			$this->set('error', 	'Invalid request');
+			$this->set('error', 	__('Invalid request', true));
 		}
 	}// view
 	

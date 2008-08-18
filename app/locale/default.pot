@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2008-08-12 02:49+0200\n"
+"POT-Creation-Date: 2008-08-18 23:02+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -15,159 +15,240 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: /controllers/deployment_logs_controller.php:29
-#: /controllers/projects_controller.php:51
-msgid "Display full history"
+#: /controllers/control_objects_controller.php:26
+#: /views/control_objects/index.ctp:5
+msgid "Control object list"
 msgstr ""
 
-#: /controllers/deployment_logs_controller.php:34
-msgid "List projects"
+#: /controllers/control_objects_controller.php:31
+msgid "Add control object"
 msgstr ""
 
-#: /controllers/deployment_logs_controller.php:63
-msgid "%d logs have been archived"
-msgstr ""
-
-#: /controllers/deployment_logs_controller.php:76
-msgid "Unsupported action "
-msgstr ""
-
-#: /controllers/deployment_logs_controller.php:88;156
-msgid "Invalid id"
-msgstr ""
-
-#: /controllers/deployment_logs_controller.php:121
-msgid "All logs deleted"
-msgstr ""
-
+#: /controllers/control_objects_controller.php:46;73;94
 #: /controllers/deployments_controller.php:146
-#: /controllers/groups_controller.php:63;109;137;163
-#: /controllers/projects_controller.php:71;91;123;144
+#: /controllers/groups_controller.php:62;108;136;162
+#: /controllers/projects_controller.php:70;90;121;141
+#: /controllers/users_controller.php:58;90;117;134
 msgid "Invalid id."
 msgstr ""
 
-#: /controllers/groups_controller.php:37
+#: /controllers/control_objects_controller.php:60
+msgid "The control object has been created."
+msgstr ""
+
+#: /controllers/control_objects_controller.php:64;86
+#: /controllers/groups_controller.php:91;120
+#: /controllers/projects_controller.php:109;130
+#: /controllers/users_controller.php:77;105
+msgid "Please correct errors below."
+msgstr ""
+
+#: /controllers/control_objects_controller.php:82
+msgid "The control object has been updated."
+msgstr ""
+
+#: /controllers/control_objects_controller.php:100
+msgid "The control object has been deleted."
+msgstr ""
+
+#: /controllers/control_objects_controller.php:104
+#: /controllers/groups_controller.php:145
+#: /controllers/users_controller.php:126
+msgid "Error during deletion."
+msgstr ""
+
+#: /controllers/deployment_logs_controller.php:33
+#: /controllers/projects_controller.php:50
+msgid "Display full history"
+msgstr ""
+
+#: /controllers/deployment_logs_controller.php:38
+msgid "List projects"
+msgstr ""
+
+#: /controllers/deployment_logs_controller.php:68
+msgid "Feeds not enabled. To use them, activate them first in the config file."
+msgstr ""
+
+#: /controllers/deployment_logs_controller.php:87
+msgid "%d logs have been archived"
+msgstr ""
+
+#: /controllers/deployment_logs_controller.php:101
+msgid "Unsupported action "
+msgstr ""
+
+#: /controllers/deployment_logs_controller.php:113;187
+msgid "Invalid id"
+msgstr ""
+
+#: /controllers/deployment_logs_controller.php:150
+msgid "All logs deleted"
+msgstr ""
+
+#: /controllers/groups_controller.php:36
 #: /views/groups/index.ctp:5
 msgid "Group list"
 msgstr ""
 
-#: /controllers/groups_controller.php:42
+#: /controllers/groups_controller.php:41
 msgid "Add group"
 msgstr ""
 
-#: /controllers/groups_controller.php:89
+#: /controllers/groups_controller.php:88
 msgid "The group has been created."
 msgstr ""
 
-#: /controllers/groups_controller.php:92;121
-#: /controllers/projects_controller.php:111;133
-msgid "Please correct errors below."
-msgstr ""
-
-#: /controllers/groups_controller.php:118
+#: /controllers/groups_controller.php:117
 msgid "The group has been updated."
 msgstr ""
 
-#: /controllers/groups_controller.php:143
+#: /controllers/groups_controller.php:142
 msgid "The group has been deleted."
 msgstr ""
 
-#: /controllers/groups_controller.php:146
-msgid "Error during deletion."
-msgstr ""
-
-#: /controllers/groups_controller.php:183
+#: /controllers/groups_controller.php:184
 msgid "Group updated"
 msgstr ""
 
-#: /controllers/groups_controller.php:185
+#: /controllers/groups_controller.php:186
 msgid "Error during update."
 msgstr ""
 
-#: /controllers/projects_controller.php:40
-#: /views/projects/index.ctp:5
+#: /controllers/home_controller.php:18
+#: /views/pages/about.ctp:1
+msgid "About"
+msgstr ""
+
+#: /controllers/home_controller.php:23
+msgid "Homepage"
+msgstr ""
+
+#: /controllers/home_controller.php:28
+msgid "Donate"
+msgstr ""
+
+#: /controllers/logs_controller.php:80
+msgid "Invalid request"
+msgstr ""
+
+#: /controllers/projects_controller.php:39
+#: /views/projects/index.ctp:9
 msgid "Project list"
 msgstr ""
 
-#: /controllers/projects_controller.php:46
+#: /controllers/projects_controller.php:45
 msgid "Add project"
 msgstr ""
 
-#: /controllers/projects_controller.php:108;130
+#: /controllers/projects_controller.php:106;127
 msgid "Project saved."
 msgstr ""
 
-#: /controllers/projects_controller.php:148
+#: /controllers/projects_controller.php:145
 msgid "Project deleted."
 msgstr ""
 
-#: /controllers/users_controller.php:23
+#: /controllers/users_controller.php:40
+#: /views/users/index.ctp:5
 msgid "User list"
 msgstr ""
 
-#: /controllers/users_controller.php:25
+#: /controllers/users_controller.php:42
 msgid "Add user"
 msgstr ""
 
+#: /controllers/users_controller.php:44
+msgid "Manage groups"
+msgstr ""
+
+#: /controllers/users_controller.php:74
+msgid "The user has been created"
+msgstr ""
+
+#: /controllers/users_controller.php:102
+msgid "The user has been updated"
+msgstr ""
+
+#: /controllers/users_controller.php:123
+msgid "The user has been deleted"
+msgstr ""
+
+#: /controllers/users_controller.php:144
+msgid "Please fill in all fields."
+msgstr ""
+
+#: /controllers/users_controller.php:154
+msgid "The password has been changed."
+msgstr ""
+
 #: /controllers/users_controller.php:160
+msgid "Error during update : "
+msgstr ""
+
+#: /controllers/users_controller.php:169
 msgid "HTTPS required but unavailable"
 msgstr ""
 
-#: /controllers/users_controller.php:182
+#: /controllers/users_controller.php:198
 msgid "Identification accepted"
 msgstr ""
 
-#: /controllers/users_controller.php:186;191
+#: /controllers/users_controller.php:201;206
 msgid "Invalid credentials"
 msgstr ""
 
-#: /controllers/users_controller.php:209
+#: /controllers/users_controller.php:225
 msgid "Your are now disconnected."
 msgstr ""
 
-#: /models/deployment.php:220;228;236;251;261;501;507
+#: /models/deployment.php:224
+msgid "svn update"
+msgstr ""
+
+#: /models/deployment.php:229;245;467
 msgid "creating directory"
 msgstr ""
 
-#: /models/deployment.php:247
-msgid "delete directory"
+#: /models/deployment.php:238
+msgid "svn checkout"
 msgstr ""
 
-#: /models/deployment.php:272
-msgid "svn export"
-msgstr ""
-
-#: /models/deployment.php:362
+#: /models/deployment.php:340
 msgid "Deploying new version"
 msgstr ""
 
-#: /models/deployment.php:422
-#: /views/projects/deploy.ctp:137
+#: /models/deployment.php:400
+#: /views/projects/deploy.ctp:133
 msgid "Rename files"
 msgstr ""
 
-#: /models/deployment.php:435;453
+#: /models/deployment.php:412;430
 msgid "updating files modes"
 msgstr ""
 
-#: /models/deployment.php:443;461;467;522
+#: /models/deployment.php:420;436;484
 msgid "updating dir mode"
 msgstr ""
 
-#: /models/deployment.php:512;519
+#: /models/deployment.php:474;481
 msgid "backup current prod version"
 msgstr ""
 
-#: /models/deployment.php:524
+#: /models/deployment.php:486
 msgid "no backup needed"
 msgstr ""
 
-#: /models/deployment.php:524
+#: /models/deployment.php:486
 msgid "does not exist"
 msgstr ""
 
-#: /models/deployment.php:602
+#: /models/deployment.php:562
 msgid "No command supplied"
+msgstr ""
+
+#: /plugins/aclite/views/acl_management/update_permissions.ctp:45
+msgid "Add"
 msgstr ""
 
 #: /views/administration/index.ctp:1
@@ -179,44 +260,182 @@ msgstr ""
 msgid "Use the links provided on this page to configure Fredistrano."
 msgstr ""
 
-#: /views/administration/index.ctp:3
+#: /views/administration/index.ctp:4
 msgid "Authorization management"
 msgstr ""
 
-#: /views/administration/index.ctp:4
+#: /views/administration/index.ctp:5
 msgid "To adapt Fredistrano to your needs, simply create new users and add them to the predefined groups (REGULAR, PREMIUM, ADMIN)."
 msgstr ""
 
-#: /views/administration/index.ctp:6
+#: /views/administration/index.ctp:7
 msgid "Users"
 msgstr ""
 
-#: /views/administration/index.ctp:6
+#: /views/administration/index.ctp:7
 msgid "manage users and group memberships"
 msgstr ""
 
-#: /views/administration/index.ctp:7
+#: /views/administration/index.ctp:8
 msgid "Groups"
 msgstr ""
 
-#: /views/administration/index.ctp:7
+#: /views/administration/index.ctp:8
 msgid "manage groups (for advanced users)"
 msgstr ""
 
-#: /views/administration/index.ctp:8
+#: /views/administration/index.ctp:9
 msgid "Authorizations"
 msgstr ""
 
-#: /views/administration/index.ctp:8
+#: /views/administration/index.ctp:9
 msgid "manage permissions (for advanced users)"
 msgstr ""
 
-#: /views/administration/index.ctp:9
+#: /views/administration/index.ctp:10
 msgid "Control objects"
 msgstr ""
 
-#: /views/administration/index.ctp:9
+#: /views/administration/index.ctp:10
 msgid "manage control objects (for developers only)"
+msgstr ""
+
+#: /views/administration/index.ctp:13
+msgid "Application configuration"
+msgstr ""
+
+#: /views/administration/index.ctp:15
+msgid "Modify configuration"
+msgstr ""
+
+#: /views/administration/index.ctp:15;16;17
+msgid "Not Yet Implemented"
+msgstr ""
+
+#: /views/administration/index.ctp:16
+msgid "Import "
+msgstr ""
+
+#: /views/administration/index.ctp:16
+msgid "Export"
+msgstr ""
+
+#: /views/administration/index.ctp:17
+msgid "Reset RSS token"
+msgstr ""
+
+#: /views/control_objects/add.ctp:3
+#: /views/control_objects/edit.ctp:3
+#: /views/groups/add.ctp:3
+#: /views/groups/edit.ctp:3
+#: /views/projects/add.ctp:2
+#: /views/projects/edit.ctp:3
+#: /views/users/add.ctp:3
+#: /views/users/change_password.ctp:11
+#: /views/users/edit.ctp:3
+msgid "Required fields"
+msgstr ""
+
+#: /views/control_objects/add.ctp:7
+msgid "New control object"
+msgstr ""
+
+#: /views/control_objects/add.ctp:12
+#: /views/groups/add.ctp:12
+#: /views/users/add.ctp:12
+msgid "Create"
+msgstr ""
+
+#: /views/control_objects/edit.ctp:7
+msgid "Control object update"
+msgstr ""
+
+#: /views/control_objects/edit.ctp:12
+#: /views/control_objects/index.ctp:30;30
+#: /views/control_objects/view.ctp:16;16;16
+#: /views/groups/affect_users.ctp:38
+#: /views/groups/edit.ctp:12
+#: /views/users/edit.ctp:12
+msgid "Update"
+msgstr ""
+
+#: /views/control_objects/index.ctp:12
+#: /views/groups/index.ctp:12
+#: /views/groups/view.ctp:38
+#: /views/projects/view.ctp:71
+#: /views/users/index.ctp:12
+msgid "Id"
+msgstr ""
+
+#: /views/control_objects/index.ctp:13
+#: /views/elements/_form_control_object.ctp:11
+#: /views/elements/_form_group.ctp:11
+#: /views/groups/index.ctp:13
+#: /views/groups/view.ctp:43
+msgid "Name"
+msgstr ""
+
+#: /views/control_objects/index.ctp:14
+#: /views/elements/_form_control_object.ctp:22
+#: /views/elements/_form_group.ctp:22
+#: /views/groups/index.ctp:14
+#: /views/groups/view.ctp:48
+msgid "Parent"
+msgstr ""
+
+#: /views/control_objects/index.ctp:26;26
+msgid "Display"
+msgstr ""
+
+#: /views/control_objects/index.ctp:34;34
+#: /views/control_objects/view.ctp:22;22;22
+#: /views/groups/view.ctp:24;25;26
+#: /views/projects/view.ctp:58;59;61
+#: /views/users/view.ctp:35;35;35
+msgid "Delete"
+msgstr ""
+
+#: /views/control_objects/index.ctp:37
+#: /views/control_objects/view.ctp:25
+msgid "Please confirm the deletion of control object :"
+msgstr ""
+
+#: /views/control_objects/view.ctp:5
+msgid "Object control detail"
+msgstr ""
+
+#: /views/deployment_logs/index.ctp:9
+msgid "Deployment logs"
+msgstr ""
+
+#: /views/deployment_logs/index.ctp:13
+#: /views/elements/_form_project.ctp:3
+#: /views/logs/index.ctp:11
+#: /views/projects/index.ctp:16
+#: /views/projects/view.ctp:76
+msgid "Project name"
+msgstr ""
+
+#: /views/deployment_logs/index.ctp:16
+msgid "All"
+msgstr ""
+
+#: /views/deployment_logs/index.ctp:18
+msgid "Show archived"
+msgstr ""
+
+#: /views/deployment_logs/index.ctp:34
+#: /views/home/index.ctp:26
+msgid "No logs in database"
+msgstr ""
+
+#: /views/deployment_logs/index.ctp:47
+#: /views/home/index.ctp:30
+msgid "Deployment of"
+msgstr ""
+
+#: /views/deployment_logs/index.ctp:48
+msgid "by"
 msgstr ""
 
 #: /views/deployment_logs/view.ctp:21
@@ -232,61 +451,89 @@ msgid "Deployment date"
 msgstr ""
 
 #: /views/deployment_logs/view.ctp:36
-#: /views/projects/deploy.ctp:102
+#: /views/projects/deploy.ctp:98
 msgid "Comment"
 msgstr ""
 
-#: /views/deployment_logs/view.ctp:42
-msgid "Unique identifier"
-msgstr ""
-
+#: /views/elements/_form_control_object.ctp:5
 #: /views/elements/_form_group.ctp:5
 msgid "The name field is required"
 msgstr ""
 
+#: /views/elements/_form_control_object.ctp:6
 #: /views/elements/_form_group.ctp:6
 msgid "This name is already used"
 msgstr ""
 
-#: /views/elements/_form_group.ctp:11
-#: /views/groups/index.ctp:13
-#: /views/groups/view.ctp:43
-msgid "Name"
-msgstr ""
-
-#: /views/elements/_form_group.ctp:22
-#: /views/groups/index.ctp:14
-#: /views/groups/view.ctp:48
-msgid "Parent"
-msgstr ""
-
-#: /views/elements/_form_project.ctp:1
-#: /views/logs/index.ctp:6
-#: /views/projects/index.ctp:12
-#: /views/projects/view.ctp:56
-msgid "Project name"
-msgstr ""
-
-#: /views/elements/_form_project.ctp:2
-#: /views/projects/index.ctp:13
-#: /views/projects/view.ctp:61
+#: /views/elements/_form_project.ctp:10
+#: /views/projects/index.ctp:17
+#: /views/projects/view.ctp:81
 msgid "SVN Url"
 msgstr ""
 
-#: /views/elements/_form_project.ctp:3
+#: /views/elements/_form_project.ctp:17
 msgid "Application absolute path"
 msgstr ""
 
-#: /views/elements/_form_project.ctp:4
-#: /views/projects/view.ctp:71
+#: /views/elements/_form_project.ctp:24
+#: /views/projects/view.ctp:91
 msgid "Application Url"
 msgstr ""
 
-#: /views/elements/_form_project.ctp:5
+#: /views/elements/_form_project.ctp:31
 msgid "Log pathes (;)"
 msgstr ""
 
-#: /views/elements/_log_viewer.ctp:9
+#: /views/elements/_form_user.ctp:5
+msgid "The login field is required"
+msgstr ""
+
+#: /views/elements/_form_user.ctp:6
+msgid "This login is already used"
+msgstr ""
+
+#: /views/elements/_form_user.ctp:12
+#: /views/users/change_password.ctp:5
+msgid "The password field is required"
+msgstr ""
+
+#: /views/elements/_form_user.ctp:13
+#: /views/users/change_password.ctp:6
+msgid "the password must have a minimal length of 6 characters"
+msgstr ""
+
+#: /views/elements/_form_user.ctp:23
+#: /views/elements/login.ctp:22
+#: /views/users/index.ctp:13
+msgid "Login"
+msgstr ""
+
+#: /views/elements/_form_user.ctp:30
+#: /views/users/index.ctp:14
+msgid "First name"
+msgstr ""
+
+#: /views/elements/_form_user.ctp:36
+#: /views/users/index.ctp:15
+msgid "Last name"
+msgstr ""
+
+#: /views/elements/_form_user.ctp:42
+msgid "email"
+msgstr ""
+
+#: /views/elements/_form_user.ctp:45
+msgid "Please supply a valid email address."
+msgstr ""
+
+#: /views/elements/_form_user.ctp:50
+#: /views/elements/login.ctp:21
+#: /views/projects/deploy.ctp:31
+#: /views/users/change_password.ctp:17
+msgid "Password"
+msgstr ""
+
+#: /views/elements/_log_viewer.ctp:13
 msgid "Unable to retreive log"
 msgstr ""
 
@@ -298,13 +545,8 @@ msgstr ""
 msgid "Username"
 msgstr ""
 
-#: /views/elements/login.ctp:21
-#: /views/projects/deploy.ctp:36
-msgid "Password"
-msgstr ""
-
-#: /views/elements/login.ctp:22
-msgid "Login"
+#: /views/elements/logout.ctp:3
+msgid "Welcome"
 msgstr ""
 
 #: /views/elements/menu.ctp:2
@@ -336,19 +578,8 @@ msgstr ""
 msgid "Page %page% of %pages%, showing %current% records out of \r\n\t\t\t\t\t\t\t\t\t%count% total"
 msgstr ""
 
-#: /views/groups/add.ctp:3
-#: /views/groups/edit.ctp:3
-#: /views/projects/add.ctp:2
-#: /views/projects/edit.ctp:3
-msgid "Required fields"
-msgstr ""
-
 #: /views/groups/add.ctp:7
 msgid "New group"
-msgstr ""
-
-#: /views/groups/add.ctp:12
-msgid "Create"
 msgstr ""
 
 #: /views/groups/affect_users.ctp:11
@@ -363,16 +594,11 @@ msgstr ""
 msgid "Manage users members of group %s by using buttons or by double-clicking on usernames"
 msgstr ""
 
-#: /views/groups/affect_users.ctp:36
-#: /views/groups/edit.ctp:12
-msgid "Update"
-msgstr ""
-
-#: /views/groups/affect_users.ctp:42
+#: /views/groups/affect_users.ctp:44
 msgid "LDAP Users"
 msgstr ""
 
-#: /views/groups/affect_users.ctp:42
+#: /views/groups/affect_users.ctp:44
 msgid "Members of group "
 msgstr ""
 
@@ -380,29 +606,18 @@ msgstr ""
 msgid "Group update"
 msgstr ""
 
-#: /views/groups/index.ctp:12
-#: /views/groups/view.ctp:38
-#: /views/projects/view.ctp:51
-msgid "Id"
-msgstr ""
-
-#: /views/groups/index.ctp:37
-#: /views/groups/view.ctp:29
-msgid "Please confirm the deletion of group :"
-msgstr ""
-
 #: /views/groups/view.ctp:5
 msgid "Group details"
 msgstr ""
 
 #: /views/groups/view.ctp:16;17;18;79;80
-#: /views/projects/view.ctp:34;34;34
+#: /views/projects/view.ctp:48;49;51
+#: /views/users/view.ctp:16;16;16
 msgid "Edit"
 msgstr ""
 
-#: /views/groups/view.ctp:24;25;26
-#: /views/projects/view.ctp:39;39;39
-msgid "Delete"
+#: /views/groups/view.ctp:29
+msgid "Please confirm the deletion of group :"
 msgstr ""
 
 #: /views/groups/view.ctp:63
@@ -429,104 +644,113 @@ msgstr ""
 msgid "Access an existing project: "
 msgstr ""
 
-#: /views/home/index.ctp:17
+#: /views/home/index.ctp:16
 msgid "Create a new project"
 msgstr ""
 
-#: /views/home/index.ctp:23
+#: /views/home/index.ctp:22
 msgid "Deployment history (10 last)"
 msgstr ""
 
-#: /views/home/index.ctp:27
-msgid "No logs in database"
+#: /views/logs/get_log_list.ctp:5
+#: /views/logs/index.ctp:19
+msgid "Log file"
 msgstr ""
 
-#: /views/home/index.ctp:31
-msgid "Deployment of"
+#: /views/logs/index.ctp:3
+msgid "Query parameters"
 msgstr ""
 
-#: /views/layouts/default.ctp:66
-msgid "Welcome"
-msgstr ""
-
-#: /views/layouts/default.ctp:89;90
-msgid "Previous"
-msgstr ""
-
-#: /views/layouts/default.ctp:91
-msgid "back"
-msgstr ""
-
-#: /views/logs/index.ctp:7
-msgid "Select a project"
-msgstr ""
-
-#: /views/logs/index.ctp:8
+#: /views/logs/index.ctp:24
 msgid "Enter a search pattern"
 msgstr ""
 
-#: /views/logs/index.ctp:9
+#: /views/logs/index.ctp:25
 msgid "Reverse order"
 msgstr ""
 
-#: /views/logs/index.ctp:11
+#: /views/logs/index.ctp:27
 msgid "Max load size (in bytes)"
 msgstr ""
 
-#: /views/pages/help.ctp:2
+#: /views/logs/index.ctp:28
+msgid "Retrieve"
+msgstr ""
+
+#: /views/logs/index.ctp:33
+msgid "Log output"
+msgstr ""
+
+#: /views/logs/index.ctp:34
+msgid "Please select a project in the query section"
+msgstr ""
+
+#: /views/pages/about.ctp:2
 msgid "Version"
 msgstr ""
 
-#: /views/pages/help.ctp:4
+#: /views/pages/about.ctp:4
 msgid "Check for news and updates about Fredistrano on its"
 msgstr ""
 
-#: /views/pages/help.ctp:6
-msgid "Support"
-msgstr ""
-
-#: /views/pages/help.ctp:8
-msgid "Documentation"
-msgstr ""
-
-#: /views/pages/help.ctp:8
-msgid "Fredistrano-documentation-EN.pdf"
-msgstr ""
-
-#: /views/pages/help.ctp:9
-msgid "Knoweldge base"
-msgstr ""
-
-#: /views/pages/help.ctp:9
-msgid "with detailled installation instructions, FAQS and solutions to common problems"
-msgstr ""
-
-#: /views/pages/help.ctp:10
-msgid "Share your experience and problems directly on the"
-msgstr ""
-
-#: /views/pages/help.ctp:11
-msgid "Report"
-msgstr ""
-
-#: /views/pages/help.ctp:11
-msgid "bugs and enhancements"
-msgstr ""
-
-#: /views/pages/help.ctp:11
-msgid "to the development team"
-msgstr ""
-
-#: /views/pages/help.ctp:14
+#: /views/pages/about.ctp:6
 msgid "Developpement team"
 msgstr ""
 
-#: /views/pages/help.ctp:21
+#: /views/pages/about.ctp:13
+msgid "How to contribute"
+msgstr ""
+
+#: /views/pages/about.ctp:14
+msgid "If you are interested by fredistrano and willing to contribute to this project, you can help us to test newly implemented feature or join the development team. Contact us by email for further details."
+msgstr ""
+
+#: /views/pages/about.ctp:16
 msgid "Acknowledgments"
 msgstr ""
 
-#: /views/pages/help.ctp:22
+#: /views/pages/about.ctp:17
 msgid "And finally, thank you, fredistrano users, for using this application to deploy your source code."
+msgstr ""
+
+#: /views/pages/help.ctp:3
+msgid "Offline support"
+msgstr ""
+
+#: /views/pages/help.ctp:5
+msgid "Documentation"
+msgstr ""
+
+#: /views/pages/help.ctp:5
+msgid "Fredistrano-documentation-EN.pdf"
+msgstr ""
+
+#: /views/pages/help.ctp:8
+msgid "Online support"
+msgstr ""
+
+#: /views/pages/help.ctp:10
+msgid "Knoweldge base"
+msgstr ""
+
+#: /views/pages/help.ctp:10
+msgid "with detailled installation instructions, FAQS and solutions to common problems"
+msgstr ""
+
+#: /views/pages/help.ctp:11
+msgid "Share your experience and problems directly on the"
+msgstr ""
+
+#: /views/pages/help.ctp:12
+msgid "Report"
+msgstr ""
+
+#: /views/pages/help.ctp:12
+msgid "bugs and enhancements"
+msgstr ""
+
+#: /views/pages/help.ctp:12
+msgid "to the development team"
 msgstr ""
 
 #: /views/projects/add.ctp:4
@@ -535,62 +759,63 @@ msgstr ""
 
 #: /views/projects/add.ctp:7
 #: /views/projects/edit.ctp:12
+#: /views/users/change_password.ctp:42
 msgid "Save"
 msgstr ""
 
-#: /views/projects/deploy.ctp:7
+#: /views/projects/deploy.ctp:5
 msgid "Subversion export"
 msgstr ""
 
-#: /views/projects/deploy.ctp:10
+#: /views/projects/deploy.ctp:8
 msgid "Revision"
 msgstr ""
 
-#: /views/projects/deploy.ctp:20
+#: /views/projects/deploy.ctp:17
 msgid "Specify SVN login"
 msgstr ""
 
-#: /views/projects/deploy.ctp:27
+#: /views/projects/deploy.ctp:24
 msgid "User"
 msgstr ""
 
-#: /views/projects/deploy.ctp:48
+#: /views/projects/deploy.ctp:42
 msgid "Step 1 - svn export"
 msgstr ""
 
-#: /views/projects/deploy.ctp:73
+#: /views/projects/deploy.ctp:67
 msgid "Synchronizing with production server"
 msgstr ""
 
-#: /views/projects/deploy.ctp:74
+#: /views/projects/deploy.ctp:68
 msgid "Rsync simulation"
 msgstr ""
 
-#: /views/projects/deploy.ctp:88
+#: /views/projects/deploy.ctp:83
 msgid "Backup"
 msgstr ""
 
-#: /views/projects/deploy.ctp:113
+#: /views/projects/deploy.ctp:110
 msgid "Step 2 - synchronization"
 msgstr ""
 
-#: /views/projects/deploy.ctp:133
+#: /views/projects/deploy.ctp:129
 msgid "Finalization of deployment"
 msgstr ""
 
-#: /views/projects/deploy.ctp:150
+#: /views/projects/deploy.ctp:146
 msgid "Adjusting modes"
 msgstr ""
 
-#: /views/projects/deploy.ctp:162
+#: /views/projects/deploy.ctp:158
 msgid "Restrict adjusting modes to modified files only"
 msgstr ""
 
-#: /views/projects/deploy.ctp:174
+#: /views/projects/deploy.ctp:170
 msgid "Writing mode"
 msgstr ""
 
-#: /views/projects/deploy.ctp:189
+#: /views/projects/deploy.ctp:185
 msgid "Step 3 - finalization"
 msgstr ""
 
@@ -598,48 +823,94 @@ msgstr ""
 msgid "Edit project"
 msgstr ""
 
-#: /views/projects/index.ctp:14
+#: /views/projects/index.ctp:1
+msgid "Deployable projects"
+msgstr ""
+
+#: /views/projects/index.ctp:3
+msgid "The list displays all the web projects configured in Fredistrano. Click on a project to deploy or manage it."
+msgstr ""
+
+#: /views/projects/index.ctp:18
 msgid "Target"
 msgstr ""
 
-#: /views/projects/view.ctp:7
+#: /views/projects/view.ctp:6
 msgid "Project details"
 msgstr ""
 
-#: /views/projects/view.ctp:10;10;10;100;148
+#: /views/projects/view.ctp:9;9;9;118;155
 msgid "Deploy"
 msgstr ""
 
-#: /views/projects/view.ctp:29;29;29
+#: /views/projects/view.ctp:27;28;30
+msgid "Switch deployment mode (standard / fast)"
+msgstr ""
+
+#: /views/projects/view.ctp:38;39;41
 msgid "View deployment history"
 msgstr ""
 
-#: /views/projects/view.ctp:42
+#: /views/projects/view.ctp:64
+#: /views/users/view.ctp:38
 msgid "Are you sure you want to delete"
 msgstr ""
 
-#: /views/projects/view.ctp:66
+#: /views/projects/view.ctp:86
 msgid "Project absolute path"
 msgstr ""
 
-#: /views/projects/view.ctp:76
+#: /views/projects/view.ctp:96
 msgid "Log pathes"
 msgstr ""
 
-#: /views/projects/view.ctp:117
+#: /views/projects/view.ctp:132
 msgid "Fast deploy"
 msgstr ""
 
-#: /views/projects/view.ctp:132
-msgid "Use the Fast deploy button to deploy in one click with standart options: svn export, synchronisation and finalization"
+#: /views/projects/view.ctp:148
+msgid "You can switch between standard deployment and fast deployment mode by using the switch mode link"
 msgstr ""
 
-#: /views/projects/view.ctp:140
-msgid "Use the deploy button to deploy step by step"
-msgstr ""
-
-#: /views/projects/view.ctp:149
+#: /views/projects/view.ctp:156
 msgid "Modified on"
+msgstr ""
+
+#: /views/users/add.ctp:7
+msgid "New user"
+msgstr ""
+
+#: /views/users/change_password.ctp:15
+#: /views/users/view.ctp:29;29;29
+msgid "Change password"
+msgstr ""
+
+#: /views/users/change_password.ctp:25
+msgid "New password"
+msgstr ""
+
+#: /views/users/change_password.ctp:32
+msgid "Confirm new password"
+msgstr ""
+
+#: /views/users/edit.ctp:7
+msgid "User update"
+msgstr ""
+
+#: /views/users/index.ctp:16
+msgid "Email"
+msgstr ""
+
+#: /views/users/view.ctp:5
+msgid "User details"
+msgstr ""
+
+#: /views/users/view.ctp:22;22
+msgid "manage groups for the current user"
+msgstr ""
+
+#: /views/users/view.ctp:22
+msgid "Group management"
 msgstr ""
 
 #: /webroot/test.php:75

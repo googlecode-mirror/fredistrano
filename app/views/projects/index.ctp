@@ -13,9 +13,9 @@
 <?php
 //$pagination->setPaging($paging); // Initialize the pagination variables
 $th = array (
-            $paginator->sort('name',__('Project name', true)),
-            $paginator->sort('svn_url', __('SVN Url', true)),
-            $paginator->sort('prd_path', __('Target', true))
+            $paginator->sort(__('Project name', true),'name'),
+            $paginator->sort(__('SVN Url', true), 'svn_url'),
+            $paginator->sort(__('Target', true), 'prd_path')
 ); // Generate the pagination sort links
 echo $html->tableHeaders($th); // Create the table headers with sort links if desired
 
