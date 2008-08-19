@@ -88,7 +88,7 @@ class Deployment extends AppModel {
 			$output .= $shell;
 			preg_match('/ ([0-9]+)\.$/', $output, $matches);
 			if (isset($matches[1])) {
-				$options['comment'] = 'Revision exported ' . $matches[1];			
+				$options['comment'] = __('Revision exported ', true) . $matches[1];			
 			}
 		} else {
 			if ($log->writable()) {
