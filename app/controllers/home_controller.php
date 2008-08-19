@@ -11,7 +11,7 @@ class HomeController extends AppController {
 		
 		// Tableau de liens pour la création du menu contextuel
 		$tab[] = array (
-			'text' => 'See also'
+			'text' => __('See also', true)
 		);
 
 		$tab[] = array (

@@ -9,7 +9,7 @@
 \usepackage{color}
 \pagestyle{headings}
 \author{Frédéric BOLLON}
-\title{Fredistrano v0.3.2\\Documentation\\}
+\title{Fredistrano v0.4\\Documentation\\}
 \begin{document}
 \maketitle
 \tableofcontents
@@ -30,7 +30,7 @@ A Php project "versioned" with Subversion
 \item 
 A Php web hosting with the safe\_mode set to Off and mod\_rewrite activated\\\\
 \begin{small}\textit{If mod\_rewrite is not working you will need to remove the comment from app/config/core.php\\
-      a. Around line 40: define ('BASE\_URL', env('SCRIPT\_NAME'));\\
+      a. Around line 59: Configure::write('App.baseUrl', env('SCRIPT\_NAME'));\\
       b. Then access using http://www.example.com/my\_directory/index.php/pages to verify installation is working}\end{small}
 \end{itemize}
 
@@ -69,19 +69,19 @@ chmod -R 777 app/tmp/ files/
 
 \lstset{literate={=}{{$\leftarrow$}}{1}{<=}{{$\le$}}{2}{&&}{{$\cap$}}{2}}
 \begin{lstlisting}[frame=tb]{}
-	var $default = array (
-		'driver' => 'mysql',
-		'connect' => 'mysql_connect',
-		'host' => 'localhost',
-		'login' => 'usermysql',
-		'password' => 'password',
-		'database' => 'Fredistrano',
-		'prefix' => ''
-	);
+var $default = array(
+	'driver' => 'mysql',
+	'persistent' => false,
+	'host' => 'localhost',
+	'login' => 'usermysql',
+	'password' => 'password',
+	'database' => 'fredistrano'
+	'encoding' => 'utf8'
+);
 \end{lstlisting}
 %---------------------------------------------------------------
 
-\item A user "admin" with password "admin" is created by the sql script, don't forget to change password in Administration/users.
+\item A user "admin" with password "pass" is created by the sql script, don't forget to change password in Administration/users.
 If you create a new user, you need to affect if the group "admin".
 \textbf{Do not delete the user "admin" before creating a new user for the group "admin".}
 
@@ -106,9 +106,6 @@ During the deployment, whatever the extension is, all 'prd.xxx' files will be de
 class DEPLOY_CONFIG {
 
 	var $exclude = array (
-		'/app/tmp/cache/models/*',
-		'/app/tmp/cache/persistent/*',
-		'/app/tmp/cache/views/*',
 		'/app/tmp/logs/*',
 		'/app/tmp/sessions/*',
 		'/app/tmp/tests/*',
@@ -145,7 +142,7 @@ To deploy a PHP web application with Fredistrano, the first step is to create a 
 \item \textbf{"SVN Url"} :  Url of the SVN repository of the project that should be deployed (eg. : "http://svn.mondomain.com/monProjet/trunk").
 \item \textbf{"Application Url"} : Won't be used by Fredistrano. Juste a simple reminder.
 \item \textbf{"Absolute path"} :  Absolute path of the target folder where the application should be deployed\\Example for a Windows server (located on the server) : D:\textbackslash www\textbackslash html\textbackslash myProject \\Example on a Linux server : /var/www/html/monProjet or /home/monUser/monDomain.com.
-%\item \textbf{"Répertoire des fichiers de configuration du projet"} :  Répertoire de l'application où se trouvent les fichiers database.php, config.php et deploy.php (\ref{precimportantes}).
+\item \textbf{"Log pathes"} : Pathes of files that you want to access with the log viewer, one path per line.
 \end{list}
 \end{enumerate}
 
@@ -155,7 +152,7 @@ To deploy a PHP web application with Fredistrano, the first step is to create a 
 \item Click on "Deploy project".
 \item Specify the revision number. If empty, Fredistrano will checkout the latest revision of the repository.
 \item In the case of a private Suversion project protected by login/password, you may specify your credentials at this step. If all your projects are using the same credentials, you may specify them in the file \textit{app/config/config.php}.
-\item Click on "Step 1 SVN export". An svn export is executed and hte result is displayed in the console located at the bottom (\textit{output console}) "Fredistrano/files/tmp/nomduprojet/tempDir".
+\item Click on "Step 1 SVN export". An svn export is executed and the result is displayed in the console located at the bottom (\textit{output console}) "Fredistrano/files/tmp/nomduprojet/tempDir".
 \item For the next step, if "simulate" is checked, the rsync command will only be simualted and its  result may be seen in the output console.
 \item Click on "Step 2 synchronize".
 \item A backup is preformed in "Fredistrano/files/backup/projectName". The rsync command is executed between "Fredistrano/files/tmp/projectName/tempDir" and "projectName".
@@ -163,6 +160,18 @@ To deploy a PHP web application with Fredistrano, the first step is to create a 
 \item Click on "Step 3 finalize" and your done!
 \end{enumerate}
 
+\subsection{Project deployment fast mode}
+\begin{enumerate}
+\item Display the details of the project that should be deployed.
+\item Click on the "switch deployment mode" link to change the button "Deploy" to "Fast deploy"
+\item All the steps will be execute with standard options (renaming prd files, changing file mode on modified files only, giving write mode). 
+\end{enumerate}
+
+\section{Deployment logs}
+You can access the deployment history from the details page of each project by clicking on the link "view deployment history". A rss feed of deployment history is available in the menu on this page. It is possible to disable rss feeds in /app/config/config.php 
+
+\section{Logs viewer}
+Click on the "Logs" tab to use the log viewer, with this feature you can diplay the content of the logs files defined in the project details
 \chapter{Related links}
 You will find in the following 
 \begin{itemize}

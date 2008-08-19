@@ -477,7 +477,7 @@ msgstr "Url de l'application"
 
 #: /views/elements/_form_project.ctp:31
 msgid "Log pathes (;)"
-msgstr "Chemin des fichiers de logs (;)"
+msgstr "Chemin des fichiers de logs (1 par ligne)"
 
 #: /views/elements/_form_user.ctp:5
 msgid "The login field is required"

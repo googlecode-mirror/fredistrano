@@ -9,7 +9,7 @@
 \usepackage{color}
 \pagestyle{headings}
 \author{Frédéric BOLLON}
-\title{Fredistrano v0.3.2\\Documentation\\}
+\title{Fredistrano v0.4\\Documentation\\}
 \begin{document}
 \maketitle
 \tableofcontents
@@ -30,7 +30,7 @@ Fredistrano doit \^{e}tre installé sur un serveur Web Apache hébergé \textbf{
 Un projet Php "versionné" avec Subversion
 \item 
 Un hébergement Php avec le safe\_mode à Off et mod\_rewrite activé	\\\\
-\begin{small}\textit{Si mod\_rewrite n'est pas activé vous devrez décommenter dans le fichier app/config/core.php la ligne 40 "define ('BASE\_URL', env('SCRIPT\_NAME'));" puis accéder à l'application par l'URL\\ http://www.example.com/my\_directory/index.php pour vérifier le fonctionnement de l'application}\end{small}
+\begin{small}\textit{Si mod\_rewrite n'est pas activé vous devrez décommenter dans le fichier app/config/core.php la ligne 59: Configure::write('App.baseUrl', env('SCRIPT\_NAME'));, puis accéder à l'application par l'URL\\ http://www.example.com/my\_directory/index.php pour vérifier le fonctionnement de l'application}\end{small}
 \end{itemize}
 
 \paragraph*{Eléments spécifiques à Windows}
@@ -69,20 +69,20 @@ chmod -R 777 app/tmp/ files/
 
 \lstset{literate={=}{{$\leftarrow$}}{1}{<=}{{$\le$}}{2}{&&}{{$\cap$}}{2}}
 \begin{lstlisting}[frame=tb]{}
-	var $default = array (
-		'driver' => 'mysql',
-		'connect' => 'mysql_connect',
-		'host' => 'localhost',
-		'login' => 'usermysql',
-		'password' => 'password',
-		'database' => 'Fredistrano',
-		'prefix' => ''
-	);
+var $default = array(
+	'driver' => 'mysql',
+	'persistent' => false,
+	'host' => 'localhost',
+	'login' => 'usermysql',
+	'password' => 'password',
+	'database' => 'fredistrano'
+	'encoding' => 'utf8'
+);
 \end{lstlisting}
 %---------------------------------------------------------------
 
 
-\item Un utilisateur "admin" avec comme mot de passe "admin" est créé par le script sql, penser à changer le mot de passe dans Administration/utilisateurs, avec le lien "changer le mot de passe" dans la fiche d'un utilisateur.
+\item Un utilisateur "admin" avec comme mot de passe "pass" est créé par le script sql, pensez à changer le mot de passe dans Administration/utilisateurs, avec le lien "changer le mot de passe" dans la fiche d'un utilisateur.
 
 Si vous souhaitez créer un nouvel utilisateur, il faut le créer via le menu Administration/utilisateurs, en lui affectant le groupe "admin". 
 \textbf{Ne pas supprimer l'utilisateur "admin" tant qu'un autre utilisateur appartenant au groupe "admin" ne soit créer.}
@@ -108,13 +108,8 @@ Quelque soit l'extension, les fichiers *.prd.xxx seront renommés en *.xxx lors 
 \lstset{backgroundcolor=\color{lbcolor},rulecolor=}
 \begin{lstlisting}[frame=tb]{}
 class DEPLOY_CONFIG {
-	// tableau permettant la creation du fichier
-	// des repertoires et fichiers a exclure 
-	// lors du depoiement en production
+
 	var $exclude = array (
-		'/app/tmp/cache/models/*',
-		'/app/tmp/cache/persistent/*',
-		'/app/tmp/cache/views/*',
 		'/app/tmp/logs/*',
 		'/app/tmp/sessions/*',
 		'/app/tmp/tests/*',
@@ -124,10 +119,6 @@ class DEPLOY_CONFIG {
 		'.settings'
 	);
 
-	// repertoires sur lesquel un CHMOD 777 
-	// sera execute a la suite du deploiement
-	// les repertoires de log, de cache, 
-	// les repertoires d'upload, etc ...
 	var $writable = array (
 		'/app/tmp',
 		'/app/webroot/files'
@@ -151,8 +142,7 @@ Pour pouvoir déployer une application Php à l'aide de Fredistrano, il faut dan
 \item \textbf{"Url SVN"} :  Url vers le repository SVN du projet à déployer (exemple : "http://svn.mondomain.com/monProjet/trunk").
 \item \textbf{"Url de l'application à déployer"} :  Servira uniquement à afficher un lien vers l'application.
 \item \textbf{"Chemin absolu du projet à déployer"} :  Chemin absolu vers le dossier sur le serveur de production où sera déployé l'application\\exemple sur un serveur Windows : D:\textbackslash www\textbackslash html\textbackslash monProjet \\exemple sur un serveur Linux : /var/www/html/monProjet ou encore /home/monUser/monDomain.com.
-%\item \textbf{"Répertoire des fichiers de configuration du projet"} :  Répertoire de l'application où se trouvent les fichiers database.php, config.php et deploy.php (\ref{precimportantes}).
-\end{list}
+\item \textbf{"Chemin des fichiers de log"} : Chemins des fichiers de log que vous souhaitez rendre accessible depuis le visualisateur de log, un chemin par ligne.\end{list}
 \end{enumerate}
 
 
@@ -171,6 +161,19 @@ Pour pouvoir déployer une application Php à l'aide de Fredistrano, il faut dan
 \item Un backup du répertoire de production est effectué dans "Fredistrano/files/backup/nomduprojet" puis la commande rsync est exécutée entre le dossier "Fredistrano/files/tmp/nomduprojet/tempDir" et le dossier "nomduprojet"
 \item "Step 3 finalisation" les trois options sont désactivables: renommage des fichiers '.prd.', l'ajustement des droits des répertoires et fichiers et enfin les droits d'écriture sur les dossiers définis dans deploy.php.
 \end{enumerate}
+
+\subsection{Project deployment fast mode}
+\begin{enumerate}
+\item Afficher le détail du projet à deployer.
+\item Click on the "switch deployment mode" link to change the button "Deploy" to "Fast deploy"
+\item All the steps will be execute with standard options (renaming prd files, changing file mode on modified files only, giving write mode). 
+\end{enumerate}
+
+\section{Deployment logs}
+You can access the deployment history from the details page of each project by clicking on the link "view deployment history". A rss feed of deployment history is available in the menu on this page. It is possible to disable rss feeds in /app/config/config.php 
+
+\section{Logs viewer}
+Click on the "Logs" tab to use the log viewer, with this feature you can diplay the content of the logs files defined in the project details.
 
 \chapter{Références}
 \begin{itemize}

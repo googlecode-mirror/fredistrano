@@ -1,7 +1,7 @@
 <?php
 if ( $log !== false) {
 ?>
-	<p>Logs retreived from <?php e($project['Project']['name']); 
+	<p><?php __('Logs retreived from') ?> <?php e($project['Project']['name']); 
 		if (isset($size)) { 
 			printf(" [<em>%s</em> - %.3f Ko]", $logPath, ($size/1024));
 		} ?></p>

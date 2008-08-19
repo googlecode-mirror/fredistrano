@@ -95,7 +95,7 @@ class AdministrationController extends AppController {
 				fwrite($handle, $content);
 				fclose($handle);
 			} else {
-				$this->Session->setFlash(LANG_INVALIDID);
+				$this->Session->setFlash(__('Invalid id.', true));
 				$this->redirect('/');
 			}
 			$this->set('token',$token);
