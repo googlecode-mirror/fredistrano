@@ -203,7 +203,7 @@ class AcliteComponent extends Object {
 	}// updateSessionWithDynamicGroup
 	
 	function reloadsAcls($type = null) {
-		loadPluginModels('aclite');
+		App::import('Model', 'Aclite.AclManagement');
 		$aclite = new AclManagement();
 		$aclite->reloadAcls($type);
 	}//reloadsAcls
