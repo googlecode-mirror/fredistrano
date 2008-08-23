@@ -25,7 +25,8 @@
 	// les répertoires de log, de cache, les répertoires d'upload, etc ...
 	var $writable = array (
 		'/app/tmp',
-		'/files'
+		'/files/backup',
+		'/files/logs'
 	);
 
  }

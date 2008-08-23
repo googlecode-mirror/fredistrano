@@ -19,7 +19,7 @@
 
 <tr>
 <th class="sub"><?php __('Related project') ?></th>
-<td>&nbsp;<?php echo $html->link($deployLog['Project']['name'],'/projects/view/'.$deployLog['Project']['id'], array('target' => '_blank'), false, true, false)?></td>
+<td>&nbsp;<?php echo $html->link($deployLog['Project']['name'],'/projects/view/'.$deployLog['Project']['id'])?></td>
 </tr>
 
 <tr>

@@ -52,7 +52,7 @@ class AppController extends Controller {
 	function beforeFilter() {
 		uses('L10n');
 		$this->L10n = new L10n();
-		$this->L10n->get('fr'); //get('en');
+		$this->L10n->get('en'); //get('fr');
 	}
 			
 	function beforeRender() {
