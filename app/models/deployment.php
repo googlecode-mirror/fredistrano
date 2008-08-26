@@ -233,7 +233,10 @@ class Deployment extends AppModel {
 			}
 			
 			// Export code from SVN
-			$authentication = ' --username ' . $options['user_svn'] . ' --password ' . $options['password_svn'];
+			$authentication = '';
+			if (!empty($options['password_svn'])) {
+				$authentication = ' --username ' . $options['user_svn'] . ' --password ' . $options['password_svn'];
+			}
 			$command = "svn checkout" . $revision . $authentication . " " . $project['Project']['svn_url'] . " tmpDir 2>&1";
 			$output .= $this->executeCommand($command, __('svn checkout',true), 'export', $exportDir);
 		}

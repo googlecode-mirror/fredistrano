@@ -3,6 +3,15 @@
 	// Version
 	define("_VERSION",				'0.4.0');		
 	define("_RELEASEDATE",			'XX/XX/2008');
+
+	/**
+	 * Default language
+	 *	Available
+	 * en: english
+	 * fr: french
+	 * it: italian
+	 */
+	Configure::write('Subversion.UIlanguage',		'en');
 	
 	/**
 	 * Enable  public feeds
@@ -59,6 +68,7 @@
 	 * 2: always
 	 */
 	Configure::write('Subversion.passwd',		'');
+	
 
 	// Time limits
 	define("_LOGSARCHIVEDATE",		3 * 7 * 24 * 60 * 60);		//time before archiving logs 

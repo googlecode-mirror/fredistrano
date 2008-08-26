@@ -36,15 +36,13 @@ http://creativecommons.org/licenses/GPL/2.0/
 <div id="wrap">
 
 	<div id="header">
-		<div id="site-name">Fredistrano</div>
+		<div id="site-name"><?php e($html->image('logo1.png'))?></div>
 			<?php echo $this->renderElement('menu') ?>
 		</div>
 
 	<div id="content-wrap">
 
-		<div id="logo">
-		<?php echo $html->link( $html->image( 'logo.png', array('alt' => 'fbollon.net', 'title' => 'fbollon.net')), 'http://www.fbollon.net', null, false, false ); ?>
-		</div>
+		
 		<!--<div id="flag">
         <?php echo $html->link( $html->image( 'fr.gif', array('alt' => 'french', 'title' => 'french')), '/home/switchLanguage/fr-FR', null, false, false ); ?>
         <?php echo $html->link( $html->image( 'en.gif', array('alt' => 'english', 'title' => 'english')), '/home/switchLanguage/en-US', null, false, false ); ?>
@@ -75,7 +73,7 @@ http://creativecommons.org/licenses/GPL/2.0/
 			<?php echo $content_for_layout;	?>
 	
 			<div id="footer">
-			<p>&copy; 2007-2008 <a href="http://fbollon.net">fbollon.net</a> </p>
+				<p>&copy; 2007-2008 <a href="http://fbollon.net">fbollon.net</a> </p>
 			</div>
 		</div>
 	</div>
