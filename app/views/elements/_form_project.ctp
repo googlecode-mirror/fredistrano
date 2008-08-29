@@ -21,7 +21,7 @@
 							'label' => '<b>'.__('SVN Url', true).'<span class="req">*</span></b>', 
 							'size' => '60', 
 							'class' => 'f-name',
-							'error' => __('The SVN Url field is required', true)
+							'error' => __('The SVN Url must be a valid url', true)
 							)
 						);?>
 <?php echo $form->input('Project/prd_path', 
@@ -37,7 +37,7 @@
 							'label' => '<b>'.__('Application Url', true).'<span class="req">*</span></b>', 
 							'size' => '60', 
 							'class' => 'f-name',
-							'error' => __('The application url is required', true)
+							'error' => __('The application url must be a valid url', true)
 							)
 						);?>
 <?php echo $form->input('Project/log_path', 

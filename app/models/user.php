@@ -52,8 +52,15 @@ class User extends AppModel {
 
 	function beforeSave() {
 		// si y a un champ password : add() et change_password() mais pas edit()
-		if (isset ($this->data[$this->name]['password']))
+		if (isset ($this->data[$this->name]['password'])){
 			$this->data[$this->name]['password'] = md5($this->data[$this->name]['password']);
+		}
+		
+		// if (condition) {
+		// 	// sha1( rand(0,10000) + time())
+		// }
+			
+			
 		return parent :: beforeSave();
 	}
 	

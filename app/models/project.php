@@ -19,9 +19,7 @@ class Project extends AppModel {
 		        'allowEmpty' => false
 		 ),
 		'prd_path' => array(
-				'rule' => '',
-				'required' => true,
-		        'allowEmpty' => false
+				'rule' => array('minLength', '1')
 		 ),
 		'prd_url' => array(
 		        'rule' => 'url', 
