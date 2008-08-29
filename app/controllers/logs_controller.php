@@ -48,7 +48,6 @@ class LogsController extends AppController {
 		return $logs;
 	}
 	
-	// TODO finalize
 	function view() {
 		$this->layout = 'ajax';
 		if (!empty($this->data) && !empty($this->data['Log']['project_id']) && !is_null($this->data['Search']['logPath'])) {

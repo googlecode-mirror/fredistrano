@@ -116,7 +116,6 @@ CREATE TABLE `deployment_logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-
 # Dump of table groups
 # ------------------------------------------------------------
 
@@ -149,6 +148,18 @@ CREATE TABLE `groups_users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `groups_users` (`user_id`,`group_id`) VALUES ('1','6');
+
+
+# Dump of table profiles
+# ------------------------------------------------------------
+
+CREATE TABLE `profiles` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `lang` char(2) DEFAULT NULL,
+  `rss_token` char(40) NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 
 # Dump of table projects
@@ -185,5 +196,3 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 INSERT INTO `users` (`id`,`login`,`password`,`first_name`,`last_name`,`email`,`created`,`modified`) VALUES ('1','admin','1a1dc91c907325c69271ddf0c944bc72','test',NULL,NULL,'2007-07-23 19:17:34','2008-08-15 15:08:32');
-
-

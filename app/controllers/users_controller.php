@@ -129,9 +129,7 @@ class UsersController extends AppController {
 	}
 
 	function settings(){
-		// debug($_SESSION);
-
-		$folder = new Folder(_FREDISTRANOPATH . DS . 'app' . DS . 'locale');
+		$folder = new Folder(APP.'locale');
 		$tmp = $folder->ls(true, array (".svn", ".", ".."));
 		$availableLanguages = array ();
 		foreach ($tmp[0] as $value) {
@@ -140,9 +138,6 @@ class UsersController extends AppController {
 		}
 		
 		$this->set('availableLanguages', $availableLanguages);
-
-		// debug($availableLanguages);
-		
 	}
 
 	function change_password($id = null) {
@@ -257,18 +252,19 @@ class UsersController extends AppController {
 		} else if (Configure::read('Security.Authentication.type') == 1) {
 			// WS authentification 
 			
-			$client = new SoapClient( null,
-			array(
-				 		'location' 		=>	"https://" . _WEBSERVICESSERVER . "/OSI_authentificationWS/ConfigSSL?style=document",
-				    	'uri'  			=>	'urn:OSI_authentificationWSVi',
-	                    'use'     		=>	SOAP_LITERAL
-			)
+			$client = new SoapClient( 
+				null,
+				array(
+			 		'location' 		=>	"https://" . _WEBSERVICESSERVER . "/OSI_authentificationWS/ConfigSSL?style=document",
+			    	'uri'  			=>	'urn:OSI_authentificationWSVi',
+                    'use'     		=>	SOAP_LITERAL
+				)
 			);
 				
 			$params = array (
-			new SoapParam( $user, 'login'),
-			new SoapParam( $passwd, 'pass'),
-			new SoapParam( _AUTHENTICATIONTDIRECTORY, 'annuaire')
+				new SoapParam( $user, 'login'),
+				new SoapParam( $passwd, 'pass'),
+				new SoapParam( _AUTHENTICATIONTDIRECTORY, 'annuaire')
 			);
 
 			try {

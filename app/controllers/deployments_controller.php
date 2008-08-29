@@ -23,12 +23,6 @@ class DeploymentsController extends AppController {
 			'buinessData'
 		)
 	);
-		
-//	/**
-//	 * Ajax controller for initializing a project
-//	 */
-//	function initialize() {
-//	}// initialize
 
 	/**
 	 * Ajax controller for the 'export' step of a deployment
@@ -145,7 +139,7 @@ class DeploymentsController extends AppController {
 		if ($id == null ) {
 			$this->Session->setFlash(__('Invalid id.', true));
 			$this->redirect('/projects/index');
-			return;
+			exit;
 		}
 
 		// Give an ID to current deployment 
@@ -153,18 +147,18 @@ class DeploymentsController extends AppController {
 
 		// Run step	
 		$output = $this->Deployment->runProcess(
-												$this->data['Project']['id'], 
-												$deploymentUuid, 
-												array(
-													'backup'			=>	false,
-													'simulation' 		=> 	false,
-													'renamePrdFile' 	=> 	true,
-													'changeFileMode' 	=> 	true,
-													'giveWriteMode'		=> 	true,
-													'modifiedFileOnly'	=>	true,
-													'user' 		=> 	$this->Session->read('User.User.id')
-													)
-												);
+			$this->data['Project']['id'], 
+			$deploymentUuid, 
+			array(
+				'backup'			=>	false,
+				'simulation' 		=> 	false,
+				'renamePrdFile' 	=> 	true,
+				'changeFileMode' 	=> 	true,
+				'giveWriteMode'		=> 	true,
+				'modifiedFileOnly'	=>	true,
+				'user' 				=> 	$this->Session->read('User.User.id')
+			)
+		);
 
 		// Process output
 		if ( $output === false ) {

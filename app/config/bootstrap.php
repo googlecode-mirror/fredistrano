@@ -42,7 +42,11 @@
  * $controllerPaths = array('this path to controllers', 'second full path to controllers', 'etc...');
  *
  */
-//EOF
-
-   require_once(APP.'config'.DS.'config.php');
+   	define('F_VERSION',			'0.4.0');		
+   	define('F_RELEASEDATE',		'2008/XX/XX');
+	define('F_OS',				strtoupper(substr(PHP_OS,0,3)));
+	
+   	require APP.'config'.DS.'paths.php';
+   	Configure::load('config');
+	
 ?>

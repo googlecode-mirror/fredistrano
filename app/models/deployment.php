@@ -10,10 +10,9 @@ class Deployment extends AppModel {
 	var $useTable = false;
 	
 	var $process = array(
-//		0 => 'initialize',
-		1 => 'export',
-		2 => 'synchronize',
-		3 => 'finalize'
+		0 => 'export',
+		1 => 'synchronize',
+		2 => 'finalize'
 	);
 	
 	var $uuid = '';
@@ -31,9 +30,11 @@ class Deployment extends AppModel {
 		App::import('Model','DeploymentLog');
 		$this->DeploymentLog = new DeploymentLog();
 
-		if ( Configure::read() > 0 )
-			if (!class_exists('CakeLog'))
-				uses('cake_log');
+		if ( Configure::read() > 0 ) {
+			if (!class_exists('CakeLog')) {
+				uses('cake_log');	
+			}			
+		}
 	}// __construct 
 	
 	// Public deploy -----------------------------------------------------------------		
@@ -49,6 +50,7 @@ class Deployment extends AppModel {
 			return false;		
 		}
 				
+		// Track time
 		$t1 = getMicrotime();
 		
 		// Init options
@@ -63,12 +65,12 @@ class Deployment extends AppModel {
 		$options = array_merge($default_options, $options);
 	
 		// Prepare log output
-		$header = date('Y-m-d H:i:s') . " Performing fast deploy\n";
-		$filename = _DEPLOYLOGDIR . DS . $uuid . '.log';
+		$header = date('Y-m-d H:i:s')." Performing fast deploy\n";
+		$filename = F_DEPLOYLOGDIR.$uuid.'.log';
 		clearstatcache(); // Prevent pb with is_dir() function (see PHPDoc)
-		if (!is_dir(_DEPLOYLOGDIR)) {
-			if (!@mkdir(_DEPLOYLOGDIR, octdec(_DIRMODE), TRUE)) {
-				$this->triggerError( "Unable to create directory "._DEPLOYLOGDIR );
+		if (!is_dir(F_DEPLOYLOGDIR)) {
+			if (!@mkdir(F_DEPLOYLOGDIR, octdec( self::dirMode() ), TRUE)) {
+				$this->triggerError( "Unable to create directory ".F_DEPLOYLOGDIR );
 				return false;
 			}
 		}
@@ -77,12 +79,7 @@ class Deployment extends AppModel {
 			$log->append($header);
 		}
 		
-		// Performs successively each step
-		//$output = "> Initialize:\n";
-		//$output .= $this->initialize($project, $options);
-		
 		$output = '';
-		
 		$output .= "\n> Performing step Export:\n";
 		if ($shell = $this->runStep('export', $project_id, $uuid, $options)) {
 			$output .= $shell;
@@ -139,17 +136,21 @@ class Deployment extends AppModel {
 			return false;
 		}
 		
+		// Set a time limit	
+		set_time_limit(Configure::read('Deployment.timelimit.'.$step));
+		
 		$this->uuid = $uuid;
 			
+		// Track time
 		$t1 = getMicrotime();
 
 		// Prepare log output
-		$header = date('Y-m-d H:i:s') . " Output of " . strtoupper($step)."\n";
-		$filename = _DEPLOYLOGDIR . DS . $uuid . '.log';
+		$header = date('Y-m-d H:i:s')." Output of ".strtoupper($step)."\n";
+		$filename = F_DEPLOYLOGDIR.$uuid.'.log';
 		clearstatcache(); // Prevent pb with is_dir() function (see PHPDoc)
-		if (!is_dir(_DEPLOYLOGDIR)) {
-			if (!@mkdir(_DEPLOYLOGDIR, octdec(_DIRMODE), TRUE)) {
-				$this->triggerError( "Unable to create directory "._DEPLOYLOGDIR );
+		if (!is_dir(F_DEPLOYLOGDIR)) {
+			if (!@mkdir(F_DEPLOYLOGDIR, octdec( self::dirMode() ), TRUE)) {
+				$this->triggerError( "Unable to create directory ".F_DEPLOYLOGDIR );
 				return false;
 			}
 		}
@@ -175,37 +176,18 @@ class Deployment extends AppModel {
 		return $output;
 	}// runStep
 		
-	//  Private Step -----------------------------------------------------------
-//	/**
-//	 * Step 1 of the deployment process: Initialize
-//	 * @param array $project 	Project that should be deployed 
-//	 * @param array $options	Various options used for configuring the step 
-//	 * @return string 			Shell output 
-//   */
-//	private function initialize($project = null, $options = array()) {
-//		if ($project===null) 
-//			return false;
-//		
-//		set_time_limit(_TIMELIMIT_INITIALIZE);
-//
-//		return '';
-//	}// initialize
-	
+	//  Private Steps -----------------------------------------------------------
 	/**
-	 * Step 2 of the deployment process: Export
+	 * Step 1 of the deployment process: Export
 	 * @param array $project 	Project that should be deployed 
 	 * @param array $options	Various options used for configuring the step 
 	 * @return string 			Shell output 
      */
-	
 	private function export($project = null, $options = array()) {
 		if ($project===null) {
 			return false;
 		}
 		
-		// Set a time limit	
-		set_time_limit(_TIMELIMIT_EXPORT);
-				
 		// Define step options
 		$default_options = array(
 			'revision' 		=> 	null,
@@ -216,7 +198,7 @@ class Deployment extends AppModel {
 		$output = '';
 		
 		// Create temporary folders for the current project (if required)
-		$exportDir = _DEPLOYTMPDIR . DS . $project['Project']['name'];
+		$exportDir = F_DEPLOYTMPDIR.$project['Project']['name'];
 		$revision = ($options['revision']!=null)?' -r' . $options['revision']:'';
 		if (is_dir($exportDir)) {
 			// svn update
@@ -225,7 +207,7 @@ class Deployment extends AppModel {
 			
 		} else {			
 			// TODO Remove DIRMODE
-			if (@mkdir($exportDir, octdec(_DIRMODE), TRUE)) {
+			if (@mkdir($exportDir, octdec( self::dirMode() ), TRUE)) {
 				$output .= "-[".__('creating directory', true)." $exportDir]\n";
 			} else {
 				$this->triggerError("Unable to create directory ".$exportDir." during export step");
@@ -235,43 +217,36 @@ class Deployment extends AppModel {
 			// Export code from SVN
 			$authentication = '';
 			if (!empty($options['password_svn'])) {
-				$authentication = ' --username ' . $options['user_svn'] . ' --password ' . $options['password_svn'];
+				$authentication = ' --username '.$options['user_svn'].' --password '.$options['password_svn'];
 			}
-			$command = "svn checkout" . $revision . $authentication . " " . $project['Project']['svn_url'] . " tmpDir 2>&1";
+			$command = "svn checkout".$revision.$authentication.' '.$project['Project']['svn_url'].' tmpDir 2>&1';
 			$output .= $this->executeCommand($command, __('svn checkout',true), 'export', $exportDir);
 		}
 
-		// Create target dir (if required)
-		if (!is_dir($project['Project']['prd_path'])) {
-			// TODO Remove DIRMODE
-			if (@mkdir($project['Project']['prd_path'], octdec(_DIRMODE), TRUE)) {
-				$output .= "-[".__('creating directory', true)." ".$project['Project']['prd_path']."]\n";
-			} else {
-				$this->triggerError("Unable to create directory ".$project['Project']['prd_path']." during export step");
-				return false;
-			}
-		}
+		// Load project configuration 
+		self::loadConfig();
+		
+		/*
+			TODO Run before script
+		*/
 		
 		return $output;
 	}// export
 	
 	/**
-	 * Step 3 of the deployment process: Synchronize
+	 * Step 2 of the deployment process: Synchronize
 	 * Synchronize the exported source code from snv with the code located in the target directory
 	 * @param array $project 	Project that should be deployed 
 	 * @param array $options	Various options used for configuring the step 
 	 * @return string 			Shell output 
      */
 	private function synchronize($project = null, $options = array()) {
-		
 		if ( $project == null || !$this->isConfigAvailable($project['Project']['name'])) {
 			return false;			
 		}
-		// Set a time limit
-		set_time_limit(_TIMELIMIT_RSYNC);
 			
-		// Inculde deployment config file
-		include_once (_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS . "deploy.php");
+		// Load project configuration 
+		self::loadConfig();
 			
 		// Define step options
 		$default_options = array(
@@ -282,7 +257,18 @@ class Deployment extends AppModel {
 		);
 		$options = array_merge($default_options, $options);
 		$output = '';
-
+		
+		// Create target dir (if required)
+		if (!is_dir($project['Project']['prd_path'])) {
+			// TODO Remove DIRMODE
+			if (@mkdir($project['Project']['prd_path'], octdec( self::dirMode() ), TRUE)) {
+				$output .= '-['.__('creating directory', true).' '.$project['Project']['prd_path'].']\n';
+			} else {
+				$this->triggerError('Unable to create directory '.$project['Project']['prd_path'].' during export step');
+				return false;
+			}
+		}
+		
 		// Generate exclusion file
 		$exclude = $this->_getConfig()->exclude;
 		$exclude_string = "";
@@ -292,7 +278,7 @@ class Deployment extends AppModel {
 		$exclude_string .= "- deploy.php\n";
 		$exclude_string .= "- **.dev.**\n";
 		$exclude_string .= "- **.svn**\n";	
-		$exclude_file_name = _DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "exclude_file.txt";
+		$exclude_file_name = F_DEPLOYTMPDIR.$project['Project']['name'].DS."exclude_file.txt";
 		$handle = fopen($exclude_file_name, "w");
 		fwrite($handle, $exclude_string);
 		fclose($handle);
@@ -317,7 +303,7 @@ class Deployment extends AppModel {
 			);
 			
 			//The rsync option "O" not yet supported on Mac
-			if (Configure::read('OS.type') != 'DAR') {
+			if ( F_OS != 'DAR') {
 				$option .= 'O';
 			}
 			
@@ -337,17 +323,17 @@ class Deployment extends AppModel {
 
 		// Execute command		
 		$exclude_file_name = self::pathConverter($exclude_file_name);
-		$source = self::pathConverter(_DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "tmpDir" . DS);
+		$source = self::pathConverter(F_DEPLOYTMPDIR.$project['Project']['name'].DS."tmpDir". DS);
 		$target = self::pathConverter($project['Project']['prd_path']);
 		$command = "rsync -$option --delete --exclude-from=$exclude_file_name $source $target 2>&1";	
-		$output .= $this->executeCommand($command,__('Deploying new version',true), 'synchronize', _DEPLOYDIR);
+		$output .= $this->executeCommand($command,__('Deploying new version',true), 'synchronize', F_DEPLOYDIR);
 
 		// Create files list and directories list for chmod step
 		$list = explode("\n", $output);
 		$size = count($list);
 		if ($size > 0) {
-			$files_to_chmod = _DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "files_to_chmod.txt";
-			$dir_to_chmod = _DEPLOYTMPDIR . DS . $project['Project']['name'] . DS . "dir_to_chmod.txt";
+			$files_to_chmod = F_DEPLOYTMPDIR.$project['Project']['name'].DS."files_to_chmod.txt";
+			$dir_to_chmod = F_DEPLOYTMPDIR.$project['Project']['name'].DS."dir_to_chmod.txt";
 			$handle_f = fopen($files_to_chmod, "w");
 			$handle_d = fopen($dir_to_chmod, "w");
 
@@ -370,7 +356,7 @@ class Deployment extends AppModel {
 	}// synchronize
 
 	/**
-	 * Step 4 of the deployment process: Finalize
+	 * Step 3 of the deployment process: Finalize
 	 * @param int $project 		Project that should be deployed 
 	 * @param array $options	Various options used for configuring the step 
 	 * @return string 			Shell output 
@@ -380,11 +366,8 @@ class Deployment extends AppModel {
 			return false;	
 		}
 		
-		// Set a time limit
-		set_time_limit(_TIMELIMIT_FINALIZE);
-		
-		// Inculde deployment config file
-		include_once (_DEPLOYTMPDIR.DS.$project['Project']['name'].DS.'tmpDir'.DS.'deploy.php');
+		// Load project configuration 
+		self::loadConfig();
 			
 		// Define step options
 		$default_options = array(
@@ -392,15 +375,14 @@ class Deployment extends AppModel {
 			'changeFileMode' 		=> 	false,
 			'giveWriteMode'			=> 	false,
 			'modifiedFileOnly'		=> 	false
-			
 		);
 		$options = array_merge($default_options, $options);
 		$output = '';
 		
 		// Rename file type from .prd.xxx into .xxx
 		if ($options['renamePrdFile'] === true) {			
-			$command = "find " . self::pathConverter($project['Project']['prd_path']) . " -name '*.prd.*' -exec /usr/bin/perl ".self::pathConverter(_DEPLOYDIR)."/renamePrdFile -vf 's/\.prd\./\./i' {} \;";
-			$output .= $this->executeCommand($command, __('Rename files', true) . '.prd.', 'finalize', _DEPLOYDIR);
+			$command = "find ".self::pathConverter($project['Project']['prd_path'])." -name '*.prd.*' -exec /usr/bin/perl ".self::pathConverter(_DEPLOYDIR)."/renamePrdFile -vf 's/\.prd\./\./i' {} \;";
+			$output .= $this->executeCommand($command, __('Rename files', true).'.prd.', 'finalize', F_DEPLOYDIR);
 		}
 
 		// Change file mode
@@ -408,35 +390,34 @@ class Deployment extends AppModel {
 			
 			// change file mode only for modified files
 			if ($options['modifiedFileOnly'] === true) {
-				$path = _DEPLOYTMPDIR . DS . $project['Project']['name'] . DS;
-				$command = "chmod " ._FILEMODE . "  $(<". $path . "files_to_chmod.txt)";
+				$path = F_DEPLOYTMPDIR.$project['Project']['name'].DS;
+				$command = "chmod ".Configure::read('FileSystem.permissions.default')."  $(<".$path."files_to_chmod.txt)";
 				$output .= $this->executeCommand(
 					$command, 
-					__('updating files modes', true) . ' > ' . htmlspecialchars($command), 
-					'finalize', 
-					_DEPLOYDIR
+					__('updating files modes', true).' > '.htmlspecialchars($command), 
+					'finalize'
 				);
 				
-				$command = "chmod " ._DIRMODE . "  $(<". $path . "dir_to_chmod.txt)";
+				$command = "chmod ".self::dirMode()."  $(<". $path . "dir_to_chmod.txt)";
 				$output .= $this->executeCommand(
 					$command, 
 					__('updating dir mode', true) . ' > ' . htmlspecialchars($command), 
-					'finalize', 
-					_DEPLOYDIR
+					'finalize'
 				);
 			
 			// change file mode on all the project files
 			} else {
-				$command = "find " . self::pathConverter($project['Project']['prd_path']) . " -type f -exec chmod " . _FILEMODE . " {} \;";
+				$command = "find ".self::pathConverter($project['Project']['prd_path'])." -type f -exec chmod "
+								.Configure::read('FileSystem.permissions.default')." {} \;";
 				$output .= $this->executeCommand(
 					$command, 
-					__('updating files modes', true) . ' > ' . _FILEMODE, 
+					__('updating files modes', true).' > '.Configure::read('FileSystem.permissions.default'), 
 					'finalize', 
-					_DEPLOYDIR
+					F_DEPLOYDIR
 				);
 	
-				$command = "find " . self::pathConverter($project['Project']['prd_path']) . " -type d -exec chmod " . _DIRMODE . " {} \;";
-				$output .= $this->executeCommand($command, __('updating dir mode', true) . '2/2 > ' . _DIRMODE, 'finalize');
+				$command = "find " . self::pathConverter($project['Project']['prd_path'])." -type d -exec chmod ".self::dirMode()." {} \;";
+				$output .= $this->executeCommand($command, __('updating dir mode', true) . '2/2 > '.self::dirMode(), 'finalize');
 			}
 		}
 		
@@ -446,11 +427,15 @@ class Deployment extends AppModel {
 			$writable = $this->_getConfig()->writable;
 			if (sizeof($writable) > 0) {
 				for ($i = 0; $i < sizeof($writable); $i++) {
-					$command = "chmod -vR "._WRITEMODE."  ".self::pathConverter($project['Project']['prd_path'].$writable[$i] );
+					$command = "chmod -vR ".Configure::read('FileSystem.permissions.writable')."  ".self::pathConverter($project['Project']['prd_path'].$writable[$i] );
 					$output .= $this->executeCommand($command, 'Setting write permissions', 'finalize');
 				}
 			}
 		}
+		
+		/*
+			TODO Run after script
+		*/
 		
 		return $output;
 	}// finalize
@@ -464,9 +449,9 @@ class Deployment extends AppModel {
 		$output = '';
 		
 		// création du répertoire pour la sauvegarde
-		$backupDir =_DEPLOYBACKUPDIR.DS.$project['Project']['name'] ;
+		$backupDir = F_DEPLOYBACKUPDIR.DS.$project['Project']['name'] ;
 		if (!is_dir($backupDir)) {
-			if (mkdir($backupDir, octdec(_DIRMODE), TRUE)) {
+			if (mkdir($backupDir, octdec(self::dirMode()), TRUE)) {
 				$output .= "-[".__('creating directory')." $backupDir]\n";
 			} else {
 				$this->triggerError("Unable to create directory $backupDir during export step");
@@ -483,8 +468,8 @@ class Deployment extends AppModel {
 			$command = "rsync -av $source $target 2>&1";
 			$output .= $this->executeCommand($command, __('backup current prod version'), 'backup');
 			
-			$command = "chmod -R "._DIRMODE." "._DEPLOYBACKUPDIR;
-			$output .= $this->executeCommand($command, __('updating dir mode') . ' > ' . _DIRMODE, 'backup');
+			$command = "chmod -R ".self::dirMode()." ".F_DEPLOYBACKUPDIR;
+			$output .= $this->executeCommand($command, __('updating dir mode') . ' > '.self::dirMode(), 'backup');
 		} else {
 			$output .= "-[".__('no backup needed')." ".$project['Project']['prd_path']." ".__('does not exist')."]\n";
 		}
@@ -493,18 +478,24 @@ class Deployment extends AppModel {
 		return $output;
 	}// backup
 
+    // Helper functions ---------------------------------------------------------
 	/**
 	 * Check an exported project contains the deploy.php config file 
 	 * @param string $projectName 	Name of the project to be checked
 	 * @return boolean  			True or false
 	 */ 
 	function isConfigAvailable(	$projectName ) {
-		$res = @ file_exists(_DEPLOYTMPDIR . DS . $projectName . DS . "tmpDir" . DS . "deploy.php");
+		$res = @ file_exists(F_DEPLOYTMPDIR.$projectName.DS.'tmpDir'.DS.'deploy.php');
 		if ($res === false) {
 			$this->triggerError("Unable to find 'deploy.php' file");
 		}
 		return $res;
 	}// isConfigAvailable
+
+	function loadConfig() {
+		// Inculde deployment config file
+		include_once (F_DEPLOYTMPDIR.$project['Project']['name'].DS.'tmpDir'.DS.'deploy.php');
+	}
 
 	function triggerError($error) {
 		$this->lastError = $error;
@@ -527,29 +518,14 @@ class Deployment extends AppModel {
 		return $this->lastError;
 	}//getLastExecutionTime
 
-	/**
-	 * Convert if necessary a path to a cygwin/linux format 
-	 * @param string $path 		Path to be converted
-	 * @return string 			Converted path
-	 */ 
-	function pathConverter($path) {
-		$pathForRsync = $path;
-		if ( Configure::read('OS.type') == 'WIN') {
-			$pattern = '/^([A-Za-z]):/';
-			preg_match($pattern, $path, $matches, PREG_OFFSET_CAPTURE);
-			if (!empty ($matches[1][0])) {
-				$windowsLetter = strtolower($matches[1][0]);
-				$pathForRsync = strtr(Configure::read('OS.Cygwin.rootDir') . $windowsLetter . substr($path, 2), "\\", "/");
-			}	
-		}
-		return $pathForRsync;
-	}// pathConverter
-
 	// Private --------------------------------------------------------------------------------
 	/**
 	 * Retrieve deploy configuration
 	 * @return 
 	 */
+	/*
+		TODO Naze a reprendre
+	*/
 	private function &_getConfig() {
 		static $instance;
 
@@ -560,29 +536,57 @@ class Deployment extends AppModel {
 		return $instance;
 	}// _getConfig
 	
+	// Exportable  --------------------------------------------------------------------------------	
+	/*
+		TODO !!! A implementer
+	*/
+	function dirMode() {
+		$fileMode = Configure::read('FileSystem.permissions.default');
+		// +1 sauf a/ si 0 alors 0 ; b/ si 7 alors 7
+		return '755';
+	}// dirMode
+	
 	function executeCommand( $command = null, $comment = 'none', $context = 'none', $newDir = null ){
-	        if ($command == null) {
-	            return __('No command supplied');
-	        }
+		if ($command == null) {
+            return __('No command supplied');
+        }
 
-	        $output = "\n-[".$comment."]\n";
-	        if ( Configure::read() > 0 ){
-	            CakeLog::write('debug', "[$context] " . $command);
-	        }
+        $output = "\n-[".$comment."]\n";
+        if ( Configure::read() > 0 ){
+            CakeLog::write('debug', "[$context] " . $command);
+        }
 
-	        if ( Configure::read('OS.type') == 'WIN' ) {
-	            $prefix = "bash.exe --login -c 'cd ".$this->pathConverter($newDir)."; ";
-	            $suffix = "'";
-	        } else {
-                if ($newDir != null) {
-                   chdir($newDir);
-                }
-	            $prefix = "";
-	            $suffix = "";
-	        }
-	        $shell = shell_exec( $prefix.$command.$suffix );
-	        return $output . $shell;
+        if ( F_OS == 'WIN' ) {
+            $prefix = "bash.exe --login -c 'cd ".$this->pathConverter($newDir)."; ";
+            $suffix = "'";
+        } else {
+            if ($newDir != null) {
+               chdir($newDir);
+            }
+            $prefix = "";
+            $suffix = "";
+        }
+        $shell = shell_exec( $prefix.$command.$suffix );
+        return $output . $shell;
 	}// executeCommand
 	
+	/**
+	 * Convert if necessary a path to a cygwin/linux format 
+	 * @param string $path 		Path to be converted
+	 * @return string 			Converted path
+	 */ 
+	function pathConverter($path) {
+		$pathForRsync = $path;
+		if ( F_OS == 'WIN') {
+			$pattern = '/^([A-Za-z]):/';
+			preg_match($pattern, $path, $matches, PREG_OFFSET_CAPTURE);
+			if (!empty ($matches[1][0])) {
+				$windowsLetter = strtolower($matches[1][0]);
+				$pathForRsync = strtr(Configure::read('Cygwin.rootDir') . $windowsLetter . substr($path, 2), "\\", "/");
+			}	
+		}
+		return $pathForRsync;
+	}// pathConverter
+
 }// Deployment
 ?>

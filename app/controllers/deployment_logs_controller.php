@@ -56,11 +56,7 @@ class DeploymentLogsController extends AppController {
 	 */
 	function index($op = null, $id = null) {
 		$limit = null;
-		
-		if (!Configure::read('Feeds.enabled') && $this->RequestHandler->isRss()) {
 			
-		}
-		
 		if ($this->RequestHandler->isRss()) {
 			$limit = 50;
 			
@@ -116,15 +112,19 @@ class DeploymentLogsController extends AppController {
 		
 		$options = array(
 			'reverse'			=>	false,
-			'logPath'			=> _DEPLOYLOGDIR.DS.$deployLog['DeploymentLog']['uuid'].'.log'
+			'logPath'			=> F_DEPLOYLOGDIR.$deployLog['DeploymentLog']['uuid'].'.log'
 		);
-		$output = $this->Project->readAssociatedLog($deployLog['DeploymentLog']['project_id'], $options);
-		if ( $output === false ) {
-			$this->set('error', 	$this->Project->lastReadError);
+		if ($deployLog['DeploymentLog']['archive']) {
+			$this->set('error', 	__('No details available for archived logs.') );
 		} else {
-			$this->set('project', 	$this->Project->read(null, $this->data['Search']['project_id']));
-			$this->set('size', 		$this->Project->lastReadSize);
-			$this->set('logPath',	$options['logPath']); 
+			$output = $this->Project->readAssociatedLog($deployLog['DeploymentLog']['project_id'], $options);
+			if ( $output === false ) {
+				$this->set('error', 	$this->Project->lastReadError);
+			} else {
+				$this->set('project', 	$this->Project->read(null, $this->data['Search']['project_id']));
+				$this->set('size', 		$this->Project->lastReadSize);
+				$this->set('logPath',	$options['logPath']); 
+			}
 		}
 		$this->set('log',	 	$output);
 		$this->set('deployLog', $deployLog);
@@ -136,7 +136,7 @@ class DeploymentLogsController extends AppController {
 	 * Private function for archiving old logs
 	 */
 	private function _archive() {
-		$oldTime = time() - _LOGSARCHIVEDATE;
+		$oldTime = time() - Configure::read('Log.archiveDate');
 		return $this->DeploymentLog->archive($oldTime);
 	}// _archive
 

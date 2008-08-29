@@ -15,16 +15,6 @@ class ControlObject extends AppModel {
 	    )
 	);
 
-
-	// var $hasOne = array (
-	// 	'ParentControlObject' => array (
-	// 		'className' => 'ControlObject',
-	// 		'foreignKey' => 'parent_id',
-	// 		
-	// 	),
-	// 	
-	// );
-
 	var $belongsTo = array (
 		'ParentControlObject' => array (
 			'className' => 'ControlObject',

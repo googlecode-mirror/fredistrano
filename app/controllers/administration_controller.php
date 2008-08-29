@@ -63,17 +63,17 @@ class AdministrationController extends AppController {
 			$_SESSION['update_token'] = $token;
 			if ($handle = fopen( WWW_ROOT . 'web_admin.update.'.$token.'.php','w+')) {
 				
-				$tmpDir = _DEPLOYTMPDIR . DS . $p['Project']['name'] . DS . "tmpDir" . DS ;
-				$target = Deployment :: pathConverter( _FREDISTRANOPATH . DS );
-				$excludeFile 	= Deployment :: pathConverter( _DEPLOYDIR . DS . "exclude_file.txt" );
-				$renameScript 	= Deployment :: pathConverter( _DEPLOYDIR . DS . "renamePrdFile" );
+				$tmpDir = F_DEPLOYTMPDIR.$p['Project']['name'].DS.'tmpDir'.DS ;
+				$target = Deployment :: pathConverter( F_FREDISTRANOPATH );
+				$excludeFile 	= Deployment :: pathConverter( F_DEPLOYDIR.'exclude_file.txt' );
+				$renameScript 	= Deployment :: pathConverter( F_DEPLOYDIR.'renamePrdFile' );
 				
 				$content = "<?php \n" 
 					."set_time_limit(240);\n"
-					."if ( !file_exists('"._DEPLOYTMPDIR . DS . $p['Project']['name']."') ) {\n"
-						."mkdir('"._DEPLOYTMPDIR . DS . $p['Project']['name']."');\n"
+					."if ( !file_exists('".F_DEPLOYTMPDIR. $p['Project']['name']."') ) {\n"
+						."mkdir('".F_DEPLOYTMPDIR. $p['Project']['name']."');\n"
 					."} else {\n"	
-						.'$res'." = shell_exec('rm -rf "._DEPLOYTMPDIR . DS . $p['Project']['name']."/*');\n"
+						.'$res'." = shell_exec('rm -rf ".F_DEPLOYTMPDIR.$p['Project']['name']."/*');\n"
 					."}\n"
 					.'$res'." .= shell_exec('svn export --username ".Configure::read('Subversion.user').
 						" --password ".Configure::read('Subversion.passwd')." ".$p['Project']['svn_url']." ".$tmpDir." 2>&1');\n"

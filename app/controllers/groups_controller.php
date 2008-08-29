@@ -55,8 +55,7 @@ class GroupsController extends AppController {
 	 * @param string $id 
 	 * @return void
 	 * @author Frédéric BOLLON
-	 */
-	
+	 */	
 	function view($id = null) {
 		if (!$id or !$this->Group->read(null, $id)) {
 			$this->Session->setFlash(__('Invalid id.', true));
@@ -67,8 +66,6 @@ class GroupsController extends AppController {
 		$this->set('group', $this->Group->read(null, $id));
 		// $this->set('users', $this->Group->getUsers($id));
 		$this->set('person', $this->User->find('list', array('fields' => array('User.login', 'User.login'))));
-		// debug($this->Group->read(null, $id));
-		
 	}
 
 	/**
@@ -101,7 +98,6 @@ class GroupsController extends AppController {
 	 * @return void
 	 * @author Frédéric BOLLON
 	 */
-	
 	function edit($id = null) {
 		if (empty ($this->data)) {
 			if (!$id or !$this->Group->read(null, $id)) {
@@ -130,7 +126,6 @@ class GroupsController extends AppController {
 	 * @return void
 	 * @author Frédéric BOLLON
 	 */	
-	
 	function delete($id = null) {
 		if (!$id or !$this->Group->read(null, $id)) {
 			$this->Session->setFlash(__('Invalid id.', true));
@@ -154,8 +149,6 @@ class GroupsController extends AppController {
 	 * @return void
 	 * @author Frédéric BOLLON
 	 */
-	
-	
 	function affectUsers($id = null){
 		if (empty ($this->data)) {
 			if (!$id or !$this->Group->read(null, $id)) {

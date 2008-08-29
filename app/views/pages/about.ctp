@@ -1,5 +1,5 @@
 <h1><?php __('About') ?></h1>
-<p><em><?php __('Version') ?> <?php echo _VERSION.' - '. _RELEASEDATE; ?></em></p>
+<p><em><?php __('Version') ?> <?php echo F_VERSION.' - '.F_RELEASEDATE; ?></em></p>
 
 <?php __('Check for news and updates about Fredistrano on its') ?> <?php echo $html->link('homepage','http://code.google.com/p/fredistrano'); ?>	
 
