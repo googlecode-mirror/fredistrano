@@ -12,7 +12,7 @@ http://creativecommons.org/licenses/GPL/2.0/
 */
 /* THE BIG GUYS */
 * {margin:0;padding:0}
-body {padding: 0 0 20px;z-index:100;background: #fff url("images/body_bg.gif") repeat-x 0 100%;color:#333;font:83%/1.5 arial,tahoma,verdana,sans-serif}
+body {padding: 0 0 20px;z-index:100;background: #fff url("images/body_bg.gif") repeat-x 0 100%;color:#333;font:78%/1.5 arial,tahoma,verdana,sans-serif}
 
 /* LINKS */
 a,a:link,a:link,a:link,a:hover {background:transparent;text-decoration:underline;cursor:pointer}
@@ -202,9 +202,9 @@ hr {margin: 1em 0;background:#f2f2f2;height:1px;color:#f2f2f2;border:none;clear:
 	.table1 {border: 2px solid #900;border-collapse:collapse;width:100%}
 		.table1 td {padding:3px;border: 1px solid #fff}
 		.table1 th {text-align:left;border: 1px solid #fff}
-		.table1 thead th {color:#fff;font-size:115%;background: #900 url("images/sprites.gif") repeat-x 0 -1300px;padding: 1px 3px}
-		.table1 tbody th {color:#fff;font-size:105%;background: #88b8db url("images/sprites.gif") repeat-x 0 -1400px;padding: 1px 5px}
-		.table1 tbody th.sub {font-size:100%;color:#000;background: #efefef url("images/sprites.gif") repeat-x 0 -1500px;padding: 1px 5px 1px}
+		.table1 thead th {color:#fff;font-size:115%;background: #900 url("images/bg1.png") repeat;padding: 1px 3px}
+		.table1 tbody th {color:#fff;font-size:105%;background: #88b8db url("images/bg2.png") repeat;padding: 1px 5px;width:180px;}
+		.table1 tbody th.sub {font-size:100%;color:#000;background: #efefef url("images/bg3.png") repeat;padding: 1px 5px 1px}
 		.table1 th a {color:#fff;}
 		.table1 ul {margin:0;padding:0}
 		.table1 li{display:inline; list-style:none;}

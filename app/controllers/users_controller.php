@@ -3,7 +3,7 @@ class UsersController extends AppController {
 
 	var $name = 'Users';
 
-	var $uses = array ('User', 'Group');	
+	var $uses = array ('User', 'Group', 'Profile');	
 
 	var $helpers = array ();
 
@@ -126,6 +126,23 @@ class UsersController extends AppController {
 			$this->Session->setFlash(__('Error during deletion.', true));
 			$this->redirect('/users/view/' . $id);
 		}
+	}
+
+	function settings(){
+		// debug($_SESSION);
+
+		$folder = new Folder(_FREDISTRANOPATH . DS . 'app' . DS . 'locale');
+		$tmp = $folder->ls(true, array (".svn", ".", ".."));
+		$availableLanguages = array ();
+		foreach ($tmp[0] as $value) {
+			$lang = substr($value, 0, 2);
+			$availableLanguages[$lang] = $lang;
+		}
+		
+		$this->set('availableLanguages', $availableLanguages);
+
+		// debug($availableLanguages);
+		
 	}
 
 	function change_password($id = null) {

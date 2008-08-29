@@ -22,12 +22,34 @@
 <th colspan="2">
 	<div class="tabletoplink">
 		<ul>
+			<li><?php echo $html->link($html->image('preferences-system.png', 
+													array(
+														'alt' => __('Reset permissions', true), 
+														'title' => __('Reset permissions', true)
+														)
+													), 
+										'#',
+										null,
+										__('Are you sure you want to reset permissions for the project', true).' : ' . $project['Project']['name'] . '?',
+										false
+										);?></li>				
+			<li><?php echo $html->link($html->image('edit-clear.png', 
+													array(
+														'alt' => __('Delete project temp files', true), 
+														'title' => __('Delete project temp files', true)
+														)
+													), 
+										'#',
+										array('onclick'=>"Element.toggle('standardDeploy');Element.toggle('fastDeploy')"),
+										__('Are you sure you want to delete temp files for the project', true).' : ' . $project['Project']['name'] . '?',
+										false
+										);?></li>				
 			<li><?php echo $html->link($html->image('arrow_switch.png', 
 													array(
 														'alt' => __('Switch deployment mode (standard / fast)', true), 
 														'title' => __('Switch deployment mode (standard / fast)', true)
 														)
-													).' '.__('Switch deployment mode (standard / fast)', true), 
+													), 
 										'#',
 										array('onclick'=>"Element.toggle('standardDeploy');Element.toggle('fastDeploy')"),
 										false,
@@ -38,17 +60,18 @@
 														'alt' => __('View deployment history', true), 
 														'title' => __('View deployment history', true)
 														)
-													).' '.__('View deployment history', true), 
+													), 
 										'/deploymentLogs/index/project/' . $project['Project']['id'], 
 										null,
 										false,
 										false);?></li>
+			<li>.</li>							
 			<li><?php echo $html->link($html->image('b_edit.png', 
 													array(
 														'alt' => __('Edit', true), 
 														'title' => __('Edit', true)
 														)
-													).' '.__('Edit', true), 
+													), 
 										'/projects/edit/' . $project['Project']['id'], 
 										null,
 										false,
@@ -58,7 +81,7 @@
 														'alt' => __('Delete', true), 
 														'title' => __('Delete', true)
 														)
-													).' '.__('Delete', true), 
+													), 
 										'/projects/delete/' . $project['Project']['id'], 
 										null, 
 										__('Are you sure you want to delete', true).' : ' . $project['Project']['name'] . '?',
@@ -66,10 +89,6 @@
 		</ul>
 	</div>
 </th>
-</tr>
-<tr>
-	<th class="sub"><?php __('Id');?></th>
-	<td>&nbsp;<?php echo $project['Project']['id']?></td>
 </tr>
 
 <tr>

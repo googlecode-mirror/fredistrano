@@ -54,18 +54,12 @@
 	/**
 	 * Subversion default login
 	 *
-	 * 0: never
-	 * 1: login
-	 * 2: always
 	 */
 	Configure::write('Subversion.user',			'');
 	
 	/**
 	 * Subversion default password
 	 *
-	 * 0: never
-	 * 1: login
-	 * 2: always
 	 */
 	Configure::write('Subversion.passwd',		'');
 	

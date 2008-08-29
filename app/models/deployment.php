@@ -561,28 +561,27 @@ class Deployment extends AppModel {
 	}// _getConfig
 	
 	function executeCommand( $command = null, $comment = 'none', $context = 'none', $newDir = null ){
-		if ($command == null) {
-			return __('No command supplied');
-		}
-		
-		if ($newDir != null) {
-			chdir($newDir);			
-		}
-			
-		$output = "\n-[".$comment."]\n";
-		if ( Configure::read() > 0 ){
-			CakeLog::write('debug', "[$context] " . $command);			
-		}
-		
-		if ( Configure::read('OS.type') == 'WIN' ) {
-			$prefix = "bash.exe --login -c '";
-			$suffix = "'";
-		} else {
-			$prefix = "";
-			$suffix = "";
-		}
-		$shell = shell_exec( $prefix.$command.$suffix );
-		return $output . $shell;
+	        if ($command == null) {
+	            return __('No command supplied');
+	        }
+
+	        $output = "\n-[".$comment."]\n";
+	        if ( Configure::read() > 0 ){
+	            CakeLog::write('debug', "[$context] " . $command);
+	        }
+
+	        if ( Configure::read('OS.type') == 'WIN' ) {
+	            $prefix = "bash.exe --login -c 'cd ".$this->pathConverter($newDir)."; ";
+	            $suffix = "'";
+	        } else {
+                if ($newDir != null) {
+                   chdir($newDir);
+                }
+	            $prefix = "";
+	            $suffix = "";
+	        }
+	        $shell = shell_exec( $prefix.$command.$suffix );
+	        return $output . $shell;
 	}// executeCommand
 	
 }// Deployment

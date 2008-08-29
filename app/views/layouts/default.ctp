@@ -36,7 +36,16 @@ http://creativecommons.org/licenses/GPL/2.0/
 <div id="wrap">
 
 	<div id="header">
-		<div id="site-name"><?php e($html->image('logo1.png'))?></div>
+		<div id="site-name"><?php echo $html->link($html->image('logo1.png', 
+												array(
+													'alt' => __('Logo', true)
+													)
+												), 
+									'/', 
+									null,
+									false,
+									false);?>
+		</div>
 			<?php echo $this->renderElement('menu') ?>
 		</div>
 

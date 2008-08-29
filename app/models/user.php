@@ -38,6 +38,17 @@ class User extends AppModel {
 			'associationForeignKey' => 'group_id'
 		)
 	);
+	
+	var $hasOne = array (
+		'Profile' => array ('className' => 'Profile',
+			'foreignKey' => 'user_id',
+			'dependent' => false,
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+			)
+	);
+	
 
 	function beforeSave() {
 		// si y a un champ password : add() et change_password() mais pas edit()

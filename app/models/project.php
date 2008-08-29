@@ -2,37 +2,35 @@
 class Project extends AppModel {
 
 	var $name = 'Project';
+	
+	var $validate = array(
+	    'name' => array(
+	        'rule1' => array(
+	            'rule' => 'alphaNumeric',
+	            'required' => true
+	        ),
+	        'rule2' => array(
+	            'rule' => 'isUnique'
+	        )
+	    ),
+		'svn_url' => array(
+		        'rule' => 'url', 
+		        'required' => true,
+		        'allowEmpty' => false
+		 ),
+		'prd_path' => array(
+				'rule' => '',
+				'required' => true,
+		        'allowEmpty' => false
+		 ),
+		'prd_url' => array(
+		        'rule' => 'url', 
+		        'required' => true,
+		        'allowEmpty' => false
+		 )
+	);
 
-//	var $validate = array (
-//		'name' => array (
-//			array (
-//				VALID_NOT_EMPTY,
-//				LANG_ENTERPROJECTNAME
-//			)
-//			,
-//			array (array('isUnique', array('name')), LANG_PROJECTNAMEALREADYEXISTS)
-//			,
-//			array (array('noSpace', array('name')), 'The project name can not contain space')
-//		),
-//		'svn_url' => array (
-//			array (
-//				VALID_NOT_EMPTY,
-//				LANG_ENTERURLREPOSITORYFORTHISPROJECT
-//			)
-//		),
-//		'prd_url' => array (
-//			array (
-//				VALID_NOT_EMPTY,
-//				LANG_ENTERPRODUCTIONURL
-//			)
-//		),
-//		'prd_path' => array (
-//			array (
-//				VALID_NOT_EMPTY,
-//				LANG_ENTERAPPLICATIONDIRECTORY
-//			)
-//		)
-//	);
+
 	
 	var $lastReadSize = 0;
 
