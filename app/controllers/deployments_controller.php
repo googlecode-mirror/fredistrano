@@ -1,4 +1,8 @@
 <?php
+/*
+
+	TODO F: Rewrite deployment options based on config
+*/
 if (!class_exists('File')) {
 	 uses('file');
 }

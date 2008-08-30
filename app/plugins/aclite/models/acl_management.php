@@ -140,7 +140,7 @@ class AclManagement extends AcliteAppModel {
 		return $this->_listParents($tmp, $type);
 	}// createRequesterTree
 	
-	// TODO depreated since parent_id
+	// TODO A: depreated since parent_id
 	function _listParents ( $list = array(), $type = 'Aro') {
 		if (empty($list))
 			return false;
@@ -162,7 +162,7 @@ class AclManagement extends AcliteAppModel {
 		return $tmp;
 	}// _recursiveParentSearch
 	
-	// TODO depreated since parent_id
+	// TODO A: depreated since parent_id
 	function _getParent($element, $candidates, $type = 'Aro') {
 		foreach ( $candidates as $candidate) {
 			if ($element[$type]['lft'] > $candidate[$type]['lft'] && $element[$type]['rght'] < $candidate[$type]['rght'])
@@ -183,7 +183,7 @@ class AclManagement extends AcliteAppModel {
 		return $result;
 	}// _getParent
 	
-	// TODO depreated since parent_id
+	// TODO A: depreated since parent_id
 	function _convertParentListToTree ($roots, $relations, &$result = array()) {
 		$str = "<ul style=\"margin: 0;\">"; // margin 0 pour surcharger la déclaration du fichier CSS
 		foreach ($roots as $root) {

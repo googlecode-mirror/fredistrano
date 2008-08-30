@@ -1,4 +1,7 @@
 <?php
+/*
+	TODO F: Rewrite deployment options based on config
+*/
 class Deployment extends AppModel {
 
 	var $name = 'Deployment';
@@ -206,7 +209,6 @@ class Deployment extends AppModel {
 			$output .= $this->executeCommand($command, __('svn update',true), 'export', $exportDir);
 			
 		} else {			
-			// TODO Remove DIRMODE
 			if (@mkdir($exportDir, octdec( self::dirMode() ), TRUE)) {
 				$output .= "-[".__('creating directory', true)." $exportDir]\n";
 			} else {
@@ -227,7 +229,7 @@ class Deployment extends AppModel {
 		self::loadConfig();
 		
 		/*
-			TODO Run before script
+			TODO F: Execute before script
 		*/
 		
 		return $output;
@@ -260,7 +262,6 @@ class Deployment extends AppModel {
 		
 		// Create target dir (if required)
 		if (!is_dir($project['Project']['prd_path'])) {
-			// TODO Remove DIRMODE
 			if (@mkdir($project['Project']['prd_path'], octdec( self::dirMode() ), TRUE)) {
 				$output .= '-['.__('creating directory', true).' '.$project['Project']['prd_path'].']\n';
 			} else {
@@ -434,7 +435,7 @@ class Deployment extends AppModel {
 		}
 		
 		/*
-			TODO Run after script
+			TODO F: Execute after script
 		*/
 		
 		return $output;
@@ -474,7 +475,9 @@ class Deployment extends AppModel {
 			$output .= "-[".__('no backup needed')." ".$project['Project']['prd_path']." ".__('does not exist')."]\n";
 		}
 
-		// TODO Check du backup
+		/*
+			TODO F: Check backup
+		*/
 		return $output;
 	}// backup
 
@@ -524,7 +527,7 @@ class Deployment extends AppModel {
 	 * @return 
 	 */
 	/*
-		TODO Naze a reprendre
+		TODO F: Not well implemented, rewrite (and export?)
 	*/
 	private function &_getConfig() {
 		static $instance;
@@ -538,7 +541,7 @@ class Deployment extends AppModel {
 	
 	// Exportable  --------------------------------------------------------------------------------	
 	/*
-		TODO !!! A implementer
+		TODO F: Implement dirMode function
 	*/
 	function dirMode() {
 		$fileMode = Configure::read('FileSystem.permissions.default');

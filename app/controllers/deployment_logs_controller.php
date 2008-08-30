@@ -65,7 +65,7 @@ class DeploymentLogsController extends AppController {
 				$this->redirect('/deploymentLogs');
 				exit();		
 			}
-			// TODO check token?
+			// TODO F: Check RSS token before accessing feed data
 			// 	$this->redirect('/projects/index');
 			// 	exit();
 		} else {

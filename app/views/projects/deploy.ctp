@@ -1,3 +1,8 @@
+<?php
+/*
+	TODO F: Rewrite deployment options based on config
+*/
+?>
 <hr/>
 <div id="step1">
 	<?php echo $form->create('Project', array('url' => '/deployments/export', 'method' => 'post', 'class' => 'f-wrap-1'));?>
