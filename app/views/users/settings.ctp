@@ -1,4 +1,4 @@
-<h1><?php __("User settings") ?></h1>
+<h1><?php __('User settings') ?></h1>
 
 <?php echo $html->link(__('Change password', true), '/users/change_password/'.$session->read('User.User.id'))?>
 <hr />
@@ -18,14 +18,9 @@
 									'size' => '60', 
 									'class' => 'f-name'
 									)
-								);?>						
-		
+								);?>
 		<div class="f-submit-wrap">
 			<?php echo $form->submit(__('Save', true), array('class' => 'f-submit'));?>
-	</div>
+		</div>
 	</fieldset>
 <?php echo $form->end();?>
-<?php debug($token);
-?>
-
-

@@ -21,8 +21,7 @@ class ProjectsController extends AppController {
 		'except' 	=> 	array(
 			'edit' 		=> 	array( 'buinessData' ),
 			'add'		=> 	array( 'buinessData' ),
-			'delete' 	=> 	array( 'buinessData' ),
-			'deploy' 	=> 	array( 'buinessData' )
+			'delete' 	=> 	array( 'buinessData' )
 		)
 	);
 	
@@ -60,26 +59,6 @@ class ProjectsController extends AppController {
 	function index() {
 		$this->set('data', $this->paginate('Project')); 
 	}// index
-
-	/**
-	 * Deploy a project
-	 * @param string $id ID of the project to be deployed
-	 */
-	function deploy($id = null) {
-		if ($id == null ) {
-			$this->Session->setFlash(__('Invalid id.', true));
-			$this->redirect('/projects/index');
-			exit();
-		}
-		
-		// Give an ID to current deployment 
-		$deploymentUuid = md5( 'YLB:'.$id .':'.time() ); 
-		$this->Session->write('Deployment.uuid', $deploymentUuid);
-				
-		// View
-		$this->layout = 'ajax';
-		$this->set('id', $id);
-	}// deploy
 	
 	/**
 	 * View properties of a specified project

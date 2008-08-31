@@ -27,8 +27,6 @@ class Project extends AppModel {
 		        'allowEmpty' => false
 		 )
 	);
-
-
 	
 	var $lastReadSize = 0;
 

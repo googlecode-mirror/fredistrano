@@ -3,18 +3,16 @@
  class DEPLOY_CONFIG {
 
  	var $options = array(
- 		'export' 		=> array(
- 		 	'runScript'				=> 	false	
- 		),
+ 		'export' 		=> array(),
  		'synchronize'	=> array(
+ 		 	'runBeforeScript'		=> 	false,
  			'backup'				=> 	false
  		),
  		'finalize'		=> array(
 	 		'renamePrdFile' 		=> 	false,
 			'changeFileMode' 		=> 	false,
 			'giveWriteMode'			=> 	false,
-			'modifiedFileOnly'		=> 	false,
- 			'runScript'				=> 	false
+ 			'runAfterScript'		=> 	false
  		)
  	);
  	

@@ -1,12 +1,4 @@
 <?php
-/*
-
-	TODO F: Rewrite deployment options based on config
-*/
-if (!class_exists('File')) {
-	 uses('file');
-}
-
 class DeploymentsController extends AppController {
 
 	var $name = 'Deployments';
@@ -27,14 +19,81 @@ class DeploymentsController extends AppController {
 			'buinessData'
 		)
 	);
+	
+	/**
+	 * Deploy manually a project
+	 * @param string $id ID of the project to be deployed
+	 */
+	function runManual($id = null) {
+		if ($id == null ) {
+			$this->Session->setFlash(__('Invalid id.', true));
+			$this->redirect('/projects/index');
+			exit();
+		}
+		
+		// Give an ID to current deployment 
+		$this->Session->write('Deployment.uuid', $this->Deployment->generateUuid());
+						
+		// View
+		$this->layout = 'ajax';
+		$this->set('id', $id);
+	}// runManual
+	
+	/**
+	 * Deploy automatically a project
+	 * @param string $id ID of the project to be deployed
+	 */
+	function runAutomatic($id = null) {
+		$this->layout = 'ajax';
+		if ($id == null ) {
+			$this->Session->setFlash(__('Invalid id.', true));
+			$this->redirect('/projects/index');
+			exit();
+		}
+
+		// Give an ID to current deployment 
+		$this->Session->write('Deployment.uuid', $this->Deployment->generateUuid());
+
+		// Run step	
+		/*
+			TODO F: Get default deployment options
+		*/
+		$output = $this->Deployment->runProcess(
+			$this->data['Project']['id'], 
+			$this->_getContext(), 
+			array(
+		 		'export' 		=> array(),
+		 		'synchronize'	=> array(
+		 		 	'runBeforeScript'		=> 	false,
+		 			'backup'				=> 	false
+		 		),
+		 		'finalize'		=> array(
+			 		'renamePrdFile' 		=> 	false,
+					'changeFileMode' 		=> 	false,
+					'giveWriteMode'			=> 	false,
+		 			'runAfterScript'		=> 	false
+		 		)
+		 	)
+		);
+
+		// Process output
+		if ( $output === false ) {
+			$this->set('errorMessage', 	$this->Deployment->getLastError());
+			$this->render('error');
+			return;
+		} else {
+			$this->set('output', 	$output);
+			$this->set('took', 		$this->Deployment->getLastExecutionTime());
+		}
+	}// runAutomatic
 
 	/**
 	 * Ajax controller for the 'export' step of a deployment
 	 */
 	function export() {
 		$this->layout = 'ajax';
-		if (!isset($this->data['Project']['id']) || !($uuid = $this->Session->read('Deployment.uuid'))) {
-			$this->set('errorMessage', 	'Invalid request');
+		if (!isset($this->data['Project']['id']) || !$this->Session->read('Deployment.uuid')) {
+			$this->set('errorMessage', 	__('Invalid request',true));
 			$this->render('error');
 			return;
 		}
@@ -50,7 +109,7 @@ class DeploymentsController extends AppController {
 		}
 		
 		// Run step
-		$output = $this->Deployment->runStep('export', $this->data['Project']['id'], $uuid, $options);
+		$output = $this->Deployment->runStep('export', $this->data['Project']['id'], $this->_getContext(), $options);
 				
 		// Process output
 		if ( $output === false ) {
@@ -58,8 +117,17 @@ class DeploymentsController extends AppController {
 			$this->render('error');
 			return;
 		} else {
-			preg_match('/ ([0-9]+)\.$/', $output, $matches);
+			// Get deployment options for current project
+			$options = $this->Deployment->getConfig();
+			$defaultOptions = Configure::read('Deployment.options');
+			Set::merge($defaultOptions, $options);
 			
+			$this->set('options', 	$options); 
+			
+			/*
+				TODO F: SVN pregmatch routine not dry 
+			*/
+			preg_match('/ ([0-9]+)\.$/', $output, $matches);
 			if (isset($matches[1])) {
 				$this->set('revision', 	$matches[1]);				
 			} else {
@@ -75,26 +143,23 @@ class DeploymentsController extends AppController {
 	 */
 	function synchronize() {
 		$this->layout = 'ajax';
-		if (!isset($this->data['Project']['id']) || !($uuid = $this->Session->read('Deployment.uuid'))) {
-			$this->set('errorMessage', 	'Invalid request');
+		if (!isset($this->data['Project']['id']) || !$this->Session->read('Deployment.uuid')) {
+			$this->set('errorMessage', 	__('Invalid request',true));
 			$this->render('error');
 			return;
 		}
 		
 		// Define options
 		$options = array();
-		$options['uuid'] = $uuid;
-		$options['simulation'] 	= ($this->data['Project']['simulation'] == 1);
-		$options['backup'] 		= ($this->data['Project']['backup'] == 1);
+		$options['simulation'] 		= ($this->data['Project']['simulation'] == 1);
+		$options['runBeforeScript'] = ($this->data['Project']['runBeforeScript'] == 1);
+		$options['backup'] 			= ($this->data['Project']['backup'] == 1);
 		if ($this->data['DeploymentLog']['comment'] != null) {
-			$options['comment'] = $this->data['DeploymentLog']['comment'];	
-		}
-		if ($this->Session->read('User.User.id')) {
-			$options['user'] = $this->Session->read('User.User.id');
+			$options['comment'] 	= $this->data['DeploymentLog']['comment'];	
 		}
 		
 		// Run step
-		$output = $this->Deployment->runStep('synchronize', $this->data['Project']['id'], $uuid, $options);
+		$output = $this->Deployment->runStep('synchronize', $this->data['Project']['id'], $this->_getContext(), $options);
 
 		// Process output
 		if ( $output === false ) {
@@ -112,8 +177,8 @@ class DeploymentsController extends AppController {
 	 */	
 	function finalize() {
 		$this->layout = 'ajax';
-		if (!isset($this->data['Project']['id']) || !($uuid = $this->Session->read('Deployment.uuid'))) {  
-			$this->set('errorMessage', 	'Invalid request');
+		if (!isset($this->data['Project']['id']) || !$this->Session->read('Deployment.uuid')) {  
+			$this->set('errorMessage', 	__('Invalid request',true));
 			$this->render('error');
 			return;
 		}
@@ -124,8 +189,10 @@ class DeploymentsController extends AppController {
 		$options['changeFileMode'] 		= 	($this->data['Project']['ChangeFileMode'] == 1);
 		$options['giveWriteMode'] 		= 	($this->data['Project']['GiveWriteMode'] == 1);
 		$options['modifiedFileOnly'] 	= 	($this->data['Project']['ModifiedFileOnly'] == 1);
+		$options['runAfterScript']	 	= 	($this->data['Project']['runAfterScript'] == 1);
+		
 		// Run step	
-		$output = $this->Deployment->runStep('finalize', $this->data['Project']['id'], $uuid, $options);
+		$output = $this->Deployment->runStep('finalize', $this->data['Project']['id'], $this->_getContext(), $options);
 
 		// Process output
 		if ( $output === false ) {
@@ -138,42 +205,18 @@ class DeploymentsController extends AppController {
 		}
 	}// finalize
 	
-	function fastDeploy($id = null) {
-		$this->layout = 'ajax';
-		if ($id == null ) {
-			$this->Session->setFlash(__('Invalid id.', true));
-			$this->redirect('/projects/index');
-			exit;
-		}
-
-		// Give an ID to current deployment 
-		$deploymentUuid = md5( 'YLB:'.$id .':'.time() ); 
-
-		// Run step	
-		$output = $this->Deployment->runProcess(
-			$this->data['Project']['id'], 
-			$deploymentUuid, 
-			array(
-				'backup'			=>	false,
-				'simulation' 		=> 	false,
-				'renamePrdFile' 	=> 	true,
-				'changeFileMode' 	=> 	true,
-				'giveWriteMode'		=> 	true,
-				'modifiedFileOnly'	=>	true,
-				'user' 				=> 	$this->Session->read('User.User.id')
-			)
-		);
-
-		// Process output
-		if ( $output === false ) {
-			$this->set('errorMessage', 	$this->Deployment->getLastError());
-			$this->render('error');
-			return;
+	private function _getContext() {	
+		if ($this->Session->read('User.User.id')) {
+			$user = $this->Session->read('User.User.id');
 		} else {
-			$this->set('output', 	$output);
-			$this->set('took', 		$this->Deployment->getLastExecutionTime());
+			$user = 'anonymous';
 		}
-	}// fastDeploy
+		
+		return array(
+			'uuid' 	=> $this->Session->read('Deployment.uuid'),
+			'user' 	=> $user
+		);
+	}// _getContext
 	
 }// DeploymentsController
 ?>

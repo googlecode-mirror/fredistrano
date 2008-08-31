@@ -3,25 +3,24 @@
  class DEPLOY_CONFIG {
 
  	var $options = array(
- 		'export' 		=> array(
- 		 	'runScript'				=> 	false	
- 		),
+ 		'export' 		=> array(),
  		'synchronize'	=> array(
+	 		'runBeforeScript'		=> 	false,
  			'backup'				=> 	false
  		),
  		'finalize'		=> array(
 	 		'renamePrdFile' 		=> 	false,
 			'changeFileMode' 		=> 	false,
 			'giveWriteMode'			=> 	false,
-			'modifiedFileOnly'		=> 	false,
- 			'runScript'				=> 	false
+ 			'runAfterScript'		=> 	false
  		)
  	);
- 	
- 	var $scripts = array(
- 		'before' 	=>		'/path/to/file',
- 		'after' 	=>		'/path/to/file'
- 	);
+
+	// Scripts à exécuter avant/après que les fichiers ne soient modifiés
+	var $scripts = array(
+		'before' 	=>		'/path/to/file',
+		'after' 	=>		'/path/to/file'
+	);
  	
 	var $exclude = array (
 		'.fredistrano',
