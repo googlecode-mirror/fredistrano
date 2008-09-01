@@ -22,25 +22,29 @@
 <th colspan="2">
 	<div class="tabletoplink">
 		<ul>
-			<li><?php echo $html->link($html->image('preferences-system.png', 
+			<li><?php echo $ajax->link($html->image('preferences-system.png', 
 													array(
 														'alt' => __('Reset permissions', true), 
 														'title' => __('Reset permissions', true)
 														)
 													), 
-										'#',
-										null,
+										'/deployments/resetPermissions/' . $project['Project']['id'],
+										array (
+											'update' 	=> 'deploy_area'
+											),
 										__('Are you sure you want to reset permissions for the project', true).' : ' . $project['Project']['name'] . '?',
 										false
 										);?></li>				
-			<li><?php echo $html->link($html->image('edit-clear.png', 
+			<li><?php echo $ajax->link($html->image('edit-clear.png', 
 													array(
 														'alt' => __('Delete project temp files', true), 
 														'title' => __('Delete project temp files', true)
 														)
 													), 
-										'#',
-										array('onclick'=>"Element.toggle('standardDeploy');Element.toggle('fastDeploy')"),
+										'/deployments/clearProjectTempFiles/' . $project['Project']['id'],
+										array (
+											'update' 	=> 'deploy_area'
+											),
 										__('Are you sure you want to delete temp files for the project', true).' : ' . $project['Project']['name'] . '?',
 										false
 										);?></li>				

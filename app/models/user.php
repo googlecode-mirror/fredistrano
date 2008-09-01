@@ -42,7 +42,7 @@ class User extends AppModel {
 	var $hasOne = array (
 		'Profile' => array ('className' => 'Profile',
 			'foreignKey' => 'user_id',
-			'dependent' => false,
+			'dependent' => true,
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
@@ -56,11 +56,10 @@ class User extends AppModel {
 			$this->data[$this->name]['password'] = md5($this->data[$this->name]['password']);
 		}
 		
-		// if (condition) {
-		// 	// sha1( rand(0,10000) + time())
+		// if (empty($this->data['Profile']['rss_token'])) {
+		// 	$this->data['Profile']['rss_token'] = sha1( rand(0,10000) + time());
 		// }
-			
-			
+
 		return parent :: beforeSave();
 	}
 	
@@ -73,20 +72,6 @@ class User extends AppModel {
 		$tmp = $this->findByLogin($login);
 		return !empty($tmp);
 	}// isValid
-	
-	// function _format(& $user) {
-	// 	$groups = null;
-	// 	if (!empty ($user['Group']))
-	// 		foreach ($user['Group'] as $group)
-	// 			$groups .= $group['name'] . ' ; ';
-	// 	$user['User']['groups'] = $groups;
-	// 	unset ($user['Group']);
-	// }
-	// 
-	// function _formatAll(& $users) {
-	// 	foreach ($users as & $user)
-	// 		$this->_format($user);
-	// }
-	
+		
 }
 ?>

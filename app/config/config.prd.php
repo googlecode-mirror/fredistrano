@@ -33,7 +33,7 @@
 	
 	$config['FileSystem'] = array(
 		'permissions'	=> array(
-			'default' 	=> '440',
+			'default' 	=> '644',
 			'writable'	=> '777'		// Bof
 		)
 	);
@@ -51,8 +51,12 @@
 	
 	$config['Subversion'] = array(
 		'user'			=> null,
-		'passwd'		=> null,
-		'UIlanguage'	=> 'en'
+		'passwd'		=> null
 	);
+
+	$config['Ui'] = array(
+		'language'	=> 'en'
+	);
+
 
 ?>

@@ -16,6 +16,8 @@ class Deployment extends AppModel {
 	);
 	
 	//  Processing info (public)
+	var $lastCommand = null;
+
 	var $lastExecutionTime = 0;
 	
 	var $lastError = '';	
@@ -173,7 +175,7 @@ class Deployment extends AppModel {
 		
 		// Initialiaze processing
 		$this->_context = $context;
-		$this->_project = $this->Project->find('first', array('conditions' => array('Project.id' => $project_id), 'recursive' => 0);
+		$this->_project = $this->Project->find('first', array('conditions' => array('Project.id' => $project_id), 'recursive' => 0));
 		
 		// Execute step
  		if ( !$this->_project )  {
@@ -221,7 +223,7 @@ class Deployment extends AppModel {
 		
 		$projectTmpDir = F_DEPLOYTMPDIR.$this->_project['Project']['name'].DS;
 		$revision = ($options['revision']!=null)?' -r' . $options['revision']:'';
-		if (is_dir($exportDir)) {
+		if (is_dir($projectTmpDir)) {
 			// svn update
 			$command = "svn update" . $revision ." tmpDir 2>&1";
 			$output .= $this->executeCommand($command, __('svn update', true), 'export', $projectTmpDir);
@@ -421,7 +423,7 @@ class Deployment extends AppModel {
 		// Rename file type from .prd.xxx into .xxx
 		if ($options['renamePrdFile'] === true) {			
 			$command = "find ".self::pathConverter($this->_project['Project']['prd_path'])." -name '*.prd.*' "
-				."-exec /usr/bin/perl ".self::pathConverter(_DEPLOYDIR)."/renamePrdFile -vf 's/\.prd\./\./i' {} \;";
+				."-exec /usr/bin/perl ".self::pathConverter(F_DEPLOYDIR)."renamePrdFile -vf 's/\.prd\./\./i' {} \;";
 			$output .= $this->executeCommand($command, __('Rename files', true).'.prd.', 'finalize', F_DEPLOYDIR);
 		}
 
@@ -454,7 +456,11 @@ class Deployment extends AppModel {
 				}
 			}
 		}
-		
+		/*
+			TODO : a script to test with runAfterScript
+				sed -i.old "s/\('debug',\)[ ]*[12]/\1 0/g" core.php (to be tested)
+			
+		*/
 		if ($options['runAfterScript']) {
 			$scriptPath = $this->_config->scripts['after'];
 			if (!file_exists($scriptPath) && file_exists($projectTmpDir.'.fredistrano'.DS.$scriptPath)) {
@@ -516,9 +522,78 @@ class Deployment extends AppModel {
 		*/
 		return $output;
 	}// backup
+	
+	/*
+		TODO implement _clearProjectTempFiles function
+	*/
+	private function _clearProjectTempFiles(){
+		if ( is_null($this->_project) || is_null($this->_context)) {
+			$this->triggerError('Missing working data');
+			return false;		
+		}
+		$path = self::pathConverter(F_DEPLOYTMPDIR.$this->_project['Project']['name'].DS);
+		$output = '';
+		if (!is_dir($path)) {
+			$output .= __('files not found', true).' > '.$path;
+		} else {
+			$command = "rm -rf ".$path;
+			$output .= $this->executeCommand(
+				$command, 
+				__('deleting project temp files', true).' > '.$path, 
+				'clearProjectTempFiles'
+			);
+		}
+		return $output;
+	}
+	
+	private function _resetPermissions(){
+		if ( is_null($this->_project) || is_null($this->_context)) {
+			$this->triggerError('Missing working data');
+			return false;		
+		}
+			
+		// Load project configuration 
+		if (!self::loadConfig()) {
+			return false;
+		}
+		
+		$output = '';
+		
+		// Change file mode
+		$command = "find ".self::pathConverter($this->_project['Project']['prd_path'])." -type f -exec chmod "
+						.Configure::read('FileSystem.permissions.default')." {} \;";
+		$output .= $this->executeCommand(
+			$command, 
+			__('updating files modes', true).' > '.Configure::read('FileSystem.permissions.default'), 
+			'resetPermissions', 
+			F_DEPLOYDIR
+		);
+
+		// Change directory mode
+		$command = "find " . self::pathConverter($this->_project['Project']['prd_path'])." -type d -exec chmod ".self::dirMode()." {} \;";
+		$output .= $this->executeCommand($command, __('updating dir mode', true) . ' > '.self::dirMode(), 'resetPermissions');
+		
+		// Give write permissions to some folder
+		$writable = $this->_config->writable;
+		if (sizeof($writable) > 0) {
+			for ($i = 0; $i < sizeof($writable); $i++) {
+				$command = "chmod -vR ".Configure::read('FileSystem.permissions.writable')."  "
+					.self::pathConverter($this->_project['Project']['prd_path'].$writable[$i] );
+				$output .= $this->executeCommand($command, 'Setting write permissions', 'resetPermissions');
+			}
+		}
+	return $output;
+	}
 
     // Helper functions ---------------------------------------------------------
-	function getConfig() {
+	/*
+		TODO Add project name as parameter
+	*/
+	function getConfig($projectName = null ) {
+		//if (!is_null) {
+		//	
+		//}
+		
 		self::loadConfig();
 		return $this->_config;
 	}
@@ -541,9 +616,9 @@ class Deployment extends AppModel {
 		
 		if (!isset($this->_config) || !$this->_config) {
 			// Check new path
-			$path = $this->getConfigPath(true, $this->_project['Project']['name']));
+			$path = $this->getConfigPath(true, $this->_project['Project']['name']);
 			if ( !file_exists( $path ) ) {
-				$path = $this->getConfigPath(false, $this->_project['Project']['name']));
+				$path = $this->getConfigPath(false, $this->_project['Project']['name']);
 				if (!file_exists( $path )) {
 					$this->triggerError("Unable to find 'deploy.php' file");
 					return false;
@@ -580,7 +655,7 @@ class Deployment extends AppModel {
 	/**
 	 *
 	 */ 
-	function generateUuid () {
+	function generateUuid ( $id = 'none' ) {
 		return md5( 'FREDISTRANO:'.$id .':'.time() ); 
 	}// generateUuid
 
@@ -590,8 +665,18 @@ class Deployment extends AppModel {
 	*/
 	function dirMode() {
 		$fileMode = Configure::read('FileSystem.permissions.default');
-		// +1 sauf a/ si 0 alors 0 ; b/ si 7 alors 7
-		return '755';
+		$fileMode = str_split($fileMode);
+		$dirMode = '';
+		
+		for ($i=0; $i < 3; $i++) { 
+			if ($fileMode[$i] > 7) {
+				$fileMode[$i] = 7;
+			} elseif (!in_array($fileMode[$i], array(0,7))) {
+				$fileMode[$i]++;
+			} 
+			$dirMode .= $fileMode[$i];
+		}
+		return $dirMode;
 	}// dirMode
 	
 	function executeCommand( $command = null, $comment = 'none', $context = 'none', $newDir = null ){
@@ -615,6 +700,10 @@ class Deployment extends AppModel {
             $suffix = "";
         }
         $shell = shell_exec( $prefix.$command.$suffix );
+
+		// Remember last command
+		$this->lastCommand = $prefix.$command.$suffix;
+			
         return $output . $shell;
 	}// executeCommand
 	

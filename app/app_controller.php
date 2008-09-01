@@ -50,9 +50,16 @@ class AppController extends Controller {
 	);
 				
 	function beforeFilter() {
+		
+		$lang = $this->Session->read('User.Profile.lang');
+		
+		if (empty($lang)) {
+			$lang = Configure::read('Fredistrano.language');
+		}
+		
 		uses('L10n');
 		$this->L10n = new L10n();
-		$this->L10n->get(Configure::read('Subversion.UIlanguage'));
+		$this->L10n->get($lang);
 	}
 			
 	function beforeRender() {

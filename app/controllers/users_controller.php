@@ -14,7 +14,8 @@ class UsersController extends AppController {
 		'except' => array (
 			'login'				=> array('public'),
 			'logout'			=> array('public'),
-			'change_password'	=> array('password')
+			'change_password'	=> array('password'),
+			'settings'	=> array('password')
 		)
 	);
 	
@@ -24,7 +25,7 @@ class UsersController extends AppController {
 	);
 	
 	function beforeAuthorize(){
-		if ($this->params['action'] == 'change_password'){
+		if (in_array($this->params['action'], array ('settings', 'change_password'))){
 			if (isset($_SESSION['User']['User']['id']) && ($_SESSION['User']['User']['id'] == $this->params['pass'][0])){
 				$this->Session->write('dynamicGroup', array( array( 'name' => 'currentUser' )));
 			}
@@ -69,7 +70,12 @@ class UsersController extends AppController {
 			$this->set('selectedGroups', null);
 			$this->render();
 		} else {
+						
 			if ($this->User->save($this->data)) {
+
+				$this->data['Profile']['user_id'] = $this->User->id;
+				$this->User->Profile->save($this->data);
+
 				$this->Aclite->reloadsAcls('Aro');
 				$this->Session->setFlash(__('The user has been created', true));
 				$this->redirect('/users/index');
@@ -128,13 +134,28 @@ class UsersController extends AppController {
 		}
 	}
 
-	function settings(){
+	function settings($id = null){
 		$folder = new Folder(APP.'locale');
 		$tmp = $folder->ls(true, array (".svn", ".", ".."));
 		$availableLanguages = array ();
 		foreach ($tmp[0] as $value) {
 			$lang = substr($value, 0, 2);
 			$availableLanguages[$lang] = $lang;
+		}
+		
+		if (empty ($this->data)) {
+			if (!$id or !$this->User->read(null, $id)) {
+				$this->Session->setFlash(__('Invalid id.', true));
+				$this->redirect($this->referer());
+				exit;
+			}
+			$this->data = $this->User->read(null, $id);
+		} else {
+			$this->User->Profile->save($this->data);
+			$this->Session->write('User.Profile.lang', $this->data['Profile']['lang']);
+			$this->Session->setFlash(__('Settings saved.', true));
+			$this->redirect($this->referer());
+			exit;
 		}
 		
 		$this->set('availableLanguages', $availableLanguages);
@@ -167,7 +188,7 @@ class UsersController extends AppController {
 					if (isset($_SESSION['dynamicGroup']) && $_SESSION['dynamicGroup'][0]['name'] == 'currentUser') {
 						$this->redirect('/', null, true);
 					}
-					$this->redirect('/users/view/' . $id);
+					$this->redirect($this->referer());
 				} else {
 					$this->Session->setFlash(__('Error during update : ', true) . mysql_error());
 				}

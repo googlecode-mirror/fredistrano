@@ -32,7 +32,7 @@ class DeploymentsController extends AppController {
 		}
 		
 		// Give an ID to current deployment 
-		$this->Session->write('Deployment.uuid', $this->Deployment->generateUuid());
+		$this->Session->write('Deployment.uuid', $this->Deployment->generateUuid($id));
 						
 		// View
 		$this->layout = 'ajax';
@@ -52,7 +52,7 @@ class DeploymentsController extends AppController {
 		}
 
 		// Give an ID to current deployment 
-		$this->Session->write('Deployment.uuid', $this->Deployment->generateUuid());
+		$this->Session->write('Deployment.uuid', $this->Deployment->generateUuid($id));
 
 		// Run step	
 		/*
@@ -188,7 +188,10 @@ class DeploymentsController extends AppController {
 		$options['renamePrdFile'] 		= 	($this->data['Project']['RenamePrdFile'] == 1);
 		$options['changeFileMode'] 		= 	($this->data['Project']['ChangeFileMode'] == 1);
 		$options['giveWriteMode'] 		= 	($this->data['Project']['GiveWriteMode'] == 1);
-		$options['modifiedFileOnly'] 	= 	($this->data['Project']['ModifiedFileOnly'] == 1);
+		/*
+			TODO à revoir : Undefined index:  ModifiedFileOnly [APP/controllers/deployments_controller.php, line 191]
+		*/
+		$options['modifiedFileOnly'] 	= 	1;//($this->data['Project']['ModifiedFileOnly'] == 1);
 		$options['runAfterScript']	 	= 	($this->data['Project']['runAfterScript'] == 1);
 		
 		// Run step	
@@ -205,6 +208,55 @@ class DeploymentsController extends AppController {
 		}
 	}// finalize
 	
+	function resetPermissions($id = null){
+		$this->layout = 'ajax';
+		if (!$id) {
+			$this->set('errorMessage', 	__('Invalid request',true));
+			$this->render('error');
+			return;
+		}
+		// Define options
+		$options = array();
+		$options['renamePrdFile'] 		= 	0;
+		$options['changeFileMode'] 		= 	1;
+		$options['giveWriteMode'] 		= 	1;
+		
+		// Run step	
+		$output = $this->Deployment->runStep('resetPermissions', $id, $this->_getContext(), $options);
+		
+		// Process output
+		if ( $output === false ) {
+			$this->set('errorMessage', 	$this->Deployment->getLastError());
+			$this->render('error');
+			return;
+		} else {
+			$this->set('output', 	$output);
+			$this->set('took', 		$this->Deployment->getLastExecutionTime());
+		}
+	}//resetPermissions
+	
+	function clearProjectTempFiles($id = null){
+		$this->layout = 'ajax';
+		if (!$id) {
+			$this->set('errorMessage', 	__('Invalid request',true));
+			$this->render('error');
+			return;
+		}
+		
+		// Run step	
+		$output = $this->Deployment->runStep('clearProjectTempFiles', $id, $this->_getContext());
+		
+		// Process output
+		if ( $output === false ) {
+			$this->set('errorMessage', 	$this->Deployment->getLastError());
+			$this->render('error');
+			return;
+		} else {
+			$this->set('output', 	$output);
+			$this->set('took', 		$this->Deployment->getLastExecutionTime());
+		}
+	}
+	
 	private function _getContext() {	
 		if ($this->Session->read('User.User.id')) {
 			$user = $this->Session->read('User.User.id');
@@ -217,6 +269,12 @@ class DeploymentsController extends AppController {
 			'user' 	=> $user
 		);
 	}// _getContext
+	
+	
+	// function test(){
+	// 	debug($this->Deployment->dirMode());
+	// 	exit;
+	// }
 	
 }// DeploymentsController
 ?>
