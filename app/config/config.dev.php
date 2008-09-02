@@ -33,7 +33,7 @@
 	
 	$config['FileSystem'] = array(
 		'permissions'	=> array(
-			'default' 	=> '644',
+			'files' 	=> '644',
 			'writable'	=> '777'		// Bof
 		)
 	);

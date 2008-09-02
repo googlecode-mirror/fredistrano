@@ -176,6 +176,7 @@ class Deployment extends AppModel {
 		// Initialiaze processing
 		$this->_context = $context;
 		$this->_project = $this->Project->find('first', array('conditions' => array('Project.id' => $project_id), 'recursive' => 0));
+		Configure::write('FileSystem.permissions.directories', self::dirMode(Configure::read('FileSystem.permissions.files')));
 		
 		// Execute step
  		if ( !$this->_project )  {
@@ -205,9 +206,8 @@ class Deployment extends AppModel {
 	 * @return string 			Shell output 
      */
 	private function _export($options = array()) {
-		if (is_null($this->_project) || is_null($this->_context)) {
-			$this->triggerError('Missing working data');
-			return false;
+		if (!$this->isInitialized()) {
+			return false;		
 		}
 		
 		// Define step options
@@ -229,7 +229,7 @@ class Deployment extends AppModel {
 			$output .= $this->executeCommand($command, __('svn update', true), 'export', $projectTmpDir);
 			
 		} else {			
-			if (@mkdir($projectTmpDir, octdec( self::dirMode() ), TRUE)) {
+			if (@mkdir($projectTmpDir, octdec(  Configure::read('FileSystem.permissions.directories') ), TRUE)) {
 				$output .= "-[".__('creating directory', true)." $projectTmpDir]\n";
 			} else {
 				$this->triggerError(sprintf(__('Unable to create directory %s', true), $projectTmpDir));
@@ -255,8 +255,7 @@ class Deployment extends AppModel {
 	 * @return string 			Shell output 
      */
 	private function _synchronize($options = array()) {
-		if ( is_null($this->_project) || is_null($this->_context)) {
-			$this->triggerError('Missing working data');
+		if (!$this->isInitialized()) {
 			return false;		
 		}
 			
@@ -279,7 +278,7 @@ class Deployment extends AppModel {
 		// Synchronize target files
 		// Create target dir (if required)
 		if (!is_dir($this->_project['Project']['prd_path'])) {
-			if (@mkdir($this->_project['Project']['prd_path'], octdec( self::dirMode() ), TRUE)) {
+			if (@mkdir($this->_project['Project']['prd_path'], octdec(  Configure::read('FileSystem.permissions.directories') ), TRUE)) {
 				$output .= '-['.__('creating directory', true).' '.$this->_project['Project']['prd_path'].']\n';
 			} else {
 				$this->triggerError(sprintf(__('Unable to create directory %s', true), $this->_project['Project']['prd_path']));
@@ -399,9 +398,8 @@ class Deployment extends AppModel {
 	 * @return string 			Shell output 
      */
 	private function _finalize($options = array()) {
-		if ( is_null($this->_project) || is_null($this->_context)) {
-			$this->triggerError('Missing working data');
-			return false;
+		if (!$this->isInitialized()) {
+			return false;		
 		}
 		
 		// Load project configuration 
@@ -429,14 +427,14 @@ class Deployment extends AppModel {
 
 		// Change file mode
 		if ($options['changeFileMode'] === true) {			
-			$command = "chmod ".Configure::read('FileSystem.permissions.default')."  $(<".$projectTmpDir."files_to_chmod.txt)";
+			$command = "chmod ".Configure::read('FileSystem.permissions.files')."  $(<".$projectTmpDir."files_to_chmod.txt)";
 			$output .= $this->executeCommand(
 				$command, 
 				__('updating files modes', true).' > '.htmlspecialchars($command), 
 				'finalize'
 			);
 			
-			$command = "chmod ".self::dirMode()."  $(<". $projectTmpDir . "dir_to_chmod.txt)";
+			$command = "chmod ". Configure::read('FileSystem.permissions.directories')."  $(<". $projectTmpDir . "dir_to_chmod.txt)";
 			$output .= $this->executeCommand(
 				$command, 
 				__('updating dir mode', true) . ' > ' . htmlspecialchars($command), 
@@ -459,7 +457,6 @@ class Deployment extends AppModel {
 		/*
 			TODO : a script to test with runAfterScript
 				sed -i.old "s/\('debug',\)[ ]*[12]/\1 0/g" core.php (to be tested)
-			
 		*/
 		if ($options['runAfterScript']) {
 			$scriptPath = $this->_config->scripts['after'];
@@ -490,11 +487,15 @@ class Deployment extends AppModel {
 		TODO F: Backup not fully tested
 	*/
 	private function _backup() {
+		if (!$this->isInitialized()) {
+			return false;		
+		}
+		
 		$output = '';
 		// création du répertoire pour la sauvegarde
-		$backupDir = F_DEPLOYBACKUPDIR.$project['Project']['name'] ;
+		$backupDir = F_DEPLOYBACKUPDIR.$this->_project['Project']['name'] ;
 		if (!is_dir($backupDir)) {
-			if (mkdir($backupDir, octdec(self::dirMode()), TRUE)) {
+			if (mkdir($backupDir, octdec( Configure::read('FileSystem.permissions.directories')), TRUE)) {
 				$output .= "-[".__('creating directory')." $backupDir]\n";
 			} else {
 				$this->triggerError(sprintf(__('Unable to create directory %s',true), $backupDir));
@@ -511,8 +512,8 @@ class Deployment extends AppModel {
 			$command = "rsync -av $source $target 2>&1";
 			$output .= $this->executeCommand($command, __('backup current prod version'), 'backup');
 			
-			$command = "chmod -R ".self::dirMode()." ".F_DEPLOYBACKUPDIR;
-			$output .= $this->executeCommand($command, __('updating dir mode') . ' > '.self::dirMode(), 'backup');
+			$command = "chmod -R ". Configure::read('FileSystem.permissions.directories')." ".F_DEPLOYBACKUPDIR;
+			$output .= $this->executeCommand($command, __('updating dir mode') . ' > '. Configure::read('FileSystem.permissions.directories'), 'backup');
 		} else {
 			$output .= "-[".__('no backup needed')." ".$project['Project']['prd_path']." ".__('does not exist')."]\n";
 		}
@@ -527,10 +528,10 @@ class Deployment extends AppModel {
 		TODO implement _clearProjectTempFiles function
 	*/
 	private function _clearProjectTempFiles(){
-		if ( is_null($this->_project) || is_null($this->_context)) {
-			$this->triggerError('Missing working data');
+		if (!$this->isInitialized()) {
 			return false;		
 		}
+		
 		$path = self::pathConverter(F_DEPLOYTMPDIR.$this->_project['Project']['name'].DS);
 		$output = '';
 		if (!is_dir($path)) {
@@ -544,11 +545,10 @@ class Deployment extends AppModel {
 			);
 		}
 		return $output;
-	}
+	}// _clearProjectTempFiles
 	
 	private function _resetPermissions(){
-		if ( is_null($this->_project) || is_null($this->_context)) {
-			$this->triggerError('Missing working data');
+		if (!$this->isInitialized()) {
 			return false;		
 		}
 			
@@ -558,20 +558,24 @@ class Deployment extends AppModel {
 		}
 		
 		$output = '';
-		
 		// Change file mode
 		$command = "find ".self::pathConverter($this->_project['Project']['prd_path'])." -type f -exec chmod "
-						.Configure::read('FileSystem.permissions.default')." {} \;";
+						.Configure::read('FileSystem.permissions.files')." {} \;";
 		$output .= $this->executeCommand(
 			$command, 
-			__('updating files modes', true).' > '.Configure::read('FileSystem.permissions.default'), 
+			__('updating files modes', true).' > '.Configure::read('FileSystem.permissions.files'), 
 			'resetPermissions', 
 			F_DEPLOYDIR
 		);
 
 		// Change directory mode
-		$command = "find " . self::pathConverter($this->_project['Project']['prd_path'])." -type d -exec chmod ".self::dirMode()." {} \;";
-		$output .= $this->executeCommand($command, __('updating dir mode', true) . ' > '.self::dirMode(), 'resetPermissions');
+		$command = "find " . self::pathConverter($this->_project['Project']['prd_path'])." -type d "
+					."-exec chmod ". Configure::read('FileSystem.permissions.directories')." {} \;";
+		$output .= $this->executeCommand(
+			$command, 
+			__('updating dir mode', true) . ' > '. Configure::read('FileSystem.permissions.directories'),
+			 'resetPermissions'
+		);
 		
 		// Give write permissions to some folder
 		$writable = $this->_config->writable;
@@ -582,21 +586,26 @@ class Deployment extends AppModel {
 				$output .= $this->executeCommand($command, 'Setting write permissions', 'resetPermissions');
 			}
 		}
-	return $output;
-	}
-
+		return $output;
+	}// _resetPermissions
+	
     // Helper functions ---------------------------------------------------------
+	function isInitialized() {
+		if ( is_null($this->_project) || is_null($this->_context)) {
+			$this->triggerError('Missing working data');
+			return false;		
+		} else {
+			return true;
+		}
+	}// isInitialized
+	
 	/*
 		TODO Add project name as parameter
 	*/
-	function getConfig($projectName = null ) {
-		//if (!is_null) {
-		//	
-		//}
-		
-		self::loadConfig();
+	function getConfig($projectId=null) {
+		self::loadConfig();	
 		return $this->_config;
-	}
+	}// getConfig
 
 	/**
 	 *
@@ -653,18 +662,22 @@ class Deployment extends AppModel {
 	}// getLastError
 
 	/**
-	 *
+	 * Generate a unique deployment id for a given project or the current one   
+	 * @param string $id		Project id; if null, the id of the currently processed project is used
+	 * @return string 			Some kind of UUID
 	 */ 
-	function generateUuid ( $id = 'none' ) {
-		return md5( 'FREDISTRANO:'.$id .':'.time() ); 
+	function generateUuid ( $projectId = null ) {
+		if (is_null($projectId) && !is_null($this->_project) && isset($this->_project['Project']['id'])) {
+			 $projectId = $this->_project['Project']['id'];
+		}
+		return md5( 'FREDISTRANO:'.$projectId .':'.time() ); 
 	}// generateUuid
 
 	// Exportable  --------------------------------------------------------------------------------	
-	/*
-		TODO F: Implement dirMode function
-	*/
-	function dirMode() {
-		$fileMode = Configure::read('FileSystem.permissions.default');
+	function dirMode($fileMode = null) {
+		if (is_null($fileMode)) {
+			$fileMode = Configure::read('FileSystem.permissions.files');
+		}
 		$fileMode = str_split($fileMode);
 		$dirMode = '';
 		
