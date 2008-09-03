@@ -34,7 +34,7 @@ class DeploymentsController extends AppController {
 		
 		// Give an ID to current deployment 
 		$this->Session->write('Deployment.uuid', $this->Deployment->generateUuid($id));
-		
+						
 		// View
 		$this->layout = 'ajax';
 		$this->set('id', $id);
@@ -56,12 +56,13 @@ class DeploymentsController extends AppController {
 		$this->Session->write('Deployment.uuid', $this->Deployment->generateUuid($id));
 
 		// Run step	
-		$output = $this->Deployment->runProcess(
+		$log = $this->Deployment->process(
 			$this->data['Project']['id'], 
 			$this->_getContext(), 
 			array(
 		 		'export' 		=> array(),
 		 		'synchronize'	=> array(
+					'simulation'			=> 	false,
 		 		 	'runBeforeScript'		=> 	false,
 		 			'backup'				=> 	false
 		 		),
@@ -75,14 +76,12 @@ class DeploymentsController extends AppController {
 		);
 
 		// Process output
-		if ( $output === false ) {
-			$this->set('errorMessage', 	$this->Deployment->getLastError());
-			$this->render('error');
+		$this->set('output', 	$log->toString());
+		if ( $log->hasError() ) {
+			$this->set('errorMessage', 	$log->getError() );
 			return;
-		} else {
-			$this->set('output', 	$output);
-			$this->set('took', 		$this->Deployment->getLastExecutionTime());
-		}
+		} 
+
 	}// runAutomatic
 
 	// Ajax steps for manual run -----------------------------
@@ -106,29 +105,25 @@ class DeploymentsController extends AppController {
 		}
 		
 		// Run step
-		$output = $this->Deployment->runStep('export', $this->data['Project']['id'], $this->_getContext(), $options);
+		$log = $this->Deployment->export($this->data['Project']['id'], $this->_getContext(), $options);
 				
-		// Process output
-		if (!$this->_processOutput($output)) {
+		// Process result
+		$this->set('output', 	$log->toString());
+		if ( $log->hasError() ) {
+			$this->set('errorMessage', 	$log->getError() );
 			return;
-		} else {
-			// Get deployment options for current project
-			$options = $this->Deployment->getConfig();
+		} 
+				
+		// Get deployment options for current project
+		if ( ($options = $this->Deployment->getConfig()) && is_array($options) ) {
 			$defaultOptions = Configure::read('Deployment.options');
 			Set::merge($defaultOptions, $options);
-			
-			$this->set('options', 	$options); 
-			
-			/*
-				TODO F: SVN pregmatch routine not dry 
-			*/
-			preg_match('/ ([0-9]+)\.$/', $output, $matches);
-			if (isset($matches[1])) {
-				$this->set('revision', 	$matches[1]);				
-			} else {
-				$this->set('revision', 	'XXX');	
-			}		
 		}
+		$this->set('options', 	$options); 
+		
+		// SVN revision
+		$revision = ($log->data['revision']!==false)?$log->data['revision']:'XXX';	
+		$this->set('revision', 	$revision);
 	}// export
 
 	/**
@@ -150,9 +145,12 @@ class DeploymentsController extends AppController {
 		}
 		
 		// Run step
-		$output = $this->Deployment->runStep('synchronize', $this->data['Project']['id'], $this->_getContext(), $options);
-		// Process output
-		if (!$this->_processOutput($output)) {
+		$log = $this->Deployment->synchronize( $this->data['Project']['id'], $this->_getContext(), $options);
+
+		// Process result
+		$this->set('output', 	$log->toString());
+		if ( $log->hasError() ) {
+			$this->set('errorMessage', 	$log->getError() );
 			return;
 		}
 	}// synchronize
@@ -174,10 +172,12 @@ class DeploymentsController extends AppController {
 		$options['runAfterScript']	 	= 	($this->data['Project']['runAfterScript'] == 1);
 		
 		// Run step	
-		$output = $this->Deployment->runStep('finalize', $this->data['Project']['id'], $this->_getContext(), $options);
+		$log = $this->Deployment->finalize( $this->data['Project']['id'], $this->_getContext(), $options);
 
-		// Process output
-		if (!$this->_processOutput($output)) {
+		// Process result
+		$this->set('output', 	$log->toString());
+		if ( $log->hasError() ) {
+			$this->set('errorMessage', 	$log->getError() );
 			return;
 		}
 	}// finalize
@@ -192,10 +192,12 @@ class DeploymentsController extends AppController {
 		}
 		
 		// Run step	
-		$output = $this->Deployment->runStep('resetPermissions', $id, $this->_getContext());
+		$log = $this->Deployment->resetPermissions( $id, $this->_getContext());
 		
-		// Process output
-		if (!$this->_processOutput($output)) {
+		// Process result
+		$this->set('output', 	$log->toString());
+		if ( $log->hasError() ) {
+			$this->set('errorMessage', 	$log->getError() );
 			return;
 		}
 	}//resetPermissions
@@ -209,10 +211,12 @@ class DeploymentsController extends AppController {
 		}
 		
 		// Run step	
-		$output = $this->Deployment->runStep('clearProjectTempFiles', $id, $this->_getContext());
+		$log = $this->Deployment->clearProjectTempFiles( $id, $this->_getContext());
 		
-		// Process output
-		if (!$this->_processOutput($output)) {
+		// Process result
+		$this->set('output', 	$log->toString());
+		if ( $log->hasError() ) {
+			$this->set('errorMessage', 	$log->getError() );
 			return;
 		}
 	}// clearProjectTempFiles
@@ -240,23 +244,6 @@ class DeploymentsController extends AppController {
 			return true;
 		}
 	}// _isValidStep
-
-	private function _processOutput($output = false) {
-		if ( $output === false ) {
-			$this->set('errorMessage', 	$this->Deployment->getLastError());
-			$this->render('error');
-			return false;
-		} else {
-			$this->set('output', 	$output);
-			$this->set('took', 		$this->Deployment->getLastExecutionTime());
-			return true;
-		}
-	}// _processOutput
-	
-	// function test(){
-	// 	debug($this->Deployment->dirMode());
-	// 	exit;
-	// }
 	
 }// DeploymentsController
 ?>

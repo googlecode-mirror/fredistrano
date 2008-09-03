@@ -15,14 +15,17 @@ class Deployment extends AppModel {
 		2 => 'finalize'
 	);
 	
-	//  Processing info (public)
-	var $lastCommand = null;
-
-	var $lastExecutionTime = 0;
-	
-	var $lastError = '';	
+	var $allowedSteps = array(
+		'export',
+		'synchronize',
+		'finalize',
+		'clearProjectTempFiles',
+		'resetPermissions'
+	);
 
 	// Internal data (private)
+	var $_stepLog = null;
+
 	var $_context = array();
 
 	var $_project = null;
@@ -32,18 +35,17 @@ class Deployment extends AppModel {
 	// Constructor
 	function __construct() {
 		parent::__construct();
-		
+	
+		// Manual links
 		App::import('Model','Project');
 		$this->Project = new Project(); 
 		
 		App::import('Model','DeploymentLog');
 		$this->DeploymentLog = new DeploymentLog();
 
-		if ( Configure::read() > 0 ) {
-			if (!class_exists('CakeLog')) {
-				uses('cake_log');	
-			}			
-		}
+		// Custom classes
+		App::import('Vendor', 'fbollon/log_classes');
+		App::import('Vendor', 'fbollon/commands');
 	}// __construct 
 	
 	// Public deploy -----------------------------------------------------------------		
@@ -54,165 +56,134 @@ class Deployment extends AppModel {
 	 * @param array $options		Various options used for configuring the step 
 	 * @return string 				Shell output 
      */
-	/*
-		TODO F: Rewrite runProcess (automatic)
-	*/	
-	function runProcess($project_id = null, $context = array(), $options = array()) {
-		if ( $project_id == null || !isset($context['uuid']) ) { 
-			$this->lastExecutionTime = 0;
-			$this->triggerError('Bad input parameters for runProcess');
-			return false;		
-		}
-				
-		// Track time
-		$t1 = getMicrotime();
+	function process($projectId, $context , $options = array()) {
+		$processLog = new Processlog();
 		
-		// Init options
-		$default_options = array(
-	 		'export' 		=> array(),
-	 		'synchronize'	=> array(
-				'simulation'			=> false,
-	 		 	'runBeforeScript'		=> 	false,
-	 			'backup'				=> 	false
-	 		),
-	 		'finalize'		=> array(
-		 		'renamePrdFile' 		=> 	false,
-				'changeFileMode' 		=> 	false,
-				'giveWriteMode'			=> 	false,
-	 			'runAfterScript'		=> 	false
-	 		)
-	 	);
-		/*
-			fixme F: Test merge result (use array_merge_recursive rather?)
-		*/
-		$options = Set::merge($default_options, $options);
-	
-		// Prepare log output
-		$log = new File( F_DEPLOYLOGDIR.$context['uuid'].'.log', true );
-		$header = date('Y-m-d H:i:s')." Performing fast deploy\n";
-		if ($log->writable()) {
-			$log->append($header);
-		}
-		
-		$output = '';
-		// Running export step 
-		$output .= "\n> Performing step Export:\n";
-		if ($shell = $this->runStep('export', $project_id, $context, $options['export'])) {
-			$output .= $shell;
+		try {
+			if ( !isset($context['user']) || !isset($context['uuid']) ) { 
+				$processLog->error( __('Bad input parameters',true) );
+			}
+			$processLog->setContext($context['user'], $context['uuid']);
+						
+			// Init options
+			$default_options = array(
+		 		'export' 		=> array(),
+		 		'synchronize'	=> array(
+		 		 	'runBeforeScript'		=> 	false,
+		 			'backup'				=> 	false
+		 		),
+		 		'finalize'		=> array(
+			 		'renamePrdFile' 		=> 	false,
+					'changeFileMode' 		=> 	false,
+					'giveWriteMode'			=> 	false,
+		 			'runAfterScript'		=> 	false
+		 		)
+		 	);
 			/*
-				TODO F: SVN pregmatch routine not dry 
+				FIXME F: Test merge result (use array_merge_recursive rather?)
 			*/
-			preg_match('/ ([0-9]+)\.$/', $output, $matches);
-			if (isset($matches[1])) {
-				$options['comment'] = __('Revision exported ', true) . $matches[1];			
+			$options = Set::merge($default_options, $options);
+		
+			// Running export step 
+			$this->_runStep('export',$projectId, $context, $options['export']);
+			$processLog->addStep( $this->_stepLog );
+		
+			// Post actions
+			if (!($rev = $this->_stepLog->data['revision'])) {
+				$options['comment'] = sprintf( __('Revision exported %s', true), $rev);			
+			}	
+			$options = Set::merge($options, $this->_config->options);
+		
+			// Running remaining steps
+			for ( $i=1 ; $i<count($this->process) ; $i++ ) {
+				$step = $this->process[$i];
+				$this->_runStep($step, $projectId, $context, $options[$step]);
+				$processLog->addStep( $this->_stepLog );
+			}// for
+
+			// Process result
+			$processLog->end();		
+				
+		} catch (Exception $e) { 
+			if ( !$processLog->hasError() ) {
+				$processLog->error(__('An error occured during the process. See steps for further details.',true), false);
 			}
-		} else {
-			if ($log->writable()) {
-				$log->append("Process aborted (see error.log for further details)");
-			}
-			return false;
-		}	
-		
-		// Load project configuration
-		if (!self::loadConfig()) {
-			return false;
 		}
-		$options = Set::merge($options, $this->_config->options);
-		
-		// Running synchornize step 
-		$output .= "\n> Performing step Synchronize:\n";
-		if ($shell = $this->runStep('synchronize', $project_id, $context, $options['synchronize'])) {
-			$output .= $shell;
-		} else {
-			if ($log->writable()) {
-				$log->append("Process aborted (see error.log for further details)");
-			}
-			return false;
-		}
-		
-		// Running finalize step
-		$output .= "\n> Performing step Finalize:\n";
-		if ($shell = $this->runStep('finalize', $project_id, $context, $options['finalize'])) {
-			$output .= $shell;
-		} else {
-			if ($log->writable()) {
-				$log->append("Process aborted (see error.log for further details)");
-			}
-			return false;
-		}
-		
-		// Track time
-		$this->lastExecutionTime = round((getMicrotime() - $t1) , 3);
-		
-		// Log text
-		if ($log->writable()) {
-			$log->append("Process executed in ".$this->lastExecutionTime."s");
-		}
-		
-		return $output;
-	}// runProcess
+
+		return $processLog;
+	}// process
 	
+	// Nicer call to functions
+	public function __call($name, $arguments) {
+		// Dispatch
+		if (!in_array($name, $this->allowedSteps))) {		
+			try{	
+				if (count($arguments) == 2) {
+					$this->_runStep($name,$arguments[0],$arguments[1]);
+				} else if (count($arguments) == 3) {
+					$this->_runStep($name,$arguments[0],$arguments[1],$arguments[2]);
+				}  else {
+					return false;
+				}
+			} catch (Exception $e) { }
+			
+			return $this->_stepLog;	
+		} 
+		
+		return false;
+	}// __call
+
+	//  Private Steps -----------------------------------------------------------
 	/**
 	 * Run a deployment step and performs the required checks
 	 * @param string $step			Step that should be performed 
 	 * @param int $project_id 		Id of the project that should be deployed 
 	 * @param array $context		Context info about the current deployment
 	 * @param array $options		Various options used for configuring the step 
-	 * @return string 				Shell output 
+	 * @return StepLog 				Step log  
      */			
-	function runStep($step = null, $project_id = null, $context = array(), $options = array()) {
-		if ( ( $step == null && !in_array($step, $this->$process) ) || $project_id == null || !isset($context['uuid']) ) {
-			$this->lastExecutionTime = 0;
-			$this->triggerError('Bad input parameters for runStep');
-			return false;
-		}
+	private function _runStep($step, $projectId, $context, $options = array()) {
+		$this->_stepLog = new Steplog( $step );
 		
-		// Prepare log output
-		$log = new File( F_DEPLOYLOGDIR.$context['uuid'].'.log', true );
-		$header = date('Y-m-d H:i:s')." Output of ".strtoupper($step)."\n";
-		if ($log->writable()) {
-			$log->append($header);
-		}
+		try{	
+			// Check input parameters
+			if ( !in_array($step, $this->$process) || !isset($context['user']) || !isset($context['uuid'])) {
+				$this->_stepLog->error( __('Bad input parameters',true) );
+			}
+			$this->_stepLog->setContext($context['user'], $context['uuid']);
 		
-		// Initialiaze processing
-		$this->_context = $context;
-		$this->_project = $this->Project->find('first', array('conditions' => array('Project.id' => $project_id), 'recursive' => 0));
-		Configure::write('FileSystem.permissions.directories', self::dirMode(Configure::read('FileSystem.permissions.files')));
+			// Initialiaze processing
+			$this->_context = $context;
+			$this->_project = $this->Project->find('first', array('conditions' => array('Project.id' => $projectId), 'recursive' => 0);
+	 		if ( !$this->_project )  {
+				$this->_stepLog->error( __('Unknown project',true) );
+			}
 		
-		// Execute step
- 		if ( !$this->_project )  {
-			$this->lastExecutionTime = 0;
-			$text = 'Unknown project';
-			$this->triggerError($text);
-			$output = false;
-		} else {
-			$startTime = getMicrotime();
+			// Execute step	
 			set_time_limit( Configure::read('Deployment.timelimit.'.$step) );
-			$text = $output = $this->{'_'.$step}($options);
-			$this->lastExecutionTime = round((getMicrotime() - $startTime) , 3);
-		} 
-		
-		// Log text
-		if ($log->writable()) {
-			$log->append("<<<<\n".$text."\n>>>> Step executed in ".$this->lastExecutionTime."s\n");
+			$this->{'_'.$step}( $options);		
+			$this->_stepLog->end(); // F_DEPLOYLOGDIR.$context['uuid'].'.log' );
+			
+		} catch (Exception $e) { 
+			if ( !$this->_stepLog->hasError() ) {
+				$this->_stepLog->error(__('An error occured during the step. See actions for further details.',true));
+			} 
 		}
-		
-		return $output;
-	}// runStep
-		
-	//  Private Steps -----------------------------------------------------------
 
-/*
-	FIXME F: implement mode export instead of checkout 
-*/
+	}// _runStep
+
+	/*
+		FIXME F: implement mode export instead of checkout 
+	*/
 	/**
 	 * Step 1 of the deployment process: Export
-	 * @param array $options	Various options used for configuring the step 
-	 * @return string 			Shell output 
+	 * @param SetLog 	$setLog		Custom logging object 
+	 * @param array 	$options	Various options used for configuring the step 
      */
-	private function _export($options = array()) {
+	private function _export($options = array()) {				
+		// Check input parameters
 		if (!$this->isInitialized()) {
-			return false;		
+			$this->_stepLog->error( sprintf(__('Missing working data', true)) );
 		}
 		
 		// Define step options
@@ -222,24 +193,29 @@ class Deployment extends AppModel {
 			'password_svn' 	=> 	Configure::read('Subversion.passwd')
 		);
 		$options = array_merge($default_options, $options);
-		
-		$output = '';
-		// Create temporary folders for the current project (if required)
-		
+
+		// Looking for sources
 		$projectTmpDir = F_DEPLOYTMPDIR.$this->_project['Project']['name'].DS;
 		$revision = ($options['revision']!=null)?' -r' . $options['revision']:'';
 		if (is_dir($projectTmpDir)) {
+			
 			// svn update
-			$command = "svn update" . $revision ." tmpDir 2>&1";
-			$output .= $this->executeCommand($command, __('svn update', true), 'export', $projectTmpDir);
+			$command = "svn update" . $revision ." tmpDir 2>&1";		
+			Command::execute( $command, $this->_stepLog, 
+				array(
+			        'comment'=>__('SVN update',true),
+			        'newDir'=>$projectTmpDir
+				)
+			);
 			
 		} else {			
-			if (@mkdir($projectTmpDir, octdec(  Configure::read('FileSystem.permissions.directories') ), TRUE)) {
-				$output .= "-[".__('creating directory', true)." $projectTmpDir]\n";
-			} else {
-				$this->triggerError(sprintf(__('Unable to create directory %s', true), $projectTmpDir));
-				return false;
+			
+			// Create tmpDir folder inside Fredistrano
+			$actionLog = $this->_stepLog->addNewAction('create', 'Directory: '.$projectTmpDir, 'FS');
+			if (!@mkdir($projectTmpDir, octdec( Configure::read('FileSystem.permissions.directories') ), TRUE)) {
+				$actionLog->error( sprintf(__('Unable to create directory %s', true), $projectTmpDir) );
 			}
+			$actionLog->end();
 			
 			// Export code from SVN
 			$authentication = '';
@@ -247,27 +223,34 @@ class Deployment extends AppModel {
 				$authentication = '--username '.$options['user_svn'].' --password '.$options['password_svn'];
 			}
 			$command = "svn checkout $revision $authentication ".$this->_project['Project']['svn_url'].' tmpDir 2>&1';
-			$output .= $this->executeCommand($command, __('svn checkout',true), 'export', $projectTmpDir);
+			Command::execute( $command, $this->_stepLog, 
+				array(
+			        'comment'=>__('SVN checkout',true),
+			        'newDir'=>$projectTmpDir
+				)
+			);
 		}
+		$actionLog = $this->_stepLog->getLastAction();
+		$this->_stepLog->data['revision'] = Command::getSvnRevision( $actionLog->getResult() );
 		
-		return $output;
-	}// export
+		// Load project configuration 
+		self::_loadConfig();
+	}// _export
 	
 	/**
 	 * Step 2 of the deployment process: Synchronize
 	 * Synchronize the exported source code from snv with the code located in the target directory
+	 * @param SetLog 	$setLog		Custom logging object 
 	 * @param array $options	Various options used for configuring the step 
-	 * @return string 			Shell output 
      */
-	private function _synchronize($options = array()) {
+	private function _synchronize($stepLog, $options = array()) {
+		// Check input parameters
 		if (!$this->isInitialized()) {
-			return false;		
-		}
+			$this->_stepLog->error( sprintf(__('Missing working data', true)) );
+		} 
 			
 		// Load project configuration 
-		if (!self::loadConfig()) {
-			return false;
-		}
+		self::_loadConfig();
 			
 		// Define step options
 		$default_options = array(
@@ -278,17 +261,15 @@ class Deployment extends AppModel {
 		);
 		$options = array_merge($default_options, $options);
 		
-		$output = '';
 		$projectTmpDir = F_DEPLOYTMPDIR.$this->_project['Project']['name'].DS;
 		// Synchronize target files
 		// Create target dir (if required)
+		$actionLog = $this->stepLog->addNewAction('create', 'Directory: '.$this->_project['Project']['prd_path'], 'FS');
 		if (!is_dir($this->_project['Project']['prd_path'])) {
-			if (@mkdir($this->_project['Project']['prd_path'], octdec(  Configure::read('FileSystem.permissions.directories') ), TRUE)) {
-				$output .= '-['.__('creating directory', true).' '.$this->_project['Project']['prd_path'].']\n';
-			} else {
-				$this->triggerError(sprintf(__('Unable to create directory %s', true), $this->_project['Project']['prd_path']));
-				return false;
+			if (!@mkdir($this->_project['Project']['prd_path'], octdec(  Configure::read('FileSystem.permissions.directories') ), TRUE)) {
+				$actionLog->error( sprintf(__('Unable to create directory %s', true), $this->_project['Project']['prd_path'])) );
 			}
+			$actionLog->end();
 		}
 		
 		// Generate exclusion file
@@ -320,6 +301,7 @@ class Deployment extends AppModel {
 			}
 			
 			// Create a log entry for the pending deployement 
+			$actionLog = $this->stepLog->addNewAction('create', 'Directory: '.$this->_project['Project']['prd_path'], 'FS');
 			$data = array (
 				'DeploymentLog' => array (
 					'project_id'	=> 	$this->_project['Project']['id'],
@@ -331,47 +313,38 @@ class Deployment extends AppModel {
 				)
 			);
 			if (!$this->DeploymentLog->save($data) ) {
-				$this->triggerError(__('Unable to log deployment', true));				
-				return false;				
+				$actionLog->error( __('Unable to save deployment log', true) );
 			}
+			$actionLog->end();
 			
-			// Run before script
-			if ($options['runBeforeScript']) {	
-						
-				$scriptPath = $this->_config->scripts['before'];
-				if (!file_exists($scriptPath) && file_exists($projectTmpDir.DS.'tmpDir'.DS.'.fredistrano'.DS.$scriptPath)) {
-					$scriptPath = $projectTmpDir.DS.'tmpDir'.DS.'.fredistrano'.DS.$scriptPath;
-				} else if (!file_exists($scriptPath)){
-					$this->triggerError(__('Script not found',true));
-					return false;
-				}
-
-				if (!is_executable($scriptPath)) {
-					$output .= $this->executeCommand(
-						"chmod u+x $scriptPath", 
-						__('adding execution privilege to script',true), 
-						'export');	
-				}
-				$output .= $this->executeCommand($scriptPath, __('running initialization script',true), 'export');	
-			}
-			
-			// Backup (if required)
-			if ($options['backup'] === true) {
-				if ( ($output .= $this->_backup()) === false) {
-					$this->triggerError(__('Unable to backup', true));	
-					return false;
-				}
-			}
+			// Run initialization script
+			$this->__runScript('before');
+			/*
+				FIXME F: ReActivate Backup
+			*/
+			// // Backup (if required)
+			// if ($options['backup'] === true) {
+			// 	if ( ($output .= $this->_backup()) === false) {
+			// 		$this->triggerError(__('Unable to backup', true));	
+			// 		return false;
+			// 	}
+			// }
 		}
 
 		// Execute command		
-		$excludeFileName = self::pathConverter($excludeFileName);
-		$source = self::pathConverter($projectTmpDir."tmpDir". DS);
-		$target = self::pathConverter($this->_project['Project']['prd_path']);
+		$excludeFileName = Command::convertPath( $excludeFileName );
+		$source = Command::convertPath( $projectTmpDir."tmpDir". DS );
+		$target = Command::convertPath( $this->_project['Project']['prd_path'] );
 		$command = "rsync -$option --delete --exclude-from=$excludeFileName $source $target 2>&1";	
-		$output .= $this->executeCommand($command,__('Deploying new version',true), 'synchronize', F_DEPLOYDIR);
+		Command::execute( $command, $this->_stepLog, 
+			array(
+		        'comment'	=> __('Deploying new version',true),
+		        'newDir'	=> F_DEPLOYDIR
+			)
+		);
 
 		// Create files list and directories list for chmod step
+		$actionLog = $this->stepLog->addNewAction('create', 'Contents', 'FS');
 		$list = explode("\n", $output);
 		$size = count($list);
 		if ($size > 0) {
@@ -395,8 +368,10 @@ class Deployment extends AppModel {
 			fclose($handle_f);
 			fclose($handle_d);
 		}
+		$actionLog->end();
+		
 		return $output;
-	}// synchronize
+	}// _synchronize
 
 	/**
 	 * Step 3 of the deployment process: Finalize
@@ -404,14 +379,13 @@ class Deployment extends AppModel {
 	 * @return string 			Shell output 
      */
 	private function _finalize($options = array()) {
+		// Check input parameters
 		if (!$this->isInitialized()) {
-			return false;		
+			$this->_stepLog->error( sprintf(__('Missing working data', true)) );
 		}
 		
 		// Load project configuration 
-		if (!self::loadConfig()) {
-			return false;
-		}
+		self::_loadConfig();
 			
 		// Define step options
 		$default_options = array(
@@ -422,29 +396,33 @@ class Deployment extends AppModel {
 		);
 		$options = array_merge($default_options, $options);
 		
-		$output = '';
 		$projectTmpDir = F_DEPLOYTMPDIR.$this->_project['Project']['name'].DS;
 		// Rename file type from .prd.xxx into .xxx
 		if ($options['renamePrdFile'] === true) {			
-			$command = "find ".self::pathConverter($this->_project['Project']['prd_path'])." -name '*.prd.*' "
-				."-exec /usr/bin/perl ".self::pathConverter(F_DEPLOYDIR)."renamePrdFile -vf 's/\.prd\./\./i' {} \;";
-			$output .= $this->executeCommand($command, __('Rename files', true).'.prd.', 'finalize', F_DEPLOYDIR);
+			$command = "find ".Command::convertPath($this->_project['Project']['prd_path'])." -name '*.prd.*' "
+				."-exec /usr/bin/perl ".Command::convertPath(F_DEPLOYDIR)."renamePrdFile -vf 's/\.prd\./\./i' {} \;";
+			Command::execute( $command, $this->_stepLog, 
+				array(
+			        'comment'	=> __('Rename .prd files', true),
+			        'newDir'	=> F_DEPLOYDIR
+				)
+			);
+			
 		}
 
 		// Change file mode
 		if ($options['changeFileMode'] === true) {			
 			$command = "chmod ".Configure::read('FileSystem.permissions.files')."  $(<".$projectTmpDir."files_to_chmod.txt)";
-			$output .= $this->executeCommand(
-				$command, 
-				__('updating files modes', true).' > '.htmlspecialchars($command), 
-				'finalize'
+			Command::execute( $command, $this->_stepLog, 
+				array(
+			        'comment'	=> sprintf(__('Changing files permissions to %s', true), Configure::read('FileSystem.permissions.files')),
+				)
 			);
 			
 			$command = "chmod ". Configure::read('FileSystem.permissions.directories')."  $(<". $projectTmpDir . "dir_to_chmod.txt)";
-			$output .= $this->executeCommand(
-				$command, 
-				__('updating dir mode', true) . ' > ' . htmlspecialchars($command), 
-				'finalize'
+			Command::execute( $command, $this->_stepLog, 
+				array(
+			        'comment'	=> sprintf(__('Changing directories permissions to %s', true), Configure::read('FileSystem.permissions.directories')),
 			);
 		}
 		
@@ -455,123 +433,108 @@ class Deployment extends AppModel {
 			if (sizeof($writable) > 0) {
 				for ($i = 0; $i < sizeof($writable); $i++) {
 					$command = "chmod -vR ".Configure::read('FileSystem.permissions.writable')."  "
-						.self::pathConverter($this->_project['Project']['prd_path'].$writable[$i] );
-					$output .= $this->executeCommand($command, 'Setting write permissions', 'finalize');
+						.Command::convertPath($this->_project['Project']['prd_path'].$writable[$i] );
+					Command::execute( $command, $this->_stepLog, 
+						array(
+					        'comment'	=> sprintf(__('Changing writeable permissions', true), Configure::read('FileSystem.permissions.writable'))
+						)
+					);
 				}
 			}
 		}
-		
-		if ($options['runAfterScript']) {
-			$scriptPath = $this->_config->scripts['after'];
-			if (!file_exists($scriptPath) && file_exists($projectTmpDir.DS.'tmpDir'.DS.'.fredistrano'.DS.$scriptPath)) {
-				$scriptPath = $projectTmpDir.DS.'tmpDir'.DS.'.fredistrano'.DS.$scriptPath;
-			} else if (!file_exists($scriptPath)){
-				$this->triggerError(__('Script not found',true));
-				return false;
-			}
 			
-			if (!is_executable($scriptPath)) {
-				$output .= $this->executeCommand(
-					"chmod u+x $scriptPath", 
-					__('adding execution privilege to script',true), 
-					'export');	
-			}
-			$output .= $this->executeCommand($scriptPath, __('running finalization script',true), 'export');	
-		}
-		
-		return $output;
-	}// finalize
+		// Running finalization script
+		$this->__runScript('after');
 
-	/**
-	 * Optional step in the deployment process: Backup
-	 * @return string 			Shell output 
-     */
-	/*
-		fixme F: Backup not fully tested
-	*/
-	private function _backup() {
-		if (!$this->isInitialized()) {
-			return false;		
-		}
-		
-		$output = '';
-		// création du répertoire pour la sauvegarde
-		$backupDir = F_DEPLOYBACKUPDIR.$this->_project['Project']['name'] ;
-		if (!is_dir($backupDir)) {
-			if (mkdir($backupDir, octdec( Configure::read('FileSystem.permissions.directories')), TRUE)) {
-				$output .= "-[".__('creating directory')." $backupDir]\n";
-			} else {
-				$this->triggerError(sprintf(__('Unable to create directory %s',true), $backupDir));
-				return false;
-			}
-		}
+	}// _finalize
 
-		$output .= "-[".__('backup current prod version')."]\n";
-		if (is_dir($project['Project']['prd_path'])) {
-			$source = self::pathConverter($project['Project']['prd_path'] );
-			$target = self::pathConverter($backupDir);
-		
-			// rsync pour le backup
-			$command = "rsync -av $source $target 2>&1";
-			$output .= $this->executeCommand($command, __('backup current prod version'), 'backup');
-			
-			$command = "chmod -R ". Configure::read('FileSystem.permissions.directories')." ".F_DEPLOYBACKUPDIR;
-			$output .= $this->executeCommand($command, __('updating dir mode') . ' > '. Configure::read('FileSystem.permissions.directories'), 'backup');
-		} else {
-			$output .= "-[".__('no backup needed')." ".$project['Project']['prd_path']." ".__('does not exist')."]\n";
-		}
-
-		return $output;
-	}// backup
-
+	// /**
+	//  * Optional step in the deployment process: Backup
+	//  * @return string 			Shell output 
+	//      */
+	// private function __backup() {
+	// 	if (!$this->isInitialized()) {
+	// 		return false;		
+	// 	}
+	// 	
+	// 	$output = '';
+	// 	// création du répertoire pour la sauvegarde
+	// 	$backupDir = F_DEPLOYBACKUPDIR.$this->_project['Project']['name'] ;
+	// 	if (!is_dir($backupDir)) {
+	// 		if (mkdir($backupDir, octdec( Configure::read('FileSystem.permissions.directories')), TRUE)) {
+	// 			$output .= "-[".__('creating directory')." $backupDir]\n";
+	// 		} else {
+	// 			$this->triggerError(sprintf(__('Unable to create directory %s',true), $backupDir));
+	// 			return false;
+	// 		}
+	// 	}
+	// 
+	// 	$output .= "-[".__('backup current prod version')."]\n";
+	// 	if (is_dir($project['Project']['prd_path'])) {
+	// 		$source = self::pathConverter($project['Project']['prd_path'] );
+	// 		$target = self::pathConverter($backupDir);
+	// 	
+	// 		// rsync pour le backup
+	// 		$command = "rsync -av $source $target 2>&1";
+	// 		$output .= $this->executeCommand($command, __('backup current prod version'), 'backup');
+	// 		
+	// 		$command = "chmod -R ". Configure::read('FileSystem.permissions.directories')." ".F_DEPLOYBACKUPDIR;
+	// 		$output .= $this->executeCommand($command, __('updating dir mode') . ' > '. Configure::read('FileSystem.permissions.directories'), 'backup');
+	// 	} else {
+	// 		$output .= "-[".__('no backup needed')." ".$project['Project']['prd_path']." ".__('does not exist')."]\n";
+	// 	}
+	// 
+	// 	/*
+	// 		TODO F: Check backup
+	// 	*/
+	// 	return $output;
+	// }// backup
+	
 	private function _clearProjectTempFiles(){
+		// Check input parameters
 		if (!$this->isInitialized()) {
-			return false;		
+			$this->_stepLog->error( sprintf(__('Missing working data', true)) );
 		}
 		
-		$path = self::pathConverter(F_DEPLOYTMPDIR.$this->_project['Project']['name'].DS);
-		$output = '';
+		$path = Command::convertPath(F_DEPLOYTMPDIR.$this->_project['Project']['name'].DS);
 		if (!is_dir($path)) {
-			$output .= __('files not found', true).' > '.$path;
-		} else {
-			$command = "rm -rf ".$path;
-			$output .= $this->executeCommand(
-				$command, 
-				__('deleting project temp files', true).' > '.$path, 
-				'clearProjectTempFiles'
-			);
-		}
-		return $output;
+			$this->_stepLog->error( sprintf(__('No temporary files found', true)) );
+		} 			
+
+		Command::execute( $command, $this->_stepLog, 
+			array(
+		        'comment'	=> __('Deleting project temp files', true).' > '.htmlspecialchars($command)
+			)
+		);
 	}// _clearProjectTempFiles
 	
 	private function _resetPermissions(){
+		// Check input parameters
 		if (!$this->isInitialized()) {
-			return false;		
+			$this->_stepLog->error( sprintf(__('Missing working data', true)) );
 		}
 			
 		// Load project configuration 
-		if (!self::loadConfig()) {
-			return false;
-		}
+		self::_loadConfig();
 		
-		$output = '';
 		// Change file mode
-		$command = "find ".self::pathConverter($this->_project['Project']['prd_path'])." -type f -exec chmod "
+		$command = "find ".Command::convertPath($this->_project['Project']['prd_path'])." -type f -exec chmod "
 						.Configure::read('FileSystem.permissions.files')." {} \;";
-		$output .= $this->executeCommand(
-			$command, 
-			__('updating files modes', true).' > '.Configure::read('FileSystem.permissions.files'), 
-			'resetPermissions', 
-			F_DEPLOYDIR
+		Command::execute( $command, $this->_stepLog, 
+			array(
+		        'comment'	=> sprintf(__('Resetting files permissions to %s', true), Configure::read('FileSystem.permissions.files')),
+				'directory'	=> F_DEPLOYDIR
+			)
 		);
 
 		// Change directory mode
-		$command = "find " . self::pathConverter($this->_project['Project']['prd_path'])." -type d "
-					."-exec chmod ". Configure::read('FileSystem.permissions.directories')." {} \;";
-		$output .= $this->executeCommand(
-			$command, 
-			__('updating dir mode', true) . ' > '. Configure::read('FileSystem.permissions.directories'),
-			 'resetPermissions'
+		$command = "find ".Command::convertPath($this->_project['Project']['prd_path'])." -type d "
+					."-exec chmod ".Configure::read('FileSystem.permissions.directories')." {} \;";
+		Command::execute( $command, $this->_stepLog, 
+			array(
+		        'comment'	=> sprintf(__('Resetting directories permissions to %s', true), Configure::read('FileSystem.permissions.directories')),
+				'directory'	=> F_DEPLOYDIR
+			)
 		);
 		
 		// Give write permissions to some folder
@@ -579,84 +542,53 @@ class Deployment extends AppModel {
 		if (sizeof($writable) > 0) {
 			for ($i = 0; $i < sizeof($writable); $i++) {
 				$command = "chmod -vR ".Configure::read('FileSystem.permissions.writable')."  "
-					.self::pathConverter($this->_project['Project']['prd_path'].$writable[$i] );
-				$output .= $this->executeCommand($command, 'Setting write permissions', 'resetPermissions');
+					.Command::convertPath($this->_project['Project']['prd_path'].$writable[$i] );
+				Command::execute( $command, $this->_stepLog, 
+					array(
+				        'comment'	=> sprintf(__('Resetting writeable permissions to %s', true), Configure::read('FileSystem.permissions.writable')),
+						'directory'	=> F_DEPLOYDIR
+					)
+				);
 			}
 		}
-		return $output;
 	}// _resetPermissions
 	
-    // Helper functions ---------------------------------------------------------
-	function isInitialized() {
-		if ( is_null($this->_project) || is_null($this->_context)) {
-			$this->triggerError('Missing working data');
+	private function __runScript( $type = 'before' ) {
+		$projectTmpDir = F_DEPLOYTMPDIR.$this->_project['Project']['name'].DS;
+		
+		// Run before script
+		if ($options['run'.ucfirst($type).'Script']) {			
+			$scriptPath = $this->_config->scripts[$type];
+			if (!file_exists($scriptPath) && file_exists($projectTmpDir.'tmpDir'.DS.'.fredistrano'.DS.$scriptPath)) {
+				$scriptPath = $projectTmpDir.'tmpDir'.DS.'.fredistrano'.DS.$scriptPath;
+			} else if (!file_exists($scriptPath)){
+				$this->_stepLog->error( __('Script not found', true) );
+			}
+
+			if (!is_executable($scriptPath)) {
+				Command::execute( "chmod u+x $scriptPath", $this->_stepLog, 
+					array(
+				        'comment'=>__('Execution privileges to script',true)
+					)
+				);	
+					
+			}
+			Command::execute( $scriptPath, $this->_stepLog, 
+				array(
+			        'comment'	=> sprintf(__('%s script',true), $type)
+				)
+			);
+		}
+	}// __runScript
+	
+    // Helper functions ( public) ---------------------------------------------------------
+	public function isInitialized() {
+		if ( is_null($this->_project) || is_null($this->_context) ||  is_null($this->_stepLog)) {
 			return false;		
 		} else {
 			return true;
 		}
 	}// isInitialized
-	
-	/*
-		TODO F: Add project as parameter
-	*/
-	function getConfig() {
-		self::loadConfig();	
-		return $this->_config;
-	}// getConfig
-
-	/**
-	 *
-	 */ 
-	function getConfigPath ($newPath = false, $projectName = null) {
-		if ($newPath) {
-			return F_DEPLOYTMPDIR.$projectName.DS.'tmpDir'.DS.'.fredistrano'.DS.'deploy.php';
-		} else {
-			return F_DEPLOYTMPDIR.$projectName.DS.'tmpDir'.DS.'deploy.php';			
-		}
-	}// getConfigPath
-
-	function loadConfig() {
-		if (!isset($this->_project) || !$this->_project) {
-			return false;
-		}
-		
-		if (!isset($this->_config) || !$this->_config) {
-			// Check new path
-			$path = $this->getConfigPath(true, $this->_project['Project']['name']);
-			if ( !file_exists( $path ) ) {
-				$path = $this->getConfigPath(false, $this->_project['Project']['name']);
-				if (!file_exists( $path )) {
-					$this->triggerError("Unable to find 'deploy.php' file");
-					return false;
-				}
-			} 
-			include_once($path);
-			$this->_config = &new DEPLOY_CONFIG();
-		}
-
-		return true;
-	}// loadConfig
-	
-	function triggerError($error) {
-		$this->lastError = $error;
-		CakeLog::write(LOG_ERROR, $this->lastError);
-	}// triggerError
-
-	/**
-	 * Get the execution time of the last operation (step or process) 
-	 * @return int 	Last execution time
-	 */ 
-	function getLastExecutionTime () {
-		return $this->lastExecutionTime;
-	}//g etLastExecutionTime
-
-	/**
-	 * Get the error of the last operation (step or process) 
-	 * @return int 	Last execution time
-	 */ 
-	function getLastError () {
-		return $this->lastError;
-	}// getLastError
 
 	/**
 	 * Generate a unique deployment id for a given project or the current one   
@@ -668,72 +600,53 @@ class Deployment extends AppModel {
 			 $projectId = $this->_project['Project']['id'];
 		}
 		return md5( 'FREDISTRANO:'.$projectId .':'.time() ); 
-	}// generateUuid
-
-	// Exportable  --------------------------------------------------------------------------------	
-	function dirMode($fileMode = null) {
-		if (is_null($fileMode)) {
-			$fileMode = Configure::read('FileSystem.permissions.files');
+	}// generateUuid	
+	/*
+		TODO F: Add project as parameter
+	*/
+	public function getConfig() {
+		try {
+			self::_loadConfig();	
+		} catch (Exception $e) {
+			return false;
 		}
-		$fileMode = str_split($fileMode);
-		$dirMode = '';
+		return $this->_config;
+	}// getConfig
+
+    // Helper functions ( public) ---------------------------------------------------------
+	private function _loadConfig() {
+		$actionLog = $this->stepLog->addNewAction('loadConfig', null,'include');
 		
-		for ($i=0; $i < 3; $i++) { 
-			if ($fileMode[$i] > 7) {
-				$fileMode[$i] = 7;
-			} elseif (!in_array($fileMode[$i], array(0,7))) {
-				$fileMode[$i]++;
+		if (!isset($this->_project) || !$this->_project) {
+			$actionLog->error( sprintf(__('Missing working data', true)) );
+		}
+		
+		if (!isset($this->_config) || !$this->_config) {
+			// Check new path
+			$path = $this->__getConfigPath(true, $this->_project['Project']['name']);
+			if ( !file_exists( $path ) ) {
+				$path = $this->__getConfigPath(false, $this->_project['Project']['name']);
+				if (!file_exists( $path )) {
+					$actionLog->error( sprintf(__('Unable to find deploy.php', true)) );
+				}
 			} 
-			$dirMode .= $fileMode[$i];
+			include_once($path);
+			$this->_config = &new DEPLOY_CONFIG();
 		}
-		return $dirMode;
-	}// dirMode
-	
-	function executeCommand( $command = null, $comment = 'none', $context = 'none', $newDir = null ){
-		if ($command == null) {
-            return __('No command supplied');
-        }
 
-        $output = "\n-[".$comment."]\n";
-        if ( Configure::read() > 0 ){
-            CakeLog::write('debug', "[$context] " . $command);
-        }
+		$actionLog->end();
+	}// loadConfig
 
-        if ( F_OS == 'WIN' ) {
-            $prefix = "bash.exe --login -c 'cd ".$this->pathConverter($newDir)."; ";
-            $suffix = "'";
-        } else {
-            if ($newDir != null) {
-               chdir($newDir);
-            }
-            $prefix = "";
-            $suffix = "";
-        }
-        $shell = shell_exec( $prefix.$command.$suffix );
-
-		// Remember last command
-		$this->lastCommand = $prefix.$command.$suffix;
-			
-        return $output . $shell;
-	}// executeCommand
-	
 	/**
-	 * Convert if necessary a path to a cygwin/linux format 
-	 * @param string $path 		Path to be converted
-	 * @return string 			Converted path
+	 *
 	 */ 
-	function pathConverter($path) {
-		$pathForRsync = $path;
-		if ( F_OS == 'WIN') {
-			$pattern = '/^([A-Za-z]):/';
-			preg_match($pattern, $path, $matches, PREG_OFFSET_CAPTURE);
-			if (!empty ($matches[1][0])) {
-				$windowsLetter = strtolower($matches[1][0]);
-				$pathForRsync = strtr(Configure::read('Cygwin.rootDir') . $windowsLetter . substr($path, 2), "\\", "/");
-			}	
+	private function __getConfigPath ($newPath = false, $projectName = null) {
+		if ($newPath) {
+			return F_DEPLOYTMPDIR.$projectName.DS.'tmpDir'.DS.'.fredistrano'.DS.'deploy.php';
+		} else {
+			return F_DEPLOYTMPDIR.$projectName.DS.'tmpDir'.DS.'deploy.php';			
 		}
-		return $pathForRsync;
-	}// pathConverter
+	}// getConfigPath
 
 }// Deployment
 ?>
