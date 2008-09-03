@@ -161,10 +161,8 @@ CREATE TABLE `profiles` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
+INSERT INTO `profiles` (`id`,`user_id`,`lang`,`rss_token`) VALUES ('1','1','en','f33ce25b05cd9e7b91e6a54552ad7e8f179b8b76');
 
-/*
-	FIXME F: insert profiles for admin account 
-*/
 
 # Dump of table projects
 # ------------------------------------------------------------

@@ -460,10 +460,7 @@ class Deployment extends AppModel {
 				}
 			}
 		}
-		/*
-			FIXME F: a script to test with runAfterScript
-				sed -i.old "s/\('debug',\)[ ]*[12]/\1 0/g" core.php (to be tested)
-		*/
+		
 		if ($options['runAfterScript']) {
 			$scriptPath = $this->_config->scripts['after'];
 			if (!file_exists($scriptPath) && file_exists($projectTmpDir.DS.'tmpDir'.DS.'.fredistrano'.DS.$scriptPath)) {
