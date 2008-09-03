@@ -71,6 +71,7 @@ class Deployment extends AppModel {
 		$default_options = array(
 	 		'export' 		=> array(),
 	 		'synchronize'	=> array(
+				'simulation'			=> false,
 	 		 	'runBeforeScript'		=> 	false,
 	 			'backup'				=> 	false
 	 		),
@@ -82,7 +83,7 @@ class Deployment extends AppModel {
 	 		)
 	 	);
 		/*
-			TODO F: Test merge result (use array_merge_recursive rather?)
+			fixme F: Test merge result (use array_merge_recursive rather?)
 		*/
 		$options = Set::merge($default_options, $options);
 	
@@ -112,7 +113,7 @@ class Deployment extends AppModel {
 			return false;
 		}	
 		
-		// Load project configuration 
+		// Load project configuration
 		if (!self::loadConfig()) {
 			return false;
 		}
@@ -200,6 +201,10 @@ class Deployment extends AppModel {
 	}// runStep
 		
 	//  Private Steps -----------------------------------------------------------
+
+/*
+	FIXME F: implement mode export instead of checkout 
+*/
 	/**
 	 * Step 1 of the deployment process: Export
 	 * @param array $options	Various options used for configuring the step 
@@ -331,10 +336,11 @@ class Deployment extends AppModel {
 			}
 			
 			// Run before script
-			if ($options['runBeforeScript']) {			
+			if ($options['runBeforeScript']) {	
+						
 				$scriptPath = $this->_config->scripts['before'];
-				if (!file_exists($scriptPath) && file_exists($projectTmpDir.'tmpDir'.DS.'.fredistrano'.DS.$scriptPath)) {
-					$scriptPath = $projectTmpDir.'tmpDir'.DS.'.fredistrano'.DS.$scriptPath;
+				if (!file_exists($scriptPath) && file_exists($projectTmpDir.DS.'tmpDir'.DS.'.fredistrano'.DS.$scriptPath)) {
+					$scriptPath = $projectTmpDir.DS.'tmpDir'.DS.'.fredistrano'.DS.$scriptPath;
 				} else if (!file_exists($scriptPath)){
 					$this->triggerError(__('Script not found',true));
 					return false;
@@ -455,13 +461,13 @@ class Deployment extends AppModel {
 			}
 		}
 		/*
-			TODO : a script to test with runAfterScript
+			FIXME F: a script to test with runAfterScript
 				sed -i.old "s/\('debug',\)[ ]*[12]/\1 0/g" core.php (to be tested)
 		*/
 		if ($options['runAfterScript']) {
 			$scriptPath = $this->_config->scripts['after'];
-			if (!file_exists($scriptPath) && file_exists($projectTmpDir.'.fredistrano'.DS.$scriptPath)) {
-				$scriptPath = $projectTmpDir.'.fredistrano'.DS.$scriptPath;
+			if (!file_exists($scriptPath) && file_exists($projectTmpDir.DS.'tmpDir'.DS.'.fredistrano'.DS.$scriptPath)) {
+				$scriptPath = $projectTmpDir.DS.'tmpDir'.DS.'.fredistrano'.DS.$scriptPath;
 			} else if (!file_exists($scriptPath)){
 				$this->triggerError(__('Script not found',true));
 				return false;
@@ -484,7 +490,7 @@ class Deployment extends AppModel {
 	 * @return string 			Shell output 
      */
 	/*
-		TODO F: Backup not fully tested
+		fixme F: Backup not fully tested
 	*/
 	private function _backup() {
 		if (!$this->isInitialized()) {
@@ -518,15 +524,9 @@ class Deployment extends AppModel {
 			$output .= "-[".__('no backup needed')." ".$project['Project']['prd_path']." ".__('does not exist')."]\n";
 		}
 
-		/*
-			TODO F: Check backup
-		*/
 		return $output;
 	}// backup
-	
-	/*
-		TODO implement _clearProjectTempFiles function
-	*/
+
 	private function _clearProjectTempFiles(){
 		if (!$this->isInitialized()) {
 			return false;		
@@ -600,9 +600,9 @@ class Deployment extends AppModel {
 	}// isInitialized
 	
 	/*
-		TODO Add project name as parameter
+		TODO F: Add project as parameter
 	*/
-	function getConfig($projectId=null) {
+	function getConfig() {
 		self::loadConfig();	
 		return $this->_config;
 	}// getConfig

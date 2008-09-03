@@ -13,7 +13,6 @@ class Profile extends AppModel {
 	);
 
 	function beforeSave() {
-		
 		if (empty($this->data['Profile']['rss_token'])) {
 			$this->data['Profile']['rss_token'] = sha1( rand(0,10000) + time());
 		}
@@ -21,7 +20,6 @@ class Profile extends AppModel {
 		if (empty($this->data['Profile']['lang'])) {
 			$this->data['Profile']['lang'] = Configure::read('Fredistrano.language');
 		}
-		
 
 		return parent :: beforeSave();
 	}

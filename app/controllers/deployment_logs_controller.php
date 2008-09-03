@@ -9,8 +9,11 @@ class DeploymentLogsController extends AppController {
 	);
 
 	var $uses = array (
-		'Project',
-		'DeploymentLog'
+		'DeploymentLog',
+		'Profile',
+		'Project'
+		
+		
 	);
 
 	var $authLocal = array (
@@ -42,7 +45,7 @@ class DeploymentLogsController extends AppController {
 		if ( Configure::read('Feeds.enabled') === true ) {
 			$tab[] = array (
 				'text' => 'Rss Feed',
-				'link' => '/deploymentLogs/index.rss'
+				'link' => '/deploymentLogs/index.rss?token='.$this->Session->read('User.Profile.rss_token')
 			);
 		}
 		
@@ -56,8 +59,8 @@ class DeploymentLogsController extends AppController {
 	 */
 	function index($op = null, $id = null) {
 		$limit = null;
-			
 		if ($this->RequestHandler->isRss()) {
+			Configure::write('debug', 0);
 			$limit = 50;
 			
 			if (!Configure::read('Feeds.enabled')) {
@@ -65,9 +68,12 @@ class DeploymentLogsController extends AppController {
 				$this->redirect('/deploymentLogs');
 				exit();		
 			}
-			// TODO F: Check RSS token before accessing feed data
-			// 	$this->redirect('/projects/index');
-			// 	exit();
+			
+			if (!$this->Profile->find('count', array ('conditions' => array('rss_token' => $this->params['url']['token'])))) {
+				$this->Session->setFlash(__("Rss token not found in database.", true));
+				$this->redirect('/projects/index');
+				exit();
+			}
 		} else {
 			$this->Aclite->checkAccess(array('entrance'));
 		}
@@ -172,7 +178,6 @@ class DeploymentLogsController extends AppController {
 		);
 		$order = 'DeploymentLog.created DESC';
 		$logs = $this->DeploymentLog->findAll($conditions, $fields, $order,$limit);
-
 		$this->set('filter', $filter);
 		$this->set('logs', $logs);
 	} // _listAll

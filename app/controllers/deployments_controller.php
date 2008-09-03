@@ -34,7 +34,7 @@ class DeploymentsController extends AppController {
 		
 		// Give an ID to current deployment 
 		$this->Session->write('Deployment.uuid', $this->Deployment->generateUuid($id));
-						
+		
 		// View
 		$this->layout = 'ajax';
 		$this->set('id', $id);
@@ -56,9 +56,6 @@ class DeploymentsController extends AppController {
 		$this->Session->write('Deployment.uuid', $this->Deployment->generateUuid($id));
 
 		// Run step	
-		/*
-			TODO F: Get default deployment options
-		*/
 		$output = $this->Deployment->runProcess(
 			$this->data['Project']['id'], 
 			$this->_getContext(), 
@@ -154,7 +151,6 @@ class DeploymentsController extends AppController {
 		
 		// Run step
 		$output = $this->Deployment->runStep('synchronize', $this->data['Project']['id'], $this->_getContext(), $options);
-
 		// Process output
 		if (!$this->_processOutput($output)) {
 			return;
@@ -194,14 +190,9 @@ class DeploymentsController extends AppController {
 			$this->render('error');
 			return;
 		}
-		// Define options
-		$options = array();
-		$options['renamePrdFile'] 		= 	0;
-		$options['changeFileMode'] 		= 	1;
-		$options['giveWriteMode'] 		= 	1;
 		
 		// Run step	
-		$output = $this->Deployment->runStep('resetPermissions', $id, $this->_getContext(), $options);
+		$output = $this->Deployment->runStep('resetPermissions', $id, $this->_getContext());
 		
 		// Process output
 		if (!$this->_processOutput($output)) {
@@ -245,6 +236,8 @@ class DeploymentsController extends AppController {
 			$this->set('errorMessage', 	__('Invalid request',true));
 			$this->render('error');
 			return false;
+		} else {
+			return true;
 		}
 	}// _isValidStep
 

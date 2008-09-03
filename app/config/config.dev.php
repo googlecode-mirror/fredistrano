@@ -54,7 +54,7 @@
 		'passwd'		=> null
 	);
 
-	$config['Ui'] = array(
+	$config['Fredistrano'] = array(
 		'language'	=> 'en'
 	);
 

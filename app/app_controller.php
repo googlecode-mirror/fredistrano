@@ -1,4 +1,8 @@
 <?php
+/*
+	FIXME F:	run bake i18n 
+*/
+
 /* SVN FILE: $Id: app_controller.php 6311 2008-01-02 06:33:52Z phpnut $ */
 /**
  * Short description for file.

@@ -1,4 +1,7 @@
 <?php
+/*
+	FIXME F: improve style 
+*/
 if ( $log !== false) {
 ?>
 	<p><?php __('Logs retreived from') ?> <?php e($project['Project']['name']); 

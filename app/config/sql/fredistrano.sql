@@ -162,6 +162,10 @@ CREATE TABLE `profiles` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 
+/*
+	FIXME F: insert profiles for admin account 
+*/
+
 # Dump of table projects
 # ------------------------------------------------------------
 

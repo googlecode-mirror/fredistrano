@@ -17,17 +17,21 @@ class AdministrationController extends AppController {
 			'text' => 'Actions'
 		);
 
-		$tab[] = array (
-			'text' => 'Update application',
-			'link' => '/administration/update'
-		);
+		// $tab[] = array (
+		// 	'text' => 'Update application',
+		// 	'link' => '/administration/update'
+		// );
 		
 		$this->set("context_menu", $tab);
 	}
 	
 	function index() {}
 
-	function update() {
+
+	/*
+		TODO F:implement update fonctionality
+	*/
+	private function _update() {
 		$p = $this->Project->read( null, 1);
 		
 		if (isset($this->params['url']['result']) && isset($this->params['url']['token'])) {
