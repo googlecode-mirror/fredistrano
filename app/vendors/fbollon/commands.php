@@ -35,7 +35,7 @@ class Command {
 		return $dirMode;
 	}// dirMode
 
-	static function execute( $command, $stepLog, $options = array()){
+	static function execute( $command, $options = array()){
 		$defaultOptions = array(
 			'comment' 	=> null,
 			'directory'	=> null
@@ -43,7 +43,7 @@ class Command {
 		$options = array_merge($defaultOptions, $options);
 		
 		// Logging
-		$actionLog = $stepLog->addNewAction('executeCommand', $options['comment'], 'shell' );			
+		$actionLog = new ActionLog('executeCommand', $options['comment'], 'shell' );
 
 		// Prepare command
 	    if ( F_OS == 'WIN' ) {
@@ -66,7 +66,8 @@ class Command {
 		// Execute command 
 		$output = shell_exec( $prefix.$command.$suffix );
 		$actionLog->end( $output );
-	
+		
+		return $actionLog;
 	}// executeCommand
 
 	static function getSvnRevision($string) {

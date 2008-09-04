@@ -11,9 +11,7 @@ class DeploymentLogsController extends AppController {
 	var $uses = array (
 		'DeploymentLog',
 		'Profile',
-		'Project'
-		
-		
+		'Project'	
 	);
 
 	var $authLocal = array (

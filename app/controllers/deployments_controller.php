@@ -19,6 +19,23 @@ class DeploymentsController extends AppController {
 			'buinessData'
 		)
 	);
+	
+	function beforeFilter() {
+		$id = null;
+		
+		if (isset($this->data['Project']['id'])) {
+			$id = $this->data['Project']['id'];
+		} else if (isset($this->params['pass'][0])) {
+			$id = $this->params['pass'][0];
+		} 
+		
+		if (is_null($id)){
+			$this->Session->setFlash(__('Missing id.', true));
+			$this->redirect('/projects/index');
+			exit();
+		}
+		$this->_setContext($id);
+	}// par
 
 	// Initialize runs ---------------------------------------
 	/**
@@ -26,15 +43,7 @@ class DeploymentsController extends AppController {
 	 * @param string $id ID of the project to be deployed
 	 */
 	function runManual($id = null) {
-		if ($id == null ) {
-			$this->Session->setFlash(__('Invalid id.', true));
-			$this->redirect('/projects/index');
-			exit();
-		}
 		
-		// Set current working context 
-		$this->_setContext();
-						
 		// View
 		$this->layout = 'ajax';
 		$this->set('id', $id);
@@ -46,14 +55,6 @@ class DeploymentsController extends AppController {
 	 */
 	function runAutomatic($id = null) {
 		$this->layout = 'ajax';
-		if ($id == null ) {
-			$this->Session->setFlash(__('Invalid id.', true));
-			$this->redirect('/projects/index');
-			exit();
-		}
-
-		// Set current working context 
-		$this->_setContext();
 		
 		// Run step	
 		$log = $this->Deployment->process(
@@ -103,13 +104,13 @@ class DeploymentsController extends AppController {
 			$options['password_svn'] = $this->data['Project']['password'];
 		}
 		
-		// Run step
+		// Run step 
 		$log = $this->Deployment->export($this->data['Project']['id'], $options);
-				
+		
 		// Process result
 		$this->set('output', 	$log->toString());
 		if ( $log->hasError() ) {
-			$this->set('errorMessage', 	$log->getError() );
+			$this->set('errorMessage', $log->getError() );
 			return;
 		} 
 				
@@ -170,7 +171,8 @@ class DeploymentsController extends AppController {
 		$options['giveWriteMode'] 		= 	($this->data['Project']['GiveWriteMode'] == 1);
 		$options['runAfterScript']	 	= 	($this->data['Project']['runAfterScript'] == 1);
 		
-		// Run step	
+		// Run step
+		$this->_setContext($this->data['Project']['id']);	
 		$log = $this->Deployment->finalize( $this->data['Project']['id'], $options);
 
 		// Process result
@@ -184,11 +186,6 @@ class DeploymentsController extends AppController {
 	// On click step -----------------------------------------
 	function resetPermissions($id = null){
 		$this->layout = 'ajax';
-		if (!$id) {
-			$this->set('errorMessage', 	__('Invalid request',true));
-			$this->render('error');
-			return;
-		}
 		
 		// Run step	
 		$log = $this->Deployment->resetPermissions( $id );
@@ -203,14 +200,9 @@ class DeploymentsController extends AppController {
 	
 	function clearProjectTempFiles($id = null){
 		$this->layout = 'ajax';
-		if (!$id) {
-			$this->set('errorMessage', 	__('Invalid request',true));
-			$this->render('error');
-			return;
-		}
 		
 		// Run step	
-		$log = $this->Deployment->clearProjectTempFiles( $id );
+		$log = $this->Deployment->clearProjectTempFiles($id);
 		
 		// Process result
 		$this->set('output', 	$log->toString());
@@ -231,7 +223,7 @@ class DeploymentsController extends AppController {
 		}
 	}// _isValidStep
 	
-	private function _setContext() {	
+	private function _setContext($id) {	
 		if ($this->Session->read('User.User.id')) {
 			$user = $this->Session->read('User.User.id');
 		} else {

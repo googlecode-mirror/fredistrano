@@ -9,21 +9,18 @@ if ( Configure::read() > 0 ) {
 
 class ElementaryLog {
 		
-	private $name = null;
-	
-	private $description = null;
-	
-	private $startTime = null;
-	
-	private $endTime = null;
-	
-	private $elapsedTime = 0;
+	protected $name = null;
 		
-	private $error = null;
+	protected $startTime = null;
 	
-	public function __construct($name = null, $description = null) {
+	protected $endTime = null;
+	
+	protected $elapsedTime = 0;
+		
+	protected $error = null;
+	
+	public function __construct($name = null) {
 		$this->name = $name;
-		$this->description = $description;
 		$this->startTime = getMicrotime();
 	}// __construct
 	
@@ -37,8 +34,8 @@ class ElementaryLog {
 		return true;
 	}// endTimePeriod
 
-	public function getLastStep() {
-		return $this->error; 	
+	public function getError() {
+		return $this->error->getMessage(); 	
 	}// getError
 
 	public function hasError() {
@@ -66,18 +63,23 @@ class ElementaryLog {
 	}// error
 	
 	public function toXml() {
-		return null;		
-	}// toXml
-	
-	public function toString () {
 		return 
-			'<description>'.$this->description.'</description>'
-			.'<timePeriod>'
+			'<timePeriod>'
 				.'<start timezone="'.date_default_timezone_get().'">'.date(DATE_ATOM, $this->startTime).'</start>'
 				.'<end timezone="'.date_default_timezone_get().'">'.date(DATE_ATOM, $this->endTime).'</end>'
 				.'<elapsed unit="seconds">'.$this->elapsedTime.'</elapsed>'
 			.'</timePeriod>'
-			.(!$this->hasError()?:'<error>'.$this->error.'</error>':'');
+			.(!$this->hasError()?'<error>'.$this->error.'</error>':'');
+	}// toXml
+	
+	public function toString () {
+		return 
+			'<timePeriod>'
+				.'<start timezone="'.date_default_timezone_get().'">'.date(DATE_ATOM, $this->startTime).'</start>'
+				.'<end timezone="'.date_default_timezone_get().'">'.date(DATE_ATOM, $this->endTime).'</end>'
+				.'<elapsed unit="seconds">'.$this->elapsedTime.'</elapsed>'
+			.'</timePeriod>'
+			.(!$this->hasError()?'<error>'.$this->error.'</error>':'');
 	}// toString
 	
 	public function writeToFile( $target ) {
@@ -94,12 +96,15 @@ class ActionLog extends ElementaryLog {
 	
 	private $type = null;	
 
+	private $description = null;
+	
 	private $command = null;
 		
 	private $result = null;
 	
 	public function __construct($name = null, $description = null, $type = null) {
-		parent::__construct($name, $description);
+		parent::__construct($name);
+		$this->description = $description;		
 		$this->type = $type;
 	}// __construct
 	
@@ -118,18 +123,27 @@ class ActionLog extends ElementaryLog {
 	}// setCommand
 	
 	public function toXml() {
-		return null;		
+		return 
+			'<action name="'.$this->name.'" type="'.$this->type.'" >'
+				.'<description>'.$this->description.'</description>'
+				.parent::toString()
+				.'<job>'
+					.(!is_null($this->command)?'<command>'.$this->command.'</command>':'<command/>')
+					.(!is_null($this->result)?'<result>'.$this->result.'</result>':'<result/>')
+				.'</job>'
+			.'</action>';
 	}// toXml
 	
 	public function toString () {
 		return 
 			'<action name="'.$this->name.'" type="'.$this->type.'" >'
+				.'<description>'.$this->description.'</description>'
 				.parent::toString()
 				.'<job>'
-					.(!is_null($this->command)?:'<command>'.$this->command.'</command>':'<command/>')
-					.(!is_null($this->result)?:'<result>'.$this->result.'</result>':'<result/>')
+					.(!is_null($this->command)?'<command>'.$this->command.'</command>':'<command/>')
+					.(!is_null($this->result)?'<result>'.$this->result.'</result>':'<result/>')
 				.'</job>'
-			.'</action>';
+			.'</action>';		
 	}// toString
 	
 }// ActionLog
@@ -138,11 +152,11 @@ class AdvancedLog extends ElementaryLog {
 	
 	public $data = null;
 	
-	private $logs = array();
+	protected $logs = array();
 	
-	private $context = array( 'user' => null, 'uuid'=> null);
+	protected $context = array( 'user' => null, 'uuid'=> null);
 	
-	private $childType = null;	
+	protected $childType = null;
 	
 	public function addChildLog( $log, $terminate = false ) {
 		if ( get_class($log) != $this->childType ) {
@@ -150,7 +164,9 @@ class AdvancedLog extends ElementaryLog {
 		}
 		
 		// Terminate previous if required 
-		if (!is_null( $last = $this->getLastLog() ) ) {
+		$last = $this->getLastLog();
+		if ( !empty( $last ) ) {
+			
 			if (!$last->isEnded()) {
 				$last->end();
 			}
@@ -178,12 +194,12 @@ class AdvancedLog extends ElementaryLog {
 	}// end
 	
 	public function getLastLog() {
-		if ( ( $size = count($this->logs) ) == 0 ) ) {
+		if ( ( $size = count($this->logs) ) == 0 ) {
 			return false;
 		} 
 		
 		return $this->logs[$size-1]; 	
-	}// getLastStep
+	}// getLastLog
 	
 	public function hasError($recursive = false) {
 		if (!is_null($this->error)) {
@@ -212,7 +228,7 @@ class AdvancedLog extends ElementaryLog {
 
 class Steplog extends AdvancedLog {
 	
-	private $childType = 'ActionLog';
+	protected $childType = 'ActionLog';
 	
 	public function addNewAction( $name = null, $description = null, $type = null ) {
 		$actionLog = new ActionLog($name, $description, $type);
@@ -225,7 +241,7 @@ class Steplog extends AdvancedLog {
 	
 	public function toString( $showContext=true ) {
 		$actionLogs = '';
-		foreach($this->actionLogs as $actionLog) {
+		foreach($this->logs as $actionLog) {
 			$actionLogs .= $actionLog->toString();
 		}
 		
@@ -249,7 +265,7 @@ class Steplog extends AdvancedLog {
 
 class Processlog extends AdvancedLog {
 
-	private $childType = 'StepLog';
+	protected $childType = 'StepLog';
 
 	public function toString() {
 		$stepLogs = '';

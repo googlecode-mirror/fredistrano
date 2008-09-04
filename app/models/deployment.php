@@ -62,7 +62,7 @@ class Deployment extends AppModel {
 			if ( !isset($this->_context['user']) || !isset($this->_context['uuid']) ) { 
 				$processLog->error( __('Invalid context (use setContext() first)',true) );
 			}
-			$processLog->setContext($context['user'], $context['uuid']);
+			$processLog->setContext($this->_context);
 						
 			// Init options
 			$default_options = array(
@@ -113,7 +113,7 @@ class Deployment extends AppModel {
 	// Nicer call to functions
 	public function __call($name, $arguments) {
 		// Dispatch
-		if (!in_array($name, $this->allowedSteps))) {		
+		if (in_array($name, $this->allowedSteps)) {		
 			try{	
 				if (count($arguments) == 1) {
 					$this->_runStep($name,$arguments[0]);
@@ -136,24 +136,21 @@ class Deployment extends AppModel {
 	 * @param string $step			Step that should be performed 
 	 * @param int $project_id 		Id of the project that should be deployed 
 	 * @param array $options		Various options used for configuring the step 
-	 * @return StepLog 				Step log  
      */			
 	private function _runStep($step, $projectId, $options = array()) {
 		$this->_stepLog = new Steplog( $step );
-		
 		try{	
 			// Check input parameters
 			if ( !isset($this->_context['user']) || !isset($this->_context['uuid']) ) { 
 				$this->_stepLog->error( __('Invalid context (use setContext() first)',true) );
 			}
-			if ( !in_array($step, $this->$process) ) {
-				$this->_stepLog->error( __('Unknown step',true) );
+			if ( !in_array($step, $this->allowedSteps) ) {
+				$this->_stepLog->error( sprintf(__('Unknown step %s',true), $step) );
 			}
-			$this->_stepLog->setContext($context['user'], $context['uuid']);
+			$this->_stepLog->setContext($this->_context);
 		
 			// Initialiaze processing
-			$this->_context = $context;
-			$this->_project = $this->Project->find('first', array('conditions' => array('Project.id' => $projectId), 'recursive' => 0);
+			$this->_project = $this->Project->find('first', array('conditions' => array('Project.id' => $projectId), 'recursive' => 0));
 	 		if ( !$this->_project )  {
 				$this->_stepLog->error( __('Unknown project',true) );
 			}
@@ -202,8 +199,8 @@ class Deployment extends AppModel {
 			$command = "svn update" . $revision ." tmpDir 2>&1";		
 			$log = Command::execute( $command, 
 				array(
-			        'comment'=>__('SVN update',true),
-			        'newDir'=>$projectTmpDir
+			        'comment'	=> __('SVN update',true),
+			        'directory'	=> $projectTmpDir
 				)
 			);
 			$this->_stepLog->addChildLog( $log );		
@@ -225,8 +222,8 @@ class Deployment extends AppModel {
 			$command = "svn checkout $revision $authentication ".$this->_project['Project']['svn_url'].' tmpDir 2>&1';
 			$log = Command::execute( $command,
 				array(
-			        'comment'=>__('SVN checkout',true),
-			        'newDir'=>$projectTmpDir
+			        'comment'	=> __('SVN checkout',true),
+			        'directory'	=> $projectTmpDir
 				)
 			);
 			$this->_stepLog->addChildLog( $log );			
@@ -268,7 +265,7 @@ class Deployment extends AppModel {
 		$actionLog = $this->stepLog->addNewAction('create', 'Directory: '.$this->_project['Project']['prd_path'], 'FS');
 		if (!is_dir($this->_project['Project']['prd_path'])) {
 			if (!@mkdir($this->_project['Project']['prd_path'], octdec(  Configure::read('FileSystem.permissions.directories') ), TRUE)) {
-				$actionLog->error( sprintf(__('Unable to create directory %s', true), $this->_project['Project']['prd_path'])) );
+				$actionLog->error( sprintf(__('Unable to create directory %s', true), $this->_project['Project']['prd_path']));
 			}
 			$actionLog->end();
 		}
@@ -340,7 +337,7 @@ class Deployment extends AppModel {
 		$log = Command::execute( $command,
 			array(
 		        'comment'	=> __('Deploying new version',true),
-		        'newDir'	=> F_DEPLOYDIR
+		        'directory'	=> F_DEPLOYDIR
 			)
 		);
 		$this->_stepLog->addChildLog( $log );	
@@ -406,7 +403,7 @@ class Deployment extends AppModel {
 			Command::execute( $command,
 				array(
 			        'comment'	=> __('Rename .prd files', true),
-			        'newDir'	=> F_DEPLOYDIR
+			        'directory'	=> F_DEPLOYDIR
 				)
 			);
 			
@@ -417,7 +414,7 @@ class Deployment extends AppModel {
 			$command = "chmod ".Configure::read('FileSystem.permissions.files')."  $(<".$projectTmpDir."files_to_chmod.txt)";
 			$log = Command::execute( $command,
 				array(
-			        'comment'	=> sprintf(__('Changing files permissions to %s', true), Configure::read('FileSystem.permissions.files')),
+			        'comment'	=> sprintf(__('Changing files permissions to %s', true), Configure::read('FileSystem.permissions.files'))
 				)
 			);
 			$this->_stepLog->addChildLog( $log );	
@@ -425,7 +422,8 @@ class Deployment extends AppModel {
 			$command = "chmod ". Configure::read('FileSystem.permissions.directories')."  $(<". $projectTmpDir . "dir_to_chmod.txt)";
 			$log = Command::execute( $command, 
 				array(
-			        'comment'	=> sprintf(__('Changing directories permissions to %s', true), Configure::read('FileSystem.permissions.directories')),
+			        'comment'	=> sprintf(__('Changing directories permissions to %s', true), Configure::read('FileSystem.permissions.directories'))
+				)	
 			);
 			$this->_stepLog->addChildLog( $log );	
 		}
@@ -458,16 +456,20 @@ class Deployment extends AppModel {
 			$this->_stepLog->error( sprintf(__('Missing working data', true)) );
 		}
 		
+		// Load project configuration 
+		self::_loadConfig();
+		
 		$path = Command::convertPath(F_DEPLOYTMPDIR.$this->_project['Project']['name'].DS);
 		if (!is_dir($path)) {
 			$this->_stepLog->error( sprintf(__('No temporary files found', true)) );
 		} 			
-
+		$command = "rm -rf ".$path;
 		$log = Command::execute( $command,
 			array(
-		        'comment'	=> __('Deleting project temp files', true).' > '.htmlspecialchars($command)
+		        'comment'	=> __('Deleting project temp files', true)
 			)
 		);
+		
 		$this->_stepLog->addChildLog( $log );	
 	}// _clearProjectTempFiles
 	
@@ -629,7 +631,7 @@ class Deployment extends AppModel {
 
     // Helper functions ( private ) ---------------------------------------------------------
 	private function _loadConfig() {
-		$actionLog = $this->stepLog->addNewAction('loadConfig', null,'include');
+		$actionLog = $this->_stepLog->addNewAction('loadConfig', null,'include');
 		
 		if (!isset($this->_project) || !$this->_project) {
 			$actionLog->error( sprintf(__('Missing working data', true)) );
