@@ -19,7 +19,7 @@ class DeploymentsController extends AppController {
 			'buinessData'
 		)
 	);
-	
+
 	// Initialize runs ---------------------------------------
 	/**
 	 * Deploy manually a project
@@ -32,8 +32,8 @@ class DeploymentsController extends AppController {
 			exit();
 		}
 		
-		// Give an ID to current deployment 
-		$this->Session->write('Deployment.uuid', $this->Deployment->generateUuid($id));
+		// Set current working context 
+		$this->_setContext();
 						
 		// View
 		$this->layout = 'ajax';
@@ -52,13 +52,12 @@ class DeploymentsController extends AppController {
 			exit();
 		}
 
-		// Give an ID to current deployment 
-		$this->Session->write('Deployment.uuid', $this->Deployment->generateUuid($id));
-
+		// Set current working context 
+		$this->_setContext();
+		
 		// Run step	
 		$log = $this->Deployment->process(
 			$this->data['Project']['id'], 
-			$this->_getContext(), 
 			array(
 		 		'export' 		=> array(),
 		 		'synchronize'	=> array(
@@ -105,7 +104,7 @@ class DeploymentsController extends AppController {
 		}
 		
 		// Run step
-		$log = $this->Deployment->export($this->data['Project']['id'], $this->_getContext(), $options);
+		$log = $this->Deployment->export($this->data['Project']['id'], $options);
 				
 		// Process result
 		$this->set('output', 	$log->toString());
@@ -145,7 +144,7 @@ class DeploymentsController extends AppController {
 		}
 		
 		// Run step
-		$log = $this->Deployment->synchronize( $this->data['Project']['id'], $this->_getContext(), $options);
+		$log = $this->Deployment->synchronize( $this->data['Project']['id'], $options);
 
 		// Process result
 		$this->set('output', 	$log->toString());
@@ -172,7 +171,7 @@ class DeploymentsController extends AppController {
 		$options['runAfterScript']	 	= 	($this->data['Project']['runAfterScript'] == 1);
 		
 		// Run step	
-		$log = $this->Deployment->finalize( $this->data['Project']['id'], $this->_getContext(), $options);
+		$log = $this->Deployment->finalize( $this->data['Project']['id'], $options);
 
 		// Process result
 		$this->set('output', 	$log->toString());
@@ -192,7 +191,7 @@ class DeploymentsController extends AppController {
 		}
 		
 		// Run step	
-		$log = $this->Deployment->resetPermissions( $id, $this->_getContext());
+		$log = $this->Deployment->resetPermissions( $id );
 		
 		// Process result
 		$this->set('output', 	$log->toString());
@@ -211,7 +210,7 @@ class DeploymentsController extends AppController {
 		}
 		
 		// Run step	
-		$log = $this->Deployment->clearProjectTempFiles( $id, $this->_getContext());
+		$log = $this->Deployment->clearProjectTempFiles( $id );
 		
 		// Process result
 		$this->set('output', 	$log->toString());
@@ -222,19 +221,6 @@ class DeploymentsController extends AppController {
 	}// clearProjectTempFiles
 	
 	// Private helpers ---------------------------------------
-	private function _getContext() {	
-		if ($this->Session->read('User.User.id')) {
-			$user = $this->Session->read('User.User.id');
-		} else {
-			$user = 'anonymous';
-		}
-		
-		return array(
-			'uuid' 	=> $this->Session->read('Deployment.uuid'),
-			'user' 	=> $user
-		);
-	}// _getContext
-	
 	private function _isValidStep() {
 		if (!isset($this->data['Project']['id']) || !$this->Session->read('Deployment.uuid')) {  
 			$this->set('errorMessage', 	__('Invalid request',true));
@@ -244,6 +230,21 @@ class DeploymentsController extends AppController {
 			return true;
 		}
 	}// _isValidStep
+	
+	private function _setContext() {	
+		if ($this->Session->read('User.User.id')) {
+			$user = $this->Session->read('User.User.id');
+		} else {
+			$user = 'anonymous';
+		}
+		
+		$this->Deployment->setContext(
+			array(
+				'uuid' 	=> $this->Session->write('Deployment.uuid', $this->Deployment->generateUuid($id)),
+				'user' 	=> $user
+			)
+		); 
+	}// _setContext
 	
 }// DeploymentsController
 ?>

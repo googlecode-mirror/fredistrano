@@ -8,9 +8,7 @@ if ( Configure::read() > 0 ) {
 }
 
 class ElementaryLog {
-	
-	public $data = null;
-	
+		
 	private $name = null;
 	
 	private $description = null;
@@ -104,16 +102,20 @@ class ActionLog extends ElementaryLog {
 		parent::__construct($name, $description);
 		$this->type = $type;
 	}// __construct
-
-	public function setCommand($command = null ){
-		$this->command = $command;
-		$this->type = 'shell'; 
-	}// setCommand
 	
 	public function end($result = null) {
 		parent::end();
 		$this->result = $result;
 	}// endAction
+	
+	public function getResult() {
+		return $this->result; 	
+	}// getResult
+	
+	public function setCommand($command = null ){
+		$this->command = $command;
+		$this->type = 'shell'; 
+	}// setCommand
 	
 	public function toXml() {
 		return null;		
@@ -132,74 +134,63 @@ class ActionLog extends ElementaryLog {
 	
 }// ActionLog
 
-class Steplog extends ElementaryLog {
-		
-	private $uuid = null;
-
-	private $user = null;
-		
-	private $actionLogs = array();
-
-	public function addAction( $actionLog, $terminate = false ) {
-		if ( get_class($actionLog) != 'ActionLog' ) {
+class AdvancedLog extends ElementaryLog {
+	
+	public $data = null;
+	
+	private $logs = array();
+	
+	private $context = array( 'user' => null, 'uuid'=> null);
+	
+	private $childType = null;	
+	
+	public function addChildLog( $log, $terminate = false ) {
+		if ( get_class($log) != $this->childType ) {
 			return false;
 		}
 		
 		// Terminate previous if required 
-		if (!is_null( $last = $this->getLastAction() ) ) {
+		if (!is_null( $last = $this->getLastLog() ) ) {
 			if (!$last->isEnded()) {
 				$last->end();
 			}
 		}
 		
 		// Terminate if requested
-		if (!$actionLog->isEnded() && $terminate) {
-			$actionLog->end();
+		if (!$log->isEnded() && $terminate) {
+			$log->end();
 		}
 		
 		// Add action log
-		array_push($this->actionLogs, $actionLog);
+		array_push($this->logs, $log);
 
-		return $actionLog;
-	}// logNextAction
-	
-	public function addNewAction( $name = null, $description = null, $type = null ) {
-		$actionLog = new ActionLog($name, $description, $type);
-		return $this->addAction($actionLog);
-	}// addNewAction
+		return $log;	
+	}// addChildLog
 	
 	public function end() {
 		// End current step
 		parent::end();
 		
 		// Log to file if required
-		if (!is_null($this->uuid)) {
-			$this->writeToFile( F_DEPLOYLOGDIR.$this->uuid.'.log' );			
+		if (!is_null($this->context['uuid'])) {
+			$this->writeToFile( F_DEPLOYLOGDIR.$this->context['uuid'].'.log' );			
 		}
 	}// end
 	
-	public function getLastAction() {
-		if ( ( $size = count($this->actionLogs) ) == 0 ) ) {
+	public function getLastLog() {
+		if ( ( $size = count($this->logs) ) == 0 ) ) {
 			return false;
-		}
+		} 
 		
-		return $this->actionLogs[$size-1]; 	
-	}// getLastAction
-	
-	public function getResult() {
-		return $this->result; 	
-	}// getLastAction
-	
-	// public function getLastError() {
-	// 
-	// }// getLastError
+		return $this->logs[$size-1]; 	
+	}// getLastStep
 	
 	public function hasError($recursive = false) {
 		if (!is_null($this->error)) {
 			return true;
 		} else if ($recursive) {
-			foreach ($this->actionLogs as $actionLog) {
-				if ( $actionLog->hasError() ) {
+			foreach ($this->logs as $log) {
+				if ( $log->hasError() ) {
 					return true;
 				}
 			}
@@ -210,10 +201,27 @@ class Steplog extends ElementaryLog {
 		}
 	}// hasError
 	
-	public function setContext($user, $uuid) {
-		$this->user = $user;
-		$this->uuid = $uuid;
+	public function setContext($context) {
+		if (is_array($context)) {
+			return false;
+		}
+		$this->context = array_merge($this->context, $context);
 	}// setContext
+	
+}// AdvancedLog
+
+class Steplog extends AdvancedLog {
+	
+	private $childType = 'ActionLog';
+	
+	public function addNewAction( $name = null, $description = null, $type = null ) {
+		$actionLog = new ActionLog($name, $description, $type);
+		return $this->addChildLog( $actionLog );
+	}// addNewAction
+	
+	// public function getLastError() {
+	// 
+	// }// getLastError
 	
 	public function toString( $showContext=true ) {
 		$actionLogs = '';
@@ -225,8 +233,8 @@ class Steplog extends ElementaryLog {
 		if ($showContext) {
 			$context = 
 				'<context>'
-					.'<user>'.$this->startTime.'</user>'
-					.'<uuid>'.$this->endTime.'</uuid>'
+					.'<user>'.$this->context['user'].'</user>'
+					.'<uuid>'.$this->context['uuid'].'</uuid>'
 				.'</context>';
 		}
 		return 
@@ -239,86 +247,19 @@ class Steplog extends ElementaryLog {
 	
 }// Steplog
 
-class Processlog extends ElementaryLog {
-		
-	private $uuid = null;
+class Processlog extends AdvancedLog {
 
-	private $user = null;
-		
-	private $stepLogs = array();
+	private $childType = 'StepLog';
 
-	public function addStep( $stepLog, $terminate = false ) {
-		if ( get_class($stepLog) != 'StepLog' ) {
-			return false;
-		}
-		
-		// Terminate previous if required 
-		if (!is_null( $last = $this->getLastStep() ) ) {
-			if (!$actionLog->isEnded()) {
-				$last->end();
-			}
-		}
-		
-		// Terminate if requested
-		if (!$actionLog->isEnded() && $terminate) {
-			$stepLog->end();
-		}
-		
-		// Add action log
-		array_push($this->stepLogs, $stepLog);
-
-		return $stepLog;	
-	}// addStep 
-	
-	public function getLastStep() {
-		if ( ( $size = count($this->stepLogs) ) == 0 ) ) {
-			return false;
-		} 
-		
-		return $this->stepLogs[$size-1]; 	
-	}// getLastStep
-	
-	public function end() {
-		// End current step
-		parent::end();
-		
-		// Log to file if required
-		if (!is_null($this->uuid)) {
-			$this->writeToFile( F_DEPLOYLOGDIR.$this->uuid.'.log' );			
-		}
-	}// end
-	
-	public function hasError($recursive = false) {
-		if (!is_null($this->error)) {
-			return true;
-		} else if ($recursive) {
-			foreach ($this->stepLogs as $stepLog) {
-				if ( $stepLog->hasError() ) {
-					return true;
-				}
-			}
-			return false;
-
-		} else {
-			return false;
-		}
-	}// hasError
-	
-	public function setContext($user, $uuid) {
-		$this->user = $user;
-		$this->uuid = $uuid;
-	}// setContext
-	
-	
 	public function toString() {
 		$stepLogs = '';
-		foreach($this->stepLogs as $stepLog) {
+		foreach($this->logs as $stepLog) {
 			$stepLogs .= $stepLog->toString(false);
 		}
 		return 
-			'<process uuid="'.$this->uuid.'">'
+			'<process uuid="'.$this->context['uuid'].'">'
 				.parent::toString()
-				.'<user>'.$this->startTime.'</user>'
+				.'<user>'.$this->context['user'].'</user>'
 				.'<steps>'.$stepLogs.'</steps>'
 			.'</process>';
 	}// toString

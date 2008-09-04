@@ -52,16 +52,15 @@ class Deployment extends AppModel {
 	/**
 	 * Run a complete deployment process
 	 * @param int $project_id 		Id of the project that should be deployed 
-	 * @param array $context		Context info about the current deployment 	
 	 * @param array $options		Various options used for configuring the step 
 	 * @return string 				Shell output 
      */
-	function process($projectId, $context , $options = array()) {
+	function process($projectId, $options = array()) {
 		$processLog = new Processlog();
 		
 		try {
-			if ( !isset($context['user']) || !isset($context['uuid']) ) { 
-				$processLog->error( __('Bad input parameters',true) );
+			if ( !isset($this->_context['user']) || !isset($this->_context['uuid']) ) { 
+				$processLog->error( __('Invalid context (use setContext() first)',true) );
 			}
 			$processLog->setContext($context['user'], $context['uuid']);
 						
@@ -83,22 +82,20 @@ class Deployment extends AppModel {
 				FIXME F: Test merge result (use array_merge_recursive rather?)
 			*/
 			$options = Set::merge($default_options, $options);
-		
-			// Running export step 
-			$this->_runStep('export',$projectId, $context, $options['export']);
-			$processLog->addStep( $this->_stepLog );
-		
-			// Post actions
-			if (!($rev = $this->_stepLog->data['revision'])) {
-				$options['comment'] = sprintf( __('Revision exported %s', true), $rev);			
-			}	
-			$options = Set::merge($options, $this->_config->options);
-		
-			// Running remaining steps
+
+			// Running steps
 			for ( $i=1 ; $i<count($this->process) ; $i++ ) {
 				$step = $this->process[$i];
 				$this->_runStep($step, $projectId, $context, $options[$step]);
-				$processLog->addStep( $this->_stepLog );
+				$processLog->addChildLog( $this->_stepLog );
+				
+				if ($step == 'export') {
+					// Post actions
+					if (!($rev = $this->_stepLog->data['revision'])) {
+						$options['comment'] = sprintf( __('Revision exported %s', true), $rev);			
+					}	
+					$options = Set::merge($options, $this->_config->options);	
+				}
 			}// for
 
 			// Process result
@@ -118,10 +115,10 @@ class Deployment extends AppModel {
 		// Dispatch
 		if (!in_array($name, $this->allowedSteps))) {		
 			try{	
-				if (count($arguments) == 2) {
+				if (count($arguments) == 1) {
+					$this->_runStep($name,$arguments[0]);
+				} else if (count($arguments) == 2) {
 					$this->_runStep($name,$arguments[0],$arguments[1]);
-				} else if (count($arguments) == 3) {
-					$this->_runStep($name,$arguments[0],$arguments[1],$arguments[2]);
 				}  else {
 					return false;
 				}
@@ -138,17 +135,19 @@ class Deployment extends AppModel {
 	 * Run a deployment step and performs the required checks
 	 * @param string $step			Step that should be performed 
 	 * @param int $project_id 		Id of the project that should be deployed 
-	 * @param array $context		Context info about the current deployment
 	 * @param array $options		Various options used for configuring the step 
 	 * @return StepLog 				Step log  
      */			
-	private function _runStep($step, $projectId, $context, $options = array()) {
+	private function _runStep($step, $projectId, $options = array()) {
 		$this->_stepLog = new Steplog( $step );
 		
 		try{	
 			// Check input parameters
-			if ( !in_array($step, $this->$process) || !isset($context['user']) || !isset($context['uuid'])) {
-				$this->_stepLog->error( __('Bad input parameters',true) );
+			if ( !isset($this->_context['user']) || !isset($this->_context['uuid']) ) { 
+				$this->_stepLog->error( __('Invalid context (use setContext() first)',true) );
+			}
+			if ( !in_array($step, $this->$process) ) {
+				$this->_stepLog->error( __('Unknown step',true) );
 			}
 			$this->_stepLog->setContext($context['user'], $context['uuid']);
 		
@@ -201,12 +200,13 @@ class Deployment extends AppModel {
 			
 			// svn update
 			$command = "svn update" . $revision ." tmpDir 2>&1";		
-			Command::execute( $command, $this->_stepLog, 
+			$log = Command::execute( $command, 
 				array(
 			        'comment'=>__('SVN update',true),
 			        'newDir'=>$projectTmpDir
 				)
 			);
+			$this->_stepLog->addChildLog( $log );		
 			
 		} else {			
 			
@@ -223,14 +223,15 @@ class Deployment extends AppModel {
 				$authentication = '--username '.$options['user_svn'].' --password '.$options['password_svn'];
 			}
 			$command = "svn checkout $revision $authentication ".$this->_project['Project']['svn_url'].' tmpDir 2>&1';
-			Command::execute( $command, $this->_stepLog, 
+			$log = Command::execute( $command,
 				array(
 			        'comment'=>__('SVN checkout',true),
 			        'newDir'=>$projectTmpDir
 				)
 			);
+			$this->_stepLog->addChildLog( $log );			
 		}
-		$actionLog = $this->_stepLog->getLastAction();
+		$actionLog = $this->_stepLog->getLastLog();
 		$this->_stepLog->data['revision'] = Command::getSvnRevision( $actionLog->getResult() );
 		
 		// Load project configuration 
@@ -336,12 +337,13 @@ class Deployment extends AppModel {
 		$source = Command::convertPath( $projectTmpDir."tmpDir". DS );
 		$target = Command::convertPath( $this->_project['Project']['prd_path'] );
 		$command = "rsync -$option --delete --exclude-from=$excludeFileName $source $target 2>&1";	
-		Command::execute( $command, $this->_stepLog, 
+		$log = Command::execute( $command,
 			array(
 		        'comment'	=> __('Deploying new version',true),
 		        'newDir'	=> F_DEPLOYDIR
 			)
 		);
+		$this->_stepLog->addChildLog( $log );	
 
 		// Create files list and directories list for chmod step
 		$actionLog = $this->stepLog->addNewAction('create', 'Contents', 'FS');
@@ -401,7 +403,7 @@ class Deployment extends AppModel {
 		if ($options['renamePrdFile'] === true) {			
 			$command = "find ".Command::convertPath($this->_project['Project']['prd_path'])." -name '*.prd.*' "
 				."-exec /usr/bin/perl ".Command::convertPath(F_DEPLOYDIR)."renamePrdFile -vf 's/\.prd\./\./i' {} \;";
-			Command::execute( $command, $this->_stepLog, 
+			Command::execute( $command,
 				array(
 			        'comment'	=> __('Rename .prd files', true),
 			        'newDir'	=> F_DEPLOYDIR
@@ -413,17 +415,19 @@ class Deployment extends AppModel {
 		// Change file mode
 		if ($options['changeFileMode'] === true) {			
 			$command = "chmod ".Configure::read('FileSystem.permissions.files')."  $(<".$projectTmpDir."files_to_chmod.txt)";
-			Command::execute( $command, $this->_stepLog, 
+			$log = Command::execute( $command,
 				array(
 			        'comment'	=> sprintf(__('Changing files permissions to %s', true), Configure::read('FileSystem.permissions.files')),
 				)
 			);
+			$this->_stepLog->addChildLog( $log );	
 			
 			$command = "chmod ". Configure::read('FileSystem.permissions.directories')."  $(<". $projectTmpDir . "dir_to_chmod.txt)";
-			Command::execute( $command, $this->_stepLog, 
+			$log = Command::execute( $command, 
 				array(
 			        'comment'	=> sprintf(__('Changing directories permissions to %s', true), Configure::read('FileSystem.permissions.directories')),
 			);
+			$this->_stepLog->addChildLog( $log );	
 		}
 		
 		// Change directory mode
@@ -447,7 +451,74 @@ class Deployment extends AppModel {
 		$this->__runScript('after');
 
 	}// _finalize
+	
+	private function _clearProjectTempFiles(){
+		// Check input parameters
+		if (!$this->isInitialized()) {
+			$this->_stepLog->error( sprintf(__('Missing working data', true)) );
+		}
+		
+		$path = Command::convertPath(F_DEPLOYTMPDIR.$this->_project['Project']['name'].DS);
+		if (!is_dir($path)) {
+			$this->_stepLog->error( sprintf(__('No temporary files found', true)) );
+		} 			
 
+		$log = Command::execute( $command,
+			array(
+		        'comment'	=> __('Deleting project temp files', true).' > '.htmlspecialchars($command)
+			)
+		);
+		$this->_stepLog->addChildLog( $log );	
+	}// _clearProjectTempFiles
+	
+	private function _resetPermissions(){
+		// Check input parameters
+		if (!$this->isInitialized()) {
+			$this->_stepLog->error( sprintf(__('Missing working data', true)) );
+		}
+			
+		// Load project configuration 
+		self::_loadConfig();
+		
+		// Change file mode
+		$command = "find ".Command::convertPath($this->_project['Project']['prd_path'])." -type f -exec chmod "
+						.Configure::read('FileSystem.permissions.files')." {} \;";
+		$log = Command::execute( $command,  
+			array(
+		        'comment'	=> sprintf(__('Resetting files permissions to %s', true), Configure::read('FileSystem.permissions.files')),
+				'directory'	=> F_DEPLOYDIR
+			)
+		);
+		$this->_stepLog->addChildLog( $log );	
+		
+		// Change directory mode
+		$command = "find ".Command::convertPath($this->_project['Project']['prd_path'])." -type d "
+					."-exec chmod ".Configure::read('FileSystem.permissions.directories')." {} \;";
+		$log = Command::execute( $command, 
+			array(
+		        'comment'	=> sprintf(__('Resetting directories permissions to %s', true), Configure::read('FileSystem.permissions.directories')),
+				'directory'	=> F_DEPLOYDIR
+			)
+		);
+		$this->_stepLog->addChildLog( $log );	
+		
+		// Give write permissions to some folder
+		$writable = $this->_config->writable;
+		if (sizeof($writable) > 0) {
+			for ($i = 0; $i < sizeof($writable); $i++) {
+				$command = "chmod -vR ".Configure::read('FileSystem.permissions.writable')."  "
+					.Command::convertPath($this->_project['Project']['prd_path'].$writable[$i] );
+				$log = Command::execute( $command, 
+					array(
+				        'comment'	=> sprintf(__('Resetting writeable permissions to %s', true), Configure::read('FileSystem.permissions.writable')),
+						'directory'	=> F_DEPLOYDIR
+					)
+				);
+				$this->_stepLog->addChildLog( $log );	
+			}
+		}
+	}// _resetPermissions
+	
 	// /**
 	//  * Optional step in the deployment process: Backup
 	//  * @return string 			Shell output 
@@ -490,69 +561,6 @@ class Deployment extends AppModel {
 	// 	return $output;
 	// }// backup
 	
-	private function _clearProjectTempFiles(){
-		// Check input parameters
-		if (!$this->isInitialized()) {
-			$this->_stepLog->error( sprintf(__('Missing working data', true)) );
-		}
-		
-		$path = Command::convertPath(F_DEPLOYTMPDIR.$this->_project['Project']['name'].DS);
-		if (!is_dir($path)) {
-			$this->_stepLog->error( sprintf(__('No temporary files found', true)) );
-		} 			
-
-		Command::execute( $command, $this->_stepLog, 
-			array(
-		        'comment'	=> __('Deleting project temp files', true).' > '.htmlspecialchars($command)
-			)
-		);
-	}// _clearProjectTempFiles
-	
-	private function _resetPermissions(){
-		// Check input parameters
-		if (!$this->isInitialized()) {
-			$this->_stepLog->error( sprintf(__('Missing working data', true)) );
-		}
-			
-		// Load project configuration 
-		self::_loadConfig();
-		
-		// Change file mode
-		$command = "find ".Command::convertPath($this->_project['Project']['prd_path'])." -type f -exec chmod "
-						.Configure::read('FileSystem.permissions.files')." {} \;";
-		Command::execute( $command, $this->_stepLog, 
-			array(
-		        'comment'	=> sprintf(__('Resetting files permissions to %s', true), Configure::read('FileSystem.permissions.files')),
-				'directory'	=> F_DEPLOYDIR
-			)
-		);
-
-		// Change directory mode
-		$command = "find ".Command::convertPath($this->_project['Project']['prd_path'])." -type d "
-					."-exec chmod ".Configure::read('FileSystem.permissions.directories')." {} \;";
-		Command::execute( $command, $this->_stepLog, 
-			array(
-		        'comment'	=> sprintf(__('Resetting directories permissions to %s', true), Configure::read('FileSystem.permissions.directories')),
-				'directory'	=> F_DEPLOYDIR
-			)
-		);
-		
-		// Give write permissions to some folder
-		$writable = $this->_config->writable;
-		if (sizeof($writable) > 0) {
-			for ($i = 0; $i < sizeof($writable); $i++) {
-				$command = "chmod -vR ".Configure::read('FileSystem.permissions.writable')."  "
-					.Command::convertPath($this->_project['Project']['prd_path'].$writable[$i] );
-				Command::execute( $command, $this->_stepLog, 
-					array(
-				        'comment'	=> sprintf(__('Resetting writeable permissions to %s', true), Configure::read('FileSystem.permissions.writable')),
-						'directory'	=> F_DEPLOYDIR
-					)
-				);
-			}
-		}
-	}// _resetPermissions
-	
 	private function __runScript( $type = 'before' ) {
 		$projectTmpDir = F_DEPLOYTMPDIR.$this->_project['Project']['name'].DS;
 		
@@ -566,22 +574,23 @@ class Deployment extends AppModel {
 			}
 
 			if (!is_executable($scriptPath)) {
-				Command::execute( "chmod u+x $scriptPath", $this->_stepLog, 
+				$log = Command::execute( "chmod u+x $scriptPath", 
 					array(
 				        'comment'=>__('Execution privileges to script',true)
 					)
 				);	
-					
+				$this->_stepLog->addChildLog( $log );		
 			}
-			Command::execute( $scriptPath, $this->_stepLog, 
+			Command::execute( $scriptPath,
 				array(
 			        'comment'	=> sprintf(__('%s script',true), $type)
 				)
 			);
+			$this->_stepLog->addChildLog( $log );	
 		}
 	}// __runScript
 	
-    // Helper functions ( public) ---------------------------------------------------------
+    // Public methods ---------------------------------------------------------
 	public function isInitialized() {
 		if ( is_null($this->_project) || is_null($this->_context) ||  is_null($this->_stepLog)) {
 			return false;		
@@ -601,6 +610,7 @@ class Deployment extends AppModel {
 		}
 		return md5( 'FREDISTRANO:'.$projectId .':'.time() ); 
 	}// generateUuid	
+
 	/*
 		TODO F: Add project as parameter
 	*/
@@ -612,8 +622,12 @@ class Deployment extends AppModel {
 		}
 		return $this->_config;
 	}// getConfig
+	
+	public function setContext($context) {
+		$this->_context = $context;
+	}// setContext
 
-    // Helper functions ( public) ---------------------------------------------------------
+    // Helper functions ( private ) ---------------------------------------------------------
 	private function _loadConfig() {
 		$actionLog = $this->stepLog->addNewAction('loadConfig', null,'include');
 		
