@@ -143,11 +143,12 @@ class Deployment extends AppModel {
 			// Check input parameters
 			if ( !isset($this->_context['user']) || !isset($this->_context['uuid']) ) { 
 				$this->_stepLog->error( __('Invalid context (use setContext() first)',true) );
+			} else {
+				$this->_stepLog->setContext($this->_context);		
 			}
 			if ( !in_array($step, $this->allowedSteps) ) {
 				$this->_stepLog->error( sprintf(__('Unknown step %s',true), $step) );
 			}
-			$this->_stepLog->setContext($this->_context);
 		
 			// Initialiaze processing
 			$this->_project = $this->Project->find('first', array('conditions' => array('Project.id' => $projectId), 'recursive' => 0));
@@ -181,55 +182,33 @@ class Deployment extends AppModel {
 		if (!$this->isInitialized()) {
 			$this->_stepLog->error( sprintf(__('Missing working data', true)) );
 		}
-		
-		// Define step options
+
 		$default_options = array(
 			'revision' 		=> 	null,
 			'user_svn' 		=> 	Configure::read('Subversion.user'),
 			'password_svn' 	=> 	Configure::read('Subversion.passwd')
 		);
 		$options = array_merge($default_options, $options);
-
+		
 		// Looking for sources
 		$projectTmpDir = F_DEPLOYTMPDIR.$this->_project['Project']['name'].DS;
-		$revision = ($options['revision']!=null)?' -r' . $options['revision']:'';
-		if (is_dir($projectTmpDir)) {
-			
+		if ( is_dir($projectTmpDir.'tmpDir') ) {
 			// svn update
-			$command = "svn update" . $revision ." tmpDir 2>&1";		
-			$log = Command::execute( $command, 
-				array(
-			        'comment'	=> __('SVN update',true),
-			        'directory'	=> $projectTmpDir
-				)
-			);
-			$this->_stepLog->addChildLog( $log );		
+			$log = SvnAction::update( $projectTmpDir.'tmpDir'.DS, $options);
+			$this->_recordLog($log);
 			
 		} else {			
-			
 			// Create tmpDir folder inside Fredistrano
-			$actionLog = $this->_stepLog->addNewAction('create', 'Directory: '.$projectTmpDir, 'FS');
-			if (!@mkdir($projectTmpDir, octdec( Configure::read('FileSystem.permissions.directories') ), TRUE)) {
-				$actionLog->error( sprintf(__('Unable to create directory %s', true), $projectTmpDir) );
-			}
-			$actionLog->end();
+			$log = ShellAction::createDirectory( $projectTmpDir, Configure::read('FileSystem.permissions.directories') );
+			$this->_recordLog($log);
 			
 			// Export code from SVN
-			$authentication = '';
-			if (!empty($options['password_svn'])) {
-				$authentication = '--username '.$options['user_svn'].' --password '.$options['password_svn'];
-			}
-			$command = "svn checkout $revision $authentication ".$this->_project['Project']['svn_url'].' tmpDir 2>&1';
-			$log = Command::execute( $command,
-				array(
-			        'comment'	=> __('SVN checkout',true),
-			        'directory'	=> $projectTmpDir
-				)
-			);
-			$this->_stepLog->addChildLog( $log );			
+			$log = SvnAction::checkout( $this->_project['Project']['svn_url'], $projectTmpDir, 'tmpDir', $options);
+			$this->_recordLog($log);
 		}
-		$actionLog = $this->_stepLog->getLastLog();
-		$this->_stepLog->data['revision'] = Command::getSvnRevision( $actionLog->getResult() );
+		
+		// Retrieve revision log 
+		$this->_stepLog->data['revision'] = Utils::getSvnRevisionFromOutput( $log->getResult() );
 		
 		// Load project configuration 
 		self::_loadConfig();
@@ -341,6 +320,12 @@ class Deployment extends AppModel {
 			)
 		);
 		$this->_stepLog->addChildLog( $log );	
+
+
+		// 1
+		$options = array( 'exclude' => $excludeFileName, 'simulate' => false );
+		$log = ShellAction::synchronizeContent( $projectTmpDir."tmpDir". DS , $this->_project['Project']['prd_path'], $options);
+		$this->recordLog( $log );	
 
 		// Create files list and directories list for chmod step
 		$actionLog = $this->stepLog->addNewAction('create', 'Contents', 'FS');
@@ -639,24 +624,28 @@ class Deployment extends AppModel {
 		
 		if (!isset($this->_config) || !$this->_config) {
 			// Check new path
-			$path = $this->__getConfigPath(true, $this->_project['Project']['name']);
+			$path = $this->__getConfigPath($this->_project['Project']['name'], true);
 			if ( !file_exists( $path ) ) {
-				$path = $this->__getConfigPath(false, $this->_project['Project']['name']);
+				$path = $this->__getConfigPath($this->_project['Project']['name'], false);
 				if (!file_exists( $path )) {
 					$actionLog->error( sprintf(__('Unable to find deploy.php', true)) );
 				}
 			} 
 			include_once($path);
-			$this->_config = &new DEPLOY_CONFIG();
+			$this->_config = new DEPLOY_CONFIG();
 		}
 
 		$actionLog->end();
 	}// loadConfig
+	
+	private function _recordLog() {
+		$this->_stepLog->addChildLog($log);
+	}// _recordLog
 
 	/**
 	 *
 	 */ 
-	private function __getConfigPath ($newPath = false, $projectName = null) {
+	private function __getConfigPath ($projectName = null, $newPath = false) {
 		if ($newPath) {
 			return F_DEPLOYTMPDIR.$projectName.DS.'tmpDir'.DS.'.fredistrano'.DS.'deploy.php';
 		} else {

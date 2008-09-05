@@ -51,25 +51,19 @@ class ElementaryLog {
 		$this->end();
 		
 		// Store exception 
-		$this->error = new Exception( $error );
+		$this->error = $error;
 		
 		// Log error in file
 		//CakeLog::write(LOG_ERROR, $this->lastError);
 				
 		// Trigger exception 
 		if ($trigger) {
-			throw $this->error;
+			throw  new Exception( $error );
 		}
 	}// error
 	
 	public function toXml() {
-		return 
-			'<timePeriod>'
-				.'<start timezone="'.date_default_timezone_get().'">'.date(DATE_ATOM, $this->startTime).'</start>'
-				.'<end timezone="'.date_default_timezone_get().'">'.date(DATE_ATOM, $this->endTime).'</end>'
-				.'<elapsed unit="seconds">'.$this->elapsedTime.'</elapsed>'
-			.'</timePeriod>'
-			.(!$this->hasError()?'<error>'.$this->error.'</error>':'');
+		return '';
 	}// toXml
 	
 	public function toString () {
@@ -117,27 +111,15 @@ class ActionLog extends ElementaryLog {
 		return $this->result; 	
 	}// getResult
 	
-	public function setCommand($command = null ){
+	public function saveCommand( $command = null, $result = null ){
 		$this->command = $command;
-		$this->type = 'shell'; 
+		$this->result = $result; 
 	}// setCommand
-	
-	public function toXml() {
-		return 
-			'<action name="'.$this->name.'" type="'.$this->type.'" >'
-				.'<description>'.$this->description.'</description>'
-				.parent::toString()
-				.'<job>'
-					.(!is_null($this->command)?'<command>'.$this->command.'</command>':'<command/>')
-					.(!is_null($this->result)?'<result>'.$this->result.'</result>':'<result/>')
-				.'</job>'
-			.'</action>';
-	}// toXml
 	
 	public function toString () {
 		return 
 			'<action name="'.$this->name.'" type="'.$this->type.'" >'
-				.'<description>'.$this->description.'</description>'
+				.(!is_null($this->description)?'<description>'.$this->description.'</description>':'')
 				.parent::toString()
 				.'<job>'
 					.(!is_null($this->command)?'<command>'.$this->command.'</command>':'<command/>')
@@ -235,10 +217,6 @@ class Steplog extends AdvancedLog {
 		return $this->addChildLog( $actionLog );
 	}// addNewAction
 	
-	// public function getLastError() {
-	// 
-	// }// getLastError
-	
 	public function toString( $showContext=true ) {
 		$actionLogs = '';
 		foreach($this->logs as $actionLog) {
@@ -247,16 +225,13 @@ class Steplog extends AdvancedLog {
 		
 		$context = '';
 		if ($showContext) {
-			$context = 
-				'<context>'
-					.'<user>'.$this->context['user'].'</user>'
-					.'<uuid>'.$this->context['uuid'].'</uuid>'
-				.'</context>';
+			$uuid = (!is_null($this->context['uuid']))?'uuid=""':'';
+			$user = $this->context['user'];
 		}
 		return 
-			'<step name="'.$this->name.'">'
+			'<step name="'.$this->name." $uuid>"
 				.parent::toString()
-				.$context
+				.$user
 				.'<actions>'.$actionLogs.'</action>'
 			.'</step>';
 	}// toString
