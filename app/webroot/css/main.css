@@ -100,11 +100,11 @@ hr {margin: 1em 0;background:#f2f2f2;height:1px;color:#f2f2f2;border:none;clear:
 /* LAYOUT - HEADER */
 #header {background: #666 url("images/sprites.gif") repeat-x 0 100%;margin: 0 0 25px;padding: 0 0 8px;}
 
-	#header #site-name {font-size: 265%; font-family: arial,tahoma,verdana,sans-serif;letter-spacing: -.05em;margin:0 0 0 40px;padding:3px 0;color:#ccc;border:none}
+	#header #site-name {float:right;font-size: 265%; font-family: arial,tahoma,verdana,sans-serif;letter-spacing: -.05em;margin:0 35px 0 0 ;padding:3px 0;color:#ccc;border:none}
 
 	/* NAV - top horizontal nav */
-	#nav, #nav ul {padding: 0;margin: 0;list-style: none}
-	#nav {font-weight:bold;height:2.09em;font: bold 96% arial,tahoma,verdana,sans-serif;margin: 0 105px 0 40px}
+	#nav, #nav ul {padding:25px 0 0;margin: 0;list-style: none}
+	#nav {font-weight:bold;height:2.09em;font: bold 96% arial,tahoma,verdana,sans-serif;margin: 0 105px 0 35px}
 	#nav li {position:relative;background: #999;float: left;width: 10em;display:block;margin: 0;border-bottom: 3px solid #666;border-right: 3px solid #252525;padding:0}
 	#nav a, #nav a:link, #nav a:visited, #nav a:hover, #nav a:active {text-decoration:none;cursor:pointer;color:#fff;display: block;padding: 4px 10px 2px}
 	#nav a:hover {color:#000}
