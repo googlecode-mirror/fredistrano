@@ -9,7 +9,7 @@
 
 
 <?php echo $form->input('Project/name', 
-						array(
+						array(<
 							'label' => '<b>'.__('Project name', true).'<span class="req">*</span></b>',
 							'size' => '60', 
 							'class' => 'f-name',
@@ -42,7 +42,7 @@
 						);?>
 <?php echo $form->input('Project/log_path', 
 						array(
-							'label' => '<b>'.__('Log pathes (;)', true).'</b>', 
+							'label' => '<b>'.__('Log pathes (one per line)', true).'</b>', 
 							'cols' => '80', 
 							'class' => 'f-name',
 							'type' => 'textarea'

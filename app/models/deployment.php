@@ -151,6 +151,7 @@ class Deployment extends AppModel {
 			}
 		
 			// Initialiaze processing
+			Configure::write('FileSystem.permissions.directories',  Utils::computeDirMode(Configure::read('FileSystem.permissions.files'))  ); 
 			$this->_project = $this->Project->find('first', array('conditions' => array('Project.id' => $projectId), 'recursive' => 0));
 	 		if ( !$this->_project )  {
 				$this->_stepLog->error( __('Unknown project',true) );
@@ -159,10 +160,11 @@ class Deployment extends AppModel {
 			// Execute step	
 			set_time_limit( Configure::read('Deployment.timelimit.'.$step) );
 			$this->{'_'.$step}( $options);		
-			$this->_stepLog->end(); // F_DEPLOYLOGDIR.$context['uuid'].'.log' );
+			$this->_stepLog->end(); 
 			
-		} catch (Exception $e) { 
+		} catch (LogException $e) { 
 			if ( !$this->_stepLog->hasError() ) {
+				$this->_recordLog( $e->getLog() );
 				$this->_stepLog->error(__('An error occured during the step. See actions for further details.',true));
 			} 
 		}
@@ -198,9 +200,11 @@ class Deployment extends AppModel {
 			$this->_recordLog($log);
 			
 		} else {			
-			// Create tmpDir folder inside Fredistrano
-			$log = ShellAction::createDirectory( $projectTmpDir, Configure::read('FileSystem.permissions.directories') );
-			$this->_recordLog($log);
+			if (!is_dir($projectTmpDir)) {
+				// Create tmpDir folder inside Fredistrano
+				$log = ShellAction::createDirectory( $projectTmpDir, Configure::read('FileSystem.permissions.directories') );
+				$this->_recordLog($log);				
+			}
 			
 			// Export code from SVN
 			$log = SvnAction::checkout( $this->_project['Project']['svn_url'], $projectTmpDir, 'tmpDir', $options);
@@ -616,7 +620,7 @@ class Deployment extends AppModel {
 
     // Helper functions ( private ) ---------------------------------------------------------
 	private function _loadConfig() {
-		$actionLog = $this->_stepLog->addNewAction('loadConfig', null,'include');
+		$actionLog = new ActionLog('loadConfig', null, 'include');
 		
 		if (!isset($this->_project) || !$this->_project) {
 			$actionLog->error( sprintf(__('Missing working data', true)) );
@@ -634,11 +638,13 @@ class Deployment extends AppModel {
 			include_once($path);
 			$this->_config = new DEPLOY_CONFIG();
 		}
-
+		
+		// End action
 		$actionLog->end();
+		$this->_recordLog($actionLog);
 	}// loadConfig
 	
-	private function _recordLog() {
+	private function _recordLog($log) {
 		$this->_stepLog->addChildLog($log);
 	}// _recordLog
 

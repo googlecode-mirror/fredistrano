@@ -1,11 +1,19 @@
 <?php 
 
-// Debug scenario
-if ( Configure::read() > 0 ) {
-	if (!class_exists('CakeLog')) {
-		uses('cake_log');	
-	}			
-}
+class LogException extends Exception {
+	
+	private $log = null;
+
+	public function __construct($message,$log) {
+		parent::__construct($message);
+		$this->log = $log;
+	}// __construct
+	
+	public function getLog() {
+		return $this->log;
+	}// __construct
+	
+}// ActionException
 
 class ElementaryLog {
 		
@@ -35,17 +43,21 @@ class ElementaryLog {
 	}// endTimePeriod
 
 	public function getError() {
-		return $this->error->getMessage(); 	
+		return $this->error; 	
 	}// getError
 
 	public function hasError() {
 		return !is_null($this->error);
 	}// hasError
+
+	public function isAction() {
+		return (get_class($this) == 'ActionLog');
+	}// isAction
 	
 	public function isEnded() {
 		return !is_null($this->endTime);
 	}// isEnded
-	
+		
 	public function error( $error, $trigger = true ) {
 		// Terminate current element
 		$this->end();
@@ -58,7 +70,7 @@ class ElementaryLog {
 				
 		// Trigger exception 
 		if ($trigger) {
-			throw  new Exception( $error );
+			throw  new LogException( $error, $this );
 		}
 	}// error
 	
@@ -73,7 +85,7 @@ class ElementaryLog {
 				.'<end timezone="'.date_default_timezone_get().'">'.date(DATE_ATOM, $this->endTime).'</end>'
 				.'<elapsed unit="seconds">'.$this->elapsedTime.'</elapsed>'
 			.'</timePeriod>'
-			.(!$this->hasError()?'<error>'.$this->error.'</error>':'');
+			.($this->hasError()?'<error>'.$this->error.'</error>':'');
 	}// toString
 	
 	public function writeToFile( $target ) {
@@ -104,7 +116,9 @@ class ActionLog extends ElementaryLog {
 	
 	public function end($result = null) {
 		parent::end();
-		$this->result = $result;
+		if (!is_null($result)) {
+			$this->result = $result;	
+		}
 	}// endAction
 	
 	public function getResult() {
@@ -122,8 +136,8 @@ class ActionLog extends ElementaryLog {
 				.(!is_null($this->description)?'<description>'.$this->description.'</description>':'')
 				.parent::toString()
 				.'<job>'
-					.(!is_null($this->command)?'<command>'.$this->command.'</command>':'<command/>')
-					.(!is_null($this->result)?'<result>'.$this->result.'</result>':'<result/>')
+					.((!is_null($this->command))?('<command>'.$this->command.'</command>'):'<command/>')
+					.((!is_null($this->result))?('<result>'.$this->result.'</result>'):'<result/>')
 				.'</job>'
 			.'</action>';		
 	}// toString
@@ -174,7 +188,7 @@ class AdvancedLog extends ElementaryLog {
 			$this->writeToFile( F_DEPLOYLOGDIR.$this->context['uuid'].'.log' );			
 		}
 	}// end
-	
+
 	public function getLastLog() {
 		if ( ( $size = count($this->logs) ) == 0 ) {
 			return false;
@@ -229,10 +243,10 @@ class Steplog extends AdvancedLog {
 			$user = $this->context['user'];
 		}
 		return 
-			'<step name="'.$this->name." $uuid>"
+			'<step name="'.$this->name."\" $uuid>"
 				.parent::toString()
 				.$user
-				.'<actions>'.$actionLogs.'</action>'
+				.'<actions>'.$actionLogs.'</actions>'
 			.'</step>';
 	}// toString
 	

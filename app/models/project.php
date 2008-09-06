@@ -21,11 +21,11 @@ class Project extends AppModel {
 		'prd_path' => array(
 				'rule' => array('minLength', '1')
 		 ),
-		'prd_url' => array(
-		        'rule' => 'url', 
-		        'required' => true,
-		        'allowEmpty' => false
-		 )
+		// 'prd_url' => array(
+		//         'rule' => 'url', 
+		//         'required' => true,
+		//         'allowEmpty' => false
+		//  ) 
 	);
 	
 	var $lastReadSize = 0;

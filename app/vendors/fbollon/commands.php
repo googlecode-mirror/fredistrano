@@ -14,6 +14,7 @@ class Utils {
 			} 
 			$dirMode .= $fileMode[$i];
 		}
+		return $dirMode; 
 	}// computeDirMode
 	
 	public static function getSvnRevisionFromOutput($output) {
@@ -30,7 +31,7 @@ class Utils {
 	 * @param string $path 		Path to be converted
 	 * @return string 			Converted path
 	 */ 
-	static function formatPath($path) c{
+	static function formatPath($path) {
 		$pathForRsync = $path;
 		if ( F_OS == 'WIN') {
 			$pattern = '/^([A-Za-z]):/';
@@ -55,7 +56,7 @@ class ShellAction {
 		$actionLog = new ActionLog('createDirectory', $path, 'ShellAction');
 		
 		// Check
-		if ( is_null($path) || is_null($mode) || is_null($targetDir)) {
+		if ( is_null($path) || is_null($mode) ) {
 			$actionLog->error(sprintf(__('Forbidden NULL value for input parameter [%s;%s]',true),$path,$mode));	
 		} else if (is_dir($path)) {
 			$actionLog->error(sprintf(__('Directory %s already exists',true),$path));
@@ -63,7 +64,7 @@ class ShellAction {
 		
 		// Execute
 		$path = Utils::formatPath($path);
-		if (!@mkdir($projectTmpDir, octdec( $mode ), TRUE)) {
+		if (!@mkdir($path, octdec( $mode ), TRUE)) {
 			$actionLog->error( sprintf(__('Unable to create directory %s', true), $path) );
 		}
 		
@@ -77,7 +78,7 @@ class ShellAction {
 		// Log
 		if ( is_null($actionLog) || get_class($actionLog) != 'ActionLog' ) {
 			$actionLog = new ActionLog('executeCommand', $options['comment'], 'shell' );
-			$terminate = false:
+			$terminate = false;
 		} else {
 			$terminate = true;
 		}
@@ -148,9 +149,7 @@ class SvnAction {
 		} else if (is_dir($path.DS.$targetDir))  {
 			$actionLog->error(sprintf(__('Delete target %s directory first',true), $path.DS.$targetDir));			
 		}
-		
-		$path = Utils::formatPath($path);
-		
+			
 		// Define step options
 		$default_options = array(
 			'revision' 		=> 	null,
@@ -161,18 +160,27 @@ class SvnAction {
 		
 		// Execute command 
 		$path = Utils::formatPath($path);
-		$revision = is_null($options['revision'])?' -r' . $options['revision']:'';
+		$revision = !is_null($options['revision'])?' -r' . $options['revision']:'';
 		$authentication = '';
-		if (!is_null($options['password_svn'])) {
-			$authentication = '--username '.$options['user_svn'].' --password '.$options['password_svn'];
+		if (!is_null($options['user_svn'])) {
+			$authentication .= '--username '.$options['user_svn'];
+			if (!is_null($options['password_svn'])) {
+				$authentication .= ' --password '.$options['password_svn'];
+			}
 		}
-		$command = "svn checkout $revision $authentication $svnUrl $targetDir 2>&1";
-		$log = ShellAction::executeCommand( $command,
+
+		$command = "svn --non-interactive checkout $revision $authentication $svnUrl $targetDir 2>&1";		
+		$actionLog = ShellAction::executeCommand( $command,
 			array(
-		        'comment'	=> __('SVN checkout',true),
 		        'directory'	=> $path
-			)
+			),
+			$actionLog
 		);
+		
+		// End action
+		$actionLog->end();
+		
+		return $actionLog;
 	}// checkout
 	
 	public static function export() {
