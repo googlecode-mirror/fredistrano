@@ -9,7 +9,7 @@
 
 
 <?php echo $form->input('Project/name', 
-						array(<
+						array(
 							'label' => '<b>'.__('Project name', true).'<span class="req">*</span></b>',
 							'size' => '60', 
 							'class' => 'f-name',
@@ -34,7 +34,7 @@
 						);?>
 <?php echo $form->input('Project/prd_url', 
 						array(
-							'label' => '<b>'.__('Application Url', true).'<span class="req">*</span></b>', 
+							'label' => '<b>'.__('Application Url', true), 
 							'size' => '60', 
 							'class' => 'f-name',
 							'error' => __('The application url must be a valid url', true)

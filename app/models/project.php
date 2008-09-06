@@ -20,7 +20,7 @@ class Project extends AppModel {
 		 ),
 		'prd_path' => array(
 				'rule' => array('minLength', '1')
-		 ),
+		 )
 		// 'prd_url' => array(
 		//         'rule' => 'url', 
 		//         'required' => true,
