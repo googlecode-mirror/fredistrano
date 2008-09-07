@@ -6,18 +6,16 @@
 	
 	$config['Deployment'] = array(
 		'options' 	=> array(
-	 		'export' 		=> array(
-	 		 	'runScript'				=> 	false	
-	 		),
+	 		'export' 		=> array(),
 	 		'synchronize'	=> array(
-	 			'backup'				=> 	false
+	 			'backup'			=> 	false,
+	 		 	'runBeforeScript'	=> 	false
 	 		),
 	 		'finalize'		=> array(
-		 		'renamePrdFile' 		=> 	false,
-				'changeFileMode' 		=> 	false,
-				'giveWriteMode'			=> 	false,
-				'modifiedFileOnly'		=> 	false,
-	 			'runScript'				=> 	false
+		 		'renamePrdFile' 	=> 	false,
+				'changeFileMode'	=> 	false,
+				'giveWriteMode'		=> 	false,
+	 			'runAfterScript'	=> 	false
 	 		)
 	 	), 
 		'timelimit' => 	array(
@@ -25,7 +23,7 @@
 	 		'synchronize'	=> 1 * 60, 
 			'finalize'		=> 1 * 60
 		)
-	); 
+	);
 	
 	$config['Feeds'] = array(
 		'enabled'		=> true
@@ -51,7 +49,9 @@
 	
 	$config['Subversion'] = array(
 		'user'			=> null,
-		'passwd'		=> null
+		'passwd'		=> null,
+		'configDirectory'	=> null,
+		'parseResponse'	=> true,		
 	);
 
 	$config['Fredistrano'] = array(

@@ -5,14 +5,14 @@
  	var $options = array(
  		'export' 		=> array(),
  		'synchronize'	=> array(
-	 		'runBeforeScript'		=> 	false,
- 			'backup'				=> 	false
+	 		'runBeforeScript'		=> 	true,
+ 			'backup'				=> 	true
  		),
  		'finalize'		=> array(
-	 		'renamePrdFile' 		=> 	false,
-			'changeFileMode' 		=> 	false,
-			'giveWriteMode'			=> 	false,
- 			'runAfterScript'		=> 	false
+	 		'renamePrdFile' 		=> 	true,
+			'changeFileMode' 		=> 	true,
+			'giveWriteMode'			=> 	true,
+ 			'runAfterScript'		=> 	true
  		)
  	);
 

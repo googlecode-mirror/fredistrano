@@ -103,7 +103,7 @@ class DeploymentsController extends AppController {
 			$options['user_svn'] = $this->data['Project']['user'];
 			$options['password_svn'] = $this->data['Project']['password'];
 		}
-		
+				
 		// Run step 
 		$log = $this->Deployment->export($this->data['Project']['id'], $options);
 		
@@ -115,14 +115,15 @@ class DeploymentsController extends AppController {
 		} 
 				
 		// Get deployment options for current project
-		if ( ($options = $this->Deployment->getConfig()) && is_array($options) ) {
-			$defaultOptions = Configure::read('Deployment.options');
-			Set::merge($defaultOptions, $options);
+		$options = Configure::read('Deployment.options');
+		$projectOptions = $this->Deployment->getConfig();
+		if ( property_exists($projectOptions, 'options') && is_array($projectOptions->options) ) {
+			$options = Set::merge($options, $projectOptions->options);
 		}
-		$this->set('options', 	$options); 
+		$this->set('options', $options); 
 		
 		// SVN revision
-		$revision = ($log->data['revision']!==false)?$log->data['revision']:'XXX';	
+		$revision = !empty($log->data['revision'])?$log->data['revision']:'XXX';	
 		$this->set('revision', 	$revision);
 	}// export
 

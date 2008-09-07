@@ -27,6 +27,8 @@ class ElementaryLog {
 		
 	protected $error = null;
 	
+	protected $attached = false;
+	
 	public function __construct($name = null) {
 		$this->name = $name;
 		$this->startTime = getMicrotime();
@@ -42,23 +44,7 @@ class ElementaryLog {
 		return true;
 	}// endTimePeriod
 
-	public function getError() {
-		return $this->error; 	
-	}// getError
-
-	public function hasError() {
-		return !is_null($this->error);
-	}// hasError
-
-	public function isAction() {
-		return (get_class($this) == 'ActionLog');
-	}// isAction
-	
-	public function isEnded() {
-		return !is_null($this->endTime);
-	}// isEnded
-		
-	public function error( $error, $trigger = true ) {
+	public function error( $error = null, $trigger = true ) {
 		// Terminate current element
 		$this->end();
 		
@@ -73,6 +59,30 @@ class ElementaryLog {
 			throw  new LogException( $error, $this );
 		}
 	}// error
+
+	public function getError() {
+		return $this->error; 	
+	}// getError
+
+	public function hasError() {
+		return !is_null($this->error);
+	}// hasError
+
+	public function isAction() {
+		return (get_class($this) == 'ActionLog');
+	}// isAction
+	
+	public function isAttached() {
+		return $this->attached;
+	}// isAttached
+	
+	public function isEnded() {
+		return !is_null($this->endTime);
+	}// isEnded
+	
+	public function markAttached() {
+		$this->attached = true;
+	}// markAttached
 	
 	public function toXml() {
 		return '';
@@ -175,7 +185,8 @@ class AdvancedLog extends ElementaryLog {
 		
 		// Add action log
 		array_push($this->logs, $log);
-
+		$log->markAttached();
+		
 		return $log;	
 	}// addChildLog
 	
@@ -188,6 +199,28 @@ class AdvancedLog extends ElementaryLog {
 			$this->writeToFile( F_DEPLOYLOGDIR.$this->context['uuid'].'.log' );			
 		}
 	}// end
+	
+	public function error($error = null , $trigger = true ) {
+		if (is_null($error)) {
+			$error = $this->getLastError();
+		}
+		parent::error($error,$trigger);
+	}// error
+
+	public function getLastError(){	
+		if (!is_null($this->error)) {
+			return $this->error;
+		}
+		
+		$count = count($this->logs);
+		for ( $i = 1 ; $i <= $count ; $i++ ) {
+			$log = $this->logs[$count - $i];
+			if ($log->hasError()) {
+				return '[Action: '.$log->name.'] > '.$log->getError();
+			}
+		}
+		return false;
+	}// getLastError
 
 	public function getLastLog() {
 		if ( ( $size = count($this->logs) ) == 0 ) {

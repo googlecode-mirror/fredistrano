@@ -44,7 +44,7 @@ class Deployment extends AppModel {
 		$this->DeploymentLog = new DeploymentLog();
 
 		// Custom classes
-		App::import('Vendor', 'fbollon/log_classes');
+		App::import('Vendor', 'fbollon/logs');
 		App::import('Vendor', 'fbollon/commands');
 	}// __construct 
 	
@@ -65,23 +65,8 @@ class Deployment extends AppModel {
 			$processLog->setContext($this->_context);
 						
 			// Init options
-			$default_options = array(
-		 		'export' 		=> array(),
-		 		'synchronize'	=> array(
-		 		 	'runBeforeScript'		=> 	false,
-		 			'backup'				=> 	false
-		 		),
-		 		'finalize'		=> array(
-			 		'renamePrdFile' 		=> 	false,
-					'changeFileMode' 		=> 	false,
-					'giveWriteMode'			=> 	false,
-		 			'runAfterScript'		=> 	false
-		 		)
-		 	);
-			/*
-				FIXME F: Test merge result (use array_merge_recursive rather?)
-			*/
-			$options = Set::merge($default_options, $options);
+			$defaultOptions = Configure::read('Deployment.options');
+			$options = Set::merge($defaultOptions, $options);
 
 			// Running steps
 			for ( $i=1 ; $i<count($this->process) ; $i++ ) {
@@ -92,7 +77,7 @@ class Deployment extends AppModel {
 				if ($step == 'export') {
 					// Post actions
 					if (!($rev = $this->_stepLog->data['revision'])) {
-						$options['comment'] = sprintf( __('Revision exported %s', true), $rev);			
+						$options['comment'] = sprintf(__('Revision exported %s', true), $rev);			
 					}	
 					$options = Set::merge($options, $this->_config->options);	
 				}
@@ -151,7 +136,7 @@ class Deployment extends AppModel {
 			}
 		
 			// Initialiaze processing
-			Configure::write('FileSystem.permissions.directories',  Utils::computeDirMode(Configure::read('FileSystem.permissions.files'))  ); 
+			Configure::write('FileSystem.permissions.directories', Utils::computeDirMode(Configure::read('FileSystem.permissions.files'))  ); 
 			$this->_project = $this->Project->find('first', array('conditions' => array('Project.id' => $projectId), 'recursive' => 0));
 	 		if ( !$this->_project )  {
 				$this->_stepLog->error( __('Unknown project',true) );
@@ -164,8 +149,10 @@ class Deployment extends AppModel {
 			
 		} catch (LogException $e) { 
 			if ( !$this->_stepLog->hasError() ) {
-				$this->_recordLog( $e->getLog() );
-				$this->_stepLog->error(__('An error occured during the step. See actions for further details.',true));
+				if ( !($e->getLog()->isAttached()) ) {
+					$this->_recordLog( $e->getLog() );
+				}
+				$this->_stepLog->error();
 			} 
 		}
 
@@ -186,9 +173,11 @@ class Deployment extends AppModel {
 		}
 
 		$default_options = array(
-			'revision' 		=> 	null,
-			'user_svn' 		=> 	Configure::read('Subversion.user'),
-			'password_svn' 	=> 	Configure::read('Subversion.passwd')
+			'user_svn' 		=> Configure::read('Subversion.user'),
+			'password_svn' 	=> Configure::read('Subversion.passwd'),
+			'configDir'		=> Configure::read('Subversion.configDirectory'),
+			'parseResponse'	=> Configure::read('Subversion.parseResponse'),
+			'stepLog'		=> $this->_stepLog
 		);
 		$options = array_merge($default_options, $options);
 		
@@ -197,18 +186,19 @@ class Deployment extends AppModel {
 		if ( is_dir($projectTmpDir.'tmpDir') ) {
 			// svn update
 			$log = SvnAction::update( $projectTmpDir.'tmpDir'.DS, $options);
-			$this->_recordLog($log);
-			
+						
 		} else {			
 			if (!is_dir($projectTmpDir)) {
 				// Create tmpDir folder inside Fredistrano
-				$log = ShellAction::createDirectory( $projectTmpDir, Configure::read('FileSystem.permissions.directories') );
-				$this->_recordLog($log);				
+				$log = ShellAction::createDirectory( 
+					$projectTmpDir, 
+					Configure::read('FileSystem.permissions.directories'), 
+					array('stepLog'	=> $this->_stepLog) 
+				);
 			}
 			
 			// Export code from SVN
 			$log = SvnAction::checkout( $this->_project['Project']['svn_url'], $projectTmpDir, 'tmpDir', $options);
-			$this->_recordLog($log);
 		}
 		
 		// Retrieve revision log 
@@ -444,22 +434,11 @@ class Deployment extends AppModel {
 		if (!$this->isInitialized()) {
 			$this->_stepLog->error( sprintf(__('Missing working data', true)) );
 		}
-		
-		// Load project configuration 
-		self::_loadConfig();
-		
-		$path = Command::convertPath(F_DEPLOYTMPDIR.$this->_project['Project']['name'].DS);
-		if (!is_dir($path)) {
-			$this->_stepLog->error( sprintf(__('No temporary files found', true)) );
-		} 			
-		$command = "rm -rf ".$path;
-		$log = Command::execute( $command,
-			array(
-		        'comment'	=> __('Deleting project temp files', true)
-			)
-		);
-		
-		$this->_stepLog->addChildLog( $log );	
+				
+		// Removing files
+		$path = F_DEPLOYTMPDIR.$this->_project['Project']['name'];
+		$log = ShellAction::remove($path, true, array('stepLog'=>$this->_stepLog));
+
 	}// _clearProjectTempFiles
 	
 	private function _resetPermissions(){
@@ -641,6 +620,7 @@ class Deployment extends AppModel {
 		
 		// End action
 		$actionLog->end();
+		
 		$this->_recordLog($actionLog);
 	}// loadConfig
 	

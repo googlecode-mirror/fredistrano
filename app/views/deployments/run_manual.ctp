@@ -72,7 +72,7 @@
 								'Project.simulation',  
 								array(
 									'class' => 'f-checkbox', 
-									'onClick' => 'if ($(\'ProjectBackup\').disabled) {$(\'ProjectBackup\').disabled = false; }else{ $(\'ProjectBackup\').disabled = true;  $(\'ProjectBackup\').checked = false;}', 
+									'onClick' => 'if ($(\'ProjectBackup\').disabled) {$(\'ProjectBackup\').disabled = false; $(\'ProjectRunBeforeScript\').disabled = false; }else{ $(\'ProjectBackup\').disabled = true;  $(\'ProjectBackup\').checked = false; $(\'ProjectRunBeforeScript\').disabled = true;  $(\'ProjectRunBeforeScript\').checked = false;}', 
 									'checked' => 'checked', 
 									'value' => true
 									)
