@@ -1,11 +1,11 @@
 <?php
-/* SVN FILE: $Id: component.php 4409 2007-02-02 13:20:59Z phpnut $ */
+/* SVN FILE: $Id: component.php 7296 2008-06-27 09:09:03Z gwoo $ */
 /**
  *
  * PHP versions 4 and 5
  *
  * CakePHP(tm) :  Rapid Development Framework <http://www.cakephp.org/>
- * Copyright 2005-2007, Cake Software Foundation, Inc.
+ * Copyright 2005-2008, Cake Software Foundation, Inc.
  *								1785 E. Sahara Avenue, Suite 490-204
  *								Las Vegas, Nevada 89104
  *
@@ -13,123 +13,220 @@
  * Redistributions of files must retain the above copyright notice.
  *
  * @filesource
- * @copyright		Copyright 2005-2007, Cake Software Foundation, Inc.
+ * @copyright		Copyright 2005-2008, Cake Software Foundation, Inc.
  * @link				http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
  * @package			cake
  * @subpackage		cake.cake.libs.controller
  * @since			CakePHP(tm) v TBD
- * @version			$Revision: 4409 $
- * @modifiedby		$LastChangedBy: phpnut $
- * @lastmodified	$Date: 2007-02-02 07:20:59 -0600 (Fri, 02 Feb 2007) $
+ * @version			$Revision: 7296 $
+ * @modifiedby		$LastChangedBy: gwoo $
+ * @lastmodified	$Date: 2008-06-27 02:09:03 -0700 (Fri, 27 Jun 2008) $
  * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 /**
- * Component
- *
- * Used to create instances of applications components
+ * Handler for Controller::$components
  *
  * @package		cake
  * @subpackage	cake.cake.libs.controller
  */
 class Component extends Object {
 /**
- * Instance Controller
+ * Some vars from controller (plugin, name, base)
  *
  * @var object
  * @access private
  */
-	var $__controller = null;
+	var $__controllerVars = array('plugin' => null, 'name' => null, 'base' => null);
 /**
- * Constructor
+ * All loaded components
+ *
+ * @var object
+ * @access private
  */
-	function __construct() {
-	}
+	var $__loaded = array();
+/**
+ * Settings for loaded components.
+ *
+ * @var array
+ * @access private
+ **/
+	var $__settings = array();
 /**
  * Used to initialize the components for current controller
  *
- * @param object $controller
+ * @param object $controller Controller with components to load
  * @access public
  */
 	function init(&$controller) {
-		$this->__controller =& $controller;
+		if ($controller->components !== false && is_array($controller->components)) {
+			$this->__controllerVars = array(
+				'plugin' => $controller->plugin, 'name' => $controller->name, 'base' => $controller->base
+			);
 
-		if ($this->__controller->components !== false) {
-			$loaded = array();
-			$this->__controller->components = array_merge($this->__controller->components, array('Session'));
-			$loaded = $this->__loadComponents($loaded, $this->__controller->components);
-
-			foreach(array_keys($loaded)as $component) {
-				$tempComponent =& $loaded[$component];
-
-				if (isset($tempComponent->components) && is_array($tempComponent->components)) {
-					foreach($tempComponent->components as $subComponent) {
-						$this->__controller->{$component}->{$subComponent} =& $loaded[$subComponent];
-					}
+			if (!in_array('Session', $controller->components)) {
+				array_unshift($controller->components, 'Session');
+			}
+			$this->_loadComponents($controller);
+		}
+	}
+/**
+ * Called before the Controller::beforeFilter()
+ *
+ * @param object $controller Controller with components to initialize
+ * @access public
+ */
+	function initialize(&$controller) {
+		foreach (array_keys($this->__loaded) as $name) {
+			$component =& $this->__loaded[$name];
+			if (method_exists($component,'initialize') && $component->enabled === true) {
+				$settings = array();
+				if (isset($this->__settings[$name])) {
+					$settings = $this->__settings[$name];
 				}
+				$component->initialize($controller, $settings);
 			}
 		}
 	}
-
 /**
- * Enter description here...
+ * Called after the Controller::beforeFilter() and before the controller action
  *
- * @param array $loaded
- * @param array $components
- * @return loaded components
- * @access private
+ * @param object $controller Controller with components to startup
+ * @access public
  */
-	function &__loadComponents(&$loaded, $components) {
-		foreach($components as $component) {
-			$pos = strpos($component, '/');
-			if ($pos === false) {
-				$plugin = $this->__controller->plugin;
-			} else {
-				$parts = explode('/', $component);
-				$plugin = Inflector::underscore($parts['0']);
-				$component = $parts['1'];
+	function startup(&$controller) {
+		foreach (array_keys($this->__loaded) as $name) {
+			$component =& $this->__loaded[$name];
+			if (method_exists($component,'startup') && $component->enabled === true) {
+				$component->startup($controller);
 			}
-			$componentCn = $component . 'Component';
+		}
+	}
+/**
+ * Called after the Controller::beforeRender(), after the view class is loaded, and before the Controller::render()
+ *
+ * @param object $controller Controller with components to beforeRender
+ * @access public
+ */
+	function beforeRender(&$controller) {
+		foreach (array_keys($this->__loaded) as $name) {
+			$component =& $this->__loaded[$name];
+			if (method_exists($component,'beforeRender') && $component->enabled === true) {
+				$component->beforeRender($controller);
+			}
+		}
+	}
+/**
+ * Called before Controller::redirect();
+ *
+ * @param object $controller Controller with components to beforeRedirect
+ * @access public
+ */
+	function beforeRedirect(&$controller, $url, $status = null, $exit = true) {
+		$response = array();
+		foreach (array_keys($this->__loaded) as $name) {
+			$component =& $this->__loaded[$name];
+			if (method_exists($component,'beforeRedirect') && $component->enabled === true) {
+				$resp = $component->beforeRedirect($controller, $url, $status, $exit);
+				if ($resp === false) {
+					return false;
+				}
+				$response[] = $resp;
+			}
+		}
+		return $response;
+	}
+/**
+ * Called after Controller::render() and before the output is printed to the browser
+ *
+ * @param object $controller Controller with components to shutdown
+ * @access public
+ */
+	function shutdown(&$controller) {
+		foreach (array_keys($this->__loaded) as $name) {
+			$component =& $this->__loaded[$name];
+			if (method_exists($component,'shutdown') && $component->enabled === true) {
+				$component->shutdown($controller);
+			}
+		}
+	}
+/**
+ * Load components used by this component.
+ *
+ * @param object $object Object with a Components array
+ * @param object $parent the parent of the current object
+ * @return void
+ * @access protected
+ */
+	function _loadComponents(&$object, $parent = null) {
+		$components = $object->components;
+		$base = $this->__controllerVars['base'];
 
-			if (in_array($component, array_keys($loaded)) !== true) {
+		if (is_array($object->components)) {
+			$normal = Set::normalize($object->components);
+			foreach ($normal as $component => $config) {
+				$parts = preg_split('/\/|\./', $component);
+
+				if (count($parts) === 1) {
+					$plugin = $this->__controllerVars['plugin'] . '.';
+				} else {
+					$plugin = Inflector::underscore($parts['0']) . '.';
+					$component = array_pop($parts);
+				}
+				$componentCn = $component . 'Component';
 
 				if (!class_exists($componentCn)) {
-
-					if (is_null($plugin) || !loadPluginComponent($plugin, $component)) {
-
-						if (!loadComponent($component)) {
+					if (is_null($plugin) || !App::import('Component', $plugin . $component)) {
+						if (!App::import('Component', $component)) {
 							$this->cakeError('missingComponentFile', array(array(
-													'className' => $this->__controller->name,
-													'component' => $component,
-													'file' => Inflector::underscore($component) . '.php',
-													'base' => $this->__controller->base)));
-							exit();
+								'className' => $this->__controllerVars['name'],
+								'component' => $component,
+								'file' => Inflector::underscore($component) . '.php',
+								'base' => $base,
+								'code' => 500
+							)));
+							return false;
 						}
 					}
 
 					if (!class_exists($componentCn)) {
 						$this->cakeError('missingComponentClass', array(array(
-												'className' => $this->__controller->name,
-												'component' => $component,
-												'file' => Inflector::underscore($component) . '.php',
-												'base' => $this->__controller->base)));
-						exit();
+							'className' => $this->__controllerVars['name'],
+							'component' => $component,
+							'file' => Inflector::underscore($component) . '.php',
+							'base' => $base,
+							'code' => 500
+						)));
+						return false;
 					}
 				}
 
-				if ($componentCn == 'SessionComponent') {
-					$param = strip_plugin($this->__controller->base, $this->__controller->plugin) . '/';
-				} else {
-					$param = null;
-				}
-				$this->__controller->{$component} =& new $componentCn($param);
-				$loaded[$component] =& $this->__controller->{$component};
+				if (isset($this->__loaded[$component])) {
+					$object->{$component} =& $this->__loaded[$component];
 
-				if (isset($this->__controller->{$component}->components) && is_array($this->__controller->{$component}->components)) {
-					$loaded =& $this->__loadComponents($loaded, $this->__controller->{$component}->components);
+					if (!empty($config) && isset($this->__settings[$component])) {
+						$this->__settings[$component] = array_merge($this->__settings[$component], $config);
+					} elseif (!empty($config)) {
+						$this->__settings[$component] = $config;
+					}
+				} else {
+					if ($componentCn == 'SessionComponent') {
+						$object->{$component} =& new $componentCn($base);
+					} else {
+						$object->{$component} =& new $componentCn();
+					}
+					$object->{$component}->enabled = true;
+					$this->__loaded[$component] =& $object->{$component};
+					if (!empty($config)) {
+						$this->__settings[$component] = $config;
+					}
+				}
+
+				if (isset($object->{$component}->components) && is_array($object->{$component}->components) && (!isset($object->{$component}->{$parent}))) {
+					$this->_loadComponents($object->{$component}, $component);
 				}
 			}
 		}
-		return $loaded;
 	}
 }
+
 ?>

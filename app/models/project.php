@@ -2,38 +2,36 @@
 class Project extends AppModel {
 
 	var $name = 'Project';
-
-	var $validate = array (
-		'name' => array (
-			array (
-				VALID_NOT_EMPTY,
-				LANG_ENTERPROJECTNAME
-			)
-			,
-			array (array('isUnique', array('name')), LANG_PROJECTNAMEALREADYEXISTS)
-			,
-			array (array('noSpace', array('name')), 'The project name can not contain space')
-		),
-		'svn_url' => array (
-			array (
-				VALID_NOT_EMPTY,
-				LANG_ENTERURLREPOSITORYFORTHISPROJECT
-			)
-		),
-		'prd_url' => array (
-			array (
-				VALID_NOT_EMPTY,
-				LANG_ENTERPRODUCTIONURL
-			)
-		),
-		'prd_path' => array (
-			array (
-				VALID_NOT_EMPTY,
-				LANG_ENTERAPPLICATIONDIRECTORY
-			)
-		)
+	
+	var $validate = array(
+	    'name' => array(
+	        'rule1' => array(
+	            'rule' => 'alphaNumeric',
+	            'required' => true
+	        ),
+	        'rule2' => array(
+	            'rule' => 'isUnique'
+	        )
+	    ),
+		'svn_url' => array(
+		        'rule' => 'url', 
+		        'required' => true,
+		        'allowEmpty' => false
+		 ),
+		'prd_path' => array(
+				'rule' => array('minLength', '1')
+		 )
+		// 'prd_url' => array(
+		//         'rule' => 'url', 
+		//         'required' => true,
+		//         'allowEmpty' => false
+		//  ) 
 	);
 	
+	var $lastReadSize = 0;
+
+	var $lastReadError = 0;
+
 	var $hasMany = array (
 		'DeploymentLog' => array (
 			'className' => 'DeploymentLog',
@@ -54,6 +52,8 @@ class Project extends AppModel {
 	}
 	
 	function beforeSave(){
+		$this->data['Project']['log_path'] = trim($this->data['Project']['log_path']);
+		
 		$this->data['Project']['prd_path'] = preg_replace('#[\\\/]#', DS, $this->data['Project']['prd_path']);
 		
 		if(substr($this->data['Project']['prd_path'], -1, 1) != DS)
@@ -62,6 +62,51 @@ class Project extends AppModel {
 		return true;	
 	}
 
+	function readAssociatedLog ( $projectId = null, $options = null ) {
+		if ( is_null($projectId) || !($project = $this->read(null, $projectId))){
+			return false;
+		}
+		// Init options
+		$default_options = array(
+			'reverse'			=>	false,
+			'pattern' 			=> 	null,
+			'logPath'			=> 	null
+		);
+		$options = array_merge($default_options, $options);		
+		
+		if (file_exists($options['logPath'])) {	
+			// Read log file		
+			$file = fopen($options['logPath'],'r');  
+			$maxSize = Configure::read('Log.maxSize');
+			if ( ($size = filesize ($options['logPath'])) > $maxSize ) {
+				fseek( $file, $size - $maxSize);
+				$size = $maxSize;
+			}
+			$this->lastReadSize = $size;
+			$output = fread( $file, $size ); 
+			fclose($file);
+			
+			// Highlight pattern
+			if (!is_null($options['pattern'])) {
+				$pattern =  ($options['pattern'][0] == '/') ?$options['pattern'] : '/('.$options['pattern'].')/i';
+				$output = preg_replace( $pattern , "<span class='highlight'>$1</span>" , $output );
+			} 
+			
+			// Reverse display 
+			if ($options['reverse']) {
+				$output = array_reverse(explode("\n", $output));
+				array_pop($output);
+				$output = implode("\n",$output);
+			}
+
+			return nl2br($output);
+		} else {
+			$this->lastReadSize = 0;
+			$this->lastReadError = 'Log not found : File (<em>'.$options['logPath'].'</em>) doesn\'t exist';
+
+			return false;
+		}
+	}
 
 }
 ?>

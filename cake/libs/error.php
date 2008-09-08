@@ -1,5 +1,5 @@
 <?php
-/* SVN FILE: $Id: error.php 4409 2007-02-02 13:20:59Z phpnut $ */
+/* SVN FILE: $Id: error.php 7296 2008-06-27 09:09:03Z gwoo $ */
 /**
  * Short description for file.
  *
@@ -8,7 +8,7 @@
  * PHP versions 4 and 5
  *
  * CakePHP(tm) :  Rapid Development Framework <http://www.cakephp.org/>
- * Copyright 2005-2007, Cake Software Foundation, Inc.
+ * Copyright 2005-2008, Cake Software Foundation, Inc.
  *								1785 E. Sahara Avenue, Suite 490-204
  *								Las Vegas, Nevada 89104
  *
@@ -16,17 +16,41 @@
  * Redistributions of files must retain the above copyright notice.
  *
  * @filesource
- * @copyright		Copyright 2005-2007, Cake Software Foundation, Inc.
+ * @copyright		Copyright 2005-2008, Cake Software Foundation, Inc.
  * @link				http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
  * @package			cake
  * @subpackage		cake.cake.libs
  * @since			CakePHP(tm) v 0.10.5.1732
- * @version			$Revision: 4409 $
- * @modifiedby		$LastChangedBy: phpnut $
- * @lastmodified	$Date: 2007-02-02 07:20:59 -0600 (Fri, 02 Feb 2007) $
+ * @version			$Revision: 7296 $
+ * @modifiedby		$LastChangedBy: gwoo $
+ * @lastmodified	$Date: 2008-06-27 02:09:03 -0700 (Fri, 27 Jun 2008) $
  * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
  */
-uses('sanitize');
+App::import('Controller', 'App');
+/**
+ * Short description for file.
+ *
+ * Long description for file
+ *
+ * @package		cake
+ * @subpackage	cake.cake.libs
+ */
+class CakeErrorController extends AppController {
+
+	var $name = 'CakeError';
+
+	var $uses = array();
+
+	function __construct() {
+		parent::__construct();
+		$this->_set(Router::getPaths());
+		$this->params = Router::getParams();
+		$this->constructClasses();
+		$this->Component->initialize($this);
+		$this->_set(array('cacheAction' => false, 'viewPath' => 'errors'));
+	}
+
+}
 /**
  * Short description for file.
  *
@@ -36,309 +60,287 @@ uses('sanitize');
  * @subpackage	cake.cake.libs
  */
 class ErrorHandler extends Object {
+/**
+ * Controller instance.
+ *
+ * @var object
+ * @access public
+ */
 	var $controller = null;
 
 /**
  * Class constructor.
  *
- * @param string $method
- * @param array $messages
- * @return unknown
+ * @param string $method Method producing the error
+ * @param array $messages Error messages
  */
 	function __construct($method, $messages) {
-		parent::__construct();
-		static $__previousError = null;
+		App::import('Core', 'Sanitize');
+
+		$this->controller =& new CakeErrorController();
+
 		$allow = array('.', '/', '_', ' ', '-', '~');
-	    if(substr(PHP_OS,0,3) == "WIN") {
-            $allow = array_merge($allow, array('\\', ':') );
-        }
-		$clean = new Sanitize();
-		$messages = $clean->paranoid($messages, $allow);
-		if(!class_exists('Dispatcher')){
-			require CAKE . 'dispatcher.php';
+		if (substr(PHP_OS, 0, 3) == "WIN") {
+			$allow = array_merge($allow, array('\\', ':'));
 		}
-		$this->__dispatch =& new Dispatcher();
 
-		if ($__previousError != array($method, $messages)) {
-			$__previousError = array($method, $messages);
+		$messages = Sanitize::paranoid($messages, $allow);
 
-			if (!class_exists('AppController')) {
-				loadController(null);
+		if (!isset($messages[0])) {
+			$messages = array($messages);
+		}
+
+		if (method_exists($this->controller, 'apperror')) {
+			return $this->controller->appError($method, $messages);
+		}
+
+		if (!in_array(strtolower($method), array_map('strtolower', get_class_methods($this)))) {
+			$method = 'error';
+		}
+
+		if ($method !== 'error') {
+			if (Configure::read() == 0){
+				$method = 'error404';
+				if(isset($code) && $code == 500) {
+					$method = 'error500';
+				}
 			}
-
-			$this->controller =& new AppController();
-			$this->controller->_initComponents();
-			$this->controller->cacheAction = false;
-			$this->__dispatch->start($this->controller);
-
-			if (method_exists($this->controller, 'apperror')) {
-				return $this->controller->appError($method, $messages);
-			}
-		} else {
-			$this->controller =& new Controller();
-			$this->controller->cacheAction = false;
 		}
-		if (Configure::read() > 0 || $method == 'error') {
-			call_user_func_array(array(&$this, $method), $messages);
-		} else {
-			call_user_func_array(array(&$this, 'error404'), $messages);
-		}
+		$this->dispatchMethod($method, $messages);
+		$this->_stop();
 	}
 /**
  * Displays an error page (e.g. 404 Not found).
  *
- * @param array $params
+ * @param array $params Parameters for controller
+ * @access public
  */
 	function error($params) {
-		extract($params);
-		$this->controller->base = $base;
-		$this->controller->webroot = $this->_webroot();
-		$this->controller->viewPath='errors';
-		$this->controller->set(array('code' => $code,
-										'name' => $name,
-										'message' => $message,
-										'title' => $code . ' ' . $name));
-		$this->controller->render('error404');
-		exit();
+		extract($params, EXTR_OVERWRITE);
+		$this->controller->set(array(
+			'code' => $code,
+			'name' => $name,
+			'message' => $message,
+			'title' => $code . ' ' . $name
+		));
+		$this->__outputMessage('error404');
 	}
 /**
  * Convenience method to display a 404 page.
  *
- * @param array $params
+ * @param array $params Parameters for controller
+ * @access public
  */
 	function error404($params) {
-		extract($params);
+		extract($params, EXTR_OVERWRITE);
 
 		if (!isset($url)) {
-			$url = $action;
+			$url = $this->controller->here;
 		}
-		if (!isset($message)) {
-			$message = '';
-		}
-		if (!isset($base)) {
-			$base = '';
-		}
-
+		$url = Router::normalize($url);
 		header("HTTP/1.0 404 Not Found");
-		$this->error(array('code' => '404',
-							'name' => 'Not found',
-							'message' => sprintf("The requested address %s was not found on this server.", $url, $message),
-							'base' => $base));
-		exit();
+		$this->controller->set(array(
+			'code' => '404',
+			'name' => __('Not Found', true),
+			'message' => h($url),
+			'base' => $this->controller->base
+		));
+		$this->__outputMessage('error404');
 	}
 /**
  * Renders the Missing Controller web page.
  *
- * @param array $params
+ * @param array $params Parameters for controller
+ * @access public
  */
 	function missingController($params) {
-		extract($params);
-		$this->controller->base = $base;
-		$this->controller->webroot = $webroot;
-		$this->controller->viewPath ='errors';
+		extract($params, EXTR_OVERWRITE);
+
 		$controllerName = str_replace('Controller', '', $className);
 		$this->controller->set(array('controller' => $className,
 										'controllerName' => $controllerName,
-										'title' => 'Missing Controller'));
-		$this->controller->render('missingController');
-		exit();
+										'title' => __('Missing Controller', true)));
+		$this->__outputMessage('missingController');
 	}
 /**
  * Renders the Missing Action web page.
  *
- * @param array $params
+ * @param array $params Parameters for controller
+ * @access public
  */
 	function missingAction($params) {
-		extract($params);
-		$this->controller->base = $base;
-		$this->controller->webroot = $webroot;
-		$this->controller->viewPath = 'errors';
+		extract($params, EXTR_OVERWRITE);
+
+		$controllerName = str_replace('Controller', '', $className);
 		$this->controller->set(array('controller' => $className,
+										'controllerName' => $controllerName,
 										'action' => $action,
-										'title' => 'Missing Method in Controller'));
-		$this->controller->render('missingAction');
-		exit();
+										'title' => __('Missing Method in Controller', true)));
+		$this->__outputMessage('missingAction');
 	}
 /**
  * Renders the Private Action web page.
  *
- * @param array $params
+ * @param array $params Parameters for controller
+ * @access public
  */
 	function privateAction($params) {
-		extract($params);
-		$this->controller->base = $base;
-		$this->controller->webroot = $webroot;
-		$this->controller->viewPath = 'errors';
+		extract($params, EXTR_OVERWRITE);
+
 		$this->controller->set(array('controller' => $className,
 										'action' => $action,
-										'title' => 'Trying to access private method in class'));
-		$this->controller->render('privateAction');
-		exit();
+										'title' => __('Trying to access private method in class', true)));
+		$this->__outputMessage('privateAction');
 	}
 /**
  * Renders the Missing Table web page.
  *
- * @param array $params
+ * @param array $params Parameters for controller
+ * @access public
  */
 	function missingTable($params) {
-		extract($params);
-		$this->controller->viewPath = 'errors';
-		$this->controller->webroot = $this->_webroot();
+		extract($params, EXTR_OVERWRITE);
+
 		$this->controller->set(array('model' => $className,
 										'table' => $table,
-										'title' => 'Missing Database Table'));
-		$this->controller->render('missingTable');
-		exit();
+										'title' => __('Missing Database Table', true)));
+		$this->__outputMessage('missingTable');
 	}
 /**
  * Renders the Missing Database web page.
  *
- * @param array $params
+ * @param array $params Parameters for controller
+ * @access public
  */
 	function missingDatabase($params = array()) {
-		extract($params);
-		$this->controller->viewPath = 'errors';
-		$this->controller->webroot = $this->_webroot();
-		$this->controller->set(array('title' => 'Scaffold Missing Database Connection'));
-		$this->controller->render('missingScaffolddb');
-		exit();
+		extract($params, EXTR_OVERWRITE);
+
+		$this->controller->set(array('title' => __('Scaffold Missing Database Connection', true)));
+		$this->__outputMessage('missingScaffolddb');
 	}
 /**
  * Renders the Missing View web page.
  *
- * @param array $params
+ * @param array $params Parameters for controller
+ * @access public
  */
 	function missingView($params) {
-		extract($params);
-		$this->controller->base = $base;
-		$this->controller->viewPath = 'errors';
-		$this->controller->webroot = $this->_webroot();
+		extract($params, EXTR_OVERWRITE);
+
 		$this->controller->set(array('controller' => $className,
 										'action' => $action,
 										'file' => $file,
-										'title' => 'Missing View'));
-		$this->controller->render('missingView');
-		exit();
+										'title' => __('Missing View', true)));
+		$this->__outputMessage('missingView');
+
 	}
 /**
  * Renders the Missing Layout web page.
  *
- * @param array $params
+ * @param array $params Parameters for controller
+ * @access public
  */
 	function missingLayout($params) {
-		extract($params);
-		$this->controller->base = $base;
-		$this->controller->viewPath = 'errors';
-		$this->controller->webroot = $this->_webroot();
+		extract($params, EXTR_OVERWRITE);
+
 		$this->controller->layout = 'default';
-		$this->controller->set(array('file'  => $file,
-										'title' => 'Missing Layout'));
-		$this->controller->render('missingLayout');
-		exit();
+		$this->controller->set(array('file' => $file,
+										'title' => __('Missing Layout', true)));
+		$this->__outputMessage('missingLayout');
 	}
 /**
  * Renders the Database Connection web page.
  *
- * @param array $params
+ * @param array $params Parameters for controller
+ * @access public
  */
 	function missingConnection($params) {
-		extract($params);
-		$this->controller->viewPath = 'errors';
-		$this->controller->webroot = $this->_webroot();
+		extract($params, EXTR_OVERWRITE);
+
 		$this->controller->set(array('model' => $className,
-										'title' => 'Missing Database Connection'));
-		$this->controller->render('missingConnection');
-		exit();
+										'title' => __('Missing Database Connection', true)));
+		$this->__outputMessage('missingConnection');
 	}
 /**
  * Renders the Missing Helper file web page.
  *
- * @param array $params
+ * @param array $params Parameters for controller
+ * @access public
  */
 	function missingHelperFile($params) {
-		extract($params);
-		$this->controller->base = $base;
-		$this->controller->viewPath = 'errors';
-		$this->controller->webroot = $this->_webroot();
+		extract($params, EXTR_OVERWRITE);
+
 		$this->controller->set(array('helperClass' => Inflector::camelize($helper) . "Helper",
 										'file' => $file,
-										'title' => 'Missing Helper File'));
-		$this->controller->render('missingHelperFile');
-		exit();
+										'title' => __('Missing Helper File', true)));
+		$this->__outputMessage('missingHelperFile');
 	}
 /**
  * Renders the Missing Helper class web page.
  *
- * @param array $params
+ * @param array $params Parameters for controller
+ * @access public
  */
 	function missingHelperClass($params) {
-		extract($params);
-		$this->controller->base = $base;
-		$this->controller->viewPath = 'errors';
-		$this->controller->webroot = $this->_webroot();
+		extract($params, EXTR_OVERWRITE);
+
 		$this->controller->set(array('helperClass' => Inflector::camelize($helper) . "Helper",
 										'file' => $file,
-										'title' => 'Missing Helper Class'));
-		$this->controller->render('missingHelperClass');
-		exit();
+										'title' => __('Missing Helper Class', true)));
+		$this->__outputMessage('missingHelperClass');
 	}
 /**
  * Renders the Missing Component file web page.
  *
- * @param array $params
+ * @param array $params Parameters for controller
+ * @access public
  */
 	function missingComponentFile($params) {
-		extract($params);
-		$this->controller->base = $base;
-		$this->controller->viewPath = 'errors';
-		$this->controller->webroot = $this->_webroot();
+		extract($params, EXTR_OVERWRITE);
+
 		$this->controller->set(array('controller' => $className,
 										'component' => $component,
 										'file' => $file,
-										'title' => 'Missing Component File'));
-		$this->controller->render('missingComponentFile');
-		exit();
+										'title' => __('Missing Component File', true)));
+		$this->__outputMessage('missingComponentFile');
 	}
 /**
  * Renders the Missing Component class web page.
  *
- * @param array $params
+ * @param array $params Parameters for controller
+ * @access public
  */
 	function missingComponentClass($params) {
-		extract($params);
-		$this->controller->base = $base;
-		$this->controller->viewPath = 'errors';
-		$this->controller->webroot = $this->_webroot();
+		extract($params, EXTR_OVERWRITE);
+
 		$this->controller->set(array('controller' => $className,
 										'component' => $component,
 										'file' => $file,
-										'title' => 'Missing Component Class'));
-		$this->controller->render('missingComponentClass');
-		exit();
+										'title' => __('Missing Component Class', true)));
+		$this->__outputMessage('missingComponentClass');
 	}
 /**
  * Renders the Missing Model class web page.
  *
- * @param unknown_type $params
+ * @param unknown_type $params Parameters for controller
+ * @access public
  */
 	function missingModel($params) {
-		extract($params);
-		$this->controller->base = $base;
-		$this->controller->viewPath = 'errors';
-		$this->controller->webroot = $this->_webroot();
+		extract($params, EXTR_OVERWRITE);
+
 		$this->controller->set(array('model' => $className,
-										'title' => 'Missing Model'));
-		$this->controller->render('missingModel');
-		exit();
+										'title' => __('Missing Model', true)));
+		$this->__outputMessage('missingModel');
 	}
 /**
- * Path to the web root.
+ * Output message
  *
- * @return string full web root path
+ * @access private
  */
-	function _webroot() {
-		$this->__dispatch->baseUrl();
-		return $this->__dispatch->webroot;
+	function __outputMessage($template) {
+		$this->controller->render($template);
+		$this->controller->afterFilter();
+		echo $this->controller->output;
 	}
 }
 ?>

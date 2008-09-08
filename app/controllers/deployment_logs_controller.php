@@ -4,16 +4,21 @@ class DeploymentLogsController extends AppController {
 	var $name = 'DeploymentLogs';
 
 	var $helpers = array (
-		'Html'
+		'Html',
+		'Text'
 	);
 
 	var $uses = array (
-		'Project',
-		'DeploymentLog'
+		'DeploymentLog',
+		'Profile',
+		'Project'	
 	);
 
 	var $authLocal = array (
-		'DeploymentLogs'	=> 	array( 'entrance' )
+		'DeploymentLogs'	=> 	array( 'entrance' ),
+		'except' 	=> 	array(
+			'index' 		=> 	array( 'public' )
+		)
 	);
 		
 	function beforeRender() {
@@ -24,21 +29,21 @@ class DeploymentLogsController extends AppController {
 			'text' => 'Actions'
 		);
 
-		if ($this->action != 'list_all')
+		if ($this->action != 'index')
 			$tab[] = array (
-				'text' => LANG_DISPLAYFULLHISTORY,
-				'link' => '/deploymentLogs/list_all'
+				'text' => __('Display full history', true),
+				'link' => '/deploymentLogs'
 			);
 
 		$tab[] = array (
-			'text' => LANG_PROJECTLIST,
+			'text' => __('List projects', true),
 			'link' => '/projects'
 		);
 		
-		if (defined('_PUBLISHFEED') && _PUBLISHFEED === true ) {
+		if ( Configure::read('Feeds.enabled') === true ) {
 			$tab[] = array (
 				'text' => 'Rss Feed',
-				'link' => '/rss/deploymentLogs'
+				'link' => '/deploymentLogs/index.rss?token='.$this->Session->read('User.Profile.rss_token')
 			);
 		}
 		
@@ -50,21 +55,41 @@ class DeploymentLogsController extends AppController {
 	/**
 	 * List all logs
 	 */
-	function index() {
-		$this->redirect('/deploymentLogs/list_all');
-	} // index
-
-	/**
-	 * List all logs
-	 */
-	function list_all($op = null, $id = null) {
+	function index($op = null, $id = null) {
+		$limit = null;
+		if ($this->RequestHandler->isRss()) {
+			Configure::write('debug', 0);
+			$limit = 50;
+			
+			if (!Configure::read('Feeds.enabled')) {
+				$this->Session->setFlash(__('Feeds not enabled. To use them, activate them first in the config file.', true));
+				$this->redirect('/deploymentLogs');
+				exit();		
+			}
+			
+			if (!$this->Profile->find('count', array ('conditions' => array('rss_token' => $this->params['url']['token'])))) {
+				$this->Session->setFlash(__("Rss token not found in database.", true));
+				$this->redirect('/projects/index');
+				exit();
+			}
+		} else {
+			$this->Aclite->checkAccess(array('entrance'));
+		}
+		
+		if (isset($this->data['Log']['project_id'])) {
+			$op = 'project';
+			$id = $this->data['Log']['project_id'];
+		}
+		
+		$this->set('projects', $this->Project->find('list'));
 		$archived = $this->_archive();
-		if ($archived > 0) 
-			$this->Session->setFlash(sprintf(LANG_AUTOLOGARCHIVE,$archived));
+		if ($archived > 0){ 
+			$this->Session->setFlash(sprintf(__("%d logs have been archived", true),$archived));
+		}
 
 		switch ($op) {
 			case null :
-				$this->_listAll();
+				$this->_listAll($limit);
 				break;
 			case 'person' :
 				$this->_listByPerson($id);
@@ -73,22 +98,41 @@ class DeploymentLogsController extends AppController {
 				$this->_listByProject($id);
 				break;
 			default :
-				$this->Session->setFlash(LANG_UNSUPPORTEDACTION . $op);
+				$this->Session->setFlash(__('Unsupported action ', true) . $op);
 				$this->redirect('/deploymentLogs/list_all');
 				break;
 		} // switch
-	} // listAll
+	} // index
 
 	/**
 	 * View properties of a specified log
 	 * @param string $id ID of the log to be viewed
 	 */
 	function view($id) {
-		if (!$id or !$this->DeploymentLog->read(null, $id)) {
-			$this->Session->setFlash(LANG_INVALIDLOGID.$id);
+		if (!$id or !($deployLog = $this->DeploymentLog->read(null, $id)) ) {
+			$this->Session->setFlash(__('Invalid id', true));
 			$this->redirect('/deploymentLogs/list_all');
 		}
-		$this->set('log', $this->DeploymentLog->read(null, $id));
+		
+		$options = array(
+			'reverse'			=>	false,
+			'logPath'			=> F_DEPLOYLOGDIR.$deployLog['DeploymentLog']['uuid'].'.log'
+		);
+		if ($deployLog['DeploymentLog']['archive']) {
+			$this->set('error', 	__('No details available for archived logs.') );
+		} else {
+			$output = $this->Project->readAssociatedLog($deployLog['DeploymentLog']['project_id'], $options);
+			if ( $output === false ) {
+				$this->set('error', 	$this->Project->lastReadError);
+			} else {
+				$this->set('project', 	$this->Project->read(null, $this->data['Search']['project_id']));
+				$this->set('size', 		$this->Project->lastReadSize);
+				$this->set('logPath',	$options['logPath']); 
+			}
+		}
+		$this->set('log',	 	$output);
+		$this->set('deployLog', $deployLog);
+		$this->set('project', 	$this->Project->read(null, $this->data['Search']['project_id']));		
 	} // view
 
 	// Private functions ----------------------------------------------------------------------------------
@@ -96,7 +140,7 @@ class DeploymentLogsController extends AppController {
 	 * Private function for archiving old logs
 	 */
 	private function _archive() {
-		$oldTime = time() - _LOGSARCHIVEDATE;
+		$oldTime = time() - Configure::read('Log.archiveDate');
 		return $this->DeploymentLog->archive($oldTime);
 	}// _archive
 
@@ -107,18 +151,19 @@ class DeploymentLogsController extends AppController {
 		$this->DeploymentLog->delAll();
 
 		// Afichage
-		$this->Session->setFlash(LANG_ALLLOGSDELETED);
+		$this->Session->setFlash(__('All logs deleted', true));
 		$this->redirect('/deploymentLogs/list_all');
 	} //_ reset
 
 	/**
 	 * Private function for listing logs
 	 */
-	private function _listAll() {
+	private function _listAll($limit = null) {
 		$filter = array();
 		$conditions = '';
-		if (!isset($this->params['url']['showArchived'])) 
+		if (!isset($this->params['url']['showArchived'])) {
 			$conditions = 'archive=0';
+		}
 		
 		$fields = array (
 			'id',
@@ -130,8 +175,7 @@ class DeploymentLogsController extends AppController {
 			'Project.name'
 		);
 		$order = 'DeploymentLog.created DESC';
-		$logs = $this->DeploymentLog->findAll($conditions, $fields, $order);
-
+		$logs = $this->DeploymentLog->findAll($conditions, $fields, $order,$limit);
 		$this->set('filter', $filter);
 		$this->set('logs', $logs);
 	} // _listAll
@@ -141,14 +185,16 @@ class DeploymentLogsController extends AppController {
 	 * @param string $id ID of the project
 	 */
 	private function _listByProject($id = null) {
-		if (!$id or !$this->Project->read(null, $id)) {
-			$this->Session->setFlash(LANG_INVALIDPROJECTID.$id);
-			$this->redirect('/deploymentLogs/list_all');
+		
+		if ($id && !$this->Project->read(null, $id)) {
+			$this->Session->setFlash(__('Invalid id', true));
 		}
 		
-		$filter = array('project' => $id);		
-		$conditions = 'DeploymentLog.project_id = ' . $id;
-		if (!isset($this->params['url']['showArchived'])){
+		$conditions = '1=1';
+		if ($id) {
+			$conditions .= ' AND DeploymentLog.project_id = ' . $id;
+		}
+		if (!isset($this->params['url']['showArchived']) && (!isset($this->data['Log']['showArchived']) || $this->data['Log']['showArchived'] == 0)){
 			$conditions .= ' AND archive=0';
 		}	
 		$fields = array (
@@ -164,7 +210,6 @@ class DeploymentLogsController extends AppController {
 		$logs = $this->DeploymentLog->findAll($conditions, $fields, $order);
 
 		$this->set('logs', $logs);
-		$this->set('filter',$filter);
 	} // _listByProject
 
 } // DeploymentLogs

@@ -7,54 +7,29 @@ class AclManagement extends AcliteAppModel {
 
 	var $mapping = array (
 		'Group' => array (
-			'model' => 'Group',
-			'parentAlias' => 'ParentGroup',
-			'alias' => 'name'
-		),
-		'User' => array (
-			'model' => 'User',
-			'id' => 'id',
-			'alias' => 'login'
+			'model' 		=> 'Group',
+			'parentAlias' 	=> 'ParentGroup',
+			'alias' 		=> 'name'
 		),
 		'ControlObject' => array (
-			'model' => 'ControlObject',
-			'parentAlias' => 'ParentControlObject',
-			'id' => 'id',
-			'alias' => 'name'
+			'model' 		=> 'ControlObject',
+			'parentAlias' 	=> 'ParentControlObject',
+			'alias' 		=> 'name'
 		)
 	);
 
 	var $actions = array (
-		'*'=>'*',
-		'read'=>'read',
-		'create'=>'create',
-		'update'=>'update',
-		'delete'=>'delete'
+		'*'			=> '*',
+		'read'		=> 'read',
+		'create'	=> 'create',
+		'update'	=> 'update',
+		'delete'	=> 'delete'
 	);
 
 	var $gPrefix = 'group.';
 	
-	var $uPrefix = '';
-
-	var $Permission = null;
-	
-	function __construct() {
-		parent::__construct();	
-		
-		$this->Permission = new Permission();
-	}// __construct
-	
-	function & getAcl() {
-		static $acl = null;
-
-		if (!isset ($acl) || !$acl) {
-			$acl =  new AclComponent();
-		}
-		return $acl;
-	}// getAcl
-	
 	function importMasterData($data = null) {
-		$acl = AclManagement::getAcl();
+		$acl = ClassRegistry::init('AclComponent');
 		
 		$list = $this->mapping;
 		if (!empty($data) && (in_array($data,array_keys($list))))
@@ -62,79 +37,91 @@ class AclManagement extends AcliteAppModel {
 			
 		foreach ($list as $key => $value) {
 			$modelName = $value['model'];
-			loadModel($modelName);
+			App::import('Model', $modelName);
 			$model = new $modelName ();
 			
-			// load data
-			$aros = $acl->Aro->generateList(null, null, null, null, '{n}.Aro.alias');
-			if (empty($aros))
-				$aros = array();
-				
 			switch ($key) {
 				case 'Group' :
-					$groups = $model->findAll(null,null,null,null,null,0);
-					if (empty ($groups))
-						break;
-
+					$aros = $acl->Aro->find('list', array( 'fields' => array('Aro.alias'), 'recursive' => 0));
+					if (empty($aros)) {
+						$aros = array();
+					}
+					$groups = $model->find('all');
+					if (empty ($groups)) {
+							break;			
+					}
+					
 					foreach ($groups as $group) {
-						//echo "1.1. Add group : ".$group[$value['model']][$value['alias']]."<br/>";
-						if (!in_array($this->gPrefix.$group[$value['model']][$value['alias']],$aros))
-							$acl->Aro->create(0, null, $this->gPrefix . $group[$value['model']][$value['alias']]);
+						if (!in_array($this->gPrefix.$group[$value['model']][$value['alias']],$aros)) {
+							$acl->Aro->create();
+							$data = array(
+								'Aro' => array(
+									'alias' 		=> $this->gPrefix.$group[$value['model']][$value['alias']],
+									'foreign_key' 	=> $group[$value['model']]['id'],
+									'model' 		=> $value['model']
+								)
+							);
+							$acl->Aro->save($data);
+						}
 					}
 
 					foreach ($groups as $group) {
 						if (!empty ($value['parentAlias']) && !empty ($group[$value['parentAlias']]) && !empty ($group[$value['parentAlias']][$value['alias']])) {
-							$parent = $group[$value['parentAlias']][$value['alias']];
-							//echo "1.2. Add group parent : ".$parent."-".$group[$value['model']][$value['alias']]."<br/>";
-							$acl->Aro->setParent($this->gPrefix . $parent, $this->gPrefix . $group[$value['model']][$value['alias']]);
-						}
-					}
-					break;
-
-				case 'User' :	
-					$users = $model->findAll();
-					if (empty ($users))
-						break;
-
-					foreach ($users as $user) {
-						//echo "2.1. Add User : ".$user[$value['model']][$value['id']]."-".$user[$value['model']][$value['alias']]."<br/>";
-						if (!in_array($user[$value['model']][$value['alias']],$aros))
-							$acl->Aro->create($user[$value['model']][$value['id']], null, $this->uPrefix . $user[$value['model']][$value['alias']]);
-					}
-
-					foreach ($users as $user) {
-						if (!empty ($user[$this->mapping['Group']['model']])) {
-							$mainGroup = $user[$this->mapping['Group']['model']][0][$this->mapping['Group']['alias']];
-							//echo "2.2. Add main group : ".$mainGroup."-".$user['User'][$value['alias']]."<br/>";
-							$acl->Aro->setParent($this->gPrefix . $mainGroup, $this->uPrefix . $user['User'][$value['alias']]);
+							$parentId = $group[$value['parentAlias']]['id'];
+							$data = array(
+								'Aro' => array(
+									'id' 		=> $group[$value['model']]['id'],
+									'parent_id' => $parentId 
+								)
+							);
+							if (!$acl->Aro->save($data)) {
+								echo 'Critical Error with Aros';
+								exit;	
+							}
 						}
 					}
 					break;
 
 				case 'ControlObject' :			
-					$controlObjects = $model->findAll(null,null,null,null,null,0);
-					$acos = $acl->Aco->generateList(null, null, null, null, '{n}.Aco.alias');
-					if (empty($acos))
-							$acos = array();
-				
-					if (empty ($controlObjects))
+					$acos = $acl->Aco->find('list', array( 'fields' => array('Aco.alias'), 'recursive' => 0));
+					if (empty($acos)) {
+						$acos = array();
+					}
+					$controlObjects = $model->find('all');
+					if (empty ($controlObjects)) {
 						break;
-
+					}
+					
 					foreach ($controlObjects as $controlObject) {
-						//echo "3.1. Add acos : ".$controlObject[$value['model']][$value['id']]."-".$controlObject[$value['model']][$value['alias']]."<br/>";
-						if (!in_array($controlObject[$value['model']][$value['alias']],$acos))
-							$acl->Aco->create($controlObject[$value['model']][$value['id']], null, $controlObject[$value['model']][$value['alias']]);
+						if (!in_array($controlObject[$value['model']][$value['alias']],$acos)) {
+							$acl->Aco->create();
+							$data = array(
+								'Aco' => array(
+									'alias' 		=> $controlObject[$value['model']][$value['alias']],
+									'foreign_key' 	=> $controlObject[$value['model']]['id'],
+									'model' 		=> $value['model']
+								)
+							);
+							$acl->Aco->save($data);
+						}
 					}
 					
 					foreach ($controlObjects as $controlObject) {
 						if (!empty ($value['parentAlias']) && !empty ($controlObject[$value['parentAlias']]) && !empty ($controlObject[$value['parentAlias']][$value['alias']])) {
-							$parent = $controlObject[$value['parentAlias']][$value['alias']];
-							//echo "3.2. Add acos parent : ".$parent."-".$controlObject[$value['model']][$value['alias']]."<br/>";
-							$acl->Aco->setParent($parent, $controlObject[$value['model']][$value['alias']]);
+							$parentId = $controlObject[$value['parentAlias']]['id'];
+							$data = array(
+								'Aco' => array(
+									'id' 		=> $controlObject[$value['model']]['id'],
+									'parent_id' => $parentId 
+								)
+							);
+							if (!$acl->Aco->save($data)) {
+								echo 'Critical Error with Acos';
+								exit;	
+							}
 						}
 					}
 					break;
-
 				default :
 					break;
 			}
@@ -142,16 +129,18 @@ class AclManagement extends AcliteAppModel {
 	} // importMasterData
 
 	function getAclTree ($type='Aro') {
-		$acl = AclManagement::getAcl();
-		$tmp = $acl->{$type}->findAll(null,null,null,null,null,0);
+		$acl = ClassRegistry::init('AclComponent');
 		
-		if (empty($tmp))
+		$tmp = $acl->{$type}->find('all', array('recursive' => 0));
+		
+		if (empty($tmp)) {
 			return false;
+		}
 		
 		return $this->_listParents($tmp, $type);
 	}// createRequesterTree
 	
-	
+	// TODO A: depreated since parent_id
 	function _listParents ( $list = array(), $type = 'Aro') {
 		if (empty($list))
 			return false;
@@ -173,6 +162,7 @@ class AclManagement extends AcliteAppModel {
 		return $tmp;
 	}// _recursiveParentSearch
 	
+	// TODO A: depreated since parent_id
 	function _getParent($element, $candidates, $type = 'Aro') {
 		foreach ( $candidates as $candidate) {
 			if ($element[$type]['lft'] > $candidate[$type]['lft'] && $element[$type]['rght'] < $candidate[$type]['rght'])
@@ -193,6 +183,7 @@ class AclManagement extends AcliteAppModel {
 		return $result;
 	}// _getParent
 	
+	// TODO A: depreated since parent_id
 	function _convertParentListToTree ($roots, $relations, &$result = array()) {
 		$str = "<ul style=\"margin: 0;\">"; // margin 0 pour surcharger la déclaration du fichier CSS
 		foreach ($roots as $root) {
@@ -236,13 +227,13 @@ class AclManagement extends AcliteAppModel {
 		} else if ($type == 'Aro') {
 			$this->deleteAclObjects($type);
 			$this->importMasterData('Group');
-			$this->importMasterData('User');
 		}
 	} // reloadAcls
 	
 	function setMapping($mapping = array ()) {
-		if (!empty ($mapping))
+		if (!empty ($mapping)) {
 			$this->mapping = $mapping;
+		}
 	}// setMasterData
 
 } // AclInitialization

@@ -7,14 +7,10 @@ class ProjectsController extends AppController {
 		'Html',
 		'Form',
 		'Ajax',
-		'Pagination',
-		'Error',
-		'Adixen'
+		'Fbollon'
 	);
-	
-	var $components = array (
-		'Pagination'
-	);
+
+    var $paginate = array('limit' => 15, 'page' => 1); 
 
 	var $uses = array (
 		'Project'
@@ -25,8 +21,7 @@ class ProjectsController extends AppController {
 		'except' 	=> 	array(
 			'edit' 		=> 	array( 'buinessData' ),
 			'add'		=> 	array( 'buinessData' ),
-			'delete' 	=> 	array( 'buinessData' ),
-			'deploy' 	=> 	array( 'buinessData' )
+			'delete' 	=> 	array( 'buinessData' )
 		)
 	);
 	
@@ -40,18 +35,18 @@ class ProjectsController extends AppController {
 
 		if ($this->action != 'index')
 			$tab[] = array (
-				'text' => LANG_PROJECTSLIST,
+				'text' => __('Project list', true),
 				'link' => '/projects/index'
 			);
 
 		if ($this->action != 'add')
 			$tab[] = array (
-				'text' => LANG_ADDPROJECT,
+				'text' => __('Add project', true),
 				'link' => '/projects/add'
 			);
 
 		$tab[] = array (
-			'text' => LANG_DISPLAYFULLHISTORY,
+			'text' => __('Display full history', true),
 			'link' => '/deploymentLogs'
 		);
 		$this->set("context_menu", $tab);
@@ -62,30 +57,18 @@ class ProjectsController extends AppController {
 	 * List all projects
 	 */
 	function index() {
-		$criteria = NULL;
-		$this->Pagination->sortBy = 'name';
-		list ($order, $limit, $page) = $this->Pagination->init($criteria); // Added
-		$data = $this->Project->findAll($criteria, NULL, $order, $limit, $page); // Extra parameters added
-		$this->set('data', $data);
+		$this->set('data', $this->paginate('Project')); 
 	}// index
-
-	/**
-	 * Deploy a project
-	 * @param string $id ID of the project to be deployed
-	 */
-	function deploy($id = null) {
-		$this->layout = 'ajax';
-		$this->set('id', $id);
-	}// deploy
-
+	
 	/**
 	 * View properties of a specified project
 	 * @param string $id ID of the project to be viewed
 	 */
 	function view($id = null) {
 		if (!$id) {
-			$this->Session->setFlash(LANG_INVALIDID);
+			$this->Session->setFlash(__('Invalid id.', true));
 			$this->redirect('/projects/index');
+			exit();
 		}
 		$project = $this->Project->read(null, $id);
 		$this->set('project', $project);
@@ -98,12 +81,11 @@ class ProjectsController extends AppController {
 		if (empty ($this->data)) {
 			$this->render();
 		} else {
-			$this->cleanUpFields();
 			if ($this->Project->save($this->data)) {
-				$this->Session->setFlash(LANG_PROJECTSAVED);
+				$this->Session->setFlash(__('Project saved.', true));
 				$this->redirect('/projects/view/'.$this->Project->getInsertID());
 			} else {
-				$this->Session->setFlash(LANG_CORRECTERRORSBELOW);
+				$this->Session->setFlash(__('Please correct errors below.', true));
 			}
 		}
 	}// add 
@@ -115,17 +97,16 @@ class ProjectsController extends AppController {
 	function edit($id = null) {
 		if (empty ($this->data)) {
 			if (!$id) {
-				$this->Session->setFlash(LANG_INVALIDID);
+				$this->Session->setFlash(__('Invalid id.', true));
 				$this->redirect('/projects/index');
 			}
 			$this->data = $this->Project->read(null, $id);
 		} else {
-			$this->cleanUpFields();
 			if ($this->Project->save($this->data)) {
-				$this->Session->setFlash(LANG_PROJECTSAVED);
+				$this->Session->setFlash(__('Project saved.', true));
 				$this->redirect('/projects/view/' . $id);
 			} else {
-				$this->Session->setFlash(LANG_CORRECTERRORSBELOW);
+				$this->Session->setFlash(__('Please correct errors below.', true));
 			}
 		}
 	}// edit
@@ -136,11 +117,11 @@ class ProjectsController extends AppController {
 	 */
 	function delete($id = null) {
 		if (!$id) {
-			$this->Session->setFlash(LANG_INVALIDID);
+			$this->Session->setFlash(__('Invalid id.', true));
 			$this->redirect('/projects/index');
 		}
 		if ($this->Project->del($id)) {
-			$this->Session->setFlash(LANG_PROJECTDELETED);
+			$this->Session->setFlash(__('Project deleted.', true));
 			$this->redirect('/projects/index');
 		}
 	}// delete

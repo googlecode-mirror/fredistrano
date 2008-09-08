@@ -1,0 +1,1 @@
+<?php e($this->renderElement('_log_viewer')); ?>

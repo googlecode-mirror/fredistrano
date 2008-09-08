@@ -1,8 +1,0 @@
-<?php 
-	echo "<h1>".LANG_ACLITEHOMEPAGE."</h1>";
-	echo LANG_THISPLUGINSIMPLYMANAGEYOURACLS;
-	echo "<ul>";
-	echo "<li> ".$html->link(LANG_ACLMANAGEMENT,'/aclite/acl_management/index')." </li>";
-	echo "<li> ".$html->link(LANG_PLUGINACLITEMANAGEMENT,'/aclite/slice/index')." </li>";
-	echo "</ul><br/><br/><br/><br/>";
-?>

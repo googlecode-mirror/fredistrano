@@ -1,5 +1,5 @@
 <?php
-/* SVN FILE: $Id: datasource.php 4409 2007-02-02 13:20:59Z phpnut $ */
+/* SVN FILE: $Id: datasource.php 7118 2008-06-04 20:49:29Z gwoo $ */
 /**
  * DataSource base class
  *
@@ -8,7 +8,7 @@
  * PHP versions 4 and 5
  *
  * CakePHP(tm) :  Rapid Development Framework <http://www.cakephp.org/>
- * Copyright 2005-2007, Cake Software Foundation, Inc.
+ * Copyright 2005-2008, Cake Software Foundation, Inc.
  *								1785 E. Sahara Avenue, Suite 490-204
  *								Las Vegas, Nevada 89104
  *
@@ -16,14 +16,14 @@
  * Redistributions of files must retain the above copyright notice.
  *
  * @filesource
- * @copyright		Copyright 2005-2007, Cake Software Foundation, Inc.
+ * @copyright		Copyright 2005-2008, Cake Software Foundation, Inc.
  * @link				http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
  * @package			cake
  * @subpackage		cake.cake.libs.model.datasources
  * @since			CakePHP(tm) v 0.10.5.1790
- * @version			$Revision: 4409 $
- * @modifiedby		$LastChangedBy: phpnut $
- * @lastmodified	$Date: 2007-02-02 07:20:59 -0600 (Fri, 02 Feb 2007) $
+ * @version			$Revision: 7118 $
+ * @modifiedby		$LastChangedBy: gwoo $
+ * @lastmodified	$Date: 2008-06-04 13:49:29 -0700 (Wed, 04 Jun 2008) $
  * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 /**
@@ -42,13 +42,6 @@ class DataSource extends Object {
  * @access public
  */
 	var $connected = false;
-/**
- * Print debug info?
- *
- * @var boolean
- * @access public
- */
-	var $debug = false;
 /**
  * Print full query debug info?
  *
@@ -146,9 +139,9 @@ class DataSource extends Object {
  * Holds a list of sources (tables) contained in the DataSource
  *
  * @var array
- * @access private
+ * @access protected
  */
-	var $__sources = null;
+	var $_sources = null;
 /**
  * A reference to the physical connection of this DataSource
  *
@@ -174,9 +167,16 @@ class DataSource extends Object {
  * Whether or not this DataSource is in the middle of a transaction
  *
  * @var boolean
- * @access public
+ * @access protected
  */
-	var $__transactionStarted = false;
+	var $_transactionStarted = false;
+/**
+ * Whether or not source data like available tables and schema descriptions
+ * should be cached
+ *
+ * @var boolean
+ */
+	var $cacheSources = true;
 /**
  * Constructor.
  */
@@ -187,84 +187,43 @@ class DataSource extends Object {
 		}
 	}
 /**
- * Returns true if the DataSource supports the given interface (method)
+ * Caches/returns cached results for child instances
  *
- * @param string $interface The name of the interface (method)
- * @return boolean True on success
+ * @return array
  */
-	function isInterfaceSupported($interface) {
-		$methods = get_class_methods(get_class($this));
-		$methods = strtolower(implode('|', $methods));
-		$methods = explode('|', $methods);
-		$return = in_array(strtolower($interface), $methods);
-		return $return;
-	}
-/**
- * Sets the configuration for the DataSource
- *
- * @param array $config The configuration array
- * @return void
- */
-	function setConfig($config) {
-		if (is_array($this->_baseConfig)) {
-			$this->config = $this->_baseConfig;
-			foreach($config as $key => $val) {
-				$this->config[$key] = $val;
-			}
+	function listSources($data = null) {
+		if ($this->cacheSources === false) {
+			return null;
 		}
-	}
-/**
- * Cache the DataSource description
- *
- * @param string $object The name of the object (model) to cache
- * @param mixed $data The description of the model, usually a string or array
- * @return void
- */
-	function __cacheDescription($object, $data = null) {
+		if ($this->_sources != null) {
+			return $this->_sources;
+		}
+
 		if (Configure::read() > 0) {
-			$expires = "+15 seconds";
+			$expires = "+30 seconds";
 		} else {
 			$expires = "+999 days";
 		}
 
-		if ($data !== null) {
-			$this->__descriptions[$object] =& $data;
-			$cache = serialize($data);
-		} else {
-			$cache = null;
-		}
-		$new = cache('models' . DS . ConnectionManager::getSourceName($this) . '_' . $object, $cache, $expires);
+		$key = ConnectionManager::getSourceName($this) . '_' . Inflector::slug($this->config['database']) . '_list';
+		$sources = Cache::read($key, '_cake_model_');
 
-		if ($new != null) {
-			$new = unserialize($new);
+		if ($sources == null) {
+			$sources = $data;
+			Cache::write($key, $data, array('duration' => $expires, 'config' => '_cake_model_'));
 		}
-		return $new;
+
+		$this->_sources = $sources;
+		return $sources;
 	}
 /**
- * To-be-overridden in subclasses.
+ * Convenience method for DboSource::listSources().  Returns source names in lowercase.
  *
- * @return string
+ * @return array
  */
-	function conditions($conditions) {
-		return $conditions;
-	}
-/**
- * To-be-overridden in subclasses.
- *
- * @param unknown_type $name
- * @return unknown
- */
-	function name($name) {
-		return $name;
-	}
-/**
- * To-be-overridden in subclasses.
- *
- * @param unknown_type $value
- * @return unknown
- */
-	function value($value) {
-		return $value;
+	function sources() {
+		$return = array_map('strtolower', $this->listSources());
+		return $return;
 	}
 /**
  * Returns a Model description (metadata) or null if none found.
@@ -273,16 +232,52 @@ class DataSource extends Object {
  * @return mixed
  */
 	function describe($model) {
-		if (isset($this->__descriptions[$model->table])) {
-			return $this->__descriptions[$model->table];
+		if ($this->cacheSources === false) {
+			return null;
 		}
-		$cache = $this->__cacheDescription($model->tablePrefix.$model->table);
+		if (isset($this->__descriptions[$model->tablePrefix . $model->table])) {
+			return $this->__descriptions[$model->tablePrefix . $model->table];
+		}
+		$cache = $this->__cacheDescription($model->tablePrefix . $model->table);
 
 		if ($cache !== null) {
-			$this->__descriptions[$model->table] =& $cache;
+			$this->__descriptions[$model->tablePrefix . $model->table] =& $cache;
 			return $cache;
 		}
 		return null;
+	}
+/**
+ * Begin a transaction
+ *
+ * @return boolean Returns true if a transaction is not in progress
+ */
+	function begin(&$model) {
+		return !$this->_transactionStarted;
+	}
+/**
+ * Commit a transaction
+ *
+ * @return boolean Returns true if a transaction is in progress
+ */
+	function commit(&$model) {
+		return $this->_transactionStarted;
+	}
+/**
+ * Rollback a transaction
+ *
+ * @return boolean Returns true if a transaction is in progress
+ */
+	function rollback(&$model) {
+		return $this->_transactionStarted;
+	}
+/**
+ * Converts column types to basic types
+ *
+ * @param string $real Real  column type (i.e. "varchar(255)")
+ * @return string Abstract column type (i.e. "string")
+ */
+	function column($real) {
+		return false;
 	}
 /**
  * To-be-overridden in subclasses.
@@ -328,23 +323,87 @@ class DataSource extends Object {
 		}
 	}
 /**
- * To-be-overridden in subclasses.
+ * Returns the ID generated from the previous INSERT operation.
  *
- * @param mixed $fields
- * @return mixed
+ * @param unknown_type $source
+ * @return in
  */
-	function fields($fields) {
-		return $fields;
+	function lastInsertId($source = null) {
+		return false;
 	}
 /**
- * To-be-overridden in subclasses.
+ * Returns the ID generated from the previous INSERT operation.
  *
- * @param Model $model
- * @param unknown_type $fields
- * @return unknown
+ * @param unknown_type $source
+ * @return in
  */
-	function getColumnType(&$model, $fields) {
+	function lastNumRows($source = null) {
 		return false;
+	}
+/**
+ * Returns the ID generated from the previous INSERT operation.
+ *
+ * @param unknown_type $source
+ * @return in
+ */
+	function lastAffected($source = null) {
+		return false;
+	}
+/**
+ * Returns true if the DataSource supports the given interface (method)
+ *
+ * @param string $interface The name of the interface (method)
+ * @return boolean True on success
+ */
+	function isInterfaceSupported($interface) {
+		$methods = get_class_methods(get_class($this));
+		$methods = strtolower(implode('|', $methods));
+		$methods = explode('|', $methods);
+		$return = in_array(strtolower($interface), $methods);
+		return $return;
+	}
+/**
+ * Sets the configuration for the DataSource
+ *
+ * @param array $config The configuration array
+ */
+	function setConfig($config) {
+		if (is_array($this->_baseConfig)) {
+			$this->config = $this->_baseConfig;
+			foreach ($config as $key => $val) {
+				$this->config[$key] = $val;
+			}
+		}
+	}
+/**
+ * Cache the DataSource description
+ *
+ * @param string $object The name of the object (model) to cache
+ * @param mixed $data The description of the model, usually a string or array
+ */
+	function __cacheDescription($object, $data = null) {
+		if ($this->cacheSources === false) {
+			return null;
+		}
+		if (Configure::read() > 0) {
+			$expires = "+15 seconds";
+		} else {
+			$expires = "+999 days";
+		}
+
+		if ($data !== null) {
+			$this->__descriptions[$object] =& $data;
+		}
+
+		$key = ConnectionManager::getSourceName($this) . '_' . $object;
+		$cache = Cache::read($key, '_cake_model_');
+
+		if (empty($cache)) {
+			$cache = $data;
+			Cache::write($key, $cache, array('duration' => $expires, 'config' => '_cake_model_'));
+		}
+
+		return $cache;
 	}
 /**
  * Enter description here...
@@ -361,15 +420,15 @@ class DataSource extends Object {
 	function insertQueryData($query, $data, $association, $assocData, &$model, &$linkModel, $stack) {
 		$keys = array('{$__cakeID__$}', '{$__cakeForeignKey__$}');
 
-		foreach($keys as $key) {
+		foreach ($keys as $key) {
 			$val = null;
 
 			if (strpos($query, $key) !== false) {
 				switch($key) {
 					case '{$__cakeID__$}':
-						if (isset($data[$model->name]) || isset($data[$association])) {
-							if (isset($data[$model->name][$model->primaryKey])) {
-								$val = $data[$model->name][$model->primaryKey];
+						if (isset($data[$model->alias]) || isset($data[$association])) {
+							if (isset($data[$model->alias][$model->primaryKey])) {
+								$val = $data[$model->alias][$model->primaryKey];
 							} elseif (isset($data[$association][$model->primaryKey])) {
 								$val = $data[$association][$model->primaryKey];
 							}
@@ -388,14 +447,14 @@ class DataSource extends Object {
 						}
 					break;
 					case '{$__cakeForeignKey__$}':
-						foreach($model->__associations as $id => $name) {
-							foreach($model->$name as $assocName => $assoc) {
+						foreach ($model->__associations as $id => $name) {
+							foreach ($model->$name as $assocName => $assoc) {
 								if ($assocName === $association) {
 									if (isset($assoc['foreignKey'])) {
 										$foreignKey = $assoc['foreignKey'];
 
-										if (isset($data[$model->name][$foreignKey])) {
-											$val = $data[$model->name][$foreignKey];
+										if (isset($data[$model->alias][$foreignKey])) {
+											$val = $data[$model->alias][$foreignKey];
 										} elseif (isset($data[$association][$foreignKey])) {
 											$val = $data[$association][$foreignKey];
 										} else {
@@ -418,10 +477,10 @@ class DataSource extends Object {
 						}
 					break;
 				}
-				if(empty($val) && $val !== 0) {
+				if (empty($val) && $val !== '0') {
 					return false;
 				}
-				$query = r($key, $this->value($val, $model->getColumnType($model->primaryKey)), $query);
+				$query = str_replace($key, $this->value($val, $model->getColumnType($model->primaryKey)), $query);
 			}
 		}
 		return $query;
@@ -434,49 +493,17 @@ class DataSource extends Object {
  * @return unknown
  */
 	function resolveKey($model, $key) {
-		return $model->name . $key;
-	}
-/**
- * Gets a value from an array or object.
- * The special {n}, as seen in the Model::generateList method, is taken care of here.
- *
- * @param array $data
- * @param mixed $path	As an array, or as a dot-separated string.
- * @return array
- */
-	function getFieldValue($data, $path) {
-		if (!is_array($path)) {
-			$path = explode('.', $path);
-		}
-		$tmp = array();
-
-		foreach($path as $i => $key) {
-			if (intval($key) > 0 || $key == '0') {
-				if (isset($data[intval($key)])) {
-					$data = $data[intval($key)];
-				} else {
-					return null;
-				}
-			} elseif ($key == '{n}') {
-				foreach($data as $j => $val) {
-					$tmp[] = DataSource::getFieldValue($val, array_slice($path, $i + 1));
-				}
-				return $tmp;
-			} else {
-				if (isset($data[$key])) {
-					$data = $data[$key];
-				} else {
-					return null;
-				}
-			}
-		}
-		return $data;
+		return $model->alias . $key;
 	}
 /**
  * Closes the current datasource.
  *
  */
 	function __destruct() {
+		if ($this->_transactionStarted) {
+			$null = null;
+			$this->rollback($null);
+		}
 		if ($this->connected) {
 			$this->close();
 		}

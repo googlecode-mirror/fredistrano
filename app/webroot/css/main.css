@@ -12,7 +12,7 @@ http://creativecommons.org/licenses/GPL/2.0/
 */
 /* THE BIG GUYS */
 * {margin:0;padding:0}
-body {padding: 0 0 20px;background: #fff url("images/body_bg.gif") repeat-x 0 100%;color:#333;font:83%/1.5 arial,tahoma,verdana,sans-serif}
+body {padding: 0 0 20px;z-index:100;background: #fff url("images/body_bg.gif") repeat-x 0 100%;color:#333;font:78%/1.5 arial,tahoma,verdana,sans-serif}
 
 /* LINKS */
 a,a:link,a:link,a:link,a:hover {background:transparent;text-decoration:underline;cursor:pointer}
@@ -28,7 +28,7 @@ label {display:block;padding: 5px 0}
 label br {clear:left}
 
 	/* FORMS - general classes */
-	input.f-submit {padding: 1px 3px;background:#666;color:#fff;font-weight:bold;font-size:96%}
+	input.f-submit {padding: 1px 3px;margin: 0px 10px ;background:#666;color:#fff;font-weight:bold;font-size:96%}
 
 	/* FORMS - f-wrap-1 - simple form, headings on left, form elements on right */
 	form.f-wrap-1 {width:100%;padding: .5em 0;background: #f6f6f6 url("images/featurebox_bg.gif") no-repeat 100% 100%;border-top: 1px solid #d7d7d7;position:relative}
@@ -49,7 +49,7 @@ label br {clear:left}
 		form.f-wrap-1 label select {width: 15.5em}
 		form.f-wrap-1 label textarea.f-comments {width: 20em}
 		form.f-wrap-1 div.f-submit-wrap {padding: 5px 0 5px 8em}
-		form.f-wrap-1 input.f-submit {margin: 0 0 0 10px}
+		form.f-wrap-1 input.f-submit {margin:25px 45px 20px;}
 
 		form.f-wrap-1 fieldset.f-checkbox-wrap, form.f-wrap-1 fieldset.f-radio-wrap {clear:left;float:left;width:32em;border:none;margin:0;padding-bottom:.7em}
 		form.f-wrap-1 fieldset.f-checkbox-wrap b, form.f-wrap-1 fieldset.f-radio-wrap b {float:left;width:8em;line-height: 1.7;display:block;position:relative;padding-top:.3em}
@@ -100,11 +100,11 @@ hr {margin: 1em 0;background:#f2f2f2;height:1px;color:#f2f2f2;border:none;clear:
 /* LAYOUT - HEADER */
 #header {background: #666 url("images/sprites.gif") repeat-x 0 100%;margin: 0 0 25px;padding: 0 0 8px;}
 
-	#header #site-name {font-size: 265%; font-family: arial,tahoma,verdana,sans-serif;letter-spacing: -.05em;margin:0 0 0 40px;padding:3px 0;color:#ccc;border:none}
+	#header #site-name {float:right;font-size: 265%; font-family: arial,tahoma,verdana,sans-serif;letter-spacing: -.05em;margin:0 35px 0 0 ;padding:3px 0;color:#ccc;border:none}
 
 	/* NAV - top horizontal nav */
-	#nav, #nav ul {padding: 0;margin: 0;list-style: none}
-	#nav {font-weight:bold;height:2.09em;font: bold 96% arial,tahoma,verdana,sans-serif;margin: 0 105px 0 40px}
+	#nav, #nav ul {padding:25px 0 0;margin: 0;list-style: none}
+	#nav {font-weight:bold;height:2.09em;font: bold 96% arial,tahoma,verdana,sans-serif;margin: 0 105px 0 35px}
 	#nav li {position:relative;background: #999;float: left;width: 10em;display:block;margin: 0;border-bottom: 3px solid #666;border-right: 3px solid #252525;padding:0}
 	#nav a, #nav a:link, #nav a:visited, #nav a:hover, #nav a:active {text-decoration:none;cursor:pointer;color:#fff;display: block;padding: 4px 10px 2px}
 	#nav a:hover {color:#000}
@@ -171,14 +171,23 @@ hr {margin: 1em 0;background:#f2f2f2;height:1px;color:#f2f2f2;border:none;clear:
 	.pagination * {margin:0}
 	.pagination h4 {margin-top:-1.45em;padding:0;border:none}*/
 
-	.pagination {background: #f2f2f2;color:#666;padding: 4px 2px 4px 7px;border: 1px solid #ddd;margin: 0 0 1.5em}
+/*	.pagination {background: #f2f2f2;color:#666;padding: 4px 2px 4px 7px;border: 1px solid #ddd;margin: 0 0 1.5em}
 	.pagination div.pagin_nav a:link, .pagination div.pagin_nav a:visited, .pagination div.pagin_nav a:hover, .pagination div.pagin_nav a:active {text-decoration:none;background:#fff;padding:2px 5px;border: 1px solid #ccc}
 	.pagination div.pagin_nav a:hover {background:#FF6100;color:#fff;}
 	.pagination div.pagin_nav span {text-decoration:none;background:#fff;padding:2px 5px;border: 1px solid #ccc;color:#ccc}
 	.pagination * {margin:0}
 	.pagination h4 {margin-top:-1.45em;padding:0;border:none}
 	.pagination div.pagin_nav {float: right;}
-	.pagination div.pagin_nav {position: relative; text-align: right;}
+	.pagination div.pagin_nav {position: relative; text-align: right;}*/
+	
+	.pagination {width: 100%; font-size: 90%;background: #f2f2f2;color:#666;padding: 8px 2px 4px 5px;border: 1px solid #ddd;margin: 0 0 1.5em}
+	.pagination a:link, .pagination a:visited, .pagination a:hover, .pagination a:active {text-decoration:none;background:#fff;padding:2px 4px;margin:1px;border: 1px solid #ccc}
+	.pagination a:hover {background:#FF6100;color:#fff;}
+	.pagination * {margin:0}
+	.pagination h4 {margin-top:-1.45em;padding:0;border:none}
+	.pagination {float: left;}
+	.pagination {position: relative; text-align: left;} 
+	.pagination p {font-size:80%;padding: 6px 0px 0px 20px;}	
 
 	#resultslist-wrap {margin: 0 0 1.5em;font-size:92%}
 	#resultslist-wrap dt, #resultslist-wrap dl {margin: 0}
@@ -193,9 +202,9 @@ hr {margin: 1em 0;background:#f2f2f2;height:1px;color:#f2f2f2;border:none;clear:
 	.table1 {border: 2px solid #900;border-collapse:collapse;width:100%}
 		.table1 td {padding:3px;border: 1px solid #fff}
 		.table1 th {text-align:left;border: 1px solid #fff}
-		.table1 thead th {color:#fff;font-size:115%;background: #900 url("images/sprites.gif") repeat-x 0 -1300px;padding: 1px 3px}
-		.table1 tbody th {color:#fff;font-size:105%;background: #88b8db url("images/sprites.gif") repeat-x 0 -1400px;padding: 1px 5px}
-		.table1 tbody th.sub {font-size:100%;color:#000;background: #efefef url("images/sprites.gif") repeat-x 0 -1500px;padding: 1px 5px 1px}
+		.table1 thead th {color:#fff;font-size:115%;background: #900 url("images/bg1.png") repeat;padding: 1px 3px}
+		.table1 tbody th {color:#fff;font-size:105%;background: #88b8db url("images/bg2.png") repeat;padding: 1px 5px;width:180px;}
+		.table1 tbody th.sub {font-size:100%;color:#000;background: #efefef url("images/bg3.png") repeat;padding: 1px 5px 1px}
 		.table1 th a {color:#fff;}
 		.table1 ul {margin:0;padding:0}
 		.table1 li{display:inline; list-style:none;}
@@ -244,7 +253,7 @@ hr {margin: 1em 0;background:#f2f2f2;height:1px;color:#f2f2f2;border:none;clear:
 /* LAYOUT TYPE E */
 	#type-e #content-wrap {background: transparent url("images/content_wrap_e_bg.gif") repeat-y 100% 0}
 	#type-e #logo {position:absolute;top:0;left:auto;right:25px;width:165px;text-align:center;}
-	#type-e #utility {position:absolute;top:55px;left:auto;right:25px;width:165px;border-top: 5px solid #999}
+	#type-e #utility {position:absolute;top:35px;left:auto;right:25px;width:165px;border-top: 5px solid #999}
 	#type-e #content {margin: 0 243px 0 50px}
 
 /* LAYOUT TYPE F */

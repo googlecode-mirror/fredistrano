@@ -14,21 +14,6 @@ class DeploymentLog extends AppModel {
 		)
 	);
 
-	var $feed = null;
-
-	function __construct(){
-		parent::__construct();
-		
-		if (defined('_PUBLISHFEED') && _PUBLISHFEED === true ) {
-			$this->feed = array(
-			    'titleField'	=> 	'DeploymentLog.title',
-			    'descField' 	=> 	'DeploymentLog.comment',
-			    'link' 			=> 	'/deploymentLogs/view/%s',
-			    'orderby' 		=> 	array('DeploymentLog.created' => 'DESC'),
-			    'limit' 		=> 	20
-			);
-		}
-	}
 	/** 
 	 * Archivage des logs 
 	 */
@@ -37,9 +22,18 @@ class DeploymentLog extends AppModel {
 		$logs = $this->findAll($conditions);
 		
 		foreach ($logs as $log) {
+			// Flag
 			$log['DeploymentLog']['archive'] = true;
 			$this->save($log);
-		}
+			
+			// Suppresion du fichier
+			if ($log['DeploymentLog']['uuid']) {
+				$logFile = F_DEPLOYLOGDIR.$log['DeploymentLog']['uuid'].'.log';
+				if (file_exists ($logFile)) {
+					@unlink( $logFile );
+				}
+			}//
+		}// foreach
 		
 		return sizeof($logs);
 	}// archive
@@ -51,8 +45,9 @@ class DeploymentLog extends AppModel {
 		$conditions = null;
 		$logs = $this->findAll($conditions, array ('id'));
 
-		foreach ($logs as $log)
+		foreach ($logs as $log) {
 			$this->del($log['DeploymentLog']['id']);
+		}
 	}// delAll
 	
 }// DeploymentLog

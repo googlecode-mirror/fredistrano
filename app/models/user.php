@@ -3,36 +3,63 @@ class User extends AppModel {
 
 	var $name = 'User';
 
-	var $validate = array (
-		'login' => array (
-			array (VALID_NOT_EMPTY, LANG_PLEASEENTERALOGIN),
-			array (array('isUnique', array('login')), LANG_LOGINALREADYUSED)
-		)
+	var $validate = array(
+	    'login' => array(
+	        'rule1' => array(
+	            'rule' => 'alphaNumeric',
+	            'required' => true
+	        ),
+	        'rule2' => array(
+	            'rule' => 'isUnique'
+	        )
+	    ),
+	    'password' => array(
+	        'rule1' => array(
+	            'rule' => 'alphaNumeric',
+	            'required' => true
+	        ),
+	        'rule2' => array(
+	            'rule' => array('minLength', 4)
+	        )
+	    ),
+		 'email' => array(
+		    'rule' => array('email', true),
+		  	// 'message' => 'Please supply a valid email address.'
+		    )
 	);
 
+	// var $displayField = 'login';
+	
 	var $hasAndBelongsToMany = array (
 		'Group' => array (
 			'className' => 'Group',
 			'joinTable' => 'groups_users',
 			'foreignKey' => 'user_id',
-			'associationForeignKey' => 'group_id',
+			'associationForeignKey' => 'group_id'
+		)
+	);
+	
+	var $hasOne = array (
+		'Profile' => array ('className' => 'Profile',
+			'foreignKey' => 'user_id',
+			'dependent' => true,
 			'conditions' => '',
 			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'unique' => '',
-			'finderQuery' => '',
-			'deleteQuery' => '',
-			'insertQuery' => ''
-		),
-		
+			'order' => ''
+			)
 	);
+	
 
 	function beforeSave() {
 		// si y a un champ password : add() et change_password() mais pas edit()
-		if (isset ($this->data[$this->name]['password']))
+		if (isset ($this->data[$this->name]['password'])){
 			$this->data[$this->name]['password'] = md5($this->data[$this->name]['password']);
+		}
+		
+		// if (empty($this->data['Profile']['rss_token'])) {
+		// 	$this->data['Profile']['rss_token'] = sha1( rand(0,10000) + time());
+		// }
+
 		return parent :: beforeSave();
 	}
 	
@@ -45,20 +72,6 @@ class User extends AppModel {
 		$tmp = $this->findByLogin($login);
 		return !empty($tmp);
 	}// isValid
-	
-	function _format(& $user) {
-		$groups = null;
-		if (!empty ($user['Group']))
-			foreach ($user['Group'] as $group)
-				$groups .= $group['name'] . ' ; ';
-		$user['User']['groups'] = $groups;
-		unset ($user['Group']);
-	}
-
-	function _formatAll(& $users) {
-		foreach ($users as & $user)
-			$this->_format($user);
-	}
-	
+		
 }
 ?>

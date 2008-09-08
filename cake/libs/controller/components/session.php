@@ -1,5 +1,5 @@
 <?php
-/* SVN FILE: $Id: session.php 4409 2007-02-02 13:20:59Z phpnut $ */
+/* SVN FILE: $Id: session.php 7296 2008-06-27 09:09:03Z gwoo $ */
 /**
  * Short description for file.
  *
@@ -8,7 +8,7 @@
  * PHP versions 4 and 5
  *
  * CakePHP(tm) :  Rapid Development Framework <http://www.cakephp.org/>
- * Copyright 2005-2007, Cake Software Foundation, Inc.
+ * Copyright 2005-2008, Cake Software Foundation, Inc.
  *								1785 E. Sahara Avenue, Suite 490-204
  *								Las Vegas, Nevada 89104
  *
@@ -16,16 +16,19 @@
  * Redistributions of files must retain the above copyright notice.
  *
  * @filesource
- * @copyright		Copyright 2005-2007, Cake Software Foundation, Inc.
+ * @copyright		Copyright 2005-2008, Cake Software Foundation, Inc.
  * @link				http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
  * @package			cake
  * @subpackage		cake.cake.libs.controller.components
  * @since			CakePHP(tm) v 0.10.0.1232
- * @version			$Revision: 4409 $
- * @modifiedby		$LastChangedBy: phpnut $
- * @lastmodified	$Date: 2007-02-02 07:20:59 -0600 (Fri, 02 Feb 2007) $
+ * @version			$Revision: 7296 $
+ * @modifiedby		$LastChangedBy: gwoo $
+ * @lastmodified	$Date: 2008-06-27 02:09:03 -0700 (Fri, 27 Jun 2008) $
  * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
  */
+if (!class_exists('cakesession')) {
+	uses('session');
+}
 /**
  * Session Component.
  *
@@ -44,31 +47,65 @@ class SessionComponent extends CakeSession {
  */
 	var $__active = true;
 /**
+ * Used to determine if Session has been started
+ *
+ * @var boolean
+ * @access private
+ */
+	var $__started = false;
+/**
+ * Used to determine if request are from an Ajax request
+ *
+ * @var boolean
+ * @access private
+ */
+	var $__bare = 0;
+/**
  * Class constructor
  *
- * @param string $base
+ * @param string $base The base path for the Session
  */
 	function __construct($base = null) {
-		if (!defined('AUTO_SESSION') || AUTO_SESSION === true) {
+		if (Configure::read('Session.start') === true) {
 			parent::__construct($base);
 		} else {
 			$this->__active = false;
 		}
 	}
 /**
- * Startup method.  Copies controller data locally for rendering flash messages.
+ * Initializes the component, gets a reference to Controller::$param['bare'].
  *
- * @param object $controller
+ * @param object $controller A reference to the controller
+ * @access public
+ */
+	function initialize(&$controller) {
+		if (isset($controller->params['bare'])) {
+			$this->__bare = $controller->params['bare'];
+		}
+	}
+/**
+ * Startup method.
+ *
+ * @param object $controller Instantiating controller
  * @access public
  */
 	function startup(&$controller) {
-		$this->base = $controller->base;
-		$this->webroot = $controller->webroot;
-		$this->here = $controller->here;
-		$this->params = $controller->params;
-		$this->action = $controller->action;
-		$this->data = $controller->data;
-		$this->plugin = $controller->plugin;
+		if ($this->__started === false && $this->__active === true) {
+			$this->__start();
+		}
+	}
+/**
+ * Starts Session on if 'Session.start' is set to false in core.php
+ *
+ * @param string $base The base path for the Session
+ * @access public
+ */
+	function activate($base = null) {
+		if ($this->__active === true) {
+			return;
+		}
+		parent::__construct($base);
+		$this->__active = true;
 	}
 /**
  * Used to write a value to a session key.
@@ -80,10 +117,23 @@ class SessionComponent extends CakeSession {
  * @param string $value The value you want to store in a session.
  * @access public
  */
-	function write($name, $value) {
+	function write($name, $value = null) {
 		if ($this->__active === true) {
-			$this->writeSessionVar($name, $value);
+			$this->__start();
+			if (is_array($name)) {
+				foreach ($name as $key => $value) {
+					if (parent::write($key, $value) === false) {
+						return false;
+					}
+				}
+				return true;
+			}
+			if (parent::write($name, $value) === false) {
+				return false;
+			}
+			return true;
 		}
+		return false;
 	}
 /**
  * Used to read a session values for a key or return values for all keys.
@@ -92,13 +142,13 @@ class SessionComponent extends CakeSession {
  * Calling the method without a param will return all session vars
  *
  * @param string $name the name of the session key you want to read
- *
- * @return values from the session vars
+ * @return mixed value from the session vars
  * @access public
  */
 	function read($name = null) {
 		if ($this->__active === true) {
-			return $this->readSessionVar($name);
+			$this->__start();
+			return parent::read($name);
 		}
 		return false;
 	}
@@ -107,13 +157,14 @@ class SessionComponent extends CakeSession {
  *
  * In your controller: $this->Session->del('Controller.sessKey');
  *
- * @param string $name
- * @return boolean, true is session variable is set and can be deleted, false is variable was not set.
+ * @param string $name the name of the session key you want to delete
+ * @return boolean true is session variable is set and can be deleted, false is variable was not set.
  * @access public
  */
 	function del($name) {
 		if ($this->__active === true) {
-			return $this->delSessionVar($name);
+			$this->__start();
+			return parent::del($name);
 		}
 		return false;
 	}
@@ -122,12 +173,13 @@ class SessionComponent extends CakeSession {
  *
  * In your controller: $this->Session->delete('Controller.sessKey');
  *
- * @param string $name
- * @return boolean, true is session variable is set and can be deleted, false is variable was not set.
+ * @param string $name the name of the session key you want to delete
+ * @return boolean true is session variable is set and can be deleted, false is variable was not set.
  * @access public
  */
 	function delete($name) {
 		if ($this->__active === true) {
+			$this->__start();
 			return $this->del($name);
 		}
 		return false;
@@ -137,13 +189,14 @@ class SessionComponent extends CakeSession {
  *
  * In your controller: $this->Session->check('Controller.sessKey');
  *
- * @param string $name
+ * @param string $name the name of the session key you want to check
  * @return boolean true is session variable is set, false if not
  * @access public
  */
 	function check($name) {
 		if ($this->__active === true) {
-			return $this->checkSessionVar($name);
+			$this->__start();
+			return parent::check($name);
 		}
 		return false;
 	}
@@ -157,7 +210,8 @@ class SessionComponent extends CakeSession {
  */
 	function error() {
 		if ($this->__active === true) {
-			return $this->getLastError();
+			$this->__start();
+			return parent::error();
 		}
 		return false;
 	}
@@ -168,62 +222,28 @@ class SessionComponent extends CakeSession {
  *
  * Additional params below can be passed to customize the output, or the Message.[key]
  *
- * @param string $flashMessage Message to be flashed
+ * @param string $message Message to be flashed
  * @param string $layout Layout to wrap flash message in
  * @param array $params Parameters to be sent to layout as view variables
  * @param string $key Message key, default is 'flash'
  * @access public
  */
-	function setFlash($flashMessage, $layout = 'default', $params = array(), $key = 'flash') {
+	function setFlash($message, $layout = 'default', $params = array(), $key = 'flash') {
 		if ($this->__active === true) {
-			if ($layout == 'default') {
-				$out = '<div id="' . $key . 'Message" class="message">' . $flashMessage . '</div>';
-			} elseif ($layout == '' || $layout == null) {
-				$out = $flashMessage;
-			} else {
-				$ctrl = null;
-				$view = new View($ctrl);
-				$view->base			= $this->base;
-				$view->webroot		= $this->webroot;
-				$view->here			= $this->here;
-				$view->params		= $this->params;
-				$view->action		= $this->action;
-				$view->data			= $this->data;
-				$view->plugin		= $this->plugin;
-				$view->helpers		= array('Html');
-				$view->layout		= $layout;
-				$view->pageTitle	= '';
-				$view->viewVars	= $params;
-				$out = $view->renderLayout($flashMessage);
-			}
-			$this->write('Message.' . $key, $out);
+			$this->__start();
+			$this->write('Message.' . $key, compact('message', 'layout', 'params'));
 		}
-	}
-/**
- * This method is deprecated.
- * You should use $session->flash('key'); in your views
- *
- * @deprecated will not be avialable after 1.1.x.x
- */
-	function flash($key = 'flash') {
-		trigger_error('(SessionComponent::flash()) Deprecated: Use $session->flash() in your views instead', E_USER_WARNING);
-		if ($this->__active === true) {
-			if ($this->check('Message.' . $key)) {
-				e($this->read('Message.' . $key));
-				$this->del('Message.' . $key);
-				return;
-			}
-		}
-		return false;
 	}
 /**
  * Used to renew a session id
  *
  * In your controller: $this->Session->renew();
+ *
  * @access public
  */
 	function renew() {
 		if ($this->__active === true) {
+			$this->__start();
 			parent::renew();
 		}
 	}
@@ -237,7 +257,8 @@ class SessionComponent extends CakeSession {
  */
 	function valid() {
 		if ($this->__active === true) {
-			return $this->isValid();
+			$this->__start();
+			return parent::valid();
 		}
 		return false;
 	}
@@ -245,12 +266,44 @@ class SessionComponent extends CakeSession {
  * Used to destroy sessions
  *
  * In your controller: $this->Session->destroy();
+ *
  * @access public
  */
 	function destroy() {
 		if ($this->__active === true) {
-			$this->destroyInvalid();
+			$this->__start();
+			parent::destroy();
 		}
+	}
+/**
+ * Returns Session id
+ *
+ * If $id is passed in a beforeFilter, the Session will be started
+ * with the specified id
+ *
+ * @param $id string
+ * @return string
+ * @access public
+ */
+	function id($id = null) {
+		return parent::id($id);
+	}
+/**
+ * Starts Session if SessionComponent is used in Controller::beforeFilter(),
+ * or is called from
+ *
+ * @access private
+ */
+	function __start() {
+		if ($this->__started === false) {
+			if (!$this->id() && parent::start()) {
+				$this->__started = true;
+				parent::_checkValid();
+			} else {
+				$this->__started = parent::start();
+			}
+		}
+		return $this->__started;
 	}
 }
 

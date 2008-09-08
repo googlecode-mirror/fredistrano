@@ -55,24 +55,30 @@
  *
  */
 class DATABASE_CONFIG {
-	var $default = array (
+	var $default = array(
 		'driver' => 'mysql',
-		'connect' => 'mysql_connect',
-		'host' => 'mysql.server',
-		'login' => 'user',
-		'password' => 'password',
-		'database' => 'Fredistrano',
-		'prefix' => ''
+		'persistent' => false,
+		'host' => 'localhost',
+		'port' => '',
+		'login' => '',
+		'password' => '',
+		'database' => 'fredistrano',
+		'schema' => '',
+		'prefix' => '',
+		'encoding' => 'utf8'
 	);
 
 	var $test = array (
-		'driver' => 'mysql',
-		'connect' => 'mysql_connect',
-		'host' => 'localhost',
-		'login' => 'user',
-		'password' => 'password',
-		'database' => 'project_name-test',
-		'prefix' => ''
-	);
+			'driver' => 'mysql',
+			'persistent' => false,
+			'host' => 'localhost',
+			'port' => '',
+			'login' => 'root',
+			'password' => 'root',
+			'database' => 'qos_platform_test',
+			'schema' => '',
+			'prefix' => '',
+			'encoding' => 'utf8'
+		);
 }
 ?>

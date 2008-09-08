@@ -1,5 +1,5 @@
 <?php
-/* SVN FILE: $Id: css.php 4450 2007-02-05 05:18:05Z phpnut $ */
+/* SVN FILE: $Id: css.php 6311 2008-01-02 06:33:52Z phpnut $ */
 /**
  * Short description for file.
  *
@@ -8,7 +8,7 @@
  * PHP versions 4 and 5
  *
  * CakePHP(tm) :  Rapid Development Framework <http://www.cakephp.org/>
- * Copyright 2005-2007, Cake Software Foundation, Inc.
+ * Copyright 2005-2008, Cake Software Foundation, Inc.
  *								1785 E. Sahara Avenue, Suite 490-204
  *								Las Vegas, Nevada 89104
  *
@@ -16,24 +16,24 @@
  * Redistributions of files must retain the above copyright notice.
  *
  * @filesource
- * @copyright		Copyright 2005-2007, Cake Software Foundation, Inc.
+ * @copyright		Copyright 2005-2008, Cake Software Foundation, Inc.
  * @link				http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
  * @package			cake
  * @subpackage		cake.app.webroot
  * @since			CakePHP(tm) v 0.2.9
- * @version			$Revision: 4450 $
+ * @version			$Revision: 6311 $
  * @modifiedby		$LastChangedBy: phpnut $
- * @lastmodified	$Date: 2007-02-04 23:18:05 -0600 (Sun, 04 Feb 2007) $
+ * @lastmodified	$Date: 2008-01-02 00:33:52 -0600 (Wed, 02 Jan 2008) $
  * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 if (!defined('CAKE_CORE_INCLUDE_PATH')) {
 	header('HTTP/1.1 404 Not Found');
+	exit('File Not Found');
 }
 /**
  * Enter description here...
  */
-	require(LIBS . 'folder.php');
-	require(LIBS . 'legacy.php');
+	uses('file');
 /**
  * Enter description here...
  *
@@ -43,11 +43,11 @@ if (!defined('CAKE_CORE_INCLUDE_PATH')) {
  */
 	function make_clean_css($path, $name) {
 		require(VENDORS . 'csspp' . DS . 'csspp.php');
-		$data  =file_get_contents($path);
-		$csspp =new csspp();
-		$output=$csspp->compress($data);
-		$ratio =100 - (round(strlen($output) / strlen($data), 3) * 100);
-		$output=" /* file: $name, ratio: $ratio% */ " . $output;
+		$data = file_get_contents($path);
+		$csspp = new csspp();
+		$output = $csspp->compress($data);
+		$ratio = 100 - (round(strlen($output) / strlen($data), 3) * 100);
+		$output = " /* file: $name, ratio: $ratio% */ " . $output;
 		return $output;
 	}
 /**
@@ -61,7 +61,7 @@ if (!defined('CAKE_CORE_INCLUDE_PATH')) {
 		if (!is_dir(dirname($path))) {
 			mkdir(dirname($path));
 		}
-		$cache=new File($path);
+		$cache = new File($path);
 		return $cache->write($content);
 	}
 
@@ -78,18 +78,19 @@ if (!defined('CAKE_CORE_INCLUDE_PATH')) {
 	}
 
 	if (file_exists($cachepath)) {
-		$templateModified=filemtime($filepath);
-		$cacheModified   =filemtime($cachepath);
+		$templateModified = filemtime($filepath);
+		$cacheModified = filemtime($cachepath);
 
 		if ($templateModified > $cacheModified) {
-			$output=make_clean_css($filepath, $filename);
+			$output = make_clean_css($filepath, $filename);
 			write_css_cache($cachepath, $output);
 		} else {
 			$output = file_get_contents($cachepath);
 		}
 	} else {
-		$output=make_clean_css($filepath, $filename);
+		$output = make_clean_css($filepath, $filename);
 		write_css_cache($cachepath, $output);
+		$templateModified = time();
 	}
 
 	header("Date: " . date("D, j M Y G:i:s ", $templateModified) . 'GMT');

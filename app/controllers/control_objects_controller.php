@@ -3,9 +3,11 @@ class ControlObjectsController extends AppController {
 
 	var $name = 'ControlObjects';
 	
-	var $helpers = array ();
+	var $helpers = array (
+	);
 	
-	var $components = array ();
+	var $components = array (
+	);
 
 	var $authLocal = array (
 		'ControlObjects' => array (
@@ -14,33 +16,34 @@ class ControlObjectsController extends AppController {
 	);
 
 	function beforeRender() {
-		parent :: beforeRender();
+		parent::beforeRender();
 		// Tableau de liens pour la création du menu contextuel
 		$tab[] = array (
 			'text' => 'Actions'
 		);
 		if ($this->action != 'index')
 			$tab[] = array (
-				'text' => LANG_CONTROLOBJECTLIST,
+				'text' => __('Control object list', true),
 				'link' => '/control_objects/index'
 			);
 		if ($this->action != 'add')
 			$tab[] = array (
-				'text' => LANG_ADDCONTROLOBJECT,
+				'text' => __('Add control object', true),
 				'link' => '/control_objects/add'
 			);
 		$this->set('context_menu', $tab);
+		parent :: beforeRender();
 	}
 
 	function index() {
-		$criteria = NULL;
-		list ($order, $limit, $page) = $this->Pagination->init($criteria);
-		$this->set('data', $this->ControlObject->findAll($criteria, NULL, $order, $limit, $page, 0));
+		$data = $this->paginate('ControlObject');
+		$this->set(compact('data'));
+		
 	}
 
 	function view($id = null) {
 		if (!$id or !$this->ControlObject->read(null, $id)) {
-			$this->Session->setFlash(LANG_INVALIDCREDENTIALS);
+			$this->Session->setFlash(__('Invalid id.', true));
 			$this->redirect('/control_objects/index');
 			exit;
 		}
@@ -49,17 +52,17 @@ class ControlObjectsController extends AppController {
 
 	function add() {
 		if (empty ($this->data)) {
-			$this->set('controlObjects', $this->ControlObject->generateList());
+			$this->set('controlObjects', $this->ControlObject->find('list'));
 			$this->render();
 		} else {
-			$this->cleanUpFields();
 			if ($this->ControlObject->save($this->data)) {
 				$this->Aclite->reloadsAcls('Aco');
-				$this->Session->setFlash(LANG_COCREATED);
+				$this->Session->setFlash(__('The control object has been created.', true));
 				$this->redirect('/control_objects/index');
+				exit;
 			} else {
-				$this->Session->setFlash(LANG_CORRECTERRORSBELOW);
-				$this->set('controlObjects', $this->ControlObject->generateList());
+				$this->Session->setFlash(__('Please correct errors below.', true));
+				$this->set('controlObjects', $this->ControlObject->find('list'));
 			}
 		}
 	}
@@ -67,40 +70,40 @@ class ControlObjectsController extends AppController {
 	function edit($id = null) {
 		if (empty ($this->data)) {
 			if (!$id or !$this->ControlObject->read(null, $id)) {
-				$this->Session->setFlash(LANG_INVALIDCREDENTIALS);
+				$this->Session->setFlash(__('Invalid id.', true));
 				$this->redirect('/control_objects/index');
 				exit;
 			}
 			$this->data = $this->ControlObject->read(null, $id);
-			$this->set('controlObjects', $this->ControlObject->generateList());
+			$this->set('controlObjects', $this->ControlObject->find('list'));
 		} else {
-			$this->cleanUpFields();
-			if (empty ($this->data['ControlObject']['parent_id']))
-				unset ($this->data['ControlObject']['parent_id']);
 			if ($this->ControlObject->save($this->data)) {
 				$this->Aclite->reloadsAcls('Aco');
-				$this->Session->setFlash(LANG_COUPDATED);
+				$this->Session->setFlash(__('The control object has been updated.', true));
 				$this->redirect('/control_objects/view/' . $id);
+				exit;
 			} else {
-				$this->Session->setFlash(LANG_CORRECTERRORSBELOW);
-				$this->set('controlObjects', $this->ControlObject->generateList());
+				$this->Session->setFlash(__('Please correct errors below.', true));
+				$this->set('controlObjects', $this->ControlObject->find('list'));
 			}
 		}
 	}
 
 	function delete($id = null) {
 		if (!$id or !$this->ControlObject->read(null, $id)) {
-			$this->Session->setFlash(LANG_INVALIDCREDENTIALS);
+			$this->Session->setFlash(__('Invalid id.', true));
 			$this->redirect('/control_objects/index');
 			exit;
 		}
 		if ($this->ControlObject->del($id)) {
 			$this->Aclite->reloadsAcls('Aco');
-			$this->Session->setFlash(LANG_CODELETED);
+			$this->Session->setFlash(__('The control object has been deleted.', true));
 			$this->redirect('/control_objects/index');
+			exit;
 		} else {
-			$this->Session->setFlash(LANG_ERRORDURINGDELETION);
+			$this->Session->setFlash(__('Error during deletion.', true));
 			$this->redirect('/control_objects/view/' . $id);
+			exit;
 		}
 	}
 
