@@ -43,6 +43,9 @@ class DeploymentsController extends AppController {
 	 * @param string $id ID of the project to be deployed
 	 */
 	function runManual($id = null) {
+
+debug($this->data);
+exit;
 		
 		// View
 		$this->layout = 'ajax';
@@ -117,7 +120,7 @@ class DeploymentsController extends AppController {
 		// Get deployment options for current project
 		$options = Configure::read('Deployment.options');
 		$projectOptions = $this->Deployment->getConfig();
-		if ( property_exists($projectOptions, 'options') && is_array($projectOptions->options) ) {
+		if ( isset($projectOptions->options) && is_array($projectOptions->options) ) {
 			$options = Set::merge($options, $projectOptions->options);
 		}
 		$this->set('options', $options); 

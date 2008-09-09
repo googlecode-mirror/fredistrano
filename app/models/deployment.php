@@ -175,7 +175,7 @@ class Deployment extends AppModel {
 		$default_options = array(
 			'user_svn' 		=> Configure::read('Subversion.user'),
 			'password_svn' 	=> Configure::read('Subversion.passwd'),
-			'configDir'		=> Configure::read('Subversion.configDirectory'),
+			'configDirectory'		=> Configure::read('Subversion.configDirectory'),
 			'parseResponse'	=> Configure::read('Subversion.parseResponse'),
 			'stepLog'		=> $this->_stepLog
 		);
@@ -437,7 +437,7 @@ class Deployment extends AppModel {
 				
 		// Removing files
 		$path = F_DEPLOYTMPDIR.$this->_project['Project']['name'];
-		$log = ShellAction::remove($path, true, array('stepLog'=>$this->_stepLog));
+		ShellAction::remove($path, true, array('stepLog'=>$this->_stepLog));
 
 	}// _clearProjectTempFiles
 	
@@ -446,45 +446,18 @@ class Deployment extends AppModel {
 		if (!$this->isInitialized()) {
 			$this->_stepLog->error( sprintf(__('Missing working data', true)) );
 		}
-			
-		// Load project configuration 
+		
+		$path = $this->_project['Project']['prd_path'];
+		$mode = Configure::read('FileSystem.permissions.files');
+		
+		// Default permissions
+		ShellAction::changePermissions($path, $mode, array('stepLog'=>$this->_stepLog));
+		
+		// Writable permissions
 		self::_loadConfig();
-		
-		// Change file mode
-		$command = "find ".Command::convertPath($this->_project['Project']['prd_path'])." -type f -exec chmod "
-						.Configure::read('FileSystem.permissions.files')." {} \;";
-		$log = Command::execute( $command,  
-			array(
-		        'comment'	=> sprintf(__('Resetting files permissions to %s', true), Configure::read('FileSystem.permissions.files')),
-				'directory'	=> F_DEPLOYDIR
-			)
-		);
-		$this->_stepLog->addChildLog( $log );	
-		
-		// Change directory mode
-		$command = "find ".Command::convertPath($this->_project['Project']['prd_path'])." -type d "
-					."-exec chmod ".Configure::read('FileSystem.permissions.directories')." {} \;";
-		$log = Command::execute( $command, 
-			array(
-		        'comment'	=> sprintf(__('Resetting directories permissions to %s', true), Configure::read('FileSystem.permissions.directories')),
-				'directory'	=> F_DEPLOYDIR
-			)
-		);
-		$this->_stepLog->addChildLog( $log );	
-		
-		// Give write permissions to some folder
-		$writable = $this->_config->writable;
-		if (sizeof($writable) > 0) {
-			for ($i = 0; $i < sizeof($writable); $i++) {
-				$command = "chmod -vR ".Configure::read('FileSystem.permissions.writable')."  "
-					.Command::convertPath($this->_project['Project']['prd_path'].$writable[$i] );
-				$log = Command::execute( $command, 
-					array(
-				        'comment'	=> sprintf(__('Resetting writeable permissions to %s', true), Configure::read('FileSystem.permissions.writable')),
-						'directory'	=> F_DEPLOYDIR
-					)
-				);
-				$this->_stepLog->addChildLog( $log );	
+		if ( isset($this->_config->writable) && is_array($this->_config->writable) ) {
+			foreach ($this->_config->writable as $subPath) {
+				ShellAction::changePermissions($path.$subPath, array ('dir' => Configure::read('FileSystem.permissions.writable')), array('stepLog'=>$this->_stepLog));
 			}
 		}
 	}// _resetPermissions
@@ -530,35 +503,6 @@ class Deployment extends AppModel {
 	// 	*/
 	// 	return $output;
 	// }// backup
-	
-	private function __runScript( $type = 'before' ) {
-		$projectTmpDir = F_DEPLOYTMPDIR.$this->_project['Project']['name'].DS;
-		
-		// Run before script
-		if ($options['run'.ucfirst($type).'Script']) {			
-			$scriptPath = $this->_config->scripts[$type];
-			if (!file_exists($scriptPath) && file_exists($projectTmpDir.'tmpDir'.DS.'.fredistrano'.DS.$scriptPath)) {
-				$scriptPath = $projectTmpDir.'tmpDir'.DS.'.fredistrano'.DS.$scriptPath;
-			} else if (!file_exists($scriptPath)){
-				$this->_stepLog->error( __('Script not found', true) );
-			}
-
-			if (!is_executable($scriptPath)) {
-				$log = Command::execute( "chmod u+x $scriptPath", 
-					array(
-				        'comment'=>__('Execution privileges to script',true)
-					)
-				);	
-				$this->_stepLog->addChildLog( $log );		
-			}
-			Command::execute( $scriptPath,
-				array(
-			        'comment'	=> sprintf(__('%s script',true), $type)
-				)
-			);
-			$this->_stepLog->addChildLog( $log );	
-		}
-	}// __runScript
 	
     // Public methods ---------------------------------------------------------
 	public function isInitialized() {

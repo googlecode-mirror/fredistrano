@@ -121,6 +121,29 @@
 </tr>
 
 <tr>
+<th class="sub"><?php __('Deployment method');?></th>
+<td>
+		<?php 
+			e($form->checkbox(
+					'Project.deploymentMethod', 
+					array( 'class' => 'f-checkbox', 'type' => 'checkbox','value' => 0)
+				)
+			);	
+		?>
+		<?php __('Export');?>
+		&nbsp;/&nbsp;
+		<?php 
+			e($form->checkbox(
+					'Project.deploymentMethod', 
+					array( 'class' => 'f-checkbox', 'type' => 'checkbox','value' => 1, 'checked' => 'checked')
+				)
+			);	
+		?>
+		<?php __('Checkout/update (faster but needs privilege)');?>
+</td>
+</tr>
+
+<tr>
 	<th class="sub">&nbsp;</th>
 <td>
 	

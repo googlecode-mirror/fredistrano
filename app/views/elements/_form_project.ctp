@@ -48,3 +48,11 @@
 							'type' => 'textarea'
 							)
 						);?>
+
+						
+<?php echo $form->input('Project.method', array(
+						'legend' => __('Deployment method', true),
+						'label' => false,
+						 'class' => 'f-name',
+					     'type' => 'radio',
+					     'options' => $deploymentMethods))?>

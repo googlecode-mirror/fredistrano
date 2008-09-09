@@ -2,6 +2,11 @@
 class Project extends AppModel {
 
 	var $name = 'Project';
+
+	var $deploymentMethods = array (
+		0 => 'export',
+		1 => 'checkout/update'
+		);
 	
 	var $validate = array(
 	    'name' => array(

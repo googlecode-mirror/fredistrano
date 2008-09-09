@@ -167,6 +167,10 @@ INSERT INTO `profiles` (`id`,`user_id`,`lang`,`rss_token`) VALUES ('1','1','en',
 # Dump of table projects
 # ------------------------------------------------------------
 
+/*
+	TODO update table projects with the new field
+*/
+
 CREATE TABLE `projects` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,

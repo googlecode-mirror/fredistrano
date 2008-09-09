@@ -78,6 +78,7 @@ class ProjectsController extends AppController {
 	 * Add a new project
 	 */
 	function add() {
+		$this->_initializeLists();
 		if (empty ($this->data)) {
 			$this->render();
 		} else {
@@ -95,6 +96,7 @@ class ProjectsController extends AppController {
 	 * @param string $id ID of the project to be edited 
 	 */
 	function edit($id = null) {
+		$this->_initializeLists();
 		if (empty ($this->data)) {
 			if (!$id) {
 				$this->Session->setFlash(__('Invalid id.', true));
@@ -125,6 +127,11 @@ class ProjectsController extends AppController {
 			$this->redirect('/projects/index');
 		}
 	}// delete
+	
+	function _initializeLists()
+	{
+		$this->set('deploymentMethods', $this->Project->deploymentMethods);
+	}
 	
 }// ProjectsController
 ?>

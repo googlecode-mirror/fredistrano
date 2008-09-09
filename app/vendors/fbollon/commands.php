@@ -61,9 +61,58 @@ class Action {
 
 class ShellAction extends Action {
 
-	public static function changePermissions() {
+	public static function changePermissions( $path=null, $mode=array(), $options = array() ) {
+		if (!is_array($mode)) {
+			$mode = array(
+				'file' 	=> $mode,
+				'dir' 	=> Utils::computeDirMode($mode)
+			);
+		}
 		
+		// Check
+		if ( is_null($path) || empty($mode) ) {
+			$actionLog->error(sprintf(__('Forbidden NULL value for input parameter [%s;%s]',true),$path,$mode));	
+		}
+
+		if (!file_exists($path)) {
+			$actionLog->error(sprintf(__('Path [%s] not found',true),$path));	
+		}
+
+		$path = Utils::formatPath($path);
+		
+		if (isset($mode['file'])) {
+			// Change file mode
+			$comment = sprintf(__('Reseting permissions files on %s',true),$path);
+			$actionLog = self::initAction('resetPermission', $comment, 'ShellAction', $options);
+			$command = "find ".$path." -type f -exec chmod ".$mode['file']." {} \;";
+			ShellAction::executeCommand( $command,
+				array(
+			        'directory'	=> $path,
+					'actionLog' => $actionLog
+				)
+			);
+		}
+
+		if (isset($mode['dir'])) {
+			// Change directory mode
+			$comment = sprintf(__('Resetting directories permissions on %s',true),$path);
+			$actionLog = self::initAction('resetPermission', $comment, 'ShellAction', $options);
+			$command = "find ".$path." -type d -exec chmod ".$mode['dir']." {} \;";
+			ShellAction::executeCommand( $command,
+				array(
+			        'directory'	=> $path,
+					'actionLog' => $actionLog
+				)
+			);
+		}
+		
+		// Terminate action
+		$actionLog->end();
+		
+		return $actionLog;
 	}// changePermissions
+	
+	
 	
 	public static function createDirectory( $path=null, $mode=null, $options = array() ) {
 		$comment = sprintf(__('Creating %s with mode %s',true),$path,$mode);
@@ -162,7 +211,32 @@ class ShellAction extends Action {
 	}// remove
 	
 	public static function runScript( $path ) {
-		
+		// $projectTmpDir = F_DEPLOYTMPDIR.$this->_project['Project']['name'].DS;
+		// 
+		// // Run before script
+		// if ($options['run'.ucfirst($type).'Script']) {			
+		// 	$scriptPath = $this->_config->scripts[$type];
+		// 	if (!file_exists($scriptPath) && file_exists($projectTmpDir.'tmpDir'.DS.'.fredistrano'.DS.$scriptPath)) {
+		// 		$scriptPath = $projectTmpDir.'tmpDir'.DS.'.fredistrano'.DS.$scriptPath;
+		// 	} else if (!file_exists($scriptPath)){
+		// 		$this->_stepLog->error( __('Script not found', true) );
+		// 	}
+		// 
+		// 	if (!is_executable($scriptPath)) {
+		// 		$log = Command::execute( "chmod u+x $scriptPath", 
+		// 			array(
+		// 		        'comment'=>__('Execution privileges to script',true)
+		// 			)
+		// 		);	
+		// 		$this->_stepLog->addChildLog( $log );		
+		// 	}
+		// 	Command::execute( $scriptPath,
+		// 		array(
+		// 	        'comment'	=> sprintf(__('%s script',true), $type)
+		// 		)
+		// 	);
+		// 	$this->_stepLog->addChildLog( $log );	
+		// }
 	}// remove
 	
 	public static function synchronizeContent( $path, $recursive = false) {
@@ -175,7 +249,7 @@ class SvnAction extends Action {
 	
 	public static function checkout( $svnUrl = null, $path = null, $targetDir = null, $options = array() ) {
 		$actionLog = self::initAction('checkout',$svnUrl,'SvnAction',$options);
-		
+		$configDirectory = '';
 		// Check
 		if ( is_null($svnUrl) || is_null($path) || is_null($targetDir)) {
 			$actionLog->error(sprintf(__('Forbidden NULL value for input parameter [%s;%s;%s]',true),$svnUrl,$path,$targetDir));	
@@ -190,7 +264,7 @@ class SvnAction extends Action {
 			'revision' 		=> null,
 			'user_svn' 		=> null,
 			'password_svn' 	=> null,
-			'configDir'		=> null,
+			'configDirectory'		=> null,
 			'parseResponse' => false
 		);
 		$options = array_merge($default_options, $options);
@@ -205,10 +279,10 @@ class SvnAction extends Action {
 				$authentication .= ' --password '.$options['password_svn'];
 			}
 		}
-		if (!is_null($options['configDir'])) {
-			$configDir = '--config-dir '.Utils::formatPath( $options['configDir'] );
+		if (!is_null($options['configDirectory'])) {
+			$configDirectory = '--config-dir '.Utils::formatPath( $options['configDirectory'] );
 		}
-		$command = "svn checkout --non-interactive $configDir $revision $authentication $svnUrl $targetDir 2>&1";		
+		$command = "svn checkout --non-interactive $configDirectory $revision $authentication $svnUrl $targetDir 2>&1";		
 		ShellAction::executeCommand( $command,
 			array(
 		        'directory'	=> $path,
@@ -246,7 +320,7 @@ class SvnAction extends Action {
 		// Define step options
 		$default_options = array(
 			'revision' 		=> 	null,
-			'configDir'		=> null,
+			'configDirectory'		=> null,
 			'parseResponse' => false
 		);
 		$options = array_merge($default_options, $options);
@@ -254,10 +328,10 @@ class SvnAction extends Action {
 		// Execute command 
 		$projectDir = Utils::formatPath($projectDir);
 		$revision = ($options['revision']!=null)?' -r' . $options['revision']:'';
-		if (!is_null($options['configDir'])) {
-			$configDir = '--config-dir '.Utils::formatPath( $options['configDir'] );
+		if (!is_null($options['configDirectory'])) {
+			$configDirectory = '--config-dir '.Utils::formatPath( $options['configDirectory'] );
 		}
-		$command = "svn update --non-interactive $configDir $revision $projectDir 2>&1";		
+		$command = "svn update --non-interactive $configDirectory $revision $projectDir 2>&1";		
 		ShellAction::executeCommand( $command, array('actionLog' => $actionLog) );
 		
 		// Parse response

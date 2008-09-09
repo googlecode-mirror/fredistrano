@@ -13,6 +13,7 @@ if(isset($errorMessage)){
 <?php
 	echo "<pre>";
 	print_r(htmlentities(str_replace("><",">\n<", $output)));
+	// print_r(htmlentities($output));
 	echo "</pre>";
 ?> 
 </div>
