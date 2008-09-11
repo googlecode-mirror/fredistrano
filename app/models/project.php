@@ -112,6 +112,10 @@ class Project extends AppModel {
 			return false;
 		}
 	}
+	
+	public function getMethodName($method){
+		return $this->deploymentMethods[$method];
+	}
 
 }
 ?>

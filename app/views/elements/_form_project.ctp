@@ -8,7 +8,7 @@
 ?>
 
 
-<?php echo $form->input('Project/name', 
+<?php echo $form->input('Project.name', 
 						array(
 							'label' => '<b>'.__('Project name', true).'<span class="req">*</span></b>',
 							'size' => '60', 
@@ -16,7 +16,7 @@
 							'error' => $nameErrorMessage
 							)
 						);?>
-<?php echo $form->input('Project/svn_url', 
+<?php echo $form->input('Project.svn_url', 
 						array(
 							'label' => '<b>'.__('SVN Url', true).'<span class="req">*</span></b>', 
 							'size' => '60', 
@@ -24,7 +24,7 @@
 							'error' => __('The SVN Url must be a valid url', true)
 							)
 						);?>
-<?php echo $form->input('Project/prd_path', 
+<?php echo $form->input('Project.prd_path', 
 						array(
 							'label' => '<b>'.__('Application absolute path', true).'<span class="req">*</span></b>',
 							'size' => '60', 
@@ -32,7 +32,7 @@
 							'error' => __('The application absolute path is required', true)
 							)
 						);?>
-<?php echo $form->input('Project/prd_url', 
+<?php echo $form->input('Project.prd_url', 
 						array(
 							'label' => '<b>'.__('Application Url', true), 
 							'size' => '60', 
@@ -40,7 +40,7 @@
 							'error' => __('The application url must be a valid url', true)
 							)
 						);?>
-<?php echo $form->input('Project/log_path', 
+<?php echo $form->input('Project.log_path', 
 						array(
 							'label' => '<b>'.__('Log pathes (one per line)', true).'</b>', 
 							'cols' => '80', 
@@ -49,10 +49,15 @@
 							)
 						);?>
 
+<hr />
 						
-<?php echo $form->input('Project.method', array(
-						'legend' => __('Deployment method', true),
-						'label' => false,
-						 'class' => 'f-name',
-					     'type' => 'radio',
-					     'options' => $deploymentMethods))?>
+<?php echo $form->input('Project.method', 
+						array(
+							'legend' => __('Deployment method', true),
+							'label' => false,
+							'type' => 'radio',
+							'div' => 'z_radio',
+							'class' => 'f-radio-wrap',
+							'options' => $deploymentMethods
+						)
+					)?>

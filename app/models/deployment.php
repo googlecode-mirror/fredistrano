@@ -173,22 +173,42 @@ class Deployment extends AppModel {
 		}
 
 		$default_options = array(
-			'user_svn' 		=> Configure::read('Subversion.user'),
-			'password_svn' 	=> Configure::read('Subversion.passwd'),
-			'configDirectory'		=> Configure::read('Subversion.configDirectory'),
-			'parseResponse'	=> Configure::read('Subversion.parseResponse'),
-			'stepLog'		=> $this->_stepLog
+			'user_svn' 			=> Configure::read('Subversion.user'),
+			'password_svn' 		=> Configure::read('Subversion.passwd'),
+			'configDirectory'	=> Configure::read('Subversion.configDirectory'),
+			'parseResponse'		=> Configure::read('Subversion.parseResponse'),
+			'stepLog'			=> $this->_stepLog
 		);
 		$options = array_merge($default_options, $options);
 		
 		// Looking for sources
-		$projectTmpDir = F_DEPLOYTMPDIR.$this->_project['Project']['name'].DS;
-		if ( is_dir($projectTmpDir.'tmpDir') ) {
-			// svn update
-			$log = SvnAction::update( $projectTmpDir.'tmpDir'.DS, $options);
+		$projectTmpDir = F_DEPLOYTMPDIR.$this->_project['Project']['name'];
+		// Retrieve sources by checkout/update method
+		if ($this->_project['Project']['method'] == 1) {
+			if ( is_dir($projectTmpDir.DS.'tmpDir') ) {
+				// svn update
+				$log = SvnAction::update( $projectTmpDir.DS.'tmpDir'.DS, $options);
 						
-		} else {			
-			if (!is_dir($projectTmpDir)) {
+			} else {			
+				if (!is_dir($projectTmpDir)) {
+					// Create tmpDir folder inside Fredistrano
+					$log = ShellAction::createDirectory( 
+						$projectTmpDir, 
+						Configure::read('FileSystem.permissions.directories'), 
+						array('stepLog'	=> $this->_stepLog) 
+					);
+				}
+			
+				// Export code from SVN
+				$log = SvnAction::checkout( $this->_project['Project']['svn_url'], $projectTmpDir, 'tmpDir', $options);
+			}
+		// Retrieve sources by Export method	
+		} else {
+			if ( is_dir($projectTmpDir) ) {
+				//Clear temporary folders for the current project if exist
+				$this->_clearProjectTempFiles();
+			} 
+			if ( !is_dir($projectTmpDir) ) {
 				// Create tmpDir folder inside Fredistrano
 				$log = ShellAction::createDirectory( 
 					$projectTmpDir, 
@@ -196,9 +216,8 @@ class Deployment extends AppModel {
 					array('stepLog'	=> $this->_stepLog) 
 				);
 			}
-			
 			// Export code from SVN
-			$log = SvnAction::checkout( $this->_project['Project']['svn_url'], $projectTmpDir, 'tmpDir', $options);
+			$log = SvnAction::export( $this->_project['Project']['svn_url'], $projectTmpDir, 'tmpDir', $options);
 		}
 		
 		// Retrieve revision log 

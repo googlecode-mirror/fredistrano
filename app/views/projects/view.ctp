@@ -123,23 +123,9 @@
 <tr>
 <th class="sub"><?php __('Deployment method');?></th>
 <td>
-		<?php 
-			e($form->checkbox(
-					'Project.deploymentMethod', 
-					array( 'class' => 'f-checkbox', 'type' => 'checkbox','value' => 0)
-				)
-			);	
-		?>
-		<?php __('Export');?>
-		&nbsp;/&nbsp;
-		<?php 
-			e($form->checkbox(
-					'Project.deploymentMethod', 
-					array( 'class' => 'f-checkbox', 'type' => 'checkbox','value' => 1, 'checked' => 'checked')
-				)
-			);	
-		?>
-		<?php __('Checkout/update (faster but needs privilege)');?>
+		<b><?php 
+			e($deploymentMethod);
+		?></b>
 </td>
 </tr>
 
@@ -198,7 +184,7 @@
 </table>
 
 <div class="smalldateblock">
-	<?php __('Deploy');?> <?php echo $project['Project']['created']?><br />
+	<?php __('Created on');?> <?php echo $project['Project']['created']?><br />
 	<?php __('Modified on');?> <?php echo $project['Project']['modified']?>
 </div> 
 

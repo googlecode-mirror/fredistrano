@@ -261,11 +261,11 @@ class SvnAction extends Action {
 			
 		// Define step options
 		$default_options = array(
-			'revision' 		=> null,
-			'user_svn' 		=> null,
-			'password_svn' 	=> null,
-			'configDirectory'		=> null,
-			'parseResponse' => false
+			'revision' 			=> null,
+			'user_svn' 			=> null,
+			'password_svn' 		=> null,
+			'configDirectory'	=> null,
+			'parseResponse' 	=> false
 		);
 		$options = array_merge($default_options, $options);
 		
@@ -300,13 +300,62 @@ class SvnAction extends Action {
 		return $actionLog;
 	}// checkout
 	
-	public static function export( $options = array() ) {
+	public static function export( $svnUrl = null, $path = null, $targetDir = null, $options = array() ) {
+		$actionLog = self::initAction('export',$svnUrl,'SvnAction',$options);
+		$configDirectory = '';
 		
+		if ( is_null($svnUrl) || is_null($path) || is_null($targetDir)) {
+			$actionLog->error(sprintf(__('Forbidden NULL value for input parameter [%s;%s;%s]',true),$svnUrl,$path,$targetDir));	
+		} else if (!is_dir($path)) {
+			$actionLog->error(sprintf(__('Directory %s not found',true),$path));
+		} else if (is_dir($path.DS.$targetDir))  {
+			$actionLog->error(sprintf(__('Delete target %s directory first',true), $path.DS.$targetDir));			
+		}
+		
+		// Define step options
+		$default_options = array(
+			'revision' 			=> null,
+			'user_svn' 			=> null,
+			'password_svn' 		=> null,
+			'configDirectory'	=> null,
+			'parseResponse' 	=> false
+		);
+		$options = array_merge($default_options, $options);
+		
+		// Execute command 
+		$path = Utils::formatPath($path);
+		$revision = !is_null($options['revision'])?' -r' . $options['revision']:'';
+		$authentication = '';
+		if (!is_null($options['user_svn'])) {
+			$authentication .= '--username '.$options['user_svn'];
+			if (!empty($options['password_svn'])) {
+				$authentication .= ' --password '.$options['password_svn'];
+			}
+		}
+		if (!is_null($options['configDirectory'])) {
+			$configDirectory = '--config-dir '.Utils::formatPath( $options['configDirectory'] );
+		}
+		$command = "svn export --non-interactive $configDirectory $revision $authentication $svnUrl $targetDir 2>&1";	
+		ShellAction::executeCommand( $command,
+			array(
+		        'directory'	=> $path,
+				'actionLog' => $actionLog
+			)
+		);
+		// Parse output
+		if ( !(strpos( $actionLog->getResult() , 'PROPFIND request failed on' ) === false) && $options['parseResponse'] ) {
+			$actionLog->error(__('An error has been detected in the SVN output',true));			
+		}
+		
+		// End action
+		$actionLog->end();
+		
+		return $actionLog;
 	}// export
 	
 	public static function update( $projectDir, $options = array() ) {
 		$actionLog = self::initAction('update',$projectDir,'SvnAction',$options);
-		
+		$configDirectory = '';
 		if ( is_null($projectDir) ) {
 			$actionLog->error(sprintf(__('Forbidden NULL value for input parameter [%s]',true),$projectDir));	
 		} else if (!is_dir($projectDir) ) {

@@ -72,6 +72,7 @@ class ProjectsController extends AppController {
 		}
 		$project = $this->Project->read(null, $id);
 		$this->set('project', $project);
+		$this->set('deploymentMethod', $this->Project->getMethodName($project['Project']['method']));
 	}// view
 
 	/**
@@ -103,6 +104,7 @@ class ProjectsController extends AppController {
 				$this->redirect('/projects/index');
 			}
 			$this->data = $this->Project->read(null, $id);
+			
 		} else {
 			if ($this->Project->save($this->data)) {
 				$this->Session->setFlash(__('Project saved.', true));

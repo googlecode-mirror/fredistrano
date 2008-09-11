@@ -60,3 +60,21 @@ div.disabled {
 	border: 3px #d7d7d7 dashed;
 	position:relative;
 }
+
+.z_radio fieldset {
+	clear:left;
+	float:none;
+	text-align:left;
+	
+}
+
+.z_radio fieldset b{
+	clear:left;
+	float:right;
+	text-align:center;
+	font-weight: normal;
+}
+
+.z_radio fieldset legend b{
+	font-weight: bold;
+}

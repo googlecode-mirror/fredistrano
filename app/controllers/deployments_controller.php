@@ -43,10 +43,6 @@ class DeploymentsController extends AppController {
 	 * @param string $id ID of the project to be deployed
 	 */
 	function runManual($id = null) {
-
-debug($this->data);
-exit;
-		
 		// View
 		$this->layout = 'ajax';
 		$this->set('id', $id);
