@@ -71,7 +71,7 @@ class Deployment extends AppModel {
 			// Running steps
 			for ( $i=1 ; $i<count($this->process) ; $i++ ) {
 				$step = $this->process[$i];
-				$this->_runStep($step, $projectId, $context, $options[$step]);
+				$this->_runStep($step, $projectId, $options[$step]);
 				$processLog->addChildLog( $this->_stepLog );
 				
 				if ($step == 'export') {
@@ -123,13 +123,13 @@ class Deployment extends AppModel {
 	 * @param array $options		Various options used for configuring the step 
      */			
 	private function _runStep($step, $projectId, $options = array()) {
-		$this->_stepLog = new Steplog( $step );
+		$this->_stepLog = new StepLog( $step );
 		try{	
 			// Check input parameters
 			if ( !isset($this->_context['user']) || !isset($this->_context['uuid']) ) { 
 				$this->_stepLog->error( __('Invalid context (use setContext() first)',true) );
 			} else {
-				$this->_stepLog->setContext($this->_context);		
+				$this->_stepLog->setContext($this->_context);
 			}
 			if ( !in_array($step, $this->allowedSteps) ) {
 				$this->_stepLog->error( sprintf(__('Unknown step %s',true), $step) );
@@ -144,7 +144,8 @@ class Deployment extends AppModel {
 		
 			// Execute step	
 			set_time_limit( Configure::read('Deployment.timelimit.'.$step) );
-			$this->{'_'.$step}( $options);		
+			$options['stepLog'] = $this->_stepLog;
+			$this->{'_'.$step}( $options);
 			$this->_stepLog->end(); 
 			
 		} catch (LogException $e) { 
@@ -158,9 +159,6 @@ class Deployment extends AppModel {
 
 	}// _runStep
 
-	/*
-		FIXME F: implement mode export instead of checkout 
-	*/
 	/**
 	 * Step 1 of the deployment process: Export
 	 * @param SetLog 	$setLog		Custom logging object 
@@ -176,47 +174,37 @@ class Deployment extends AppModel {
 			'user_svn' 			=> Configure::read('Subversion.user'),
 			'password_svn' 		=> Configure::read('Subversion.passwd'),
 			'configDirectory'	=> Configure::read('Subversion.configDirectory'),
-			'parseResponse'		=> Configure::read('Subversion.parseResponse'),
-			'stepLog'			=> $this->_stepLog
+			'parseResponse'		=> Configure::read('Subversion.parseResponse')
 		);
 		$options = array_merge($default_options, $options);
 		
 		// Looking for sources
 		$projectTmpDir = F_DEPLOYTMPDIR.$this->_project['Project']['name'];
+		if (!is_dir($projectTmpDir)) {
+			// Create tmpDir folder inside Fredistrano
+			$log = ShellAction::createDirectory( 
+				$projectTmpDir, 
+				Configure::read('FileSystem.permissions.directories'), 
+				array('stepLog'	=> $this->_stepLog) 
+			);
+		}
+		
 		// Retrieve sources by checkout/update method
 		if ($this->_project['Project']['method'] == 1) {
 			if ( is_dir($projectTmpDir.DS.'tmpDir') ) {
 				// svn update
 				$log = SvnAction::update( $projectTmpDir.DS.'tmpDir'.DS, $options);
-						
-			} else {			
-				if (!is_dir($projectTmpDir)) {
-					// Create tmpDir folder inside Fredistrano
-					$log = ShellAction::createDirectory( 
-						$projectTmpDir, 
-						Configure::read('FileSystem.permissions.directories'), 
-						array('stepLog'	=> $this->_stepLog) 
-					);
-				}
-			
+			} else {
 				// Export code from SVN
 				$log = SvnAction::checkout( $this->_project['Project']['svn_url'], $projectTmpDir, 'tmpDir', $options);
 			}
 		// Retrieve sources by Export method	
 		} else {
-			if ( is_dir($projectTmpDir) ) {
-				//Clear temporary folders for the current project if exist
-				$this->_clearProjectTempFiles();
-			} 
-			if ( !is_dir($projectTmpDir) ) {
-				// Create tmpDir folder inside Fredistrano
-				$log = ShellAction::createDirectory( 
-					$projectTmpDir, 
-					Configure::read('FileSystem.permissions.directories'), 
-					array('stepLog'	=> $this->_stepLog) 
-				);
-			}
 			// Export code from SVN
+			if ( is_dir($projectTmpDir.DS.'tmpDir') ) {
+				//Clear temporary folders for the current project if exist
+				ShellAction::remove($projectTmpDir.DS.'tmpDir', true, array('stepLog'=>$this->_stepLog));
+			}
 			$log = SvnAction::export( $this->_project['Project']['svn_url'], $projectTmpDir, 'tmpDir', $options);
 		}
 		
@@ -233,7 +221,7 @@ class Deployment extends AppModel {
 	 * @param SetLog 	$setLog		Custom logging object 
 	 * @param array $options	Various options used for configuring the step 
      */
-	private function _synchronize($stepLog, $options = array()) {
+	private function _synchronize($options = array()) {
 		// Check input parameters
 		if (!$this->isInitialized()) {
 			$this->_stepLog->error( sprintf(__('Missing working data', true)) );
@@ -244,29 +232,60 @@ class Deployment extends AppModel {
 			
 		// Define step options
 		$default_options = array(
-			'simulation' 		=> 	true,
-	 		'runBeforeScript'	=> 	false,
-			'backup'			=>	true,
-			'comment' 			=> 	'none'
+			'simulation' 		=> true,
+	 		'runBeforeScript'	=> false,
+			'backup'			=> true,
+			'comment' 			=> 'none'
 		);
 		$options = array_merge($default_options, $options);
 		
 		$projectTmpDir = F_DEPLOYTMPDIR.$this->_project['Project']['name'].DS;
 		// Synchronize target files
 		// Create target dir (if required)
-		$actionLog = $this->stepLog->addNewAction('create', 'Directory: '.$this->_project['Project']['prd_path'], 'FS');
 		if (!is_dir($this->_project['Project']['prd_path'])) {
-			if (!@mkdir($this->_project['Project']['prd_path'], octdec(  Configure::read('FileSystem.permissions.directories') ), TRUE)) {
-				$actionLog->error( sprintf(__('Unable to create directory %s', true), $this->_project['Project']['prd_path']));
-			}
-			$actionLog->end();
+			// Create tmpDir folder inside Fredistrano
+			$log = ShellAction::createDirectory( 
+				$this->_project['Project']['prd_path'], 
+				Configure::read('FileSystem.permissions.directories'), 
+				array($this->_stepLog) 
+			);
 		}
 		
+		// Create a log entry for the pending deployement 
+		$actionLog = $this->_stepLog->addNewAction('create', 'Directory: '.$this->_project['Project']['prd_path'], 'FS');
+		$data = array (
+			'DeploymentLog' => array (
+				'project_id'	=> 	$this->_project['Project']['id'],
+				'user_id' 		=> 	$this->_context['user'],
+				'uuid'			=> 	$this->_context['uuid'],
+				'title' 		=> 	date("D, M jS Y, H:i") . ' - ' . $this->_project['Project']['name'],
+				'comment' 		=> 	$options['comment'],
+				'archive' 		=> 	0
+			)
+		);
+		if (!$this->DeploymentLog->save($data) ) {
+			$actionLog->error( __('Unable to save deployment log', true) );
+		}
+		$actionLog->end();
+			
+		// Run initialization script
+		if (!$options['simulation']) {
+			$log = ShellAction::runScript('before', $projectTmpDir, $this->_config->scripts['before'], $options);
+
+			// Backup (if required)
+			if ($options['backup'] === true) {
+				$options['exclude'] = null;
+				$source = $this->_project['Project']['prd_path'];
+				$target = F_DEPLOYBACKUPDIR.$this->_project['Project']['name']. DS;
+				$log = ShellAction::synchronizeContent( $source, $target, $options);
+			}		
+		}
+
 		// Generate exclusion file
 		$exclude = $this->_config->exclude;
 		$excludeString = "";
 		for ($i = 0; $i < sizeof($exclude); $i++) {
-			$excludeString .= "- ".$exclude[$i] . "\n";			
+			$excludeString .= "- ".$exclude[$i] . "\n";
 		}
 		$excludeString .= "- deploy.php\n";
 		$excludeString .= "- .fredistrano\n";
@@ -276,73 +295,33 @@ class Deployment extends AppModel {
 		$handle = fopen($excludeFileName, "w");
 		fwrite($handle, $excludeString);
 		fclose($handle);
-			
-		// Setting up Rsync options
-		if ($options['simulation'] === true) {
-			// Simulation mode
-			$option = 'rtvn';
-		} else {			
-			// Live mode
-			$option = 'rtv';
-			
-			//The rsync option "O" not yet supported on Mac
-			if ( F_OS != 'DAR') {
-				$option .= 'O';
-			}
-			
-			// Create a log entry for the pending deployement 
-			$actionLog = $this->stepLog->addNewAction('create', 'Directory: '.$this->_project['Project']['prd_path'], 'FS');
-			$data = array (
-				'DeploymentLog' => array (
-					'project_id'	=> 	$this->_project['Project']['id'],
-					'user_id' 		=> 	$this->_context['user'],
-					'uuid'			=> 	$this->_context['uuid'],
-					'title' 		=> 	date("D, M jS Y, H:i") . ' - ' . $this->_project['Project']['name'],
-					'comment' 		=> 	$options['comment'],
-					'archive' 		=> 	0
-				)
-			);
-			if (!$this->DeploymentLog->save($data) ) {
-				$actionLog->error( __('Unable to save deployment log', true) );
-			}
-			$actionLog->end();
-			
-			// Run initialization script
-			$this->__runScript('before');
-			/*
-				FIXME F: ReActivate Backup
-			*/
-			// // Backup (if required)
-			// if ($options['backup'] === true) {
-			// 	if ( ($output .= $this->_backup()) === false) {
-			// 		$this->triggerError(__('Unable to backup', true));	
-			// 		return false;
-			// 	}
-			// }
+
+		// Run Rsync
+		$target = $this->_project['Project']['prd_path'];
+		$options['exclude'] = $excludeFileName;
+		$log = ShellAction::synchronizeContent( $projectTmpDir."tmpDir". DS, $target, $options);
+		
+		// Create file list
+		$output = $log->getResult();
+		$this->_createFilesListToChmod($output, $projectTmpDir, $target);
+		
+		$actionLog->end();
+		
+		return $output;
+	}// _synchronize
+	
+	// Create files list and directories list for chmod step
+	private function _createFilesListToChmod($output=null, $projectTmpDir=null, $target=null)
+	{
+		$actionLog = new ActionLog('createFilesListToChmod', null, 'listToChmod');
+		
+		if (empty($output) || empty($projectTmpDir) || empty($target)) {
+			$actionLog->error( sprintf(__('Missing working data', true)) );
 		}
-
-		// Execute command		
-		$excludeFileName = Command::convertPath( $excludeFileName );
-		$source = Command::convertPath( $projectTmpDir."tmpDir". DS );
-		$target = Command::convertPath( $this->_project['Project']['prd_path'] );
-		$command = "rsync -$option --delete --exclude-from=$excludeFileName $source $target 2>&1";	
-		$log = Command::execute( $command,
-			array(
-		        'comment'	=> __('Deploying new version',true),
-		        'directory'	=> F_DEPLOYDIR
-			)
-		);
-		$this->_stepLog->addChildLog( $log );	
-
-
-		// 1
-		$options = array( 'exclude' => $excludeFileName, 'simulate' => false );
-		$log = ShellAction::synchronizeContent( $projectTmpDir."tmpDir". DS , $this->_project['Project']['prd_path'], $options);
-		$this->recordLog( $log );	
-
-		// Create files list and directories list for chmod step
-		$actionLog = $this->stepLog->addNewAction('create', 'Contents', 'FS');
+		
+		$actionLog = $this->_stepLog->addNewAction('create', 'files_to_chmod.txt & dir_to_chmod.txt', 'FS');
 		$list = explode("\n", $output);
+		
 		$size = count($list);
 		if ($size > 0) {
 			$files_to_chmod = $projectTmpDir."files_to_chmod.txt";
@@ -365,10 +344,8 @@ class Deployment extends AppModel {
 			fclose($handle_f);
 			fclose($handle_d);
 		}
-		$actionLog->end();
 		
-		return $output;
-	}// _synchronize
+	}
 
 	/**
 	 * Step 3 of the deployment process: Finalize
@@ -396,34 +373,34 @@ class Deployment extends AppModel {
 		$projectTmpDir = F_DEPLOYTMPDIR.$this->_project['Project']['name'].DS;
 		// Rename file type from .prd.xxx into .xxx
 		if ($options['renamePrdFile'] === true) {			
-			$command = "find ".Command::convertPath($this->_project['Project']['prd_path'])." -name '*.prd.*' "
-				."-exec /usr/bin/perl ".Command::convertPath(F_DEPLOYDIR)."renamePrdFile -vf 's/\.prd\./\./i' {} \;";
-			Command::execute( $command,
+			$command = "find ".Utils::formatPath($this->_project['Project']['prd_path'])." -name '*.prd.*' "
+				."-exec /usr/bin/perl ".Utils::formatPath(F_DEPLOYDIR)."renamePrdFile -vf 's/\.prd\./\./i' {} \;";
+			$log = ShellAction::executeCommand( $command,
 				array(
 			        'comment'	=> __('Rename .prd files', true),
-			        'directory'	=> F_DEPLOYDIR
+			        'directory'	=> F_DEPLOYDIR,
+					'stepLog' 	=> $this->_stepLog
 				)
 			);
-			
 		}
 
 		// Change file mode
 		if ($options['changeFileMode'] === true) {			
 			$command = "chmod ".Configure::read('FileSystem.permissions.files')."  $(<".$projectTmpDir."files_to_chmod.txt)";
-			$log = Command::execute( $command,
+			$log = ShellAction::executeCommand( $command,
 				array(
-			        'comment'	=> sprintf(__('Changing files permissions to %s', true), Configure::read('FileSystem.permissions.files'))
+			        'comment'	=> sprintf(__('Changing files permissions to %s', true), Configure::read('FileSystem.permissions.files')),
+					'stepLog' 	=> $this->_stepLog
 				)
 			);
-			$this->_stepLog->addChildLog( $log );	
 			
 			$command = "chmod ". Configure::read('FileSystem.permissions.directories')."  $(<". $projectTmpDir . "dir_to_chmod.txt)";
-			$log = Command::execute( $command, 
+			$log = ShellAction::executeCommand( $command, 
 				array(
-			        'comment'	=> sprintf(__('Changing directories permissions to %s', true), Configure::read('FileSystem.permissions.directories'))
+			        'comment'	=> sprintf(__('Changing directories permissions to %s', true), Configure::read('FileSystem.permissions.directories')),
+					'stepLog' 	=> $this->_stepLog
 				)	
 			);
-			$this->_stepLog->addChildLog( $log );	
 		}
 		
 		// Change directory mode
@@ -433,19 +410,19 @@ class Deployment extends AppModel {
 			if (sizeof($writable) > 0) {
 				for ($i = 0; $i < sizeof($writable); $i++) {
 					$command = "chmod -vR ".Configure::read('FileSystem.permissions.writable')."  "
-						.Command::convertPath($this->_project['Project']['prd_path'].$writable[$i] );
-					Command::execute( $command, $this->_stepLog, 
+						.Utils::formatPath($this->_project['Project']['prd_path'].$writable[$i] );
+					ShellAction::executeCommand( $command, 
 						array(
-					        'comment'	=> sprintf(__('Changing writeable permissions', true), Configure::read('FileSystem.permissions.writable'))
+					        'comment'	=> sprintf(__('Changing writeable permissions', true), Configure::read('FileSystem.permissions.writable')),
+							'stepLog' 	=> $this->_stepLog
 						)
 					);
 				}
 			}
 		}
-			
+		
 		// Running finalization script
-		$this->__runScript('after');
-
+		$log = ShellAction::runScript('after', $projectTmpDir, $this->_config->scripts['after'], $options);
 	}// _finalize
 	
 	private function _clearProjectTempFiles(){

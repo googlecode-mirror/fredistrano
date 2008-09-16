@@ -34,7 +34,7 @@ class DeploymentsController extends AppController {
 			$this->redirect('/projects/index');
 			exit();
 		}
-		$this->_setContext($id);
+		$this->_setContext();
 	}// par
 
 	// Initialize runs ---------------------------------------
@@ -45,6 +45,10 @@ class DeploymentsController extends AppController {
 	function runManual($id = null) {
 		// View
 		$this->layout = 'ajax';
+		
+		// Init deployment uuid
+		$this->Session->write('Deployment.uuid', $this->Deployment->generateUuid($id));
+		
 		$this->set('id', $id);
 	}// runManual
 	
@@ -62,18 +66,21 @@ class DeploymentsController extends AppController {
 		 		'export' 		=> array(),
 		 		'synchronize'	=> array(
 					'simulation'			=> 	false,
-		 		 	'runBeforeScript'		=> 	false,
+		 		 	'runBeforeScript'		=> 	true,
 		 			'backup'				=> 	false
 		 		),
 		 		'finalize'		=> array(
-			 		'renamePrdFile' 		=> 	false,
-					'changeFileMode' 		=> 	false,
-					'giveWriteMode'			=> 	false,
-		 			'runAfterScript'		=> 	false
+			 		'renamePrdFile' 		=> 	true,
+					'changeFileMode' 		=> 	true,
+					'giveWriteMode'			=> 	true,
+		 			'runAfterScript'		=> 	true
 		 		)
 		 	)
 		);
 
+		// Init deployment uuid
+		$this->Session->write('Deployment.uuid', $this->Deployment->generateUuid($id));
+		
 		// Process output
 		$this->set('output', 	$log->toString());
 		if ( $log->hasError() ) {
@@ -122,7 +129,7 @@ class DeploymentsController extends AppController {
 		$this->set('options', $options); 
 		
 		// SVN revision
-		$revision = !empty($log->data['revision'])?$log->data['revision']:'XXX';	
+		$revision = !empty($log->data['revision'])?$log->data['revision']:'XXX';
 		$this->set('revision', 	$revision);
 	}// export
 
@@ -223,7 +230,7 @@ class DeploymentsController extends AppController {
 		}
 	}// _isValidStep
 	
-	private function _setContext($id) {	
+	private function _setContext() {
 		if ($this->Session->read('User.User.id')) {
 			$user = $this->Session->read('User.User.id');
 		} else {
@@ -232,7 +239,7 @@ class DeploymentsController extends AppController {
 		
 		$this->Deployment->setContext(
 			array(
-				'uuid' 	=> $this->Session->write('Deployment.uuid', $this->Deployment->generateUuid($id)),
+				'uuid' 	=> $this->Session->read('Deployment.uuid'),
 				'user' 	=> $user
 			)
 		); 

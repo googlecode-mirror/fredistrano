@@ -131,6 +131,7 @@ class ActionLog extends ElementaryLog {
 		}
 	}// endAction
 	
+	// return the command line output
 	public function getResult() {
 		return $this->result; 	
 	}// getResult
@@ -196,7 +197,7 @@ class AdvancedLog extends ElementaryLog {
 		
 		// Log to file if required
 		if (!is_null($this->context['uuid'])) {
-			$this->writeToFile( F_DEPLOYLOGDIR.$this->context['uuid'].'.log' );			
+			$this->writeToFile( F_DEPLOYLOGDIR.$this->context['uuid'].'.log' );
 		}
 	}// end
 	
@@ -247,7 +248,7 @@ class AdvancedLog extends ElementaryLog {
 	}// hasError
 	
 	public function setContext($context) {
-		if (is_array($context)) {
+		if (!is_array($context)) {
 			return false;
 		}
 		$this->context = array_merge($this->context, $context);
@@ -255,7 +256,7 @@ class AdvancedLog extends ElementaryLog {
 	
 }// AdvancedLog
 
-class Steplog extends AdvancedLog {
+class StepLog extends AdvancedLog {
 	
 	protected $childType = 'ActionLog';
 	
@@ -270,10 +271,12 @@ class Steplog extends AdvancedLog {
 			$actionLogs .= $actionLog->toString();
 		}
 		
-		$context = '';
 		if ($showContext) {
 			$uuid = (!is_null($this->context['uuid']))?'uuid=""':'';
 			$user = $this->context['user'];
+		} else {
+			$uuid = '';
+			$user = '';	
 		}
 		return 
 			'<step name="'.$this->name."\" $uuid>"
@@ -283,13 +286,14 @@ class Steplog extends AdvancedLog {
 			.'</step>';
 	}// toString
 	
-}// Steplog
+}// StepLog
 
 class Processlog extends AdvancedLog {
 
 	protected $childType = 'StepLog';
 
 	public function toString() {
+		
 		$stepLogs = '';
 		foreach($this->logs as $stepLog) {
 			$stepLogs .= $stepLog->toString(false);

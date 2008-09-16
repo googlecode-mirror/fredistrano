@@ -49,11 +49,16 @@ class Utils {
 class Action {
 	
 	protected function initAction($name=null, $comment=null, $type=null, $options = array() ) {
-		if ( isset($options['stepLog']) || get_class($options['stepLog']) != 'StepLog' ) {
+		if ( isset($options['stepLog']) && get_class($options['stepLog']) == 'StepLog' ) {
 			$actionLog = $options['stepLog']->addNewAction($name, $comment , $type);
+		
+		} else if ( isset($options['actionLog']) && get_class($options['actionLog']) == 'ActionLog' ) {
+			$actionLog = $options['actionLog'];
+		
 		} else {
-			$actionLog = new ActionLog($name, $comment , $type);			
+			$actionLog = new ActionLog($name, $comment , $type);	
 		}
+
 		return $actionLog;
 	}// initAction
 	
@@ -139,19 +144,18 @@ class ShellAction extends Action {
 	}// createDirectory
 
 	public static function executeCommand( $command = null, $options = array() ){
-		// options
 		$defaultOptions = array(
 			'comment' 	=> null,
 			'directory'	=> null
 		);
 		$options = array_merge($defaultOptions, $options);
-		
-		// Log
+
+		// Log management
+		$actionLog = self::initAction('executeCommand', $options['comment'], 'ShellAction', $options);
 		if ( !isset($options['actionLog']) || get_class($options['actionLog']) != 'ActionLog' ) {
-			$actionLog = new ActionLog('executeCommand', $options['comment'], 'shell' );
+			// Terminate log if passed in params
 			$terminate = false;
 		} else {
-			$actionLog = $options['actionLog'];
 			$terminate = true;
 		}
 		
@@ -210,38 +214,75 @@ class ShellAction extends Action {
 		return $actionLog;
 	}// remove
 	
-	public static function runScript( $path ) {
-		// $projectTmpDir = F_DEPLOYTMPDIR.$this->_project['Project']['name'].DS;
-		// 
-		// // Run before script
-		// if ($options['run'.ucfirst($type).'Script']) {			
-		// 	$scriptPath = $this->_config->scripts[$type];
-		// 	if (!file_exists($scriptPath) && file_exists($projectTmpDir.'tmpDir'.DS.'.fredistrano'.DS.$scriptPath)) {
-		// 		$scriptPath = $projectTmpDir.'tmpDir'.DS.'.fredistrano'.DS.$scriptPath;
-		// 	} else if (!file_exists($scriptPath)){
-		// 		$this->_stepLog->error( __('Script not found', true) );
-		// 	}
-		// 
-		// 	if (!is_executable($scriptPath)) {
-		// 		$log = Command::execute( "chmod u+x $scriptPath", 
-		// 			array(
-		// 		        'comment'=>__('Execution privileges to script',true)
-		// 			)
-		// 		);	
-		// 		$this->_stepLog->addChildLog( $log );		
-		// 	}
-		// 	Command::execute( $scriptPath,
-		// 		array(
-		// 	        'comment'	=> sprintf(__('%s script',true), $type)
-		// 		)
-		// 	);
-		// 	$this->_stepLog->addChildLog( $log );	
-		// }
-	}// remove
+	public static function runScript( $type, $projectTmpDir, $scriptPath, $options ) {
+		$comment = sprintf(__('Executing script %s',true), $scriptPath);
+		$actionLog = self::initAction('runScript', $comment, 'ShellAction', $options);
+		
+		if (!isset($scriptPath) || !$scriptPath) {
+			$actionLog->error( sprintf(__('Script not found', true)) );
+		}
+		
+		// Run before script
+		if ($options['run'.ucfirst($type).'Script']) {
+			// $scriptPath = $this->_config->scripts[$type];
+			if (!file_exists($scriptPath) && file_exists($projectTmpDir.'tmpDir'.DS.'.fredistrano'.DS.$scriptPath)) {
+				$scriptPath = $projectTmpDir.'tmpDir'.DS.'.fredistrano'.DS.$scriptPath;
+			} else if (!file_exists($scriptPath)){
+				$actionLog->error( __('Script not found', true) );
+			}
+		
+			if (!is_executable($scriptPath)) {
+				$log = ShellAction::executeCommand( "chmod u+x $scriptPath", 
+					array(
+						'comment'	=> __('Execution privileges to script',true),
+						'actionLog' => $actionLog
+					)
+				);	
+			}
+			ShellAction::executeCommand( $scriptPath,
+				array(
+					'comment'	=> sprintf(__('%s script',true), $type),
+					'actionLog' => $actionLog
+				)
+			);
+		}
+		// End action
+		$actionLog->end();
+		
+		return $actionLog;
+	}// runScript
 	
-	public static function synchronizeContent( $path, $recursive = false) {
+	public static function synchronizeContent( $source = null, $target = null, $options = array ()) {
+		$comment = sprintf(__('Synchronizing %s with %s',true),$source,$target);
+		$actionLog = self::initAction('synchronizeContent', $comment, 'ShellAction', $options);
+
+		// Setting up Rsync options
+		if ($options['simulation'] === true) {
+			// Simulation mode
+			$option = 'rtvn';
+		} else {
+			// Live mode
+			$option = 'rtv';
+			
+			//The rsync option "O" not yet supported on Mac
+			if ( F_OS != 'DAR') {
+				$option .= 'O';
+			}
+		}
+		
+		// Execute command		
+		$excludeFileName = Utils::formatPath( $options['exclude'] );
+		$source = Utils::formatPath( $source );
+		$target = Utils::formatPath( $target );
 	
-	}// remove
+		$command = "rsync -$option --delete --exclude-from=$excludeFileName $source $target 2>&1";	
+		ShellAction::executeCommand( $command, array('actionLog' => $actionLog));
+		
+		// End action
+		$actionLog->end();
+		
+		return $actionLog;
+	}// synchronizeContent
 	
 }//
 
