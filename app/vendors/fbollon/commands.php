@@ -222,9 +222,8 @@ class ShellAction extends Action {
 			$actionLog->error( sprintf(__('Script not found', true)) );
 		}
 		
-		// Run before script
+		// Run script
 		if ($options['run'.ucfirst($type).'Script']) {
-			// $scriptPath = $this->_config->scripts[$type];
 			if (!file_exists($scriptPath) && file_exists($projectTmpDir.'tmpDir'.DS.'.fredistrano'.DS.$scriptPath)) {
 				$scriptPath = $projectTmpDir.'tmpDir'.DS.'.fredistrano'.DS.$scriptPath;
 			} else if (!file_exists($scriptPath)){
@@ -239,6 +238,7 @@ class ShellAction extends Action {
 					)
 				);	
 			}
+			
 			ShellAction::executeCommand( $scriptPath,
 				array(
 					'comment'	=> sprintf(__('%s script',true), $type),

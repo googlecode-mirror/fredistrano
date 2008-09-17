@@ -126,7 +126,7 @@ class Deployment extends AppModel {
 		$this->_stepLog = new StepLog( $step );
 		try{	
 			// Check input parameters
-			if ( !isset($this->_context['user']) || !isset($this->_context['uuid']) ) { 
+			if ( !isset($this->_context['user']) || (!isset($this->_context['uuid']) && in_array($step, $this->process)) ) { 
 				$this->_stepLog->error( __('Invalid context (use setContext() first)',true) );
 			} else {
 				$this->_stepLog->setContext($this->_context);

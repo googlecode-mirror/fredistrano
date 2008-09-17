@@ -167,9 +167,7 @@ INSERT INTO `profiles` (`id`,`user_id`,`lang`,`rss_token`) VALUES ('1','1','en',
 # Dump of table projects
 # ------------------------------------------------------------
 
-/*
-	TODO update table projects with the new field
-*/
+
 
 CREATE TABLE `projects` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -180,10 +178,11 @@ CREATE TABLE `projects` (
   `log_path` text COLLATE utf8_unicode_ci,
   `created` timestamp NULL DEFAULT NULL,
   `modified` timestamp NULL DEFAULT NULL,
+  `method` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO `projects` (`id`,`name`,`svn_url`,`prd_url`,`prd_path`,`log_path`,`created`,`modified`) VALUES ('1','Fredistrano_example','http://fredistrano.googlecode.com/svn/trunk','http://localhost/testFredistrano/fredistrano/','/Users/fred/Sites/testFredistrano/fredistrano/','/Users/fred/Sites/testFredistrano/fredistrano/app/tmp/logs/debug.log\r\n/Users/fred/Sites/testFredistrano/fredistrano/app/tmp/logs/error.log','2007-10-02 19:04:09','2008-08-19 00:24:53');
+INSERT INTO `projects` (`id`,`name`,`svn_url`,`prd_url`,`prd_path`,`log_path`,`created`,`modified`,`method`) VALUES ('1','Fredistrano_example','http://fredistrano.googlecode.com/svn/trunk','http://localhost/testFredistrano/fredistrano/','/Users/fred/Sites/testFredistrano/fredistrano/','/Users/fred/Sites/testFredistrano/fredistrano/app/tmp/logs/debug.log\r\n/Users/fred/Sites/testFredistrano/fredistrano/app/tmp/logs/error.log','2007-10-02 19:04:09','2008-08-19 00:24:53','0');
 
 
 # Dump of table users

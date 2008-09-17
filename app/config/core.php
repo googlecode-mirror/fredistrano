@@ -124,7 +124,7 @@
  * Session time out time (in seconds).
  * Actual value depends on 'Security.level' setting.
  */
-	Configure::write('Session.timeout', '120');
+	Configure::write('Session.timeout', '1200');
 /**
  * If set to false, sessions are not automatically started.
  */
@@ -150,7 +150,7 @@
 /**
  * A random string used in security hashing methods.
  */
-	Configure::write('Security.salt', 'DYhG9VoUubWwvn3b0qyJfIxfs2guiR2gaCG0F9mi');
+	Configure::write('Security.salt', 'DYhG9VoUvn3b0qyJfIxfsubWw2guiR2gaCG0F9mi');
 /**
  * Compress CSS output by removing comments, whitespace, repeating tags, etc.
  * This requires a/var/cache directory to be writable by the web server for caching.

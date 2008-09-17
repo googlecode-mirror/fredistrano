@@ -196,7 +196,7 @@ class AdvancedLog extends ElementaryLog {
 		parent::end();
 		
 		// Log to file if required
-		if (!is_null($this->context['uuid'])) {
+		if (isset($this->context['uuid'])) {
 			$this->writeToFile( F_DEPLOYLOGDIR.$this->context['uuid'].'.log' );
 		}
 	}// end

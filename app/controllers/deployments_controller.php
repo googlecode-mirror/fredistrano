@@ -56,6 +56,9 @@ class DeploymentsController extends AppController {
 	 * Deploy automatically a project
 	 * @param string $id ID of the project to be deployed
 	 */
+	/*
+		FIXME error after clearProjectTempFiles
+	*/
 	function runAutomatic($id = null) {
 		$this->layout = 'ajax';
 		
@@ -207,7 +210,6 @@ class DeploymentsController extends AppController {
 	
 	function clearProjectTempFiles($id = null){
 		$this->layout = 'ajax';
-		
 		// Run step	
 		$log = $this->Deployment->clearProjectTempFiles($id);
 		
@@ -230,7 +232,7 @@ class DeploymentsController extends AppController {
 		}
 	}// _isValidStep
 	
-	private function _setContext() {
+	private function _setContext() {		
 		if ($this->Session->read('User.User.id')) {
 			$user = $this->Session->read('User.User.id');
 		} else {
