@@ -60,7 +60,7 @@ class Deployment extends AppModel {
 		
 		try {
 			if ( !isset($this->_context['user']) || !isset($this->_context['uuid']) ) { 
-				$processLog->error( __('Invalid context (use setContext() first)',true) );
+				$processLog->error( __('Invalid process context (use setContext() first)',true) );
 			}
 			$processLog->setContext($this->_context);
 						
@@ -127,10 +127,9 @@ class Deployment extends AppModel {
 		try{	
 			// Check input parameters
 			if ( !isset($this->_context['user']) || (!isset($this->_context['uuid']) && in_array($step, $this->process)) ) { 
-				$this->_stepLog->error( __('Invalid context (use setContext() first)',true) );
-			} else {
-				$this->_stepLog->setContext($this->_context);
-			}
+				$this->_stepLog->error( __('Invalid step context (use setContext() first)',true) );
+			} 
+			$this->_stepLog->setContext($this->_context);
 			if ( !in_array($step, $this->allowedSteps) ) {
 				$this->_stepLog->error( sprintf(__('Unknown step %s',true), $step) );
 			}
@@ -458,47 +457,7 @@ class Deployment extends AppModel {
 		}
 	}// _resetPermissions
 	
-	// /**
-	//  * Optional step in the deployment process: Backup
-	//  * @return string 			Shell output 
-	//      */
-	// private function __backup() {
-	// 	if (!$this->isInitialized()) {
-	// 		return false;		
-	// 	}
-	// 	
-	// 	$output = '';
-	// 	// création du répertoire pour la sauvegarde
-	// 	$backupDir = F_DEPLOYBACKUPDIR.$this->_project['Project']['name'] ;
-	// 	if (!is_dir($backupDir)) {
-	// 		if (mkdir($backupDir, octdec( Configure::read('FileSystem.permissions.directories')), TRUE)) {
-	// 			$output .= "-[".__('creating directory')." $backupDir]\n";
-	// 		} else {
-	// 			$this->triggerError(sprintf(__('Unable to create directory %s',true), $backupDir));
-	// 			return false;
-	// 		}
-	// 	}
-	// 
-	// 	$output .= "-[".__('backup current prod version')."]\n";
-	// 	if (is_dir($project['Project']['prd_path'])) {
-	// 		$source = self::pathConverter($project['Project']['prd_path'] );
-	// 		$target = self::pathConverter($backupDir);
-	// 	
-	// 		// rsync pour le backup
-	// 		$command = "rsync -av $source $target 2>&1";
-	// 		$output .= $this->executeCommand($command, __('backup current prod version'), 'backup');
-	// 		
-	// 		$command = "chmod -R ". Configure::read('FileSystem.permissions.directories')." ".F_DEPLOYBACKUPDIR;
-	// 		$output .= $this->executeCommand($command, __('updating dir mode') . ' > '. Configure::read('FileSystem.permissions.directories'), 'backup');
-	// 	} else {
-	// 		$output .= "-[".__('no backup needed')." ".$project['Project']['prd_path']." ".__('does not exist')."]\n";
-	// 	}
-	// 
-	// 	/*
-	// 		TODO F: Check backup
-	// 	*/
-	// 	return $output;
-	// }// backup
+
 	
     // Public methods ---------------------------------------------------------
 	public function isInitialized() {

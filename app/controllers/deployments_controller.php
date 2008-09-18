@@ -61,6 +61,9 @@ class DeploymentsController extends AppController {
 	*/
 	function runAutomatic($id = null) {
 		$this->layout = 'ajax';
+
+		// Init deployment uuid
+		$this->Session->write('Deployment.uuid', $this->Deployment->generateUuid($id));
 		
 		// Run step	
 		$log = $this->Deployment->process(
@@ -81,8 +84,6 @@ class DeploymentsController extends AppController {
 		 	)
 		);
 
-		// Init deployment uuid
-		$this->Session->write('Deployment.uuid', $this->Deployment->generateUuid($id));
 		
 		// Process output
 		$this->set('output', 	$log->toString());
