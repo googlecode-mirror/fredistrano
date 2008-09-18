@@ -56,9 +56,6 @@ class DeploymentsController extends AppController {
 	 * Deploy automatically a project
 	 * @param string $id ID of the project to be deployed
 	 */
-	/*
-		FIXME error after clearProjectTempFiles
-	*/
 	function runAutomatic($id = null) {
 		$this->layout = 'ajax';
 
@@ -71,8 +68,8 @@ class DeploymentsController extends AppController {
 			array(
 		 		'export' 		=> array(),
 		 		'synchronize'	=> array(
-					'simulation'			=> 	false,
-		 		 	'runBeforeScript'		=> 	true,
+					'simulation'			=> 	true,
+		 		 	'runBeforeScript'		=> 	false,
 		 			'backup'				=> 	false
 		 		),
 		 		'finalize'		=> array(
@@ -86,7 +83,7 @@ class DeploymentsController extends AppController {
 
 		
 		// Process output
-		$this->set('output', 	$log->toString());
+		$this->set('output', 	$log->toHtml());
 		if ( $log->hasError() ) {
 			$this->set('errorMessage', 	$log->getError() );
 			return;
@@ -118,7 +115,7 @@ class DeploymentsController extends AppController {
 		$log = $this->Deployment->export($this->data['Project']['id'], $options);
 		
 		// Process result
-		$this->set('output', 	$log->toString());
+		$this->set('output', 	$log->toHtml());
 		if ( $log->hasError() ) {
 			$this->set('errorMessage', $log->getError() );
 			return;
@@ -159,7 +156,7 @@ class DeploymentsController extends AppController {
 		$log = $this->Deployment->synchronize( $this->data['Project']['id'], $options);
 
 		// Process result
-		$this->set('output', 	$log->toString());
+		$this->set('output', 	$log->toHtml());
 		if ( $log->hasError() ) {
 			$this->set('errorMessage', 	$log->getError() );
 			return;
@@ -187,7 +184,7 @@ class DeploymentsController extends AppController {
 		$log = $this->Deployment->finalize( $this->data['Project']['id'], $options);
 
 		// Process result
-		$this->set('output', 	$log->toString());
+		$this->set('output', 	$log->toHtml());
 		if ( $log->hasError() ) {
 			$this->set('errorMessage', 	$log->getError() );
 			return;
@@ -202,20 +199,20 @@ class DeploymentsController extends AppController {
 		$log = $this->Deployment->resetPermissions( $id );
 		
 		// Process result
-		$this->set('output', 	$log->toString());
+		$this->set('output', 	$log->toHtml());
 		if ( $log->hasError() ) {
 			$this->set('errorMessage', 	$log->getError() );
 			return;
 		}
 	}//resetPermissions
-	
+
 	function clearProjectTempFiles($id = null){
 		$this->layout = 'ajax';
 		// Run step	
 		$log = $this->Deployment->clearProjectTempFiles($id);
 		
 		// Process result
-		$this->set('output', 	$log->toString());
+		$this->set('output', 	$log->toHtml());
 		if ( $log->hasError() ) {
 			$this->set('errorMessage', 	$log->getError() );
 			return;

@@ -1,3 +1,7 @@
+<!--
+	FIXME F: issue on checkbox selected by default
+-->
+
 <hr/>
 <div id="step1">
 	<?php echo $form->create('Project', array('url' => '/deployments/export', 'method' => 'post', 'class' => 'f-wrap-1'));?>
@@ -72,7 +76,18 @@
 								'Project.simulation',  
 								array(
 									'class' => 'f-checkbox', 
-									'onClick' => 'if ($(\'ProjectSimulation\').checked) {$(\'ProjectBackup\').disabled = true;$(\'ProjectBackup\').checked = false; $(\'ProjectRunBeforeScript\').checked = false; $(\'ProjectRunBeforeScript\').disabled = true; }else{ $(\'ProjectBackup\').disabled = false;  $(\'ProjectBackup\').checked = false; $(\'ProjectRunBeforeScript\').disabled = false;  $(\'ProjectRunBeforeScript\').checked = false;}', 
+									'onClick' => 
+									'if ($(\'ProjectSimulation\').checked) {
+										$(\'ProjectRunBeforeScript\').checked = false;
+										$(\'ProjectRunBeforeScript\').disabled = true; 
+										$(\'ProjectBackup\').checked = false; 
+										$(\'ProjectBackup\').disabled = true;
+									}else{ 
+										$(\'ProjectRunBeforeScript\').checked = false;
+										$(\'ProjectRunBeforeScript\').disabled = false;  
+										$(\'ProjectBackup\').checked = false; 
+										$(\'ProjectBackup\').disabled = false;  
+									}', 
 									'checked' => 'checked', 
 									'value' => true
 									)
@@ -86,7 +101,7 @@
 						<?php 
 							e($form->checkbox(
 									'Project.runBeforeScript', 
-									array( 'class' => 'f-checkbox', 'type' => 'checkbox','value' => true)
+									array( 'class' => 'f-checkbox', 'type' => 'checkbox')
 								)
 							);	
 						?>
@@ -97,7 +112,7 @@
 						<?php 
 							e($form->checkbox(
 								'Project.backup', 
-								array( 'class' => 'f-checkbox', 'type' => 'checkbox','value' => true)
+								array( 'class' => 'f-checkbox', 'type' => 'checkbox')
 								)
 							);	
 						?>

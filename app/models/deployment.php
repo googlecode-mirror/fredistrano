@@ -233,7 +233,7 @@ class Deployment extends AppModel {
 		$default_options = array(
 			'simulation' 		=> true,
 	 		'runBeforeScript'	=> false,
-			'backup'			=> true,
+			'backup'			=> false,
 			'comment' 			=> 'none'
 		);
 		$options = array_merge($default_options, $options);

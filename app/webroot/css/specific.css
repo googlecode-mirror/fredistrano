@@ -1,4 +1,4 @@
-.console {background-color: black;color: green;font-weight: bold;padding: 0.5em 0 0.5em 0.5em;height:200px;overflow:auto;margin-top: 40px;}
+.console {background-color: black;color: green;/*font-weight: bold;*/padding: 0.5em 0 0.5em 0.5em;height:300px;overflow:auto;margin-top: 40px;}
 
 .tabletoplink {float: right;padding-right: 2px;font-size: 75%;}
 .tabletoplink a {text-decoration:none;}

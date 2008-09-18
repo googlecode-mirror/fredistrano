@@ -6,10 +6,6 @@
 /*
 	FIXME F:	issue on session timelimit on DH 
 */
-/*
-	FIXME F:	invalid context in case of fastDeploy after login 
-*/
-
 
 /* SVN FILE: $Id: app_controller.php 6311 2008-01-02 06:33:52Z phpnut $ */
 /**

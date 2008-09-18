@@ -12,8 +12,8 @@ if(isset($errorMessage)){
 <div class="console">
 <?php
 	echo "<pre>";
-	print_r(htmlentities(str_replace("><",">\n<", $output)));
-	// print_r(htmlentities($output));
+	// print_r(htmlentities(str_replace("><",">\n<", $output)));
+	print_r($output);
 	echo "</pre>";
 ?> 
 </div>

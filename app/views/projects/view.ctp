@@ -30,7 +30,9 @@
 													), 
 										'/deployments/resetPermissions/' . $project['Project']['id'],
 										array (
-											'update' 	=> 'deploy_area'
+											'update' 	=> 'deploy_area',
+											'loading' 	=> "Element.show('spinning_image0');", 
+											'loaded' 	=> "Element.hide('spinning_image0');"
 											),
 										__('Are you sure you want to reset permissions for the project', true).' : ' . $project['Project']['name'] . '?',
 										false
@@ -43,7 +45,9 @@
 													), 
 										'/deployments/clearProjectTempFiles/' . $project['Project']['id'],
 										array (
-											'update' 	=> 'deploy_area'
+											'update' 	=> 'deploy_area',
+											'loading' 	=> "Element.show('spinning_image0');", 
+											'loaded' 	=> "Element.hide('spinning_image0');",
 											),
 										__('Are you sure you want to delete temp files for the project', true).' : ' . $project['Project']['name'] . '?',
 										false
