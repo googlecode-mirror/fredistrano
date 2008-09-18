@@ -88,6 +88,10 @@ class ElementaryLog {
 		return '';
 	}// toXml
 	
+	/*
+		FIXME F: implement a toHtml() method to display log in the interface
+	*/
+	
 	public function toString () {
 		return 
 			'<timePeriod>'
@@ -97,6 +101,13 @@ class ElementaryLog {
 			.'</timePeriod>'
 			.($this->hasError()?'<error>'.$this->error.'</error>':'');
 	}// toString
+
+	public function toHtml () {
+		return 
+			'<br />Elapsed time : '.$this->elapsedTime.' secondes'
+			.'<br />==========================='
+			.($this->hasError()?'<br />Error : '.$this->error.'<br />--------------':'');
+	}// toHtml
 	
 	public function writeToFile( $target ) {
 		$log = new File( $target, true );
@@ -152,6 +163,17 @@ class ActionLog extends ElementaryLog {
 				.'</job>'
 			.'</action>';		
 	}// toString
+
+	public function toHtml () {
+		return 
+			'<br />--action--'
+			.'<br />[name] '.$this->name.' [type] '.$this->type
+				.(!is_null($this->description)?'<br />[description] '.$this->description:'<br />[description]')
+				.parent::toString()
+					.((!is_null($this->command))?('<br />[command] '.$this->command):'<br />[command]')
+					.((!is_null($this->result))?('<br />[result] '.$this->result.'<br />'):'<br />[result]')
+			.'<br />--<br />';		
+	}// toHtml
 	
 }// ActionLog
 
@@ -285,6 +307,27 @@ class StepLog extends AdvancedLog {
 				.'<actions>'.$actionLogs.'</actions>'
 			.'</step>';
 	}// toString
+
+	public function toHtml( $showContext=true ) {
+		$actionLogs = '';
+		foreach($this->logs as $actionLog) {
+			$actionLogs .= $actionLog->toHtml();
+		}
+		
+		if ($showContext) {
+			$uuid = (!is_null($this->context['uuid']))?'uuid='.$this->context['uuid']:'';
+			$user = $this->context['user'];
+		} else {
+			$uuid = '';
+			$user = '';	
+		}
+		return 
+			'<br />--------------------------------------'
+			.'<br />[step name] '.$this->name." \ ".$uuid
+				.parent::toHtml()
+				.'<br />[user] '.$user
+				.'<br />[actions]'.$actionLogs;
+	}// toHtml
 	
 }// StepLog
 
@@ -305,6 +348,21 @@ class Processlog extends AdvancedLog {
 				.'<steps>'.$stepLogs.'</steps>'
 			.'</process>';
 	}// toString
+
+	public function toHtml() {
+		
+		$stepLogs = '';
+		foreach($this->logs as $stepLog) {
+			$stepLogs .= $stepLog->toHtml(false);
+		}
+		return 
+			'<br />======================================='
+			.'<br />[process uuid] '.$this->context['uuid']
+				.parent::toHtml()
+				.'<br />[user] '.$this->context['user']
+				.'<br />[steps] '.$stepLogs
+			.'<br />===';
+	}// toHtml
 
 }// Processlog
 ?>
