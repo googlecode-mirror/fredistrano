@@ -1,7 +1,3 @@
-<!--
-	FIXME F: issue on checkbox selected by default
--->
-
 <hr/>
 <div id="step1">
 	<?php echo $form->create('Project', array('url' => '/deployments/export', 'method' => 'post', 'class' => 'f-wrap-1'));?>

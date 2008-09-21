@@ -6,6 +6,11 @@
 	if (isset($options['synchronize']['runBeforeScript']) && $options['synchronize']['runBeforeScript']) {
 	 	e("$('ProjectRunBeforeScript').checked = 'checked';");
 	}
+	if (empty($options['synchronize']['runBeforeScript']) && empty($options['synchronize']['backup'])) {
+		e("$('ProjectSimulation').checked = 'checked';");
+		e("$('ProjectBackup').disabled = 'disabled';");
+		e("$('ProjectRunBeforeScript').disabled = 'disabled';");
+	}
 	if (isset($options['synchronize']['backup']) && $options['synchronize']['backup']) {
 		e("$('ProjectBackup').checked = 'checked';");
 	}

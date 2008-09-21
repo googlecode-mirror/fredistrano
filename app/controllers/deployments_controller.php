@@ -61,6 +61,7 @@ class DeploymentsController extends AppController {
 
 		// Init deployment uuid
 		$this->Session->write('Deployment.uuid', $this->Deployment->generateUuid($id));
+		$this->_setContext();
 		
 		// Run step	
 		$log = $this->Deployment->process(

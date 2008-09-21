@@ -1,10 +1,6 @@
 <?php
 /*
-	FIXME F:	run bake i18n 
-*/
-
-/*
-	FIXME F:	issue on session timelimit on DH 
+	FIXME F1:	run bake i18n & translate fr + it
 */
 
 /* SVN FILE: $Id: app_controller.php 6311 2008-01-02 06:33:52Z phpnut $ */

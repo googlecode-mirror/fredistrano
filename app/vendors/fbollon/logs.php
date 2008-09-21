@@ -87,11 +87,7 @@ class ElementaryLog {
 	public function toXml() {
 		return '';
 	}// toXml
-	
-	/*
-		FIXME F: implement a toHtml() method to display log in the interface
-	*/
-	
+		
 	public function toString () {
 		return 
 			'<timePeriod>'
