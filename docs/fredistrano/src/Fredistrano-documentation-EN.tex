@@ -10,9 +10,9 @@
 \usepackage{graphicx}
 \pagestyle{headings}
 \author{Frédéric BOLLON}
-\title{Fredistrano v1.0\\Documentation\\}
+\title{\includegraphics{doc_fredistrano2.png}\\- - -\\Version 1.0\\- - -\\Documentation\\}
 \begin{document}
-	% FIXME F2: update documentation 
+
 \maketitle
 \tableofcontents
 
@@ -97,7 +97,7 @@ Before being able to deploy your project with fredistrano, you must set it up ac
 \item If the content of some files differs between the deveploment environment and the production one, these files shouldn't be added to subversion but only copies with an extension like '.dev.xxx' et '.prd.xxx':\\
 For example, if the application requires a database.php file where connection parameters are defined, you won't add directly this file to subversion. Instead, you will add two other versions, one for each environment, nammed database.dev.php and database.prd.php.\\ 
 During the deployment, whatever the extension is, all 'prd.xxx' files will be deployed (not 'dev.xxx' ones) and renamed in '.xxx'.
-\item A 'deploy.php' file must be created at the application root. This files contains application specific deployment parameters such as a list of files and folders that shouldn't be synchronized, a list of writable directories... Notice that this file won't be deployed in your production environment. Here is an example of deploy.php :\\
+\item A directory ".fredistrano" must be created at the application root. In this directory you must create a file "deploy.php". This files contains application specific deployment parameters such as a list of files and folders that shouldn't be synchronized, a list of writable directories... Notice that this file won't be deployed in your production environment. Here is an example of deploy.php :\\
 
 %---------------------------------------------------------------
 \definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
@@ -169,13 +169,12 @@ During the deployment, whatever the extension is, all 'prd.xxx' files will be de
 
 To deploy a PHP web application with Fredistrano, the first step is to create a new project.\\
 
+\includegraphics[width=1\textwidth]{doc_fredistrano1.png} 
+
 \begin{enumerate}
 \item Click on the "Projects" toggle (Top of your screen)
 \item Click on the "Add a new project" link
 \item Fill out the form as follow:\\
-
-\includegraphics[width=1\textwidth]{doc_fredistrano1.png} 
-
 
 \begin{list}{- Field:}{}
 \item \textbf{"Project name"} : Is used to identify the project. It will also be used as a diretory name for temporary copy during the deployment. Do not use special characters.
@@ -183,6 +182,8 @@ To deploy a PHP web application with Fredistrano, the first step is to create a 
 \item \textbf{"Application Url"} : Won't be used by Fredistrano. Juste a simple reminder.
 \item \textbf{"Absolute path"} :  Absolute path of the target folder where the application should be deployed\\Example for a Windows server (located on the server) : D:\textbackslash www\textbackslash html\textbackslash myProject \\Example on a Linux server : /var/www/html/monProjet or /home/monUser/monDomain.com.
 \item \textbf{"Log pathes"} : Pathes of files that you want to access with the log viewer, one path per line.
+\item \textbf{"Deployment method"} : \textbf{Checkout/update:} fastest method, during the first deployment the command "svn checkout" will be executed for the next deployment the command "svn update" will be used to retrieve only modified files. \textbf{Export:} slower, because for each deployment the command "svn export" will be used, however it is sometimes necessary to use this method, for example if you do not have the necessary privileges on the subversion repository to execute the checkout command.
+
 \end{list}
 \end{enumerate}
 
@@ -212,6 +213,76 @@ You can access the deployment history from the details page of each project by c
 
 \section{Logs viewer}
 Click on the "Logs" tab to use the log viewer, with this feature you can diplay the content of the logs files defined in the project details
+
+\section{Tips and tricks}
+\subsection{Common to all kinds of project} % (fold)
+\begin{list}{-}{}
+\item \textbf{Script example for "beforeScript"}\\
+This script makes it possible to replace the .htaccess of a project by another .htaccess during the deployment syncronisation step which will redirect the visitors towards a temporary page. The temporary .htaccess file and the page which will be used for the redirection are placed in the .fredistrano directory at the project root.
+
+	\definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
+	\lstset{language=bash}
+	\lstset{breaklines=true}
+	\lstset{tabsize=1}
+	\lstset{backgroundcolor=\color{lbcolor},rulecolor=}
+	\begin{lstlisting}[frame=tb]{}
+	#!/bin/sh
+
+	PATHTMP=/Path/on/production/server/fredistrano/files/tmp/myproject/tmpDir
+	PATHPRD=/Path/on/production/server/myproject
+
+	# copy the specific temporary .htaccess at the right place 
+	cp -vf ${PATHTMP}/.fredistrano/.htaccess ${PATHPRD}/.htaccess
+	#  copy the specific temporary redirect page at the right place 
+	cp -vf ${PATHTMP}/.fredistrano/302.html ${PATHPRD}/302.html
+	\end{lstlisting}
+
+\item \textbf{Script example for "afterScript"}\\
+This script will change a value in a file, in this example it will modify the value of the debug mode to 0 in the file app/config/core.php. It also will resore the .htaccess file which one replaced by a temporary file during the deployment and will remove the redirection file (see the example of script beforeScript)
+	\definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
+	\lstset{language=bash}
+	\lstset{breaklines=true}
+	\lstset{tabsize=1}
+	\lstset{backgroundcolor=\color{lbcolor},rulecolor=}
+	\begin{lstlisting}[frame=tb]{}
+	#!/bin/sh
+	# modify the debug mode from 1 or 2 to 0 in file app/config/core.php
+	PATHTMP=/Path/on/production/server/fredistrano/files/tmp/myproject/tmpDir
+	PATHPRD=/Path/on/production/server/myproject
+
+	sed -i.bak "s/\('debug',\)[ ]*[12]/\1 0/g" ${PATHPRD}/app/config/core.php
+
+	# replace the temporary .htaccess 
+	cp -vf ${PATHTMP}/.htaccess ${PATHPRD}/.htaccess
+
+	# remove the temorary redirection page 
+	rm -vf ${PATHPRD}/302.html
+	# remove the old version of app/config/core.bak
+	rm -vf ${PATHPRD}/app/config/core.php.bak
+	\end{lstlisting}
+
+
+\end{list}
+% subsection commun_à_tous_type_de_projet (end)
+
+\subsection{Specific to CakePHP projects} % (fold)
+\begin{list}{-}{}
+	\item \textbf{Removal cache:} To empty the cache automatically during each deployment, you have to version the directories app/tmp/cache/models, app/tmp/cache/persistent and app/tmp/cache/views and ignore their content. In this way, during the deployment synchronization stage these directories will be emptied on the production server.\\
+	To ignore the content of these directories I use the following command at the project root in the working copy :
+	\definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
+	\lstset{language=bash}
+	\lstset{breaklines=true}
+	\lstset{tabsize=1}
+	\lstset{backgroundcolor=\color{lbcolor},rulecolor=}
+	\begin{lstlisting}[frame=tb]{}
+	svn propset svn:ignore "*" app/tmp/cache/models/ app/tmp/cache/persistent/ app/tmp/cache/views/ app/tmp/logs/ app/tmp/sessions/ app/tmp/tests/
+	\end{lstlisting}
+\end{list}
+% subsection spécifiques_aux_projets_basés_sur_cakephp (end)
+
+
+
+
 \chapter{Related links}
 You will find in the following 
 \begin{itemize}

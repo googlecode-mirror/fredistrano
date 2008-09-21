@@ -2,8 +2,8 @@
 
 <h3><?php __('Offline support') ?></h3>
 <ul>
-	<li><?php __('Documentation') ?> [ <?php echo $html->link('PDF-En','/files/'.__('Fredistrano-documentation-EN.pdf', true)); ?> ]</li>
-	<li><?php __('Documentation') ?> [ <?php echo $html->link('PDF-Fr','/files/'.__('Fredistrano-documentation-FR.pdf', true)); ?> ]</li>
+	<li><?php __('Documentation') ?> [ <?php echo $html->link('PDF-En', '/files/Fredistrano-documentation-EN.pdf'); ?> ]</li>
+	<li><?php __('Documentation') ?> [ <?php echo $html->link('PDF-Fr', '/files/Fredistrano-documentation-FR.pdf'); ?> ]</li>
 </ul>
 
 <h3><?php __('Online support') ?></h3>
