@@ -7,11 +7,14 @@
 \usepackage{amssymb}
 \usepackage{listings}
 \usepackage{color}
+\usepackage{graphicx}
 \pagestyle{headings}
 \author{Frédéric BOLLON}
-\title{Fredistrano v1.0\\Documentation\\}
+\title{\includegraphics{doc_fredistrano2.png}\\- - -\\Version 1.0\\- - -\\Documentation\\}
 \begin{document}
+
 \maketitle
+
 \tableofcontents
 
 \chapter{Introduction}
@@ -99,31 +102,66 @@ Pour pouvoir déloyer une application Php avec Fredistrano sur votre serveur de 
 \item Les fichiers dont le contenu doit-\^{e}tre différent entre la version de développement et la version de production, ne doivent pas être versionnés mais des copies de chaque version avec une extension du type ".dev.xxx" et ".prd.xxx" doivent se trouver dans Subversion.\\
 Par exemple, l'application à déployer nécessite un fichier database.php où les paramètres de connexion à la base de données sont définis, ce fichier sera ignoré dans Subversion et les fichiers database.dev.php et database.prd.php seront versionnés avec respectivement la configuration du serveur de développement et du serveur de production.\\
 Quelque soit l'extension, les fichiers *.prd.xxx seront renommés en *.xxx lors du déploiement.\\
-\item Un fichier nommé deploy.php doit se trouver à la racine de l'application. Ce fichier est "la recette" de déploiement, il va permettre de définir la liste des répertoires et fichiers à exclure lors du dépoiement en production ainsi que la liste des répertoires sur lesquel un CHMOD 777 sera executé à la suite du déploiement afin de permettre l'écriture dans ces dossiers.\newpage Exemple de contenu pour le fichier deploy.php :\\
+\item Un dossier nommé ".fredistrano" doit \^{e}tre créé à la racine de l'application. Dans ce dossier vous devez créer un fichier deploy.php. Ce fichier est "la recette" de déploiement, il va permettre de définir les options de déploiement, les chemins vers d'éventuels script que vous souhaiteriez exécuter avant ou après le développemnet, la liste des répertoires et fichiers à exclure lors du dépoiement en production et enfin la liste des répertoires sur lesquel un CHMOD 777 sera executé à la suite du déploiement afin de permettre l'écriture dans ces dossiers.\newpage Exemple de contenu pour le fichier deploy.php :\\
 
 %---------------------------------------------------------------
 \definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
 \lstset{language=Php}
+\lstset{breaklines=true}
+\lstset{tabsize=2}
+\lstset{morecomment=[l]{//}}
 \lstset{commentstyle=\textit}
 \lstset{backgroundcolor=\color{lbcolor},rulecolor=}
 \begin{lstlisting}[frame=tb]{}
-class DEPLOY_CONFIG {
-
+<?php
+ class DEPLOY_CONFIG {
+	
+	// Default deployment options for the current project
+	// these options could be modified during the deployment process in standard mode
+	// in fast mode these options will be used
+ 	var $options = array(
+ 		'export' 		=> array(),
+ 		'synchronize'	=> array(
+ 		 	'runBeforeScript'		=> 	false, 		//enable custom script before deployement 
+ 			'backup'				=> 	false 		//enable backup functionality
+ 		),
+ 		'finalize'		=> array(
+	 		'renamePrdFile' 		=> 	false,		//enable renaming .prd.xxx files
+			'changeFileMode' 		=> 	false,		//enable updating file mode
+			'giveWriteMode'			=> 	false,		//enable updating write mode on directories defined in $writable (in this file)
+ 			'runAfterScript'		=> 	false		//enable custom script at the end of the deployement process
+ 		)
+ 	);
+ 	
+ 	// path of yours custom scripts to execute at the beginning/end of the deployment process
+	// if yours scripts are located in a directory named ".fredistrano" at the root of your project enter only the name of your script to execute
+ 	var $scripts = array(
+ 		'before' 	=>		'/path/to/file', 
+ 		'after' 	=>		'/path/to/file' 
+ 	);
+ 	
+	// List of directories and files to exclude during the deployemnt process on the production server
 	var $exclude = array (
-		'/app/tmp/logs/*',
-		'/app/tmp/sessions/*',
-		'/app/tmp/tests/*',
-		'/app/webroot/files/*',
-		'/app/config/database.php',
-		'/app/config/config.php',
-		'.settings'
+		'app/tmp/logs/*',
+		'app/tmp/sessions/*',
+		'app/tmp/tests/*',
+		'app/config/database.php',
+		'app/config/config.php',
+		'app/webroot/files/*',
+		'files/logs/*',
+		'files/tmp/*'
+	);
+		
+	// Directories list on which the write permission will applied during the finalization step of the deployment process	
+	// log, cache, upload directories, etc...
+	var $writable = array (
+		'app/tmp',
+		'files/backup',
+		'files/logs'
 	);
 
-	var $writable = array (
-		'/app/tmp',
-		'/app/webroot/files'
-	);
-}
+ }// DEPLOY_CONFIG
+?>
 \end{lstlisting}
 %---------------------------------------------------------------
 
@@ -133,16 +171,18 @@ class DEPLOY_CONFIG {
 \section{Les différentes étapes d'un déploiement }
 \subsection{Ajout d'un projet}
 Pour pouvoir déployer une application Php à l'aide de Fredistrano, il faut dans un premier ajouter un projet à déployer.\\
+\includegraphics[width=1\textwidth]{doc_fredistrano1.png} 
 \begin{enumerate}
 \item Cliquer sur l'onglet "Projets" puis sur le lien "Ajouter un projet"
 \item Renseigner les différents champs du formulaire de création :\\
-
 \begin{list}{- Champ}{}
 \item \textbf{"Nom du projet"} : Permet d'identifier le projet, servira également de nom pour un dossier temporaire lors du déploiement, il est donc préférable d'éviter les caractères spéciaux.
 \item \textbf{"Url SVN"} :  Url vers le repository SVN du projet à déployer (exemple : "http://svn.mondomain.com/monProjet/trunk").
-\item \textbf{"Url de l'application à déployer"} :  Servira uniquement à afficher un lien vers l'application.
 \item \textbf{"Chemin absolu du projet à déployer"} :  Chemin absolu vers le dossier sur le serveur de production où sera déployé l'application\\exemple sur un serveur Windows : D:\textbackslash www\textbackslash html\textbackslash monProjet \\exemple sur un serveur Linux : /var/www/html/monProjet ou encore /home/monUser/monDomain.com.
-\item \textbf{"Chemin des fichiers de log"} : Chemins des fichiers de log que vous souhaitez rendre accessible depuis le visualisateur de log, un chemin par ligne.\end{list}
+\item \textbf{"Url de l'application à déployer"} :  Servira uniquement à afficher un lien vers l'application.
+\item \textbf{"Chemin des fichiers de log"} : Chemins des fichiers de log que vous souhaitez rendre accessible depuis le visualisateur de log, un chemin par ligne.
+\item \textbf{"Méthode de déploiement"} : \textbf{Checkout/update:} méthode la plus rapide, lors du premier déploiement un "svn checkout" est exécuté pour les déploiements suivants la commande "svn update" sera utilisée qui récuperera uniquement les fichiers modifiés. \textbf{Export:} plus lent, car pour chaque déploiement la commande "svn export" est utilisée, cependant il est parfois nécessaire d'utiliser cette méthode, par exemple si vous n'avez pas les droits nécessaire sur le repository subversion pour exécuter la commande checkout.
+\end{list}
 \end{enumerate}
 
 
@@ -174,6 +214,72 @@ Vous pouvez accéder à l'historique de déploiement depuis la page détail de c
 
 \section{Visualisateur de logs}
 Cliquez sur l'onglet "Logs" pour accéder au visualisateur de log, grâce à cette fonctionnalité vous pourrez afficher le contenu des fichiers de log défini dans le détail des projets.
+
+\section{Trucs et astuces}
+\subsection{Commun à tous type de projet} % (fold)
+\begin{list}{-}{}
+\item \textbf{Exemple de script beforeScript}\\
+Ce script permet de remplacer le .htaccess d'un projet par un autre .htaccess pendant l'étape de syncronisation d'un déploiement qui redirigera les visiteurs vers une page temporaire. Le fichier .htaccess temporaire et la page qui servira pour la redirection sont placés dans le dossier .fredistrano à la racine du projet
+
+	\definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
+	\lstset{language=bash}
+	\lstset{breaklines=true}
+	\lstset{tabsize=1}
+	\lstset{backgroundcolor=\color{lbcolor},rulecolor=}
+	\begin{lstlisting}[frame=tb]{}
+	#!/bin/sh
+
+	PATHTMP=/Path/on/production/server/fredistrano/files/tmp/myproject/tmpDir
+	PATHPRD=/Path/on/production/server/myproject
+
+	# copy the specific temporary .htaccess at the right place 
+	cp -vf ${PATHTMP}/.fredistrano/.htaccess ${PATHPRD}/.htaccess
+	#  copy the specific temporary redirect page at the right place 
+	cp -vf ${PATHTMP}/.fredistrano/302.html ${PATHPRD}/302.html
+	\end{lstlisting}
+
+\item \textbf{Exemple de script afterScript}\\
+Ce script va changer une valeur dans un fichier, dans cet exemple il va mettre la configuration du mode debug à 0 dans le fichier app/config/core.php. Il va également remettre le fichier .htaccess que l'on a remplacé par un fichier temporaire pendant le déploiement et supprimer le fichier de redirection (voir l'exemple de script beforeScript) 
+	\definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
+	\lstset{language=bash}
+	\lstset{breaklines=true}
+	\lstset{tabsize=1}
+	\lstset{backgroundcolor=\color{lbcolor},rulecolor=}
+	\begin{lstlisting}[frame=tb]{}
+	#!/bin/sh
+	# modify the debug mode from 1 or 2 to 0 in file app/config/core.php
+	PATHTMP=/Path/on/production/server/fredistrano/files/tmp/myproject/tmpDir
+	PATHPRD=/Path/on/production/server/myproject
+
+	sed -i.bak "s/\('debug',\)[ ]*[12]/\1 0/g" ${PATHPRD}/app/config/core.php
+
+	# replace the temporary .htaccess 
+	cp -vf ${PATHTMP}/.htaccess ${PATHPRD}/.htaccess
+
+	# remove the temorary redirection page 
+	rm -vf ${PATHPRD}/302.html
+	# remove the old version of app/config/core.bak
+	rm -vf ${PATHPRD}/app/config/core.php.bak
+	\end{lstlisting}
+
+
+\end{list}
+% subsection commun_à_tous_type_de_projet (end)
+
+\subsection{Spécifiques aux projets basés sur CakePHP} % (fold)
+\begin{list}{-}{}
+	\item \textbf{Suppression du cache:} Pour vider le cache automatiquement à chaque déploiement, il faut versionner les dossiers app/tmp/cache/models, app/tmp/cache/persistent et app/tmp/cache/views mais ignorer leur contenu. De cette façon, pendant l'étape de synchronisation du processus de déploiement ces dossiers seront vidés sur le serveur de production.\\
+	Pour ignorer le contenu de ces dossiers dans subversion, j'utilise la commande suivante en me placent à la racine du projet :
+	\definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
+	\lstset{language=bash}
+	\lstset{breaklines=true}
+	\lstset{tabsize=1}
+	\lstset{backgroundcolor=\color{lbcolor},rulecolor=}
+	\begin{lstlisting}[frame=tb]{}
+	svn propset svn:ignore "*" app/tmp/cache/models/ app/tmp/cache/persistent/ app/tmp/cache/views/ app/tmp/logs/ app/tmp/sessions/ app/tmp/tests/
+	\end{lstlisting}
+\end{list}
+% subsection spécifiques_aux_projets_basés_sur_cakephp (end)
 
 \chapter{Références}
 \begin{itemize}

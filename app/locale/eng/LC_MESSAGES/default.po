@@ -67,7 +67,7 @@ msgstr "Feeds not enabled. To use them, activate them first in the config file."
 
 #: /controllers/deployment_logs_controller.php:71
 msgid "Rss token not found in database."
-msgstr ""
+msgstr "Rss token not found in database."
 
 #: /controllers/deployment_logs_controller.php:87
 msgid "%d logs have been archived"
@@ -83,7 +83,7 @@ msgstr "Invalid id"
 
 #: /controllers/deployment_logs_controller.php:122
 msgid "No details available for archived logs."
-msgstr ""
+msgstr "No details available for archived logs."
 
 #: /controllers/deployment_logs_controller.php:154
 msgid "All logs deleted"
@@ -91,7 +91,7 @@ msgstr "All logs deleted"
 
 #: /controllers/deployments_controller.php:33
 msgid "Missing id."
-msgstr ""
+msgstr "Missing id."
 
 #: /controllers/deployments_controller.php:232
 #: /controllers/logs_controller.php:79
@@ -129,7 +129,7 @@ msgstr "Error during update."
 
 #: /controllers/home_controller.php:14
 msgid "See also"
-msgstr ""
+msgstr "See also"
 
 #: /controllers/home_controller.php:18
 #: /views/pages/about.ctp:1
@@ -187,9 +187,8 @@ msgid "The user has been deleted"
 msgstr "The user has been deleted"
 
 #: /controllers/users_controller.php:156
-#, fuzzy
 msgid "Settings saved."
-msgstr "Project saved."
+msgstr "Settings saved."
 
 #: /controllers/users_controller.php:177
 msgid "Please fill in all fields."
@@ -221,59 +220,55 @@ msgstr "Your are now disconnected."
 
 #: /models/deployment.php:63
 msgid "Invalid process context (use setContext() first)"
-msgstr ""
+msgstr "Invalid process context (use setContext() first)"
 
 #: /models/deployment.php:80
-#, fuzzy
 msgid "Revision exported %s"
-msgstr "Subversion export"
+msgstr "Revision exported %s"
 
 #: /models/deployment.php:91
 msgid "An error occured during the process. See steps for further details."
-msgstr ""
+msgstr "An error occured during the process. See steps for further details."
 
 #: /models/deployment.php:130
 msgid "Invalid step context (use setContext() first)"
-msgstr ""
+msgstr "Invalid step context (use setContext() first)"
 
 #: /models/deployment.php:134
 msgid "Unknown step %s"
-msgstr ""
+msgstr "Unknown step %s"
 
 #: /models/deployment.php:141
-#, fuzzy
 msgid "Unknown project"
-msgstr "New project"
+msgstr "Unknown project"
 
 #: /models/deployment.php:169;226;318;357;430;442;504
 msgid "Missing working data"
-msgstr ""
+msgstr "Missing working data"
 
 #: /models/deployment.php:266
-#, fuzzy
 msgid "Unable to save deployment log"
-msgstr "Unable to retreive log"
+msgstr "Unable to save deployment log"
 
 #: /models/deployment.php:379
-#, fuzzy
 msgid "Rename .prd files"
-msgstr "Rename files"
+msgstr "Rename .prd files"
 
 #: /models/deployment.php:391
 msgid "Changing files permissions to %s"
-msgstr ""
+msgstr "Changing files permissions to %s"
 
 #: /models/deployment.php:399
 msgid "Changing directories permissions to %s"
-msgstr ""
+msgstr "Changing directories permissions to %s"
 
 #: /models/deployment.php:415
 msgid "Changing writeable permissions"
-msgstr ""
+msgstr "Changing writeable permissions"
 
 #: /models/deployment.php:513
 msgid "Unable to find deploy.php"
-msgstr ""
+msgstr "Unable to find deploy.php"
 
 #: /plugins/aclite/views/acl_management/update_permissions.ctp:45
 msgid "Add"
@@ -281,99 +276,95 @@ msgstr "Add"
 
 #: /plugins/aclite/views/pages/denied.ctp:2
 msgid "Access denied"
-msgstr ""
+msgstr "Access denied"
 
 #: /plugins/aclite/views/pages/denied.ctp:3
-#, fuzzy
 msgid "Details"
-msgstr "email"
+msgstr "Details"
 
 #: /vendors/fbollon/commands.php:79;128
 msgid "Forbidden NULL value for input parameter [%s;%s]"
-msgstr ""
+msgstr "Forbidden NULL value for input parameter [%s;%s]"
 
 #: /vendors/fbollon/commands.php:83
 msgid "Path [%s] not found"
-msgstr ""
+msgstr "Path [%s] not found"
 
 #: /vendors/fbollon/commands.php:90
 msgid "Reseting permissions files on %s"
-msgstr ""
+msgstr "Reseting permissions files on %s"
 
 #: /vendors/fbollon/commands.php:103
 msgid "Resetting directories permissions on %s"
-msgstr ""
+msgstr "Resetting directories permissions on %s"
 
 #: /vendors/fbollon/commands.php:123
 msgid "Creating %s with mode %s"
-msgstr ""
+msgstr "Creating %s with mode %s"
 
 #: /vendors/fbollon/commands.php:130
 msgid "Directory %s already exists"
-msgstr ""
+msgstr "Directory %s already exists"
 
 #: /vendors/fbollon/commands.php:136
-#, fuzzy
 msgid "Unable to create directory %s"
-msgstr "Unable to retreive log"
+msgstr "Unable to create directory %s"
 
 #: /vendors/fbollon/commands.php:164;401
 msgid "Forbidden NULL value for input parameter [%s]"
-msgstr ""
+msgstr "Forbidden NULL value for input parameter [%s]"
 
 #: /vendors/fbollon/commands.php:197
 msgid "Deleting content under %s (recursivity=%d)"
-msgstr ""
+msgstr "Deleting content under %s (recursivity=%d)"
 
 #: /vendors/fbollon/commands.php:202
 msgid "Nothing to delete since no temporary files have been found"
-msgstr ""
+msgstr "Nothing to delete since no temporary files have been found"
 
 #: /vendors/fbollon/commands.php:218
 msgid "Executing script %s"
-msgstr ""
+msgstr "Executing script %s"
 
 #: /vendors/fbollon/commands.php:222;230
 msgid "Script not found"
-msgstr ""
+msgstr "Script not found"
 
 #: /vendors/fbollon/commands.php:236
 msgid "Execution privileges to script"
-msgstr ""
+msgstr "Execution privileges to script"
 
 #: /vendors/fbollon/commands.php:244
 msgid "%s script"
-msgstr ""
+msgstr "%s script"
 
 #: /vendors/fbollon/commands.php:256
-#, fuzzy
 msgid "Synchronizing %s with %s"
-msgstr "Synchronizing with production server"
+msgstr "Synchronizing %s with %s"
 
 #: /vendors/fbollon/commands.php:296;349
 msgid "Forbidden NULL value for input parameter [%s;%s;%s]"
-msgstr ""
+msgstr "Forbidden NULL value for input parameter [%s;%s;%s]"
 
 #: /vendors/fbollon/commands.php:298;351;403
 msgid "Directory %s not found"
-msgstr ""
+msgstr "Directory %s not found"
 
 #: /vendors/fbollon/commands.php:300;353
-#, fuzzy
 msgid "Delete target %s directory first"
-msgstr "delete directory"
+msgstr "Delete target %s directory first"
 
 #: /vendors/fbollon/commands.php:335;388;429
 msgid "An error has been detected in the SVN output"
-msgstr ""
+msgstr "An error has been detected in the SVN output"
 
 #: /vendors/fbollon/commands.php:405
 msgid "Specified directory %s is not a working copy"
-msgstr ""
+msgstr "Specified directory %s is not a working copy"
 
 #: /vendors/fbollon/commands.php:407
 msgid "Specified directory %s is not writeable"
-msgstr ""
+msgstr "Specified directory %s is not writeable"
 
 #: /views/administration/index.ctp:1
 #: /views/elements/menu.ctp:5
@@ -582,7 +573,7 @@ msgstr "Comment"
 #: /views/deployments/error.ctp:2
 #: /views/elements/_console.ctp:5
 msgid "The application is unable to continue."
-msgstr ""
+msgstr "The application is unable to continue."
 
 #: /views/deployments/run_manual.ctp:9
 msgid "Subversion export"
@@ -621,7 +612,7 @@ msgstr "Rsync simulation"
 
 #: /views/deployments/run_manual.ctp:100
 msgid "Run initialization script"
-msgstr ""
+msgstr "Run initialization script"
 
 #: /views/deployments/run_manual.ctp:111
 msgid "Backup"
@@ -649,7 +640,7 @@ msgstr "Writing mode"
 
 #: /views/deployments/run_manual.ctp:201
 msgid "Run finalization script"
-msgstr ""
+msgstr "Run finalization script"
 
 #: /views/deployments/run_manual.ctp:216
 msgid "Step 3 - finalization"
@@ -675,16 +666,15 @@ msgstr "SVN Url"
 
 #: /views/elements/_form_project.ctp:24
 msgid "The SVN Url must be a valid url"
-msgstr ""
+msgstr "The SVN Url must be a valid url"
 
 #: /views/elements/_form_project.ctp:29
 msgid "Application absolute path"
 msgstr "Application absolute path"
 
 #: /views/elements/_form_project.ctp:32
-#, fuzzy
 msgid "The application absolute path is required"
-msgstr "Application absolute path"
+msgstr "The application absolute path is required"
 
 #: /views/elements/_form_project.ctp:37
 #: /views/projects/view.ctp:118
@@ -693,18 +683,16 @@ msgstr "Application Url"
 
 #: /views/elements/_form_project.ctp:40
 msgid "The application url must be a valid url"
-msgstr ""
+msgstr "The application url must be a valid url"
 
 #: /views/elements/_form_project.ctp:45
-#, fuzzy
 msgid "Log pathes (one per line)"
-msgstr "Log pathes (;)"
+msgstr "Log pathes (one per line)"
 
 #: /views/elements/_form_project.ctp:56
 #: /views/projects/view.ctp:128
-#, fuzzy
 msgid "Deployment method"
-msgstr "Deployment of"
+msgstr "Deployment method"
 
 #: /views/elements/_form_user.ctp:5
 msgid "The login field is required"
@@ -750,7 +738,7 @@ msgstr "Please supply a valid email address."
 
 #: /views/elements/_log_viewer.ctp:4
 msgid "Logs retreived from"
-msgstr ""
+msgstr "Logs retreived from"
 
 #: /views/elements/_log_viewer.ctp:16
 msgid "Unable to retreive log"
@@ -770,12 +758,11 @@ msgstr "Welcome"
 
 #: /views/elements/logout.ctp:4
 msgid "Settings"
-msgstr ""
+msgstr "Settings"
 
 #: /views/elements/logout.ctp:4
-#, fuzzy
 msgid "Logout"
-msgstr "Log output"
+msgstr "Logout"
 
 #: /views/elements/menu.ctp:2
 msgid "Home"
@@ -885,9 +872,8 @@ msgid "Deployment history (10 last)"
 msgstr "Deployment history (10 last)"
 
 #: /views/layouts/default.ctp:42
-#, fuzzy
 msgid "Logo"
-msgstr "Logs"
+msgstr "Logo"
 
 #: /views/logs/get_log_list.ctp:5
 #: /views/logs/index.ctp:19
@@ -963,9 +949,8 @@ msgid "Fredistrano-documentation-EN.pdf"
 msgstr "Fredistrano-documentation-EN.pdf"
 
 #: /views/pages/help.ctp:6
-#, fuzzy
 msgid "Fredistrano-documentation-FR.pdf"
-msgstr "Fredistrano-documentation-EN.pdf"
+msgstr "Fredistrano-documentation-FR.pdf"
 
 #: /views/pages/help.ctp:9
 msgid "Online support"
@@ -1031,24 +1016,20 @@ msgid "Deploy"
 msgstr "Deploy"
 
 #: /views/projects/view.ctp:27;28
-#, fuzzy
 msgid "Reset permissions"
-msgstr "Responsible person"
+msgstr "Reset permissions"
 
 #: /views/projects/view.ctp:37
-#, fuzzy
 msgid "Are you sure you want to reset permissions for the project"
-msgstr "Are you sure you want to delete"
+msgstr "Are you sure you want to reset permissions for the project"
 
 #: /views/projects/view.ctp:42;43
-#, fuzzy
 msgid "Delete project temp files"
-msgstr "Related project"
+msgstr "Delete project temp files"
 
 #: /views/projects/view.ctp:52
-#, fuzzy
 msgid "Are you sure you want to delete temp files for the project"
-msgstr "Are you sure you want to delete"
+msgstr "Are you sure you want to delete temp files for the project"
 
 #: /views/projects/view.ctp:57;58
 msgid "Switch deployment mode (standard / fast)"
@@ -1080,9 +1061,8 @@ msgid "You can switch between standard deployment and fast deployment mode by us
 msgstr "You can switch between standard deployment and fast deployment mode by using the switch mode link. For more informations about different deployment mode, please consult the documentation."
 
 #: /views/projects/view.ctp:191
-#, fuzzy
 msgid "Created on"
-msgstr "Create"
+msgstr "Created on"
 
 #: /views/projects/view.ctp:192
 msgid "Modified on"
@@ -1115,18 +1095,16 @@ msgid "Email"
 msgstr "Email"
 
 #: /views/users/settings.ctp:1
-#, fuzzy
 msgid "User settings"
-msgstr "User details"
+msgstr "User settings"
 
 #: /views/users/settings.ctp:13
 msgid "Prefered language"
-msgstr ""
+msgstr "Prefered language"
 
 #: /views/users/settings.ctp:18
-#, fuzzy
 msgid "Rss token"
-msgstr "Reset RSS token"
+msgstr "Rss token"
 
 #: /views/users/view.ctp:5
 msgid "User details"
