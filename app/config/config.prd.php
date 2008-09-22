@@ -46,7 +46,7 @@
 	
 	$config['Security'] = array(
 		'authenticationType'	=> 2,			//authentication type: 0 = accept all, 1 = webservice, 2 = mysql 
-		'authorizations'		=> true,		//enable authorization
+		'authorizationsDisabled'=> false,		//disable authorization
 		'HTTPS'					=> 0			//enabled https: 0 = never, 1 = login, 2 = always
 	);
 	

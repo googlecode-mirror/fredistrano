@@ -16,7 +16,7 @@ class AcliteComponent extends Object {
 	// Specal component's functions -----------------------------------------	
 	function startup(& $controller) {		
 		// Is aclite globally disabled (see config)?
-		if (!Configure::read('Security.authorizations')) {
+		if (Configure::read('Security.authorizationsDisabled')) {
 			return;
 		}
 		

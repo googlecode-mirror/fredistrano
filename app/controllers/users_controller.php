@@ -210,7 +210,7 @@ class UsersController extends AppController {
 			if ($this->User->isValid($this->data['User']['login'])) {
 				// login already exist
 				
-				if ($this->_authenticate($this->data['User']['login'], $this->data['User']['password']) === true) {
+				if ($this->User->authenticate($this->data['User']['login'], $this->data['User']['password']) === true) {
 					// Authentification réussie
 					$someone = $this->User->findByLogin($this->data['User']['login']);
 					
@@ -260,54 +260,6 @@ class UsersController extends AppController {
 		exit;
 	}
 
-	/**
-	 * authentification par webservice + mysql
-	 * pour changer le type d'authentification voir le fichier app/confg/config.php
-	 */
-	private function _authenticate($user, $passwd) {
-
-		if (Configure::read('Security.Authentication.type') == 0){
-			// Accept all
-			return true;
-			
-		} else if (Configure::read('Security.Authentication.type') == 1) {
-			// WS authentification 
-			
-			$client = new SoapClient( 
-				null,
-				array(
-			 		'location' 		=>	"https://" . _WEBSERVICESSERVER . "/OSI_authentificationWS/ConfigSSL?style=document",
-			    	'uri'  			=>	'urn:OSI_authentificationWSVi',
-                    'use'     		=>	SOAP_LITERAL
-				)
-			);
-				
-			$params = array (
-				new SoapParam( $user, 'login'),
-				new SoapParam( $passwd, 'pass'),
-				new SoapParam( _AUTHENTICATIONTDIRECTORY, 'annuaire')
-			);
-
-			try {
-				$result = $client->__soapCall('authentifierAnnuaire', $params);
-			} catch (SoapFault $fault) {
-				$this->Session->setFlash('Identification impossible [err:'.$fault->getMessage().']');
-				return false;
-			}
-			 
-			return $result=='true';
-
-		} else if (Configure::read('Security.Authentication.type') == 2) {
-			// MySQL authentification 
-			$user = $this->User->findByLogin($user); // requete cachée
-			
-			return (!empty ($user['User']['password']) and ($user['User']['password'] == md5($passwd)));
-			
-		} else {
-			return false;
-			
-		}
-	} // _authenticate
 	
 }// UsersController
 ?>

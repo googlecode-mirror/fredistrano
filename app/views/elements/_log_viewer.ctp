@@ -9,7 +9,8 @@
 <div class="log_viewer">
 
 		<div style="height: 300px; overflow: auto;">
-			<?php e(nl2br(htmlspecialchars(str_replace("<br />", "\n", $log)))); ?>
+			<?php //e(nl2br(htmlspecialchars(str_replace("<br />", "\n", $log)))); ?>
+			<?php e(nl2br(htmlspecialchars($log))); ?>
 		</div>	
 	<?php 
 	} else {
