@@ -131,7 +131,7 @@ class ShellAction extends Action {
 		}
 		
 		// Execute
-		$path = Utils::formatPath($path);
+		// $path = Utils::formatPath($path);
 		if (!@mkdir($path, octdec( $mode ), TRUE)) {
 			$actionLog->error( sprintf(__('Unable to create directory %s', true), $path) );
 		}
@@ -421,8 +421,12 @@ class SvnAction extends Action {
 		if (!is_null($options['configDirectory'])) {
 			$configDirectory = '--config-dir '.Utils::formatPath( $options['configDirectory'] );
 		}
-		$command = "svn update --non-interactive $configDirectory $revision $projectDir 2>&1";		
-		ShellAction::executeCommand( $command, array('actionLog' => $actionLog) );
+		$command = "svn update --non-interactive $configDirectory $revision 2>&1";		
+		ShellAction::executeCommand( $command, array(
+			'directory'	=> $projectDir,
+			'actionLog' => $actionLog
+			) 
+		);
 		
 		// Parse response
 		if ( !(strpos( $actionLog->getResult() , 'PROPFIND request failed on' ) === false) && $options['parseResponse'] ) {

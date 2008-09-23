@@ -269,8 +269,14 @@ class Deployment extends AppModel {
 			
 		// Run initialization script
 		if (!$options['simulation']) {
-			$log = ShellAction::runScript('before', $projectTmpDir, $this->_config->scripts['before'], $options);
-
+			if ($options['runBeforeScript']) {
+				$scriptPath = null;
+				if (isset($this->_config->scripts['before']) && !empty($this->_config->scripts['before'])) {
+					$scriptPath = $this->_config->scripts['before'];
+				}
+				$log = ShellAction::runScript('before', $projectTmpDir, $scriptPath, $options);
+			}
+			
 			// Backup (if required)
 			if ($options['backup'] === true) {
 				$options['exclude'] = null;
@@ -421,7 +427,13 @@ class Deployment extends AppModel {
 		}
 		
 		// Running finalization script
-		$log = ShellAction::runScript('after', $projectTmpDir, $this->_config->scripts['after'], $options);
+		if ($options['runAfterScript']) {
+			$scriptPath = null;
+			if (isset($this->_config->scripts['after']) && !empty($this->_config->scripts['after'])) {
+				$scriptPath = $this->_config->scripts['after'];
+			}
+			$log = ShellAction::runScript('after', $projectTmpDir, $scriptPath, $options);
+		}
 	}// _finalize
 	
 	private function _clearProjectTempFiles(){
