@@ -144,7 +144,7 @@ class Deployment extends AppModel {
 			// Execute step	
 			set_time_limit( Configure::read('Deployment.timelimit.'.$step) );
 			$options['stepLog'] = $this->_stepLog;
-			$this->{'_'.$step}( $options);
+			$this->{'_'.$step}($options);
 			$this->_stepLog->end(); 
 			
 		} catch (LogException $e) { 
@@ -181,7 +181,7 @@ class Deployment extends AppModel {
 		$projectTmpDir = F_DEPLOYTMPDIR.$this->_project['Project']['name'];
 		if (!is_dir($projectTmpDir)) {
 			// Create tmpDir folder inside Fredistrano
-			$log = ShellAction::createDirectory( 
+			$log =  ShellAction::createDirectory( 
 				$projectTmpDir, 
 				Configure::read('FileSystem.permissions.directories'), 
 				array('stepLog'	=> $this->_stepLog) 
@@ -192,10 +192,10 @@ class Deployment extends AppModel {
 		if ($this->_project['Project']['method'] == 1) {
 			if ( is_dir($projectTmpDir.DS.'tmpDir') ) {
 				// svn update
-				$log = SvnAction::update( $projectTmpDir.DS.'tmpDir'.DS, $options);
+				$log =  SvnAction::update( $projectTmpDir.DS.'tmpDir'.DS, $options);
 			} else {
 				// Export code from SVN
-				$log = SvnAction::checkout( $this->_project['Project']['svn_url'], $projectTmpDir, 'tmpDir', $options);
+				$log =  SvnAction::checkout( $this->_project['Project']['svn_url'], $projectTmpDir, 'tmpDir', $options);
 			}
 		// Retrieve sources by Export method	
 		} else {
@@ -204,7 +204,7 @@ class Deployment extends AppModel {
 				//Clear temporary folders for the current project if exist
 				ShellAction::remove($projectTmpDir.DS.'tmpDir', true, array('stepLog'=>$this->_stepLog));
 			}
-			$log = SvnAction::export( $this->_project['Project']['svn_url'], $projectTmpDir, 'tmpDir', $options);
+			$log =  SvnAction::export( $this->_project['Project']['svn_url'], $projectTmpDir, 'tmpDir', $options);
 		}
 		
 		// Retrieve revision log 
@@ -251,7 +251,7 @@ class Deployment extends AppModel {
 		}
 		
 		// Create a log entry for the pending deployement 
-		$actionLog = $this->_stepLog->addNewAction('create', 'Directory: '.$this->_project['Project']['prd_path'], 'FS');
+		$actionLog =  $this->_stepLog->addNewAction('create', 'Directory: '.$this->_project['Project']['prd_path'], 'FS');
 		$data = array (
 			'DeploymentLog' => array (
 				'project_id'	=> 	$this->_project['Project']['id'],
@@ -274,7 +274,7 @@ class Deployment extends AppModel {
 				if (isset($this->_config->scripts['before']) && !empty($this->_config->scripts['before'])) {
 					$scriptPath = $this->_config->scripts['before'];
 				}
-				$log = ShellAction::runScript('before', $projectTmpDir, $scriptPath, $options);
+				$log =  ShellAction::runScript('before', $projectTmpDir, $scriptPath, $options);
 			}
 			
 			// Backup (if required)
@@ -282,7 +282,7 @@ class Deployment extends AppModel {
 				$options['exclude'] = null;
 				$source = $this->_project['Project']['prd_path'];
 				$target = F_DEPLOYBACKUPDIR.$this->_project['Project']['name']. DS;
-				$log = ShellAction::synchronizeContent( $source, $target, $options);
+				$log =  ShellAction::synchronizeContent( $source, $target, $options);
 			}		
 		}
 
@@ -304,7 +304,7 @@ class Deployment extends AppModel {
 		// Run Rsync
 		$target = $this->_project['Project']['prd_path'];
 		$options['exclude'] = $excludeFileName;
-		$log = ShellAction::synchronizeContent( $projectTmpDir."tmpDir". DS, $target, $options);
+		$log =  ShellAction::synchronizeContent( $projectTmpDir."tmpDir". DS, $target, $options);
 		
 		// Create file list
 		$output = $log->getResult();
@@ -316,15 +316,14 @@ class Deployment extends AppModel {
 	}// _synchronize
 	
 	// Create files list and directories list for chmod step
-	private function _createFilesListToChmod($output=null, $projectTmpDir=null, $target=null)
-	{
+	private function _createFilesListToChmod($output=null, $projectTmpDir=null, $target=null) {
 		$actionLog = new ActionLog('createFilesListToChmod', null, 'listToChmod');
 		
 		if (empty($output) || empty($projectTmpDir) || empty($target)) {
 			$actionLog->error( sprintf(__('Missing working data', true)) );
 		}
 		
-		$actionLog = $this->_stepLog->addNewAction('create', 'files_to_chmod.txt & dir_to_chmod.txt', 'FS');
+		$actionLog =  $this->_stepLog->addNewAction('create', 'files_to_chmod.txt & dir_to_chmod.txt', 'FS');
 		$list = explode("\n", $output);
 		
 		$size = count($list);
@@ -349,7 +348,6 @@ class Deployment extends AppModel {
 			fclose($handle_f);
 			fclose($handle_d);
 		}
-		
 	}
 
 	/**
@@ -380,7 +378,7 @@ class Deployment extends AppModel {
 		if ($options['renamePrdFile'] === true) {			
 			$command = "find ".Utils::formatPath($this->_project['Project']['prd_path'])." -name '*.prd.*' "
 				."-exec /usr/bin/perl ".Utils::formatPath(F_DEPLOYDIR)."renamePrdFile -vf 's/\.prd\./\./i' {} \;";
-			$log = ShellAction::executeCommand( $command,
+			$log =  ShellAction::executeCommand( $command,
 				array(
 			        'comment'	=> __('Rename .prd files', true),
 			        'directory'	=> F_DEPLOYDIR,
@@ -392,7 +390,7 @@ class Deployment extends AppModel {
 		// Change file mode
 		if ($options['changeFileMode'] === true) {			
 			$command = "chmod ".Configure::read('FileSystem.permissions.files')."  $(<".$projectTmpDir."files_to_chmod.txt)";
-			$log = ShellAction::executeCommand( $command,
+			$log =  ShellAction::executeCommand( $command,
 				array(
 			        'comment'	=> sprintf(__('Changing files permissions to %s', true), Configure::read('FileSystem.permissions.files')),
 					'stepLog' 	=> $this->_stepLog
@@ -400,7 +398,7 @@ class Deployment extends AppModel {
 			);
 			
 			$command = "chmod ". Configure::read('FileSystem.permissions.directories')."  $(<". $projectTmpDir . "dir_to_chmod.txt)";
-			$log = ShellAction::executeCommand( $command, 
+			$log =  ShellAction::executeCommand( $command, 
 				array(
 			        'comment'	=> sprintf(__('Changing directories permissions to %s', true), Configure::read('FileSystem.permissions.directories')),
 					'stepLog' 	=> $this->_stepLog
@@ -432,7 +430,7 @@ class Deployment extends AppModel {
 			if (isset($this->_config->scripts['after']) && !empty($this->_config->scripts['after'])) {
 				$scriptPath = $this->_config->scripts['after'];
 			}
-			$log = ShellAction::runScript('after', $projectTmpDir, $scriptPath, $options);
+			$log =  ShellAction::runScript('after', $projectTmpDir, $scriptPath, $options);
 		}
 	}// _finalize
 	
@@ -464,7 +462,12 @@ class Deployment extends AppModel {
 		self::_loadConfig();
 		if ( isset($this->_config->writable) && is_array($this->_config->writable) ) {
 			foreach ($this->_config->writable as $subPath) {
-				ShellAction::changePermissions($path.$subPath, array ('dir' => Configure::read('FileSystem.permissions.writable')), array('stepLog'=>$this->_stepLog));
+				ShellAction::changePermissions($path.$subPath, 
+					array (
+						'dir' => Configure::read('FileSystem.permissions.writable')
+					), 
+					array('stepLog' => $this->_stepLog)
+				);
 			}
 		}
 	}// _resetPermissions
@@ -510,7 +513,7 @@ class Deployment extends AppModel {
 
     // Helper functions ( private ) ---------------------------------------------------------
 	private function _loadConfig() {
-		$actionLog = new ActionLog('loadConfig', null, 'include');
+		$actionLog =  new ActionLog('loadConfig', null, 'include');
 		
 		if (!isset($this->_project) || !$this->_project) {
 			$actionLog->error( sprintf(__('Missing working data', true)) );

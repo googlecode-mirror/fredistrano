@@ -20,7 +20,7 @@ class Utils {
 	public static function getSvnRevisionFromOutput($output, $options = array() ) {
 		preg_match('/ ([0-9]+)\.$/', $output, $matches);
 		if (isset($matches[1])) {
-			return $matches[1];			
+			return $matches[1];
 		} else {
 			return false;
 		}
@@ -31,7 +31,7 @@ class Utils {
 	 * @param string $path 		Path to be converted
 	 * @return string 			Converted path
 	 */ 
-	static function formatPath($path) {
+	public static function formatPath($path) {
 		$pathForRsync = $path;
 		if ( F_OS == 'WIN') {
 			$pattern = '/^([A-Za-z]):/';
@@ -41,24 +41,21 @@ class Utils {
 				$pathForRsync = strtr( Configure::read('Cygwin.rootDir') . $windowsLetter . substr($path, 2), "\\", "/");
 			}	
 		}
-		return $pathForRsync;		
+		return $pathForRsync;
 	}// formatPath
 	
 }// FileSystemCommand
 
 class Action {
 	
-	protected function initAction($name=null, $comment=null, $type=null, $options = array() ) {
+	public function initAction($name=null, $comment=null, $type=null, $options = array() ) {
 		if ( isset($options['stepLog']) && get_class($options['stepLog']) == 'StepLog' ) {
-			$actionLog = $options['stepLog']->addNewAction($name, $comment , $type);
-		
+			$actionLog =  $options['stepLog']->addNewAction($name, $comment , $type);
 		} else if ( isset($options['actionLog']) && get_class($options['actionLog']) == 'ActionLog' ) {
-			$actionLog = $options['actionLog'];
-		
+			$actionLog =  $options['actionLog'];
 		} else {
-			$actionLog = new ActionLog($name, $comment , $type);	
+			$actionLog =  new ActionLog($name, $comment , $type);
 		}
-
 		return $actionLog;
 	}// initAction
 	
@@ -229,9 +226,10 @@ class ShellAction extends Action {
 			} else if (!file_exists($scriptPath)){
 				$actionLog->error( __('Script not found', true) );
 			}
-		
+			
+			$formatedScriptPath = Utils::formatPath($scriptPath);
 			if (!is_executable($scriptPath)) {
-				$log = ShellAction::executeCommand( "chmod u+x $scriptPath", 
+				$log = ShellAction::executeCommand( "chmod u+x $formatedScriptPath", 
 					array(
 						'comment'	=> __('Execution privileges to script',true),
 						'actionLog' => $actionLog
@@ -239,7 +237,7 @@ class ShellAction extends Action {
 				);	
 			}
 			
-			ShellAction::executeCommand( $scriptPath,
+			ShellAction::executeCommand( $formatedScriptPath,
 				array(
 					'comment'	=> sprintf(__('%s script',true), $type),
 					'actionLog' => $actionLog
@@ -263,11 +261,10 @@ class ShellAction extends Action {
 		} else {
 			// Live mode
 			$option = 'rtv';
-			
-			//The rsync option "O" not yet supported on Mac
-			if ( F_OS != 'DAR') {
-				$option .= 'O';
-			}
+		}
+		//The rsync option "O" not yet supported on Mac
+		if ( F_OS != 'DAR') {
+			$option .= 'O';
 		}
 		
 		// Execute command		
@@ -376,7 +373,7 @@ class SvnAction extends Action {
 		if (!is_null($options['configDirectory'])) {
 			$configDirectory = '--config-dir '.Utils::formatPath( $options['configDirectory'] );
 		}
-		$command = "svn export --non-interactive $configDirectory $revision $authentication $svnUrl $targetDir 2>&1";	
+		$command = "svn export --non-interactive $configDirectory $revision $authentication $svnUrl $targetDir 2>&1";
 		ShellAction::executeCommand( $command,
 			array(
 		        'directory'	=> $path,
@@ -385,7 +382,7 @@ class SvnAction extends Action {
 		);
 		// Parse output
 		if ( !(strpos( $actionLog->getResult() , 'PROPFIND request failed on' ) === false) && $options['parseResponse'] ) {
-			$actionLog->error(__('An error has been detected in the SVN output',true));			
+			$actionLog->error(__('An error has been detected in the SVN output',true));
 		}
 		
 		// End action
@@ -402,16 +399,16 @@ class SvnAction extends Action {
 		} else if (!is_dir($projectDir) ) {
 			$actionLog->error(sprintf(__('Directory %s not found',true), $projectDir));
 		} else if ( !is_dir($projectDir.DS.'.svn') ) {
-			$actionLog->error(sprintf(__('Specified directory %s is not a working copy',true), $projectDir.DS.'.svn'));			
+			$actionLog->error(sprintf(__('Specified directory %s is not a working copy',true), $projectDir.DS.'.svn'));
 		} else if ( !is_writeable($projectDir) ) {
-			$actionLog->error(sprintf(__('Specified directory %s is not writeable',true), $projectDir));			
+			$actionLog->error(sprintf(__('Specified directory %s is not writeable',true), $projectDir));
 		}
  			
 		// Define step options
 		$default_options = array(
-			'revision' 		=> 	null,
-			'configDirectory'		=> null,
-			'parseResponse' => false
+			'revision' 			=> null,
+			'configDirectory'	=> null,
+			'parseResponse' 	=> false
 		);
 		$options = array_merge($default_options, $options);
 		
@@ -421,7 +418,7 @@ class SvnAction extends Action {
 		if (!is_null($options['configDirectory'])) {
 			$configDirectory = '--config-dir '.Utils::formatPath( $options['configDirectory'] );
 		}
-		$command = "svn update --non-interactive $configDirectory $revision 2>&1";		
+		$command = "svn update --non-interactive $configDirectory $revision 2>&1";
 		ShellAction::executeCommand( $command, array(
 			'directory'	=> $projectDir,
 			'actionLog' => $actionLog
@@ -430,12 +427,11 @@ class SvnAction extends Action {
 		
 		// Parse response
 		if ( !(strpos( $actionLog->getResult() , 'PROPFIND request failed on' ) === false) && $options['parseResponse'] ) {
-			$actionLog->error(__('An error has been detected in the SVN output',true));			
+			$actionLog->error(__('An error has been detected in the SVN output',true));
 		}
 		
 		// End action
 		$actionLog->end();
-		
 		return $actionLog;
 	}// update
 	

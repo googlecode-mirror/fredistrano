@@ -42,7 +42,10 @@
  * $controllerPaths = array('this path to controllers', 'second full path to controllers', 'etc...');
  *
  */
-   	define('F_VERSION',			'0.4.0');		
+
+	ini_set('zend.ze1_compatibility_mode', 'Off');
+	
+   	define('F_VERSION',			'1.0');		
    	define('F_RELEASEDATE',		'2008/XX/XX');
 	define('F_OS',				strtoupper(substr(PHP_OS,0,3)));
 	

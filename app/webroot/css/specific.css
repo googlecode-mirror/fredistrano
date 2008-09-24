@@ -78,3 +78,8 @@ div.disabled {
 .z_radio fieldset legend b{
 	font-weight: bold;
 }
+
+.actionLog {
+	margin-left: 30px;
+	padding:5px;
+}

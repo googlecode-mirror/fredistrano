@@ -2,7 +2,7 @@
 
 class LogException extends Exception {
 	
-	private $log = null;
+	var $log = null;
 
 	public function __construct($message,$log) {
 		parent::__construct($message);
@@ -17,17 +17,17 @@ class LogException extends Exception {
 
 class ElementaryLog {
 		
-	protected $name = null;
+	var $name = null;
 		
-	protected $startTime = null;
+	var $startTime = null;
 	
-	protected $endTime = null;
+	var $endTime = null;
 	
-	protected $elapsedTime = 0;
+	var $elapsedTime = 0;
 		
-	protected $error = null;
+	var $error = null;
 	
-	protected $attached = false;
+	var $attached = false;
 	
 	public function __construct($name = null) {
 		$this->name = $name;
@@ -53,7 +53,7 @@ class ElementaryLog {
 		
 		// Log error in file
 		//CakeLog::write(LOG_ERROR, $this->lastError);
-				
+		
 		// Trigger exception 
 		if ($trigger) {
 			throw  new LogException( $error, $this );
@@ -100,9 +100,8 @@ class ElementaryLog {
 
 	public function toHtml () {
 		return 
-			'<br />Elapsed time : '.$this->elapsedTime.' secondes'
-			.'<br />==========================='
-			.($this->hasError()?'<br />Error : '.$this->error.'<br />--------------':'');
+			'<br />[took] '.$this->elapsedTime.' secondes'
+			.($this->hasError()?('<br />Error : '.$this->error.'<br />--------------'):'');
 	}// toHtml
 	
 	public function writeToFile( $target ) {
@@ -117,13 +116,13 @@ class ElementaryLog {
 
 class ActionLog extends ElementaryLog {
 	
-	private $type = null;	
+	var $type = null;	
 
-	private $description = null;
+	var $description = null;
 	
-	private $command = null;
+	var $command = null;
 		
-	private $result = null;
+	var $result = null;
 	
 	public function __construct($name = null, $description = null, $type = null) {
 		parent::__construct($name);
@@ -151,37 +150,38 @@ class ActionLog extends ElementaryLog {
 	public function toString () {
 		return 
 			'<action name="'.$this->name.'" type="'.$this->type.'" >'
-				.(!is_null($this->description)?'<description>'.$this->description.'</description>':'')
+				.(!is_null($this->description)?('<description>'.$this->description).'</description>':'')
 				.parent::toString()
 				.'<job>'
 					.((!is_null($this->command))?('<command>'.$this->command.'</command>'):'<command/>')
 					.((!is_null($this->result))?('<result>'.$this->result.'</result>'):'<result/>')
 				.'</job>'
-			.'</action>';		
+			.'</action>';
 	}// toString
 
 	public function toHtml () {
 		return 
-			'<br />--action--'
+			'<div class="actionLog">'
+			.'--ACTION------------------------------'
 			.'<br />[name] '.$this->name.' [type] '.$this->type
-				.(!is_null($this->description)?'<br />[description] '.$this->description:'<br />[description]')
-				.parent::toString()
-					.((!is_null($this->command))?('<br />[command] '.$this->command):'<br />[command]')
-					.((!is_null($this->result))?('<br />[result] '.$this->result.'<br />'):'<br />[result]')
-			.'<br />--<br />';		
+			.(!is_null($this->description)?('<br />[description] '.$this->description):'<br />[description]')
+			.parent::toHtml()
+			.((!is_null($this->command))?('<br />[command] '.htmlentities($this->command)):'<br />[command]')
+			.((!is_null($this->result))?('<br />[result] '.$this->result.'<br />'):'<br />[result]')
+			.'</div>';
 	}// toHtml
 	
 }// ActionLog
 
 class AdvancedLog extends ElementaryLog {
 	
-	public $data = null;
+	var $data = null;
 	
-	protected $logs = array();
+	var $logs = array();
 	
-	protected $context = array( 'user' => null, 'uuid'=> null);
+	var $context = array( 'user' => null, 'uuid'=> null);
 	
-	protected $childType = null;
+	var $childType = null;
 	
 	public function addChildLog( $log, $terminate = false ) {
 		if ( get_class($log) != $this->childType ) {
@@ -190,7 +190,7 @@ class AdvancedLog extends ElementaryLog {
 		
 		// Terminate previous if required 
 		$last = $this->getLastLog();
-		if ( !empty( $last ) ) {
+		if (!empty($last)) {
 			
 			if (!$last->isEnded()) {
 				$last->end();
@@ -206,7 +206,7 @@ class AdvancedLog extends ElementaryLog {
 		array_push($this->logs, $log);
 		$log->markAttached();
 		
-		return $log;	
+		return $log;
 	}// addChildLog
 	
 	public function end() {
@@ -242,11 +242,12 @@ class AdvancedLog extends ElementaryLog {
 	}// getLastError
 
 	public function getLastLog() {
+		$ret = false;
 		if ( ( $size = count($this->logs) ) == 0 ) {
-			return false;
+			return $ret;
 		} 
 		
-		return $this->logs[$size-1]; 	
+		return $this->logs[$size-1];
 	}// getLastLog
 	
 	public function hasError($recursive = false) {
@@ -276,10 +277,10 @@ class AdvancedLog extends ElementaryLog {
 
 class StepLog extends AdvancedLog {
 	
-	protected $childType = 'ActionLog';
+	var $childType = 'ActionLog';
 	
 	public function addNewAction( $name = null, $description = null, $type = null ) {
-		$actionLog = new ActionLog($name, $description, $type);
+		$actionLog =  new ActionLog($name, $description, $type);
 		return $this->addChildLog( $actionLog );
 	}// addNewAction
 	
@@ -318,18 +319,20 @@ class StepLog extends AdvancedLog {
 			$user = '';	
 		}
 		return 
-			'<br />--------------------------------------'
+			'<div class="stepLog">'
+			.'<br />--STEP--------------------------------'
 			.'<br />[step name] '.$this->name." \ ".$uuid
-				.parent::toHtml()
-				.'<br />[user] '.$user
-				.'<br />[actions]'.$actionLogs;
+			.parent::toHtml()
+			.'<br />[user] '.$user
+			.'<br />'.$actionLogs
+			.'</div>';
 	}// toHtml
 	
 }// StepLog
 
 class Processlog extends AdvancedLog {
 
-	protected $childType = 'StepLog';
+	var $childType = 'StepLog';
 
 	public function toString() {
 		

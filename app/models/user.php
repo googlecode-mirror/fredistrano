@@ -117,7 +117,7 @@ class User extends AppModel {
 			return false;
 			
 		}
-	} // _authenticate
+	} // authenticate
 	
 		
 }
