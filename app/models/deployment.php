@@ -69,7 +69,7 @@ class Deployment extends AppModel {
 			$options = Set::merge($defaultOptions, $options);
 
 			// Running steps
-			for ( $i=1 ; $i<count($this->process) ; $i++ ) {
+			for ( $i=0 ; $i<count($this->process) ; $i++ ) {
 				$step = $this->process[$i];
 				$this->_runStep($step, $projectId, $options[$step]);
 				$processLog->addChildLog( $this->_stepLog );

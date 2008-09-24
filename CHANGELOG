@@ -1,0 +1,17 @@
+Changelog since 0.3.2
+
+- Update documentation        
+- Create a fast deploy button     
+- Implement the backup functionality     
+- Enhance error handling
+- Migrate to cake 1.2      
+- Finalize i18n      
+- Save deployment log in a file      
+- Create a dedicated command class      
+- Implement a log viewer      
+- Change permissions on rsync-ed files      
+- Rsync option not supported on Mac      
+- Bring authorizations back in Fredistrano     
+- Improve deployment logs     
+- Use update instead of export
+- Security Issues
