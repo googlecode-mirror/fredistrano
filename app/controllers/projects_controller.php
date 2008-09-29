@@ -80,9 +80,7 @@ class ProjectsController extends AppController {
 	 */
 	function add() {
 		$this->_initializeLists();
-		if (empty ($this->data)) {
-			$this->render();
-		} else {
+		if (!empty ($this->data)) {
 			if ($this->Project->save($this->data)) {
 				$this->Session->setFlash(__('Project saved.', true));
 				$this->redirect('/projects/view/'.$this->Project->getInsertID());

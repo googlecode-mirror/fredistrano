@@ -68,7 +68,6 @@ class UsersController extends AppController {
 		if (empty ($this->data)) {
 			$this->set('groups', $this->Group->find('list'));
 			$this->set('selectedGroups', null);
-			$this->render();
 		} else {
 						
 			if ($this->User->save($this->data)) {

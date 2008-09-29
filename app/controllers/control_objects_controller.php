@@ -53,7 +53,6 @@ class ControlObjectsController extends AppController {
 	function add() {
 		if (empty ($this->data)) {
 			$this->set('controlObjects', $this->ControlObject->find('list'));
-			$this->render();
 		} else {
 			if ($this->ControlObject->save($this->data)) {
 				$this->Aclite->reloadsAcls('Aco');

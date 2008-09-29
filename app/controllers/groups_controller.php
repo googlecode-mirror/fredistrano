@@ -78,7 +78,6 @@ class GroupsController extends AppController {
 	function add() {
 		if (empty ($this->data)) {
 			$this->set('groups', $this->Group->find('list'));
-			$this->render();
 		} else {
 			if ($this->Group->save($this->data)) {
 				$this->Aclite->reloadsAcls('Aro');
