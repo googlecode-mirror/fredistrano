@@ -2,7 +2,7 @@
 	$nameErrorMessage = null;
 	if (isset($this->validationErrors['Project']) && isset($this->validationErrors['Project']['name'])) {
 		($this->validationErrors['Project']['name'] == 'rule1')?
-			$nameErrorMessage = __('The name field is required', true):
+			$nameErrorMessage = __('The name field is required and must be alphaNumeric', true):
 			$nameErrorMessage = __('This name is already used', true);
 	}
 ?>
