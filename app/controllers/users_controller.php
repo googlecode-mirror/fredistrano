@@ -77,7 +77,7 @@ class UsersController extends AppController {
 
 				$this->Aclite->reloadsAcls('Aro');
 				$this->Session->setFlash(__('The user has been created', true));
-				$this->redirect('/users/index');
+				$this->redirect('/users/view/'.$this->User->getInsertID());
 			} else {
 				$this->Session->setFlash(__('Please correct errors below.', true));
 				$this->set('groups', $this->Group->find('list'));

@@ -44,27 +44,27 @@
 			</tr>
 			
 			<tr>
-				<th class="sub">Id</th>
+				<th class="sub"><?php __('Id') ?></th>
 				<td><?php echo $user['User']['id'] ?></td>
 			</tr>
 			
 			<tr>
-				<th class="sub">Login</th>
+				<th class="sub"><?php __('Login') ?></th>
 				<td><?php echo $user['User']['login'] ?></td>
 			</tr>
 			
 			<tr>
-				<th class="sub">Prénom</th>
+				<th class="sub"><?php __('First name') ?></th>
 				<td><?php echo $user['User']['first_name'] ?></td>
 			</tr>
 			
 			<tr>
-				<th class="sub">Nom</th>
+				<th class="sub"><?php __('Last name') ?></th>
 				<td><?php echo $user['User']['last_name'] ?></td>
 			</tr>
 			
 			<tr>
-				<th class="sub">Email</th>
+				<th class="sub"><?php __('Email') ?></th>
 				<td><?php echo $user['User']['email'] ?></td>
 			</tr>
 		</tbody>
@@ -73,17 +73,14 @@
 
 <?php
 if (!empty($user)){
-	e('<h3>Liste des groupes pour l\'utilisateur sélectionné : "'.$user['User']['login'].'"</h3>');
+	e('<h3>'.__('Group membership for user : ', true).$user['User']['login'].' '.$html->link('['.__('Edit', true).']', '/groups/index').'</h3>');
 	
 	if (!empty($user['Group'])){
 		e('<ul>');
 			foreach ($user['Group'] as $key => $value) {
-				e('<li>'.$value['name'].' - '.$html->link('[modifier]','/groups/affectUsers/'.$value['id']).'</li>');
+				e('<li>'.$value['name'].' - '.$html->link('['.__('Edit', true).']','/groups/affectUsers/'.$value['id']).'</li>');
 			}//foreach
 		e('</ul>');
-	}else{	
-		e('<p>Pas de groupe pour l\'utilisateur '.$user['User']['login'].'</p>');
-		echo '<p>'.$html->link('Gestions des groupes', '/groups/index').'</p>';
 	}
 }
 ?>
