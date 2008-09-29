@@ -260,6 +260,10 @@ class AcliteComponent extends Object {
 			$options = am($defaultOptions, $options);
 			extract($options);
 			
+			if (Configure::read('debug') === 0) {
+				$message = __('Insufficient privileges for accessing the requested ressource', true);
+			}
+			
 			$this->controller->set('denialDetails', $message);
 			if (is_null($view)) {
 				$file = APP . 'plugins/aclite/views/pages/denied.ctp';
