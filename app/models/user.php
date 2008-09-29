@@ -78,35 +78,15 @@ class User extends AppModel {
 	 * pour changer le type d'authentification voir le fichier app/confg/config.php
 	 */
 	function authenticate($user, $passwd) {
+		
 		if (Configure::read('Security.authenticationType') === 0){
 			// Accept all
 			return true;
 			
 		} else if (Configure::read('Security.authenticationType') === 1) {
-			// WS authentification 
-			
-			$client = new SoapClient( 
-				null,
-				array(
-			 		'location' 		=>	"https://" . _WEBSERVICESSERVER . "/OSI_authentificationWS/ConfigSSL?style=document",
-			    	'uri'  			=>	'urn:OSI_authentificationWSVi',
-                    'use'     		=>	SOAP_LITERAL
-				)
-			);
-				
-			$params = array (
-				new SoapParam( $user, 'login'),
-				new SoapParam( $passwd, 'pass'),
-				new SoapParam( _AUTHENTICATIONTDIRECTORY, 'annuaire')
-			);
-
-			try {
-				$result = $client->__soapCall('authentifierAnnuaire', $params);
-			} catch (SoapFault $fault) {
-				return false;
-			}
-			 
-			return $result=='true';
+			// Custom authentification 
+			App::import('Vendor', 'authentication');
+			return CustomAuthentication::authenticate($user, $passwd);
 
 		} else if (Configure::read('Security.authenticationType') === 2) {
 			// MySQL authentification 
