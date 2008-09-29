@@ -182,7 +182,7 @@ CREATE TABLE `projects` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO `projects` (`id`,`name`,`svn_url`,`prd_url`,`prd_path`,`log_path`,`created`,`modified`,`method`) VALUES ('1','Fredistrano_example','http://fredistrano.googlecode.com/svn/trunk','http://localhost/testFredistrano/fredistrano/','/Users/fred/Sites/testFredistrano/fredistrano/','/Users/fred/Sites/testFredistrano/fredistrano/app/tmp/logs/debug.log\r\n/Users/fred/Sites/testFredistrano/fredistrano/app/tmp/logs/error.log','2007-10-02 19:04:09','2008-08-19 00:24:53','0');
+INSERT INTO `projects` (`id`,`name`,`svn_url`,`prd_url`,`prd_path`,`log_path`,`created`,`modified`,`method`) VALUES ('1','FredistranoExample','http://fredistrano.googlecode.com/svn/trunk','http://localhost/testFredistrano/fredistrano/','/Users/fred/Sites/testFredistrano/fredistrano/','/Users/fred/Sites/testFredistrano/fredistrano/app/tmp/logs/debug.log\r\n/Users/fred/Sites/testFredistrano/fredistrano/app/tmp/logs/error.log','2007-10-02 19:04:09','2008-08-19 00:24:53','0');
 
 
 # Dump of table users
