@@ -23,7 +23,7 @@ if (isset($this->params['pass'][0]) && $this->params['pass'][0] == 'project') {
 										); 
 			?>									
 			</label>	
-			<?php e($form->submit('Search',array( 'url' => '/deploymentLogs', 'class' => 'f-submit'))); ?>
+			<?php e($form->submit(__('Search', true),array( 'url' => '/deploymentLogs', 'class' => 'f-submit'))); ?>
 		</div>
 	</fieldset>
 	<?php echo $form->end();?>

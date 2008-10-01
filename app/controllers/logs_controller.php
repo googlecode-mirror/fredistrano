@@ -26,7 +26,7 @@ class LogsController extends AppController {
 		);
 
 		$tab[] = array (
-			'text' => 'List projects',
+			'text' => __('Project list', true),
 			'link' => '/projects'
 		);
 		$this->set("context_menu", $tab);

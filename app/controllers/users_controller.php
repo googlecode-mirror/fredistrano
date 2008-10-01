@@ -176,10 +176,10 @@ class UsersController extends AppController {
 				$this->Session->setFlash(__('Please fill in all fields.', true));
 			}
 			elseif (md5($this->data['User']['old_password']) != $user['User']['password']) {
-				$this->Session->setFlash('Incorrect old password.');
+				$this->Session->setFlash(__('Incorrect old password.', true));
 			}
 			elseif ($this->data['User']['password'] != $this->data['User']['confirm_password']) {
-				$this->Session->setFlash('Not entered twice the same password');
+				$this->Session->setFlash(__('Not entered twice the same password', true));
 			} else {
 				$this->User->id = $user['User']['id'];
 				if ($this->User->saveField('password', $this->data['User']['password'])) {
@@ -249,7 +249,7 @@ class UsersController extends AppController {
 	}
 
 	function logout() {
-		$this->log($this->Session->read('User.login') . " - Déconnexion", LOG_DEBUG);
+		$this->log($this->Session->read('User.login') . " - ".__('logout', true), LOG_DEBUG);
 		$this->Session->delete('User');
 		$this->Session->delete('isAdmin');
 		$this->Session->delete('isPremium');

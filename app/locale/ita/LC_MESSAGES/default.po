@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: fredsitrano\n"
-"POT-Creation-Date: 2008-09-18 23:36+0200\n"
+"POT-Creation-Date: 2008-10-01 21:55+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Frédéric BOLLON <contact@fbollon.net>\n"
 "Language-Team: fbollon.net\n"
@@ -11,10 +11,10 @@ msgstr ""
 "X-Poedit-Language: Italian\n"
 
 #: /controllers/administration_controller.php:102
-#: /controllers/control_objects_controller.php:46;73;94
-#: /controllers/groups_controller.php:61;104;131;155
-#: /controllers/projects_controller.php:69;103;124
-#: /controllers/users_controller.php:59;96;123;148;167
+#: /controllers/control_objects_controller.php:46;72;93
+#: /controllers/groups_controller.php:61;103;130;154
+#: /controllers/projects_controller.php:69;101;122
+#: /controllers/users_controller.php:59;95;122;147;166
 msgid "Invalid id."
 msgstr "Login non valido"
 
@@ -27,28 +27,28 @@ msgstr "elenco di oggetti di controllo"
 msgid "Add control object"
 msgstr "aggiungere un oggetto di controllo"
 
-#: /controllers/control_objects_controller.php:60
+#: /controllers/control_objects_controller.php:59
 msgid "The control object has been created."
 msgstr "Oggetto del controllo è stato creato."
 
-#: /controllers/control_objects_controller.php:64;86
-#: /controllers/groups_controller.php:88;116
-#: /controllers/projects_controller.php:90;113
-#: /controllers/users_controller.php:83;111
+#: /controllers/control_objects_controller.php:63;85
+#: /controllers/groups_controller.php:87;115
+#: /controllers/projects_controller.php:88;111
+#: /controllers/users_controller.php:82;110
 msgid "Please correct errors below."
 msgstr "Ti preghiamo di correggere gli errori di seguito."
 
-#: /controllers/control_objects_controller.php:82
+#: /controllers/control_objects_controller.php:81
 msgid "The control object has been updated."
 msgstr "Oggetto del controllo è stato aggiornato."
 
-#: /controllers/control_objects_controller.php:100
+#: /controllers/control_objects_controller.php:99
 msgid "The control object has been deleted."
 msgstr "Oggetto del controllo è stato eliminato"
 
-#: /controllers/control_objects_controller.php:104
-#: /controllers/groups_controller.php:140
-#: /controllers/users_controller.php:132
+#: /controllers/control_objects_controller.php:103
+#: /controllers/groups_controller.php:139
+#: /controllers/users_controller.php:131
 msgid "Error during deletion."
 msgstr "Errore durante la soppressione"
 
@@ -60,6 +60,10 @@ msgstr "Visualizzazione tutta la storia"
 #: /controllers/deployment_logs_controller.php:39
 msgid "List projects"
 msgstr "Elenco progetti"
+
+#: /controllers/deployment_logs_controller.php:45
+msgid "Rss Feed"
+msgstr ""
 
 #: /controllers/deployment_logs_controller.php:65
 msgid "Feeds not enabled. To use them, activate them first in the config file."
@@ -93,7 +97,7 @@ msgstr "Tutti i registri sono state eliminate"
 msgid "Missing id."
 msgstr ""
 
-#: /controllers/deployments_controller.php:232
+#: /controllers/deployments_controller.php:226
 #: /controllers/logs_controller.php:79
 msgid "Invalid request"
 msgstr "Richiesta non valida"
@@ -107,23 +111,23 @@ msgstr "elenco dei gruppi"
 msgid "Add group"
 msgstr "Aggiungi gruppo"
 
-#: /controllers/groups_controller.php:85
+#: /controllers/groups_controller.php:84
 msgid "The group has been created."
 msgstr "Il gruppo è stato creato."
 
-#: /controllers/groups_controller.php:113
+#: /controllers/groups_controller.php:112
 msgid "The group has been updated."
 msgstr "il gruppo è stato modificato"
 
-#: /controllers/groups_controller.php:137
+#: /controllers/groups_controller.php:136
 msgid "The group has been deleted."
 msgstr "Il gruppo è stato eliminato"
 
-#: /controllers/groups_controller.php:177
+#: /controllers/groups_controller.php:176
 msgid "Group updated"
 msgstr "Gruppo aggiornato."
 
-#: /controllers/groups_controller.php:179
+#: /controllers/groups_controller.php:178
 msgid "Error during update."
 msgstr "Errore durante l'aggiornamento."
 
@@ -144,6 +148,7 @@ msgstr "Home page"
 msgid "Donate"
 msgstr "fare una donazione"
 
+#: /controllers/logs_controller.php:29
 #: /controllers/projects_controller.php:38
 #: /views/projects/index.ctp:9
 msgid "Project list"
@@ -153,11 +158,11 @@ msgstr "elenco dei progetti"
 msgid "Add project"
 msgstr "aggiungere un progetto"
 
-#: /controllers/projects_controller.php:87;110
+#: /controllers/projects_controller.php:85;108
 msgid "Project saved."
 msgstr "Progetto salvato"
 
-#: /controllers/projects_controller.php:128
+#: /controllers/projects_controller.php:126
 msgid "Project deleted."
 msgstr "Progetto eliminato"
 
@@ -174,50 +179,67 @@ msgstr "aggiungere un utente"
 msgid "Manage groups"
 msgstr "Gestire gruppi"
 
-#: /controllers/users_controller.php:80
+#: /controllers/users_controller.php:79
 msgid "The user has been created"
 msgstr "L'utente è stato creato."
 
-#: /controllers/users_controller.php:108
+#: /controllers/users_controller.php:107
 msgid "The user has been updated"
 msgstr "L'utente è stato modificato"
 
-#: /controllers/users_controller.php:129
+#: /controllers/users_controller.php:128
 msgid "The user has been deleted"
 msgstr "L'utente è stato eliminato."
 
-#: /controllers/users_controller.php:156
+#: /controllers/users_controller.php:155
 #, fuzzy
 msgid "Settings saved."
 msgstr "Progetto salvato"
 
-#: /controllers/users_controller.php:177
+#: /controllers/users_controller.php:176
 msgid "Please fill in all fields."
 msgstr "Vi preghiamo di compilare tutti i campi."
 
-#: /controllers/users_controller.php:187
+#: /controllers/users_controller.php:179
+msgid "Incorrect old password."
+msgstr ""
+
+#: /controllers/users_controller.php:182
+msgid "Not entered twice the same password"
+msgstr ""
+
+#: /controllers/users_controller.php:186
 msgid "The password has been changed."
 msgstr ""
 
-#: /controllers/users_controller.php:193
+#: /controllers/users_controller.php:192
 msgid "Error during update : "
 msgstr "Errore durante Aggiornamento"
 
-#: /controllers/users_controller.php:202
+#: /controllers/users_controller.php:201
 msgid "HTTPS required but unavailable"
 msgstr "HTTPS richiesta, ma non disponibile"
 
-#: /controllers/users_controller.php:231
+#: /controllers/users_controller.php:230
 msgid "Identification accepted"
 msgstr "Identificazione accettato"
 
-#: /controllers/users_controller.php:234;239
+#: /controllers/users_controller.php:233;238
 msgid "Invalid credentials"
 msgstr "Errore di autenticazione"
 
-#: /controllers/users_controller.php:258
+#: /controllers/users_controller.php:252
+#, fuzzy
+msgid "logout"
+msgstr "La visualizzazione di log"
+
+#: /controllers/users_controller.php:257
 msgid "Your are now disconnected."
 msgstr "Ti trovi ora scollegato."
+
+#: /controllers/components/aclite.php:264
+msgid "Insufficient privileges for accessing the requested ressource"
+msgstr ""
 
 #: /models/deployment.php:63
 msgid "Invalid process context (use setContext() first)"
@@ -232,46 +254,46 @@ msgstr "Esportazione di sovversione"
 msgid "An error occured during the process. See steps for further details."
 msgstr ""
 
-#: /models/deployment.php:130
+#: /models/deployment.php:135
 msgid "Invalid step context (use setContext() first)"
 msgstr ""
 
-#: /models/deployment.php:134
+#: /models/deployment.php:139
 msgid "Unknown step %s"
 msgstr ""
 
-#: /models/deployment.php:141
+#: /models/deployment.php:146
 #, fuzzy
 msgid "Unknown project"
 msgstr "Nuovo progetto"
 
-#: /models/deployment.php:169;226;318;357;430;442;504
+#: /models/deployment.php:173;230;327;365;444;456;523
 msgid "Missing working data"
 msgstr ""
 
-#: /models/deployment.php:266
+#: /models/deployment.php:270
 #, fuzzy
 msgid "Unable to save deployment log"
 msgstr "Log non rilevabile "
 
-#: /models/deployment.php:379
+#: /models/deployment.php:387
 #, fuzzy
 msgid "Rename .prd files"
 msgstr "Rinominare i file"
 
-#: /models/deployment.php:391
+#: /models/deployment.php:399
 msgid "Changing files permissions to %s"
 msgstr ""
 
-#: /models/deployment.php:399
+#: /models/deployment.php:407
 msgid "Changing directories permissions to %s"
 msgstr ""
 
-#: /models/deployment.php:415
+#: /models/deployment.php:423
 msgid "Changing writeable permissions"
 msgstr ""
 
-#: /models/deployment.php:513
+#: /models/deployment.php:532
 msgid "Unable to find deploy.php"
 msgstr ""
 
@@ -288,90 +310,90 @@ msgstr ""
 msgid "Details"
 msgstr "email "
 
-#: /vendors/fbollon/commands.php:79;128
+#: /vendors/fbollon/commands.php:76;125
 msgid "Forbidden NULL value for input parameter [%s;%s]"
 msgstr ""
 
-#: /vendors/fbollon/commands.php:83
+#: /vendors/fbollon/commands.php:80
 msgid "Path [%s] not found"
 msgstr ""
 
-#: /vendors/fbollon/commands.php:90
+#: /vendors/fbollon/commands.php:87
 msgid "Reseting permissions files on %s"
 msgstr ""
 
-#: /vendors/fbollon/commands.php:103
+#: /vendors/fbollon/commands.php:100
 msgid "Resetting directories permissions on %s"
 msgstr ""
 
-#: /vendors/fbollon/commands.php:123
+#: /vendors/fbollon/commands.php:120
 msgid "Creating %s with mode %s"
 msgstr ""
 
-#: /vendors/fbollon/commands.php:130
+#: /vendors/fbollon/commands.php:127
 msgid "Directory %s already exists"
 msgstr ""
 
-#: /vendors/fbollon/commands.php:136
+#: /vendors/fbollon/commands.php:133
 #, fuzzy
 msgid "Unable to create directory %s"
 msgstr "Log non rilevabile "
 
-#: /vendors/fbollon/commands.php:164;401
+#: /vendors/fbollon/commands.php:162;410
 msgid "Forbidden NULL value for input parameter [%s]"
 msgstr ""
 
-#: /vendors/fbollon/commands.php:197
+#: /vendors/fbollon/commands.php:204
 msgid "Deleting content under %s (recursivity=%d)"
 msgstr ""
 
-#: /vendors/fbollon/commands.php:202
+#: /vendors/fbollon/commands.php:209
 msgid "Nothing to delete since no temporary files have been found"
 msgstr ""
 
-#: /vendors/fbollon/commands.php:218
+#: /vendors/fbollon/commands.php:225
 msgid "Executing script %s"
 msgstr ""
 
-#: /vendors/fbollon/commands.php:222;230
+#: /vendors/fbollon/commands.php:229;237
 msgid "Script not found"
 msgstr ""
 
-#: /vendors/fbollon/commands.php:236
+#: /vendors/fbollon/commands.php:244
 msgid "Execution privileges to script"
 msgstr ""
 
-#: /vendors/fbollon/commands.php:244
+#: /vendors/fbollon/commands.php:252
 msgid "%s script"
 msgstr ""
 
-#: /vendors/fbollon/commands.php:256
+#: /vendors/fbollon/commands.php:264
 #, fuzzy
 msgid "Synchronizing %s with %s"
 msgstr "Sincronizzazione con il server di produzione"
 
-#: /vendors/fbollon/commands.php:296;349
+#: /vendors/fbollon/commands.php:303;358
 msgid "Forbidden NULL value for input parameter [%s;%s;%s]"
 msgstr ""
 
-#: /vendors/fbollon/commands.php:298;351;403
+#: /vendors/fbollon/commands.php:305;360;412
 msgid "Directory %s not found"
 msgstr ""
 
-#: /vendors/fbollon/commands.php:300;353
+#: /vendors/fbollon/commands.php:307;362
 #, fuzzy
 msgid "Delete target %s directory first"
 msgstr "suppression du répertoire"
 
-#: /vendors/fbollon/commands.php:335;388;429
+#: /vendors/fbollon/commands.php:344;397;442
 msgid "An error has been detected in the SVN output"
 msgstr ""
 
-#: /vendors/fbollon/commands.php:405
+#: /vendors/fbollon/commands.php:414
 msgid "Specified directory %s is not a working copy"
 msgstr ""
 
-#: /vendors/fbollon/commands.php:407
+#: /vendors/fbollon/commands.php:416
 msgid "Specified directory %s is not writeable"
 msgstr ""
 
@@ -487,6 +509,7 @@ msgstr "Cambiare"
 #: /views/groups/index.ctp:12
 #: /views/groups/view.ctp:38
 #: /views/users/index.ctp:12
+#: /views/users/view.ctp:47
 msgid "Id"
 msgstr "Id"
 
@@ -547,6 +570,10 @@ msgstr "Tutto"
 msgid "Show archived"
 msgstr "Mostra archiviati"
 
+#: /views/deployment_logs/index.ctp:26
+msgid "Search"
+msgstr ""
+
 #: /views/deployment_logs/index.ctp:34
 #: /views/home/index.ctp:26
 msgid "No logs in database"
@@ -575,7 +602,7 @@ msgstr "Data del spiegamento"
 
 #: /views/deployment_logs/view.ctp:36
 #: /views/deployment_logs/rss/index.ctp:9
-#: /views/deployments/run_manual.ctp:126
+#: /views/deployments/run_manual.ctp:122
 msgid "Comment"
 msgstr "Commento"
 
@@ -584,80 +611,79 @@ msgstr "Commento"
 msgid "The application is unable to continue."
 msgstr ""
 
-#: /views/deployments/run_manual.ctp:9
+#: /views/deployments/run_manual.ctp:5
 msgid "Subversion export"
 msgstr "Esportazione di sovversione"
 
-#: /views/deployments/run_manual.ctp:12
+#: /views/deployments/run_manual.ctp:8
 msgid "Revision"
 msgstr "Versione"
 
-#: /views/deployments/run_manual.ctp:21
+#: /views/deployments/run_manual.ctp:17
 msgid "Specify SVN login"
 msgstr "Specificare un login SVN"
 
-#: /views/deployments/run_manual.ctp:28
+#: /views/deployments/run_manual.ctp:24
 msgid "User"
 msgstr "Utente"
 
-#: /views/deployments/run_manual.ctp:35
+#: /views/deployments/run_manual.ctp:31
 #: /views/elements/_form_user.ctp:50
 #: /views/elements/login.ctp:21
 #: /views/users/change_password.ctp:17
 msgid "Password"
 msgstr "password"
 
-#: /views/deployments/run_manual.ctp:46
+#: /views/deployments/run_manual.ctp:42
 msgid "Step 1 - svn export"
 msgstr "Fase 1 - esportazione SVN"
 
-#: /views/deployments/run_manual.ctp:71
+#: /views/deployments/run_manual.ctp:67
 msgid "Synchronizing with production server"
 msgstr "Sincronizzazione con il server di produzione"
 
-#: /views/deployments/run_manual.ctp:73
+#: /views/deployments/run_manual.ctp:69
 msgid "Rsync simulation"
 msgstr "Simulazione rsync"
 
-#: /views/deployments/run_manual.ctp:100
+#: /views/deployments/run_manual.ctp:96
 msgid "Run initialization script"
 msgstr ""
 
-#: /views/deployments/run_manual.ctp:111
+#: /views/deployments/run_manual.ctp:107
 msgid "Backup"
 msgstr "Salvaguardia"
 
-#: /views/deployments/run_manual.ctp:138
+#: /views/deployments/run_manual.ctp:134
 msgid "Step 2 - synchronization"
 msgstr "Fase 2 - sincronizzazione"
 
-#: /views/deployments/run_manual.ctp:163
+#: /views/deployments/run_manual.ctp:159
 msgid "Finalization of deployment"
 msgstr "Finalizzazione di spiegamento"
 
-#: /views/deployments/run_manual.ctp:167
+#: /views/deployments/run_manual.ctp:163
 msgid "Rename files"
 msgstr "Rinominare i file"
 
-#: /views/deployments/run_manual.ctp:179
+#: /views/deployments/run_manual.ctp:175
 msgid "Adjusting modes"
 msgstr "Adeguamento dei diritti"
 
-#: /views/deployments/run_manual.ctp:190
+#: /views/deployments/run_manual.ctp:186
 msgid "Writing mode"
 msgstr "Diritto iscritto"
 
-#: /views/deployments/run_manual.ctp:201
+#: /views/deployments/run_manual.ctp:197
 msgid "Run finalization script"
 msgstr ""
 
-#: /views/deployments/run_manual.ctp:216
+#: /views/deployments/run_manual.ctp:212
 msgid "Step 3 - finalization"
 msgstr "Fase 3 - finalizzazione"
 
 #: /views/elements/_form_control_object.ctp:5
 #: /views/elements/_form_group.ctp:5
-#: /views/elements/_form_project.ctp:5
 msgid "The name field is required"
 msgstr "Il campo nome è obbligatorio"
 
@@ -666,6 +692,11 @@ msgstr "Il campo nome è obbligatorio"
 #: /views/elements/_form_project.ctp:6
 msgid "This name is already used"
 msgstr "Il nome è già utilizzato"
+
+#: /views/elements/_form_project.ctp:5
+#, fuzzy
+msgid "The name field is required and must be alphaNumeric"
+msgstr "Il campo nome è obbligatorio"
 
 #: /views/elements/_form_project.ctp:21
 #: /views/projects/index.ctp:17
@@ -727,16 +758,19 @@ msgstr "Il password deve avere una lunghezza di 6 caratteri Bassa"
 #: /views/elements/_form_user.ctp:23
 #: /views/elements/login.ctp:22
 #: /views/users/index.ctp:13
+#: /views/users/view.ctp:52
 msgid "Login"
 msgstr "Login "
 
 #: /views/elements/_form_user.ctp:30
 #: /views/users/index.ctp:14
+#: /views/users/view.ctp:57
 msgid "First name"
 msgstr "Nome"
 
 #: /views/elements/_form_user.ctp:36
 #: /views/users/index.ctp:15
+#: /views/users/view.ctp:62
 msgid "Last name"
 msgstr "Cognome"
 
@@ -752,7 +786,7 @@ msgstr "Si prega di fornire un indirizzo email valido."
 msgid "Logs retreived from"
 msgstr ""
 
-#: /views/elements/_log_viewer.ctp:16
+#: /views/elements/_log_viewer.ctp:24
 msgid "Unable to retreive log"
 msgstr "Log non rilevabile "
 
@@ -844,7 +878,7 @@ msgstr "Dettagli del gruppo"
 
 #: /views/groups/view.ctp:16;17;18;79;80
 #: /views/projects/view.ctp:79;80
-#: /views/users/view.ctp:16;16;16
+#: /views/users/view.ctp:16;16;16;76;81
 msgid "Edit"
 msgstr "Cambiare"
 
@@ -957,15 +991,6 @@ msgstr "Offline sostegno"
 #: /views/pages/help.ctp:5;6
 msgid "Documentation"
 msgstr "Documentazione"
-
-#: /views/pages/help.ctp:5
-msgid "Fredistrano-documentation-EN.pdf"
-msgstr "Fredistrano-documentazione-EN.pdf"
-
-#: /views/pages/help.ctp:6
-#, fuzzy
-msgid "Fredistrano-documentation-FR.pdf"
-msgstr "Fredistrano-documentazione-EN.pdf"
 
 #: /views/pages/help.ctp:9
 msgid "Online support"
@@ -1111,6 +1136,7 @@ msgid "User update"
 msgstr "Modifica un utente"
 
 #: /views/users/index.ctp:16
+#: /views/users/view.ctp:67
 msgid "Email"
 msgstr "Email "
 
@@ -1139,10 +1165,25 @@ msgstr "gestire gruppi per l'utente corrente"
 msgid "Group management"
 msgstr "Gestione gruppi "
 
+#: /views/users/view.ctp:76
+#, fuzzy
+msgid "Group membership for user : "
+msgstr "Gestire i membri del gruppo:"
+
+#: /views/users/view.ctp:84
+msgid "No group selected for user %s"
+msgstr ""
+
 #: /webroot/test.php:75
 msgid "Debug setting does not allow access to this url."
 msgstr "La configurazione di debug non autorizza ha accesso a questo URL."
 
+#~ msgid "Fredistrano-documentation-EN.pdf"
+#~ msgstr "Fredistrano-documentazione-EN.pdf"
+
+#, fuzzy
+#~ msgid "Fredistrano-documentation-FR.pdf"
+#~ msgstr "Fredistrano-documentazione-EN.pdf"
 #~ msgid "svn update"
 #~ msgstr "SVN aggiornamento"
 #~ msgid "creating directory"

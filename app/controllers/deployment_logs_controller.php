@@ -42,7 +42,7 @@ class DeploymentLogsController extends AppController {
 		
 		if ( Configure::read('Feeds.enabled') === true ) {
 			$tab[] = array (
-				'text' => 'Rss Feed',
+				'text' => __('Rss Feed', true),
 				'link' => '/deploymentLogs/index.rss?token='.$this->Session->read('User.Profile.rss_token')
 			);
 		}

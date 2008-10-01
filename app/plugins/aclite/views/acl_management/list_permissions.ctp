@@ -1,6 +1,6 @@
-<h1>Resume des permissions en vigueur</h1>
+<h1><?php __('Current permissions summary') ?></h1>
 
-<h2>Liste données de base</h2>
+<h2><?php __('Master data') ?></h2>
 
 <div style="float: left; width: 45%;">
 	<strong>Demandeurs (utilisateurs ou groupes) :</strong>

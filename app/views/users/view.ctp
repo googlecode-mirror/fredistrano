@@ -75,12 +75,14 @@
 if (!empty($user)){
 	e('<h3>'.__('Group membership for user : ', true).$user['User']['login'].' '.$html->link('['.__('Edit', true).']', '/groups/index').'</h3>');
 	
+	e('<ul>');
 	if (!empty($user['Group'])){
-		e('<ul>');
 			foreach ($user['Group'] as $key => $value) {
 				e('<li>'.$value['name'].' - '.$html->link('['.__('Edit', true).']','/groups/affectUsers/'.$value['id']).'</li>');
 			}//foreach
-		e('</ul>');
+	}else{
+		e('<li>'.sprintf(__('No group selected for user %s', true), $user['User']['login']).'</li>');
 	}
+	e('</ul>');
 }
 ?>
