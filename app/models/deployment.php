@@ -91,7 +91,10 @@ class Deployment extends AppModel {
 				$processLog->error(__('An error occured during the process. See steps for further details.',true), false);
 			}
 		}
-
+		
+		// Write log
+		$processLog->save();
+		
 		return $processLog;
 	}// process
 	
@@ -109,9 +112,11 @@ class Deployment extends AppModel {
 				}
 			} catch (Exception $e) { }
 			
-			return $this->_stepLog;	
+			// Write log
+			$this->_stepLog->save();
+			
+			return $this->_stepLog;
 		} 
-		
 		return false;
 	}// __call
 
@@ -155,7 +160,6 @@ class Deployment extends AppModel {
 				$this->_stepLog->error();
 			} 
 		}
-
 	}// _runStep
 
 	/**

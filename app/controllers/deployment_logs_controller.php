@@ -116,7 +116,7 @@ class DeploymentLogsController extends AppController {
 		
 		$options = array(
 			'reverse'			=>	false,
-			'logPath'			=> F_DEPLOYLOGDIR.$deployLog['DeploymentLog']['uuid'].'.log'
+			'logPath'			=> F_DEPLOYLOGDIR.$deployLog['DeploymentLog']['uuid'].'.xml'
 		);
 		if ($deployLog['DeploymentLog']['archive']) {
 			$this->set('error', 	__('No details available for archived logs.') );

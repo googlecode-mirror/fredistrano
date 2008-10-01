@@ -28,7 +28,7 @@ class DeploymentLog extends AppModel {
 			
 			// Suppresion du fichier
 			if ($log['DeploymentLog']['uuid']) {
-				$logFile = F_DEPLOYLOGDIR.$log['DeploymentLog']['uuid'].'.log';
+				$logFile = F_DEPLOYLOGDIR.$log['DeploymentLog']['uuid'].'.xml';
 				if (file_exists ($logFile)) {
 					@unlink( $logFile );
 				}

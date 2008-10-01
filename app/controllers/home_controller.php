@@ -52,7 +52,6 @@ class HomeController extends AppController {
 		
 		$this->set('logs', $logs);
 		$this->set('projects', $projects);
-		
 	} // index
 	
 	/**

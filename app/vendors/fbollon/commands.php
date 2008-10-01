@@ -142,8 +142,9 @@ class ShellAction extends Action {
 
 	public static function executeCommand( $command = null, $options = array() ){
 		$defaultOptions = array(
-			'comment' 	=> null,
-			'directory'	=> null
+			'comment' 		=> null,
+			'directory'		=> null,
+			'commandForLog'	=> null
 		);
 		$options = array_merge($defaultOptions, $options);
 
@@ -180,11 +181,20 @@ class ShellAction extends Action {
 		
 		// Execute command 
 		$output = shell_exec( $prefix.$command.$suffix );
-		$actionLog->saveCommand( $prefix.$command.$suffix, $output); 
 		
+		/*
+			FIXME hide user and password
+		*/
+		if (!is_null($options['commandForLog'])) {
+			$commandForLog = $options['commandForLog'];
+		}else{
+			$commandForLog = $prefix.$command.$suffix;
+		}
+		$actionLog->saveCommand($commandForLog, $output);
+		 
 		// End action
 		if ($terminate) {
-			$actionLog->end( $output );
+			$actionLog->end($output);
 		}
 		
 		return $actionLog;
@@ -320,11 +330,13 @@ class SvnAction extends Action {
 		if (!is_null($options['configDirectory'])) {
 			$configDirectory = '--config-dir '.Utils::formatPath( $options['configDirectory'] );
 		}
-		$command = "svn checkout --non-interactive $configDirectory $revision $authentication $svnUrl $targetDir 2>&1";		
+		$command = "svn checkout --non-interactive $configDirectory $revision $authentication $svnUrl $targetDir 2>&1";	
+		$commandForLog = "svn checkout --non-interactive $configDirectory $revision xxxxxxxxxxxxxxxxxxxxxx $svnUrl $targetDir 2>&1";		
 		ShellAction::executeCommand( $command,
 			array(
-		        'directory'	=> $path,
-				'actionLog' => $actionLog
+		        'directory'		=> $path,
+				'actionLog' 	=> $actionLog,
+				'commandForLog'	=> $commandForLog
 			)
 		);
 		// Parse output

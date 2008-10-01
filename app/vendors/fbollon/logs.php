@@ -83,12 +83,8 @@ class ElementaryLog {
 	public function markAttached() {
 		$this->attached = true;
 	}// markAttached
-	
-	public function toXml() {
-		return '';
-	}// toXml
 		
-	public function toString () {
+	public function toXml () {
 		return 
 			'<timePeriod>'
 				.'<start timezone="'.date_default_timezone_get().'">'.date(DATE_ATOM, $this->startTime).'</start>'
@@ -96,21 +92,13 @@ class ElementaryLog {
 				.'<elapsed unit="seconds">'.$this->elapsedTime.'</elapsed>'
 			.'</timePeriod>'
 			.($this->hasError()?'<error>'.$this->error.'</error>':'');
-	}// toString
+	}// toXml
 
 	public function toHtml () {
 		return 
 			'<br />[took] '.$this->elapsedTime.' secondes'
 			.($this->hasError()?('<br />Error : '.$this->error.'<br />--------------'):'');
 	}// toHtml
-	
-	public function writeToFile( $target ) {
-		$log = new File( $target, true );
-		if ($log->writable()) {
-			return $log->append( $this->toString() );
-		}
-		return false;
-	}// writeToFile
 	
 }// ElementaryLog
 
@@ -147,27 +135,27 @@ class ActionLog extends ElementaryLog {
 		$this->result = $result; 
 	}// setCommand
 	
-	public function toString () {
+	public function toXml () {
 		return 
 			'<action name="'.$this->name.'" type="'.$this->type.'" >'
-				.(!is_null($this->description)?('<description>'.$this->description).'</description>':'')
-				.parent::toString()
+				.(!is_null($this->description)?('<description>'.htmlspecialchars($this->description)).'</description>':'')
+				.parent::toXml()
 				.'<job>'
-					.((!is_null($this->command))?('<command>'.$this->command.'</command>'):'<command/>')
-					.((!is_null($this->result))?('<result>'.$this->result.'</result>'):'<result/>')
+					.((!is_null($this->command))?('<command>'.htmlspecialchars($this->command).'</command>'):'<command/>')
+					.((!is_null($this->result))?('<result>'.htmlspecialchars($this->result).'</result>'):'<result/>')
 				.'</job>'
 			.'</action>';
-	}// toString
+	}// toXml
 
 	public function toHtml () {
 		return 
 			'<div class="actionLog">'
 			.'--ACTION------------------------------'
 			.'<br />[name] '.$this->name.' [type] '.$this->type
-			.(!is_null($this->description)?('<br />[description] '.$this->description):'<br />[description]')
+			.(!is_null($this->description)?('<br />[description] '.htmlspecialchars($this->description)):'<br />[description]')
 			.parent::toHtml()
-			.((!is_null($this->command))?('<br />[command] '.htmlentities($this->command)):'<br />[command]')
-			.((!is_null($this->result))?('<br />[result] '.$this->result.'<br />'):'<br />[result]')
+			.((!is_null($this->command))?('<br />[command] '.htmlspecialchars($this->command)):'<br />[command]')
+			.((!is_null($this->result))?('<br />[result] '.htmlspecialchars($this->result).'<br />'):'<br />[result]')
 			.'</div>';
 	}// toHtml
 	
@@ -208,16 +196,6 @@ class AdvancedLog extends ElementaryLog {
 		
 		return $log;
 	}// addChildLog
-	
-	public function end() {
-		// End current step
-		parent::end();
-		
-		// Log to file if required
-		if (isset($this->context['uuid'])) {
-			$this->writeToFile( F_DEPLOYLOGDIR.$this->context['uuid'].'.log' );
-		}
-	}// end
 	
 	public function error($error = null , $trigger = true ) {
 		if (is_null($error)) {
@@ -266,6 +244,10 @@ class AdvancedLog extends ElementaryLog {
 		}
 	}// hasError
 	
+	public function save() {
+		$this->writeToFile( F_DEPLOYLOGDIR.$this->context['uuid'].'.xml' );
+	}
+	
 	public function setContext($context) {
 		if (!is_array($context)) {
 			return false;
@@ -284,26 +266,25 @@ class StepLog extends AdvancedLog {
 		return $this->addChildLog( $actionLog );
 	}// addNewAction
 	
-	public function toString( $showContext=true ) {
+	public function toXml( $showContext=true ) {
 		$actionLogs = '';
 		foreach($this->logs as $actionLog) {
-			$actionLogs .= $actionLog->toString();
+			$actionLogs .= $actionLog->toXml();
 		}
-		
 		if ($showContext) {
 			$uuid = (!is_null($this->context['uuid']))?'uuid=""':'';
-			$user = $this->context['user'];
+			$user = '<user>'.$this->context['user'].'</user>';
 		} else {
 			$uuid = '';
 			$user = '';	
 		}
 		return 
 			'<step name="'.$this->name."\" $uuid>"
-				.parent::toString()
+				.parent::toXml()
 				.$user
 				.'<actions>'.$actionLogs.'</actions>'
 			.'</step>';
-	}// toString
+	}// toXml
 
 	public function toHtml( $showContext=true ) {
 		$actionLogs = '';
@@ -328,25 +309,38 @@ class StepLog extends AdvancedLog {
 			.'</div>';
 	}// toHtml
 	
+	public function writeToFile( $target ) {
+		$log = new File( $target, true );
+		if ($log->size() == 0 && $log->writable()) {
+			$log->write('<?xml version="1.0" encoding="utf-8" ?><steps></steps>');
+		}
+		if ($log->writable()) {
+			$xml = $log->read();
+			$updatedXml = str_replace('</steps>', $this->toXml().'</steps>',$xml);
+			return $log->write($updatedXml,'w',true);
+		}
+		return false; //$this->error(sprintf(__('Unable to write in log file %s', true), $log->pwd()));
+	}// writeToFile
+	
 }// StepLog
 
 class Processlog extends AdvancedLog {
 
 	var $childType = 'StepLog';
 
-	public function toString() {
+	public function toXml() {
 		
 		$stepLogs = '';
 		foreach($this->logs as $stepLog) {
-			$stepLogs .= $stepLog->toString(false);
+			$stepLogs .= $stepLog->toXml(false);
 		}
 		return 
 			'<process uuid="'.$this->context['uuid'].'">'
-				.parent::toString()
+				.parent::toXml()
 				.'<user>'.$this->context['user'].'</user>'
 				.'<steps>'.$stepLogs.'</steps>'
 			.'</process>';
-	}// toString
+	}// toXml
 
 	public function toHtml() {
 		
@@ -362,6 +356,17 @@ class Processlog extends AdvancedLog {
 				.'<br />[steps] '.$stepLogs
 			.'<br />===';
 	}// toHtml
+	
+	public function writeToFile( $target ) {
+		$log = new File( $target, true );
+		if ($log->size() == 0 && $log->writable()) {
+			$log->append('<?xml version="1.0" encoding="utf-8" ?>');
+		}
+		if ($log->writable()) {
+			return $log->append( $this->toXml() );
+		}
+		return false; //$this->error(sprintf(__('Unable to write in log file %s', true), $log->pwd()));
+	}// writeToFile
 
 }// Processlog
 ?>

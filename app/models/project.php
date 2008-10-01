@@ -89,6 +89,7 @@ class Project extends AppModel {
 			}
 			$this->lastReadSize = $size;
 			$output = fread( $file, $size ); 
+			// $output = htmlspecialchars(fread( $file, $size ));
 			fclose($file);
 			
 			// Highlight pattern

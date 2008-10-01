@@ -3,7 +3,14 @@
 	?>
 		<p><strong><?php __('Logs retreived from') ?> <?php e($project['Project']['name']); 
 			if (isset($size)) { 
-				printf(" [<em>%s</em> - %.3f Ko]", $logPath, ($size/1024));
+				printf(" [<em>%s</em> - %.3f Ko]", 
+					$html->link($logPath, 
+						 		'/files/logs/'.$deployLog['DeploymentLog']['uuid'].'.xml',
+												null,
+												false,
+												false)
+				
+				, ($size/1024));
 			} ?></strong></p>
 
 <div class="log_viewer">
