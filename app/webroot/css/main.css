@@ -162,23 +162,6 @@ hr {margin: 1em 0;background:#f2f2f2;height:1px;color:#f2f2f2;border:none;clear:
 
 	.thumbnail {margin: 0 0 0 10px;position:relative;z-index:9999;border: 1px solid #eee;float:right;width:100px;padding:5px;background:#fff}
 	.thumbnail img {border: 1px solid #000}
-
-/*	.pagination {background: #f2f2f2;color:#666;padding: 4px 2px 4px 7px;border: 1px solid #ddd;margin: 0 0 1.5em}
-	.pagination p {position:relative;text-align:right}
-	.pagination p a:link, .pagination p a:visited, .pagination p a:hover, .pagination p a:active {text-decoration:none;background:#fff;padding:2px 5px;border: 1px solid #ccc}
-	.pagination p a:hover {background:#FF6100;color:#fff}
-	.pagination p span {text-decoration:none;background:#fff;padding:2px 5px;border: 1px solid #ccc;color:#ccc}
-	.pagination * {margin:0}
-	.pagination h4 {margin-top:-1.45em;padding:0;border:none}*/
-
-/*	.pagination {background: #f2f2f2;color:#666;padding: 4px 2px 4px 7px;border: 1px solid #ddd;margin: 0 0 1.5em}
-	.pagination div.pagin_nav a:link, .pagination div.pagin_nav a:visited, .pagination div.pagin_nav a:hover, .pagination div.pagin_nav a:active {text-decoration:none;background:#fff;padding:2px 5px;border: 1px solid #ccc}
-	.pagination div.pagin_nav a:hover {background:#FF6100;color:#fff;}
-	.pagination div.pagin_nav span {text-decoration:none;background:#fff;padding:2px 5px;border: 1px solid #ccc;color:#ccc}
-	.pagination * {margin:0}
-	.pagination h4 {margin-top:-1.45em;padding:0;border:none}
-	.pagination div.pagin_nav {float: right;}
-	.pagination div.pagin_nav {position: relative; text-align: right;}*/
 	
 	.pagination {width: 100%; font-size: 90%;background: #f2f2f2;color:#666;padding: 8px 2px 4px 5px;border: 1px solid #ddd;margin: 0 0 1.5em}
 	.pagination a:link, .pagination a:visited, .pagination a:hover, .pagination a:active {text-decoration:none;background:#fff;padding:2px 4px;margin:1px;border: 1px solid #ccc}
@@ -199,18 +182,18 @@ hr {margin: 1em 0;background:#f2f2f2;height:1px;color:#f2f2f2;border:none;clear:
 	#resultslist-wrap dd.filetype, #resultslist-wrap dd.date {color:#999;display:inline;padding-right:.5em}
 
 	/* TABLES */
-	.table1 {border: 2px solid #900;border-collapse:collapse;width:100%}
-		.table1 td {padding:3px;border: 1px solid #fff}
-		.table1 th {text-align:left;border: 1px solid #fff}
-		.table1 thead th {color:#fff;font-size:115%;background: #900 url("images/bg1.png") repeat;padding: 1px 3px}
-		.table1 tbody th {color:#fff;font-size:105%;background: #88b8db url("images/bg2.png") repeat;padding: 1px 5px;width:180px;}
-		.table1 tbody th.sub {font-size:100%;color:#000;background: #efefef url("images/bg3.png") repeat;padding: 1px 5px 1px}
+	.table1 {border: 2px solid #900;border-collapse:separate;border-spacing: 0px 0px;width:100%}
+		.table1 td {padding:3px;}
+		.table1 th {text-align:left;}
+		.table1 thead th {color:#fff;font-size:115%;background: #900 url("images/bg1.png") repeat;padding: 2px;border-bottom: 1px solid #fff}
+		.table1 tbody th {color:#fff;font-size:105%;background: #88b8db url("images/bg2.png") repeat;padding: 1px 5px;width:180px;border-bottom: 2px solid #900}
+		.table1 tbody th.sub {font-size:100%;color:#000;background: #efefef url("images/bg3.png") repeat;padding: 1px 3px 1px;border-bottom: 1px solid #fff}
 		.table1 th a {color:#fff;}
 		.table1 ul {margin:0;padding:0}
 		.table1 li{display:inline; list-style:none;}
 				
 		.table1 .row_modified {background: #fee}
-		.table1 tr.trOver {background: #fee no-repeat 10px -695px; cursor:pointer;}
+		.table1 tr.trOver {background: #fee no-repeat 10px -695px; cursor:pointer;border: 0px solid #fff;}
 
 	/* TABLES - calendar */
 	.calendar {width:200px;font-size:92%}
