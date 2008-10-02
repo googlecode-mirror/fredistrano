@@ -70,13 +70,15 @@ div.disabled {
 
 .z_radio fieldset b{
 	clear:left;
-	float:right;
+	padding-left:250px;
+	float:center;
 	text-align:center;
 	font-weight: normal;
 }
 
 .z_radio fieldset legend b{
 	font-weight: bold;
+	padding-left:0px;
 }
 
 .actionLog {
