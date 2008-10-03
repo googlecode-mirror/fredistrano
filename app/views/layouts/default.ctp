@@ -12,8 +12,11 @@ http://creativecommons.org/licenses/GPL/2.0/
 -->
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<link rel="shortcut icon" href="favicon.ico" >
-
+<?php echo $html->meta(
+    'favicon.ico',
+    'favicon.ico',
+    array('type' => 'icon')
+);?>
 <title>Fredistrano</title>
 
 <?php echo $html->css('main','stylesheet',array('media'=>'screen'),true) ?>

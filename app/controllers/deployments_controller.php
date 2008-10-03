@@ -69,7 +69,7 @@ class DeploymentsController extends AppController {
 			array(
 		 		'export' 		=> array(),
 		 		'synchronize'	=> array(
-					'simulation'			=> 	true,
+					'simulation'			=> 	false,
 		 		 	'runBeforeScript'		=> 	false,
 		 			'backup'				=> 	false
 		 		),

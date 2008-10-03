@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2008-10-01 21:55+0200\n"
+"POT-Creation-Date: 2008-10-04 00:00+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -294,6 +294,14 @@ msgstr ""
 
 #: /models/deployment.php:532
 msgid "Unable to find deploy.php"
+msgstr ""
+
+#: /plugins/aclite/views/acl_management/list_permissions.ctp:1
+msgid "Current permissions summary"
+msgstr ""
+
+#: /plugins/aclite/views/acl_management/list_permissions.ctp:3
+msgid "Master data"
 msgstr ""
 
 #: /plugins/aclite/views/acl_management/update_permissions.ctp:45
@@ -904,7 +912,7 @@ msgstr ""
 msgid "Deployment history (10 last)"
 msgstr ""
 
-#: /views/layouts/default.ctp:42
+#: /views/layouts/default.ctp:45
 msgid "Logo"
 msgstr ""
 

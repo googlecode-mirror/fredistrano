@@ -43,7 +43,7 @@
 <?php echo $form->input('Project.log_path', 
 						array(
 							'label' => '<b>'.__('Log pathes (one per line)', true).'</b>', 
-							'cols' => '80', 
+							'cols' => '70', 
 							'class' => 'f-name',
 							'type' => 'textarea'
 							)

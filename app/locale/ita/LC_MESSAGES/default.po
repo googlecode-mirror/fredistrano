@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: fredsitrano\n"
-"POT-Creation-Date: 2008-10-01 21:55+0200\n"
+"POT-Creation-Date: 2008-10-04 00:00+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Frédéric BOLLON <contact@fbollon.net>\n"
 "Language-Team: fbollon.net\n"
@@ -296,6 +296,16 @@ msgstr ""
 #: /models/deployment.php:532
 msgid "Unable to find deploy.php"
 msgstr ""
+
+#: /plugins/aclite/views/acl_management/list_permissions.ctp:1
+#, fuzzy
+msgid "Current permissions summary"
+msgstr "Persona responsabile "
+
+#: /plugins/aclite/views/acl_management/list_permissions.ctp:3
+#, fuzzy
+msgid "Master data"
+msgstr "Modifica un utente"
 
 #: /plugins/aclite/views/acl_management/update_permissions.ctp:45
 msgid "Add"
@@ -918,7 +928,7 @@ msgstr "Creare un nuovo progetto"
 msgid "Deployment history (10 last)"
 msgstr "Storia di spiegamento (10 persone)"
 
-#: /views/layouts/default.ctp:42
+#: /views/layouts/default.ctp:45
 #, fuzzy
 msgid "Logo"
 msgstr "Logs "
