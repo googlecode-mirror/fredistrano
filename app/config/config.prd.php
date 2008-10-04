@@ -46,8 +46,7 @@
 	
 	$config['Security'] = array(
 		'authenticationType'	=> 1,			//authentication type: 0 = accept all, 1 = custom, 2 = mysql 
-		'authorizationsDisabled'=> false,		//disable authorization
-		'HTTPS'					=> 0			//enabled https: 0 = never, 1 = login, 2 = always
+		'authorizationsDisabled'=> false		//disable authorization
 	);
 	
 	$config['Subversion'] = array(

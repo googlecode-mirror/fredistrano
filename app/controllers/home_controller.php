@@ -36,23 +36,25 @@ class HomeController extends AppController {
 	 * Display the welcome screen
 	 */
 	function index() {
-		$fields = array (
-			'id',
-			'project_id',
-			'user_id',
-			'created',
-			'comment',
-			'User.login',
-			'Project.name'
-		);
-		$order = 'DeploymentLog.created DESC';
-		$logs = $this->DeploymentLog->findAll(null, $fields, $order,10);
+		if ($this->Session->read('User')) {
+			$fields = array (
+				'id',
+				'project_id',
+				'user_id',
+				'created',
+				'comment',
+				'User.login',
+				'Project.name'
+			);
+			$order = 'DeploymentLog.created DESC';
+			$logs = $this->DeploymentLog->findAll(null, $fields, $order,10);
 
-		$projects = $this->Project->find('list');
+			$projects = $this->Project->find('list');
 		
-		$this->set('logs', $logs);
-		$this->set('projects', $projects);
-	} // index
+			$this->set('logs', $logs);
+			$this->set('projects', $projects);
+		}
+	}// index
 	
 	/**
 	 * Change current language

@@ -42,10 +42,11 @@
  * @subpackage	cake.cake
  */
 class AppController extends Controller {
+	
 	var $helpers = array (
-			'Html',
-			'Form',
-			'Javascript'
+		'Html',
+		'Form',
+		'Javascript'
 	);
 
 	var $components = array (
@@ -54,27 +55,20 @@ class AppController extends Controller {
 	);
 				
 	function beforeFilter() {
-		
+		// Loading lang
 		$lang = $this->Session->read('User.Profile.lang');
-		
 		if (empty($lang)) {
 			$lang = Configure::read('Fredistrano.language');
 		}
 		
+		// Applying lang
 		uses('L10n');
 		$this->L10n = new L10n();
 		$this->L10n->get($lang);
-	}
-			
-	function beforeRender() {
-		$this->set('referer', $this->referer());
-		//disable cache due to a proxy issue
-		$this->disableCache();
 		
-		// to construct https url for login form
-		$this->set('serverName', $_SERVER['SERVER_NAME']);
-		$this->set('appPath', str_replace('/app/webroot/index.php', '', $_SERVER['SCRIPT_NAME']));
-	}		
+		// Disable cache due to a proxy issue
+		$this->disableCache();
+	}
 	
-}
+}// AppController
 ?>

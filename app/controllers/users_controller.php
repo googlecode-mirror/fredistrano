@@ -5,10 +5,6 @@ class UsersController extends AppController {
 
 	var $uses = array ('User', 'Group', 'Profile');	
 
-	var $helpers = array ();
-
-	var $components = array ();
-
 	var $authLocal = array(
 		'Users' => array('authorizations'),
 		'except' => array (
@@ -32,7 +28,6 @@ class UsersController extends AppController {
 		}
 	}
 	
-
 	function beforeRender() {
 		parent::beforeRender();
 		// Tableau de liens pour la création du menu contextuel
@@ -196,56 +191,47 @@ class UsersController extends AppController {
 	}
 
 	function login() {
-		// We only accept HTTPS requests
-		if (!env('HTTPS') && Configure::read('Security.https')) {
-			$this->Session->setFlash(__('HTTPS required but unavailable', true));
-			$this->redirect('/');
-			exit ();
-		}
-
 		// login form submited
-		if (!empty ($this->data)) {
-
-			if ($this->User->isValid($this->data['User']['login'])) {
-				// login already exist
+		if (empty ($this->data)) {
+			$this->redirect($this->referer());
+			exit;
+		}
+		
+		if ($this->User->isValid($this->data['User']['login'])) {
+			// login already exist
+			
+			if ($this->User->authenticate($this->data['User']['login'], $this->data['User']['password']) === true) {
+				// Authentification réussie
+				$someone = $this->User->findByLogin($this->data['User']['login']);
 				
-				if ($this->User->authenticate($this->data['User']['login'], $this->data['User']['password']) === true) {
-					// Authentification réussie
-					$someone = $this->User->findByLogin($this->data['User']['login']);
+				$userSession['id'] = $someone['User']['id'];
+				$userSession['login'] = $someone['User']['login'];
+				if (empty ($someone['Group']))
+					$someone['Group'][] = array('name' => 'member');
 					
-					$userSession['id'] = $someone['User']['id'];
-					$userSession['login'] = $someone['User']['login'];
-					if (empty ($someone['Group']))
-						$someone['Group'][] = array('name' => 'member');
-						
-					foreach ($someone['Group'] as $group) {
-							if($group['name'] == 'admin')
-								$this->Session->write('isAdmin', true);
-							if($group['name'] == 'premium')
-								$this->Session->write('isPremium', true);
-					}
-
-					$this->Session->write('User', $someone);
-					$this->log($this->data['User']['login'] . " - Connexion", LOG_DEBUG);
-					$this->Session->setFlash(__('Identification accepted', true));
-				} else {
-					//Authentification failed
-					$this->Session->setFlash(__('Invalid credentials', true));
+				foreach ($someone['Group'] as $group) {
+						if($group['name'] == 'admin')
+							$this->Session->write('isAdmin', true);
+						if($group['name'] == 'premium')
+							$this->Session->write('isPremium', true);
 				}
 
+				$this->Session->write('User', $someone);
+				$this->log($this->data['User']['login'] . " - Connexion", LOG_DEBUG);
+				$this->Session->setFlash(__('Identification accepted', true));
 			} else {
-				// The use doesn't exist
+				//Authentification failed
 				$this->Session->setFlash(__('Invalid credentials', true));
 			}
 
-			// Affichage
-            $tmp = empty($_SERVER['HTTP_REFERER'])?'/':$_SERVER['HTTP_REFERER'];
-            if (Configure::read('Security.https') == 2)
-            		$tmp = preg_replace('/(http):\/\//','${1}s://',$tmp);
-		    		
-            $this->redirect($tmp);
-            exit;		
+		} else {
+			// The use doesn't exist
+			$this->Session->setFlash(__('Invalid credentials', true));
 		}
+
+		// Return to previous page
+		$this->redirect($this->referer());
+		exit;
 	}
 
 	function logout() {
@@ -257,8 +243,7 @@ class UsersController extends AppController {
 		$this->Session->setFlash(__('Your are now disconnected.', true));
 		$this->redirect($this->referer());
 		exit;
-	}
-
+	}// logout
 	
 }// UsersController
 ?>
