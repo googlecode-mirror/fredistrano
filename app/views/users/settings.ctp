@@ -20,6 +20,7 @@
 									'class' => 'f-name'
 									)
 								);?>	
+		<?php echo $form->hidden('user_id', array('value' => $session->read('User.User.id'))) ?>											
 		<?php echo $form->hidden('id') ?>											
 		
 		<div class="f-submit-wrap">
