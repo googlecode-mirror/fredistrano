@@ -182,9 +182,6 @@ class ShellAction extends Action {
 		// Execute command 
 		$output = shell_exec( $prefix.$command.$suffix );
 		
-		/*
-			FIXME hide user and password
-		*/
 		if (!is_null($options['commandForLog'])) {
 			$commandForLog = $options['commandForLog'];
 		}else{

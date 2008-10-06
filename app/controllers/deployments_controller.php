@@ -21,8 +21,9 @@ class DeploymentsController extends AppController {
 	);
 	
 	function beforeFilter() {
-		$id = null;
+		parent::beforeFilter();
 		
+		$id = null;
 		if (isset($this->data['Project']['id'])) {
 			$id = $this->data['Project']['id'];
 		} else if (isset($this->params['pass'][0])) {
