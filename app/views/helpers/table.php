@@ -1,8 +1,32 @@
 <?php
-// Dans les pages "index", les données sont présentées sous forme de tableau
-// la dernière colonne de ce tableau contient des icônes d'actions
-// on ne veut pas de cette colonne à l'impression donc on lui attribue une classe spéciale
-
+/* SVN FILE: $Id$ */
+/**
+ * Deprecated? Dans les pages "index", les données sont présentées sous forme de tableau
+ * la dernière colonne de ce tableau contient des icônes d'actions
+ * on ne veut pas de cette colonne à l'impression donc on lui attribue une classe spéciale
+ * 
+ * PHP 5
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @filesource
+ * @link			http://code.google.com/p/fredistrano
+ * @package			app
+ * @subpackage		app.views.helpers
+ * @version			$Revision$
+ * @modifiedby		$Author$
+ * @lastmodified	$Date$
+ * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
+ */
+/**
+ * Deprecated? Dans les pages "index", les données sont présentées sous forme de tableau
+ * la dernière colonne de ce tableau contient des icônes d'actions
+ * on ne veut pas de cette colonne à l'impression donc on lui attribue une classe spéciale
+ *
+ * @package		app
+ * @subpackage	app.views.helpers
+ */
 class TableHelper extends Helper {
 
 	var $helpers = array('Html');

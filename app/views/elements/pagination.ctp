@@ -1,4 +1,30 @@
-<hr />
+ <?php
+/* SVN FILE: $Id$ */
+/**
+ * 
+ * 
+ * PHP 5
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @filesource
+ * @link			http://code.google.com/p/fredistrano
+ * @package			app
+ * @subpackage		app.views.elements
+ * @version			$Revision$
+ * @modifiedby		$Author$
+ * @lastmodified	$Date$
+ * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
+ */
+/**
+ * 
+ *
+ * @package		app
+ * @subpackage	app.views.elements
+ */
+ ?>
+ <hr />
 <div class="pagination">
 		<div id="spinner" style="display:none;float:right;margin:0 10px;">
 			<?php echo $html->image('loading_orange.gif'); ?>

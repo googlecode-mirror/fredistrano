@@ -1,4 +1,30 @@
-<h1><?php __('Administration') ?></h1>
+<?php
+/* SVN FILE: $Id$ */
+/**
+ * 
+ * 
+ * PHP 5
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @filesource
+ * @link			http://code.google.com/p/fredistrano
+ * @package			app
+ * @subpackage		app.views.administration
+ * @version			$Revision$
+ * @modifiedby		$Author$
+ * @lastmodified	$Date$
+ * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
+ */
+/**
+ * 
+ *
+ * @package		app
+ * @subpackage	app.views.administration
+ */
+ ?>
+ <h1><?php __('Administration') ?></h1>
 <p><?php __('Use the links provided on this page to configure Fredistrano.') ?></p>
 
 <h2><?php __('Authorization management') ?></h2>

@@ -1,4 +1,30 @@
-<h1><?php __('Welcome to Fredistrano') ?></h1>
+<?php
+/* SVN FILE: $Id$ */
+/**
+ * 
+ * 
+ * PHP 5
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @filesource
+ * @link			http://code.google.com/p/fredistrano
+ * @package			app
+ * @subpackage		app.views.home
+ * @version			$Revision$
+ * @modifiedby		$Author$
+ * @lastmodified	$Date$
+ * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
+ */
+/**
+ * 
+ *
+ * @package		app
+ * @subpackage	app.views.home
+ */
+ ?>
+ <h1><?php __('Welcome to Fredistrano') ?></h1>
 <p><?php __('Use Fredistrano to deploy your web applications.') ?></p>
 
 <?php if(!empty($_SESSION['User'])): ?>

@@ -1,10 +1,31 @@
 <?php
+/* SVN FILE: $Id$ */
 /**
- * Pagination Helper, responsible for managing the LINKS required for pagination.
+ * Deprecated? Pagination Helper, responsible for managing the LINKS required for pagination.
  * ALL parameters are specified in the component.
+ * 
+ * PHP 5
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @filesource
+ * @link			http://code.google.com/p/fredistrano
+ * @package			app
+ * @subpackage		app.views.helpers
+ * @version			$Revision$
+ * @modifiedby		$Author$
+ * @lastmodified	$Date$
+ * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
  */
-class PaginationHelper extends Helper
-{
+/**
+ * Deprecated? Pagination Helper, responsible for managing the LINKS required for pagination.
+ * ALL parameters are specified in the component.
+ *
+ * @package		app
+ * @subpackage	app.views.helpers
+ */
+class PaginationHelper extends Helper {
 /**
  * Options to be passed to ajax links if used
  *

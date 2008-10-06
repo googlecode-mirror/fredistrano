@@ -1,5 +1,28 @@
 <?php 
-
+/* SVN FILE: $Id$ */
+/**
+ * Provides classes for implementing an advanced logging system
+ * 
+ * PHP 5
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @filesource
+ * @link			http://code.google.com/p/fredistrano
+ * @package			app
+ * @subpackage		app.vendors.fbollon
+ * @version			$Revision$
+ * @modifiedby		$Author$
+ * @lastmodified	$Date$
+ * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
+ */
+/**
+ * Provides classes for implementing an advanced logging system
+ *
+ * @package		app
+ * @subpackage	app.vendors.fbollon
+ */
 class LogException extends Exception {
 	
 	var $log = null;

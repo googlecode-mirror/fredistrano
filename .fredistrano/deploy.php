@@ -1,5 +1,29 @@
 <?php
- class DEPLOY_CONFIG {
+/* SVN FILE: $Id$ */
+/**
+ * Deployment configuration file for the current project (fredistrano)
+ * 
+ * PHP 5
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @filesource
+ * @link			http://code.google.com/p/fredistrano
+ * @package			files
+ * @subpackage		files.templates.fredistrano
+ * @version			$Revision$
+ * @modifiedby		$Author$
+ * @lastmodified	$Date$
+ * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
+ */
+/**
+ * Deployment configuration file for the current project (fredistrano)
+ *
+ * @package		files
+ * @subpackage	files.templates.fredistrano
+ */
+class DEPLOY_CONFIG {
 	
 	// Default deployment options for the current project
 	// these options could be modified during the deployment process in standard mode

@@ -1,5 +1,28 @@
 <?php 
-
+/* SVN FILE: $Id$ */
+/**
+ * Wrap all used shell commands in a static PHP function
+ * 
+ * PHP 5
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @filesource
+ * @link			http://code.google.com/p/fredistrano
+ * @package			app
+ * @subpackage		app.vendors.fbollon
+ * @version			$Revision$
+ * @modifiedby		$Author$
+ * @lastmodified	$Date$
+ * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
+ */
+/**
+ * Wrap all used shell commands in a static PHP function
+ *
+ * @package		app
+ * @subpackage	app.vendors.fbollon
+ */
 class Utils {
 	
 	public static function computeDirMode( $fileMode, $options = array() ) {

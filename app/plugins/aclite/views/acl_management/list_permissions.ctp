@@ -11,7 +11,7 @@
  * @filesource
  * @link			http://code.google.com/p/fredistrano
  * @package			aclite
- * @subpackage		aclite.views
+ * @subpackage		aclite.views.acl_management
  * @version			$Revision$
  * @modifiedby		$Author$
  * @lastmodified	$Date$
@@ -21,7 +21,7 @@
  * 
  *
  * @package		aclite
- * @subpackage	aclite.views
+ * @subpackage	aclite.views.acl_management
  */
  ?>
 <h1><?php __('Current permissions summary') ?></h1>

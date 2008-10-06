@@ -1,4 +1,30 @@
 <?php
+/* SVN FILE: $Id$ */
+/**
+ * 
+ * 
+ * PHP 5
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @filesource
+ * @link			http://code.google.com/p/fredistrano
+ * @package			app
+ * @subpackage		app.views.deployment_logs
+ * @version			$Revision$
+ * @modifiedby		$Author$
+ * @lastmodified	$Date$
+ * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
+ */
+/**
+ * 
+ *
+ * @package		app
+ * @subpackage	app.views.deployment_logs
+ */
+ ?>
+ <?php
 $project_id = null;
 if (isset($this->params['pass'][0]) && $this->params['pass'][0] == 'project') {
 	$project_id = $this->params['pass'][1];

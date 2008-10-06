@@ -1,4 +1,30 @@
-<div class="user">
+<?php
+/* SVN FILE: $Id$ */
+/**
+ * 
+ * 
+ * PHP 5
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @filesource
+ * @link			http://code.google.com/p/fredistrano
+ * @package			app
+ * @subpackage		app.views.users
+ * @version			$Revision$
+ * @modifiedby		$Author$
+ * @lastmodified	$Date$
+ * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
+ */
+/**
+ * 
+ *
+ * @package		app
+ * @subpackage	app.views.users
+ */
+ ?>
+ <div class="user">
 	<table class="table1">
 		<thead>
 			<tr>

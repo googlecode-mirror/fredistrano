@@ -1,4 +1,30 @@
-<?php 
+<?php
+/* SVN FILE: $Id$ */
+/**
+ * 
+ * 
+ * PHP 5
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @filesource
+ * @link			http://code.google.com/p/fredistrano
+ * @package			app
+ * @subpackage		app.views.users
+ * @version			$Revision$
+ * @modifiedby		$Author$
+ * @lastmodified	$Date$
+ * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
+ */
+/**
+ * 
+ *
+ * @package		app
+ * @subpackage	app.views.users
+ */
+ ?>
+ <?php 
 $passwordErrorMessage = null;
 if (isset($this->validationErrors['User']) && isset($this->validationErrors['User']['password'])) {
 	($this->validationErrors['User']['password'] == 'rule1')?
