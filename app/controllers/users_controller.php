@@ -1,4 +1,28 @@
 <?php
+/* SVN FILE: $Id$ */
+/**
+ * Controller that provides access to some of the user management features
+ * 
+ * PHP 5
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @filesource
+ * @link			http://code.google.com/p/fredistrano
+ * @package			app
+ * @subpackage		app.controller
+ * @version			$Revision$
+ * @modifiedby		$Author$
+ * @lastmodified	$Date$
+ * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
+ */
+/**
+ * Controller that provides access to some of the user management features
+ *
+ * @package		app
+ * @subpackage	app.controller
+ */
 class UsersController extends AppController {
 
 	var $name = 'Users';
@@ -188,7 +212,7 @@ class UsersController extends AppController {
 				}
 			}
 		}
-	}
+	}// change_password
 
 	function login() {
 		// login form submited
@@ -232,7 +256,7 @@ class UsersController extends AppController {
 		// Return to previous page
 		$this->redirect($this->referer());
 		exit;
-	}
+	}// login
 
 	function logout() {
 		$this->log($this->Session->read('User.login') . " - ".__('logout', true), LOG_DEBUG);

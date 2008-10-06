@@ -1,13 +1,31 @@
 <?php
+/* SVN FILE: $Id$ */
+/**
+ * Controller that provides access to some of the user management features
+ * 
+ * PHP 5
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @filesource
+ * @link			http://code.google.com/p/fredistrano
+ * @package			app
+ * @subpackage		app.controller
+ * @version			$Revision$
+ * @modifiedby		$Author$
+ * @lastmodified	$Date$
+ * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
+ */
+/**
+ * Controller that provides access to some of the user management features
+ *
+ * @package		app
+ * @subpackage	app.controller
+ */
 class ControlObjectsController extends AppController {
 
 	var $name = 'ControlObjects';
-	
-	var $helpers = array (
-	);
-	
-	var $components = array (
-	);
 
 	var $authLocal = array (
 		'ControlObjects' => array (
@@ -33,13 +51,12 @@ class ControlObjectsController extends AppController {
 			);
 		$this->set('context_menu', $tab);
 		parent :: beforeRender();
-	}
+	}// beforeRender
 
 	function index() {
 		$data = $this->paginate('ControlObject');
 		$this->set(compact('data'));
-		
-	}
+	}// index
 
 	function view($id = null) {
 		if (!$id or !$this->ControlObject->read(null, $id)) {
@@ -48,7 +65,7 @@ class ControlObjectsController extends AppController {
 			exit;
 		}
 		$this->set('controlObject', $this->ControlObject->read(null, $id));
-	}
+	}// view
 
 	function add() {
 		if (empty ($this->data)) {
@@ -64,7 +81,7 @@ class ControlObjectsController extends AppController {
 				$this->set('controlObjects', $this->ControlObject->find('list'));
 			}
 		}
-	}
+	}// add
 
 	function edit($id = null) {
 		if (empty ($this->data)) {
@@ -86,7 +103,7 @@ class ControlObjectsController extends AppController {
 				$this->set('controlObjects', $this->ControlObject->find('list'));
 			}
 		}
-	}
+	}// edit
 
 	function delete($id = null) {
 		if (!$id or !$this->ControlObject->read(null, $id)) {
@@ -104,7 +121,7 @@ class ControlObjectsController extends AppController {
 			$this->redirect('/control_objects/view/' . $id);
 			exit;
 		}
-	}
-
-}
+	}// delete
+	
+}// ControlObjectsController
 ?>

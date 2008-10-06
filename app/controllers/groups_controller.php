@@ -1,4 +1,28 @@
 <?php
+/* SVN FILE: $Id$ */
+/**
+ * Controller that provides access to some of the user management features
+ * 
+ * PHP 5
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @filesource
+ * @link			http://code.google.com/p/fredistrano
+ * @package			app
+ * @subpackage		app.controller
+ * @version			$Revision$
+ * @modifiedby		$Author$
+ * @lastmodified	$Date$
+ * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
+ */
+/**
+ * Controller that provides access to some of the user management features
+ *
+ * @package		app
+ * @subpackage	app.controller
+ */
 class GroupsController extends AppController {
 
 	var $name = 'Groups';

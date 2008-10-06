@@ -1,4 +1,28 @@
 <?php
+/* SVN FILE: $Id$ */
+/**
+ * Component that enforces authorizations
+ * 
+ * PHP 4 and 5
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @filesource
+ * @link			http://code.google.com/p/fredistrano
+ * @package			app
+ * @subpackage		app.controller.components
+ * @version			$Revision$
+ * @modifiedby		$Author$
+ * @lastmodified	$Date$
+ * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
+ */
+/**
+ * Component that enforces authorizations
+ *
+ * @package		app
+ * @subpackage	app.controller.components
+ */
 class AcliteComponent extends Object {
 
 	var $name = 'Aclite';
@@ -14,6 +38,9 @@ class AcliteComponent extends Object {
 	var $lastCheckDetails = '';
 	
 	// Specal component's functions -----------------------------------------	
+	/**
+	 * If required ('Security.authorizationsDisabled'), authorizations are validated onload
+	 */
 	function startup(& $controller) {		
 		// Is aclite globally disabled (see config)?
 		if (Configure::read('Security.authorizationsDisabled')) {
@@ -63,6 +90,12 @@ class AcliteComponent extends Object {
 		$config['done'] = true;
 	} // startup
 	
+	/**
+	 * Build a config out of session variable and context data
+	 * 
+	 * @return array Provide information about the current user's groups and the requested ressource
+ 	 * @access public
+	 */
 	function & getConfig() {
 		static $config = null;
 		
@@ -81,23 +114,36 @@ class AcliteComponent extends Object {
 		}
 		if (!isset ($config) || !$config) {
 			$config = array (
-				'groups' => $groups, 
-				'controller' => $this->controller->name,
-				'action' => $this->controller->action, 
-				'done' => false
+				'groups' 		=> $groups, 
+				'controller' 	=> $this->controller->name,
+				'action' 		=> $this->controller->action, 
+				'done' 			=> false
 			);
 		}		
 		
 		return $config;
 	}// getConfig
 	
-	function getGroupsOfCurrrentUser () {
+	/**
+	 * Return a list of the current user's groups (static dynamic)
+	 * 
+	 * @return array List of the names of each group
+ 	 * @access public
+	 */
+	function getGroupsOfCurrrentUser() {
 		$config = & AcliteComponent :: getConfig();
 		$groups = $config['groups'];
 		return Set::extract($groups,'{n}.name');
-	}
+	}// getGroupsOfCurrrentUser
 	
 	// Public functions -----------------------------------------	
+	/**
+	 * Check if the current user is allowed to access a given ressource
+	 * 
+	 * @param array $requirements Requirements that protects the resource
+ 	 * @param array $redirectOptions What to do if the user is not allowed to continue (flash message or error page)
+ 	 * @access public
+	 */
 	function checkAccess( $requirements=array(), $redirectOptions=array() ) {
 		$isAuthorized = $this->isAuthorized($requirements);
 		if (!$isAuthorized){
@@ -109,6 +155,13 @@ class AcliteComponent extends Object {
 		}
 	}// checkAccess
 		
+	/**
+	 * Check if the current user is authoriez to access a given ressource
+	 * 
+	 * @param array $requirements Requirements that protects the resource
+ 	 * @return boolean true if allowed; false otherwise
+ 	 * @access public
+	 */
 	function isAuthorized($requirements=array()) {
 		$res = true;
 		$config = & AcliteComponent :: getConfig();
@@ -185,6 +238,13 @@ class AcliteComponent extends Object {
 		return true;
 	}// isAuthorized
 	
+	/**
+	 * Add a dynamic group to the current User's session
+	 * 
+	 * @param string $acceptedUsers List of accepted users
+	 * @param string $dynamicGroup Dynamic group to be added
+ 	 * @access public
+	 */
 	function updateSessionWithDynamicGroup($acceptedUsers = null, $dynamicGroup = null){
 		if (!isset($_SESSION['User']['User']['cn'])) {
 			return;		
@@ -202,6 +262,13 @@ class AcliteComponent extends Object {
 		}
 	}// updateSessionWithDynamicGroup
 	
+	/**
+	 * Ask the Acl model to reload the acl contained in the database
+	 * 
+	 * @see app/plugins/models/acl_management.php for further details
+	 * @param string $type REload only a given type of Acl (Aro,Aco)
+ 	 * @access public
+	 */
 	function reloadsAcls($type = null) {
 		App::import('Model', 'Aclite.AclManagement');
 		$aclite = new AclManagement();
