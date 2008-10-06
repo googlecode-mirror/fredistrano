@@ -11,7 +11,7 @@
  * @filesource
  * @link			http://code.google.com/p/fredistrano
  * @package			app
- * @subpackage		app.controller
+ * @subpackage		app.controllers
  * @version			$Revision$
  * @modifiedby		$Author$
  * @lastmodified	$Date$
@@ -21,7 +21,7 @@
  * Controller that manages the master data of fredistrano
  *
  * @package		app
- * @subpackage	app.controller
+ * @subpackage	app.controllers
  */
 class ProjectsController extends AppController {
 

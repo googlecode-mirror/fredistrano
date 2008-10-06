@@ -11,7 +11,7 @@
  * @filesource
  * @link			http://code.google.com/p/fredistrano
  * @package			app
- * @subpackage		app.controller.components
+ * @subpackage		app.controllers.components
  * @version			$Revision$
  * @modifiedby		$Author$
  * @lastmodified	$Date$
@@ -20,8 +20,8 @@
 /**
  * Component that enforces authorizations
  *
- * @package		app
- * @subpackage	app.controller.components
+ * @package		aclite
+ * @subpackage	aclite.components
  */
 class AcliteComponent extends Object {
 

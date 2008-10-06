@@ -1,58 +1,27 @@
 <?php
-
-/* SVN FILE: $Id: database.php.default 4409 2007-02-02 13:20:59Z phpnut $ */
+/* SVN FILE: $Id$ */
 /**
- * This is core configuration file.
- *
- * Use it to configure core behaviour ofCake.
- *
- * PHP versions 4 and 5
- *
- * CakePHP(tm) :  Rapid Development Framework <http://www.cakephp.org/>
- * Copyright 2005-2007, Cake Software Foundation, Inc.
- *								1785 E. Sahara Avenue, Suite 490-204
- *								Las Vegas, Nevada 89104
+ * Database configuration file for the development environment
+ * 
+ * PHP 5
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
  * @filesource
- * @copyright		Copyright 2005-2007, Cake Software Foundation, Inc.
- * @link				http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
- * @package			cake
- * @subpackage		cake.app.config
- * @since			CakePHP(tm) v 0.2.9
- * @version			$Revision: 4409 $
- * @modifiedby		$LastChangedBy: phpnut $
- * @lastmodified	$Date: 2007-02-02 07:20:59 -0600 (Fri, 02 Feb 2007) $
+ * @link			http://code.google.com/p/fredistrano
+ * @package			app
+ * @subpackage		app.config
+ * @version			$Revision$
+ * @modifiedby		$Author$
+ * @lastmodified	$Date$
  * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 /**
- * In this file you set up your database connection details.
+ * Database configuration file for the development environment 
  *
- * @package		cake
- * @subpackage	cake.config
- */
-/**
- * Database configuration class.
- * You can specify multiple configurations for production, development and testing.
- *
- * driver =>
- * mysql, postgres, sqlite, adodb, pear-drivername
- *
- * connect =>
- * MySQL set the connect to either mysql_pconnect of mysql_connect
- * PostgreSQL set the connect to either pg_pconnect of pg_connect
- * SQLite set the connect to sqlite_popen  sqlite_open
- * ADOdb set the connect to one of these
- *	(http://phplens.com/adodb/supported.databases.html) and
- *	append it '|p' for persistent connection. (mssql|p for example, or just mssql for not persistent)
- *
- * host =>
- * the host you connect to the database
- * MySQL 'localhost' to add a port number use 'localhost:port#'
- * PostgreSQL 'localhost' to add a port number use 'localhost port=5432'
- *
+ * @package		app
+ * @subpackage	app.config
  */
 class DATABASE_CONFIG {
 	var $default = array(
@@ -80,5 +49,5 @@ class DATABASE_CONFIG {
 			'prefix' => '',
 			'encoding' => 'utf8'
 		);
-}
+}// DATABASE_CONFIG
 ?>
