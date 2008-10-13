@@ -80,12 +80,6 @@ http://creativecommons.org/licenses/GPL/2.0/
 		</div>
 
 	<div id="content-wrap">
-
-		
-		<!--<div id="flag">
-        <?php echo $html->link( $html->image( 'fr.gif', array('alt' => 'french', 'title' => 'french')), '/home/switchLanguage/fr-FR', null, false, false ); ?>
-        <?php echo $html->link( $html->image( 'en.gif', array('alt' => 'english', 'title' => 'english')), '/home/switchLanguage/en-US', null, false, false ); ?>
-		</div>-->
 		<div id="utility">
 			<?php
 				if(isset($_SESSION['User'])){

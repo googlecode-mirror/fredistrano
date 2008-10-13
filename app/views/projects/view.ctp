@@ -30,16 +30,6 @@
 <tr>
 <th colspan="3">
 	<span class="tabletoptitle"><?php __('Project details');?></span>
-	<!--
-	<span class="tabletoplink">
-	<?php echo $ajax->link($html->image( 'arrow_switch.png', array('alt' => __('Deploy', true), 'title' =>  __('Deploy', true))).' '. __('Deploy', true), 
-			'/projects/deploy/' . $project['Project']['id'], 
-			array('update' => 'deploy_area'),
-			null,
-			false,
-			false);?>
-	</span>
-	-->
 </th>
 </tr>
 </thead>

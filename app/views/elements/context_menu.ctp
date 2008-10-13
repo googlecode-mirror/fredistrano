@@ -49,6 +49,6 @@
 			}// if
 			echo "</li>";
 		}// for
-		echo "</li>";
+		echo "</ul>";
 	}//if
 ?>

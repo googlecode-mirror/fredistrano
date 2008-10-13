@@ -1,6 +1,6 @@
-.console {background-color: black;color: green;/*font-weight: bold;*/padding: 0.5em 0 0.5em 0.5em;height:300px;overflow:auto;margin-top: 40px;}
+.console {background-color: black;color: green;/*font-weight: bold;*/padding: 0.5em 0 0.5em 0.5em;height:300px;/*overflow:auto;*/margin-top: 40px;}
 
-.tabletoplink {float: right;padding-right: 2px;font-size: 75%;}
+.tabletoplink {float: right;clear: right;padding-right: 2px;font-size: 75%;}
 .tabletoplink a {text-decoration:none;}
 .tabletoplink a:hover{text-decoration:none;color:#069;}
 .tabletoplink a:visited{text-decoration:none;color:#fff;}
