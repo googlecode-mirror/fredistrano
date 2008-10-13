@@ -28,38 +28,36 @@
 <table class="table1">
 	<thead>
 		<tr>
-			<th colspan="3"><?php __('Group details') ?></th>
+			<th colspan="3">
+				<span class="tabletoptitle"><?php __('Group details') ?></span>
+				<span class="tabletoplink">
+				<ul>
+					<li><?php echo $html->link(
+											$html->image('b_edit.png', 
+														array('alt' => __('Edit', true), 
+															'title' => __('Edit', true), 
+															'class' => 'action')) . __('Edit', true),
+											'/groups/edit/' . $group['Group']['id'], 
+											null, false, false) ?>
+					</li>
+					<li><?php echo $html->link(
+											$html->image('b_drop.png', 
+														array('alt' => __('Delete', true), 
+															'title' => __('Delete', true), 
+															'class' => 'action')) . __('Delete', true),
+											'/groups/delete/' . $group['Group']['id'], 
+											null,
+											__('Please confirm the deletion of group :', true) . $group['Group']['name'] . ' ?',
+											false) ?>
+					</li>
+				</ul>
+				</span>
+				
+			</th>
 		</tr>
 	</thead>
 
 	<tbody>
-		<tr>
-			<th colspan="2">
-			<div class="tabletoplink">
-			<ul>
-				<li><?php echo $html->link(
-										$html->image('b_edit.png', 
-													array('alt' => __('Edit', true), 
-														'title' => __('Edit', true), 
-														'class' => 'action')) . __('Edit', true),
-										'/groups/edit/' . $group['Group']['id'], 
-										null, false, false) ?>
-				</li>
-				<li><?php echo $html->link(
-										$html->image('b_drop.png', 
-													array('alt' => __('Delete', true), 
-														'title' => __('Delete', true), 
-														'class' => 'action')) . __('Delete', true),
-										'/groups/delete/' . $group['Group']['id'], 
-										null,
-										__('Please confirm the deletion of group :', true) . $group['Group']['name'] . ' ?',
-										false) ?>
-				</li>
-			</ul>
-			</div>
-			</th>
-		</tr>
-
 		<tr>
 			<th class="sub"><?php __('Id') ?></th>
 			<td><?php echo $group['Group']['id'] ?></td>
@@ -91,26 +89,29 @@
 <table class="table1">
 	<thead>
 		<tr>
-			<th colspan="7"><?php __('Group members list') ?></th>
+			<th colspan="7">
+				<span class="tabletoptitle"><?php __('Group members list') ?></span>
+				<span class="tabletoplink">
+				<ul>
+					<li><?php echo $html->link(
+										$html->image('b_edit.png', 
+											array('alt' => __('Edit', true), 
+												'title' => __('Edit', true), 
+												'class' => 'action')
+												) . __('Manage group members', true),
+										'/groups/affectUsers/' . $group['Group']['id'], 
+										null, false, false) ?>
+					</li>
+				</ul>
+				</span>
+			</th>
 		</tr>
 	</thead>
 
 	<tbody>
 		<tr>
 			<th colspan="2">
-			<div class="tabletoplink">
-			<ul>
-				<li><?php echo $html->link(
-									$html->image('b_edit.png', 
-										array('alt' => __('Edit', true), 
-											'title' => __('Edit', true), 
-											'class' => 'action')
-											) . __('Manage group members', true),
-									'/groups/affectUsers/' . $group['Group']['id'], 
-									null, false, false) ?>
-				</li>
-			</ul>
-			</div>
+
 			</th>
 		</tr>
 		<?php

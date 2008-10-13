@@ -28,14 +28,9 @@
 	<table class="table1">
 		<thead>
 			<tr>
-				<th colspan="2"><?php __('User details') ?></th>
-			</tr>
-		</thead>
-		
-		<tbody>
-			<tr>
 				<th colspan="2">
-					<div class="tabletoplink">
+					<span class="tabletoptitle"><?php __('User details') ?></span>
+					<span class="tabletoplink">
 						<ul>
 							<li>
 								<?php echo $html->link(
@@ -65,10 +60,13 @@
 									false) ?>
 							</li>
 						</ul>
-					</div>
+					</span>
+					
 				</th>
 			</tr>
-			
+		</thead>
+		
+		<tbody>
 			<tr>
 				<th class="sub"><?php __('Id') ?></th>
 				<td><?php echo $user['User']['id'] ?></td>

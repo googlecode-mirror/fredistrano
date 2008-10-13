@@ -28,14 +28,9 @@
 	<table class="table1">
 		<thead>
 			<tr>
-				<th colspan="2"><?php __('Object control detail') ?></th>
-			</tr>
-		</thead>
-
-		<tbody>
-			<tr>
 				<th colspan="2">
-					<div class="tabletoplink">
+					<span class="tabletoptitle"><?php __('Object control detail') ?></span>
+					<span class="tabletoplink">
 						<ul>
 							<li>
 								<?php echo $html->link(
@@ -52,10 +47,13 @@
 									false) ?>
 							</li>
 						</ul>
-					</div>
+					</span>
+					
 				</th>
 			</tr>
+		</thead>
 
+		<tbody>
 			<tr>
 				<th class="sub">Id</th>
 				<td><?php echo $controlObject['ControlObject']['id']?></td>

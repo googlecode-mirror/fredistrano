@@ -30,13 +30,7 @@
 <tr>
 <th colspan="3">
 	<span class="tabletoptitle"><?php __('Project details');?></span>
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<th colspan="2">
-	<div class="tabletoplink">
+	<span class="tabletoplink">
 		<ul>
 			<li><?php echo $ajax->link($html->image('preferences-system.png', 
 													array(
@@ -111,10 +105,12 @@
 										__('Are you sure you want to delete', true).' : ' . $project['Project']['name'] . '?',
 										false );?></li>
 		</ul>
-	</div>
+	</span>
+	
 </th>
 </tr>
-
+</thead>
+<tbody>
 <tr>
 	<th class="sub"><?php __('Project name');?></th>
 	<td>&nbsp;<?php echo $project['Project']['name']?></td>

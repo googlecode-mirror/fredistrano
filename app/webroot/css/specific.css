@@ -1,4 +1,12 @@
-.console {background-color: black;color: green;/*font-weight: bold;*/padding: 0.5em 0 0.5em 0.5em;height:300px;/*overflow:auto;*/margin-top: 40px;}
+.console {
+	background-color: black;
+	color: green;
+	height:300px;
+	overflow: scroll;
+	margin-top: 40px;
+	width:98%;
+	padding: .5em .5em 0 .5em ;
+	}
 
 .tabletoplink {float: right;clear: right;padding-right: 2px;font-size: 75%;}
 .tabletoplink a {text-decoration:none;}
@@ -56,9 +64,10 @@ div.disabled {
 .log_viewer {
 	width:98%;
 	padding: .5em .5em 0 .5em ;
-	background: #e1e1e1 url("images/logobox_bg.png") no-repeat 100% 100%;
+	background: #e1e1e1;
 	border: 3px #d7d7d7 dashed;
-	position:relative;
+	overflow:auto;
+/*	position:relative;*/
 }
 
 .z_radio fieldset {
