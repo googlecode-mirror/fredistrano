@@ -335,8 +335,8 @@ class AcliteComponent extends Object {
 			if (is_null($view)) {
 				$file = APP . 'plugins/aclite/views/pages/denied.ctp';
 			}
-			$this->controller->render($view, $layout, $file);	
-			return ;
+			e($this->controller->render($view, $layout, $file));
+			exit;
 			
 		} else if ($mode=='redirect') {
 			$defaultOptions = array(
@@ -348,7 +348,7 @@ class AcliteComponent extends Object {
 			
 			$this->controller->Session->setFlash($message);
 			$this->controller->redirect($url);
-			exit ();
+			exit;
 		} 
 	}// displayAccessDeniedPage
 	
