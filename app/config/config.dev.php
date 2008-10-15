@@ -70,7 +70,7 @@
 	);
 	
 	$config['Security'] = array(
-		'authenticationType'	=> 1,			//authentication type: 0 = accept all, 1 = custom, 2 = mysql 
+		'authenticationType'	=> 2,			//authentication type: 0 = accept all, 1 = custom, 2 = mysql 
 		'authorizationsDisabled'=> false		//disable authorization
 	);
 	
