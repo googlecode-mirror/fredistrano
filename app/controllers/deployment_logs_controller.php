@@ -45,7 +45,7 @@ var $helpers = array (
 		)
 		);
 
-		function beforeRender() {
+	function beforeRender() {
 		parent::beforeRender();
 
 		// Tableau de lien pour la création du menu contextuel
@@ -53,27 +53,27 @@ var $helpers = array (
 			'text' => 'Actions'
 			);
 
-			if ($this->action != 'index')
-			$tab[] = array (
-				'text' => __('Display full history', true),
-				'link' => '/deploymentLogs'
-				);
-
-				$tab[] = array (
-			'text' => __('List projects', true),
-			'link' => '/projects'
+		if ($this->action != 'index')
+		$tab[] = array (
+			'text' => __('Display full history', true),
+			'link' => '/deploymentLogs'
 			);
 
-			if ( Configure::read('Feeds.enabled') === true ) {
 			$tab[] = array (
-				'text' => __('Rss Feed', true),
-				'link' => '/deploymentLogs/index.rss?token='.$this->Session->read('User.Profile.rss_token')
-			);
-			}
+		'text' => __('List projects', true),
+		'link' => '/projects'
+		);
+
+		if ( Configure::read('Feeds.enabled') === true ) {
+		$tab[] = array (
+			'text' => __('Rss Feed', true),
+			'link' => '/deploymentLogs/index.rss?token='.$this->Session->read('User.Profile.rss_token')
+		);
+		}
 
 			// On passe le tableau de lien dans la variable links pour l'élément context_menu.thtml
 			$this->set("context_menu", $tab);
-		} // beforeRender
+	} // beforeRender
 
 		// Available actions ----------------------------------------------------------------------------------
 		/**
@@ -133,27 +133,27 @@ var $helpers = array (
 		 * @param string $id ID of the log to be viewed
 		 */
 		function view($id) {
-		if (!$id or !($deployLog = $this->DeploymentLog->read(null, $id)) ) {
-		$this->Session->setFlash(__('Invalid id', true));
-		$this->redirect('/deploymentLogs/list_all');
-		}
-
-		$options = array(
-			'reverse'			=>	false,
-			'logPath'			=> F_DEPLOYLOGDIR.$deployLog['DeploymentLog']['uuid'].'.xml'
-			);
+			if (!$id or !($deployLog = $this->DeploymentLog->read(null, $id)) ) {
+				$this->Session->setFlash(__('Invalid id', true));
+				$this->redirect('/deploymentLogs/list_all');
+			}
+			$output = null;
+			$options = array(
+				'reverse'			=>	false,
+				'logPath'			=> F_DEPLOYLOGDIR.$deployLog['DeploymentLog']['uuid'].'.xml'
+				);
 			if ($deployLog['DeploymentLog']['archive']) {
-			$this->set('error', 	__('No details available for archived logs.') );
+				$this->set('error', 	__('No details available for archived logs.', true) );
 			} else {
-			$output = $this->Project->readAssociatedLog($deployLog['DeploymentLog']['project_id'], $options);
-			if ( $output === false ) {
-			$this->set('error', 	$this->Project->lastReadError);
-			} else {
-			$this->set('project', 	$this->Project->read(null, $this->data['Search']['project_id']));
-			$this->set('size', 		$this->Project->lastReadSize);
-			$this->set('logPath',	$options['logPath']);
-			}
-			}
+				$output = $this->Project->readAssociatedLog($deployLog['DeploymentLog']['project_id'], $options);
+				if ( $output === false ) {
+					$this->set('error', 	$this->Project->lastReadError);
+				} else {
+					$this->set('project', 	$this->Project->read(null, $this->data['Search']['project_id']));
+					$this->set('size', 		$this->Project->lastReadSize);
+					$this->set('logPath',	$options['logPath']);
+				}
+			}			
 			$this->set('log',	 	$output);
 			$this->set('deployLog', $deployLog);
 			$this->set('project', 	$this->Project->read(null, $this->data['Search']['project_id']));

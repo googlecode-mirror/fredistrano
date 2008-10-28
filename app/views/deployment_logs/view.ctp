@@ -69,7 +69,7 @@
 <br/>
 
 <?php
-	if ( $log !== false) {
+	if (!empty($log)) {
 	?>
 		<p><strong><?php __('Logs retreived from') ?> <?php e($project['Project']['name']); 
 			if (isset($size)) { 
