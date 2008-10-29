@@ -43,18 +43,11 @@ class Project extends AppModel {
 	        )
 	    ),
 		'svn_url' => array(
-		        'rule' => 'url', 
-		        'required' => true,
-		        'allowEmpty' => false
-		 ),
+		        'rule' => array('minLength', 1)
+		),
 		'prd_path' => array(
-				'rule' => array('minLength', '1')
-		 )
-		// 'prd_url' => array(
-		//         'rule' => 'url', 
-		//         'required' => true,
-		//         'allowEmpty' => false
-		//  ) 
+				'rule' => array('minLength', 1)
+		)
 	);
 	
 	var $lastReadSize = 0;

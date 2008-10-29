@@ -47,7 +47,7 @@
 							'label' => '<b>'.__('SVN Url', true).'<span class="req">*</span></b>', 
 							'size' => '60', 
 							'class' => 'f-name',
-							'error' => __('The SVN Url must be a valid url', true)
+							'error' => __('This field is required', true)
 							)
 						);?>
 <?php echo $form->input('Project.prd_path', 
@@ -55,15 +55,14 @@
 							'label' => '<b>'.__('Application absolute path', true).'<span class="req">*</span></b>',
 							'size' => '60', 
 							'class' => 'f-name',
-							'error' => __('The application absolute path is required', true)
+							'error' => __('This field is required', true)
 							)
 						);?>
 <?php echo $form->input('Project.prd_url', 
 						array(
 							'label' => '<b>'.__('Application Url', true), 
 							'size' => '60', 
-							'class' => 'f-name',
-							'error' => __('The application url must be a valid url', true)
+							'class' => 'f-name'
 							)
 						);?>
 <?php echo $form->input('Project.log_path', 

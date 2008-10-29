@@ -39,20 +39,10 @@ class User extends AppModel {
 	    ),
 	    'password' => array(
 	        'rule1' => array(
-	            'rule' => 'alphaNumeric',
-	            'required' => true
-	        ),
-	        'rule2' => array(
 	            'rule' => array('minLength', 4)
 	        )
-	    ),
-		 'email' => array(
-		    'rule' => array('email', true),
-		  	// 'message' => 'Please supply a valid email address.'
-		    )
+	    )
 	);
-
-	// var $displayField = 'login';
 	
 	var $hasAndBelongsToMany = array (
 		'Group' => array (
