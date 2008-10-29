@@ -58,10 +58,7 @@ foreach ($data as $output)
 }
 ?>
 </table>
-<? //echo $this->renderElement('pagination'); // Render the pagination element ?>
-<?php echo $paginator->prev(); ?>
-<?php echo $paginator->numbers(); ?>
-<?php echo $paginator->next(); ?> 
+<? echo $this->renderElement('pagination'); ?>
 </div>
 
 <br /><br /><br />
