@@ -34,7 +34,7 @@ class ProjectsController extends AppController {
 		'Fbollon'
 	);
 
-    var $paginate = array('limit' => 15, 'page' => 1); 
+    var $paginate = array('limit' => 15, 'page' => 1, 'order' => 'name'); 
 
 	var $uses = array (
 		'Project'
