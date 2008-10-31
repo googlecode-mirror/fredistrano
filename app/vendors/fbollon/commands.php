@@ -125,7 +125,7 @@ class ShellAction extends Action {
 			$command = "find ".$path." -type d -exec chmod ".$mode['dir']." {} \;";
 			ShellAction::executeCommand( $command,
 				array(
-			        'directory'	=> $path,
+					'directory'	=> $path,
 					'actionLog' => $actionLog
 				)
 			);
@@ -137,12 +137,49 @@ class ShellAction extends Action {
 		return $actionLog;
 	}// changePermissions
 	
-	
+	// Create files list and directories list for chmod step
+	public function createFilesListToChmod($output=null, $projectTmpDir=null, $target=null, $options = array()) {
+		$actionLog = self::initAction('createFilesListToChmod', null, 'ShellAction', $options);
+		
+		if (empty($output) || empty($projectTmpDir) || empty($target)) {
+			$actionLog->error( sprintf(__('Missing working data', true)) );
+		}
+		
+		$actionLog =  $this->_stepLog->addNewAction('create', 'files_to_chmod.txt & dir_to_chmod.txt', 'FS');
+		$list = explode("\n", $output);
+		
+		$size = count($list);
+		if ($size > 0) {
+			$files_to_chmod = $projectTmpDir."files_to_chmod.txt";
+			$dir_to_chmod = $projectTmpDir."dir_to_chmod.txt";
+			$handle_f = fopen($files_to_chmod, "w");
+			$handle_d = fopen($dir_to_chmod, "w");
+
+			for ($i = 4; $i < $size ; $i++) { 
+				if (empty($list[$i])) {
+					break;
+				}
+		
+				if (is_file($target . $list[$i])) {
+					$tmp_str = $list[$i];
+					fwrite($handle_f, $target.str_replace(".prd.", ".", $list[$i]) . "\n");
+				} else {
+					fwrite($handle_d, $target.$list[$i] . "\n");
+				}
+			}
+			fclose($handle_f);
+			fclose($handle_d);
+		}
+		// End action
+		$actionLog->end();
+		
+		return $actionLog;
+	}// createFilesListToChmod
 	
 	public static function createDirectory( $path=null, $mode=null, $options = array() ) {
 		$comment = sprintf(__('Creating %s with mode %s',true),$path,$mode);
 		$actionLog = self::initAction('createDirectory', $comment, 'ShellAction', $options);
-
+		
 		// Check
 		if ( is_null($path) || is_null($mode) ) {
 			$actionLog->error(sprintf(__('Forbidden NULL value for input parameter [%s;%s]',true),$path,$mode));	
@@ -157,7 +194,6 @@ class ShellAction extends Action {
 		}
 		
 		// Terminate action
-		
 		$actionLog->end();
 		
 		return $actionLog;
@@ -187,20 +223,20 @@ class ShellAction extends Action {
 
 		// Prepare command
 		if ( F_OS == 'WIN' ) {
-	        if (!is_null($options['directory'])) {
-	           	$cd = 'cd '.Utils::formatPath( $options['directory'] ).'; ';
-	        } else {
+			if (!is_null($options['directory'])) {
+				$cd = 'cd '.Utils::formatPath( $options['directory'] ).'; ';
+			} else {
 				$cd = '';
 			}
-	        $prefix = "bash.exe --login -c '".$cd;
-	        $suffix = "'";
-	    } else {
-	        if (!is_null($options['directory'])) {
-	           chdir($options['directory']);
-	        }
-	        $prefix = "";
-	        $suffix = "";
-	    }
+			$prefix = "bash.exe --login -c '".$cd;
+			$suffix = "'";
+		} else {
+			if (!is_null($options['directory'])) {
+				chdir($options['directory']);
+			}
+			$prefix = "";
+			$suffix = "";
+		}
 		
 		// Execute command 
 		$output = shell_exec( $prefix.$command.$suffix );
@@ -227,7 +263,7 @@ class ShellAction extends Action {
 		// Check
 		if (!is_dir($path)) {
 			$actionLog->error( sprintf(__('Nothing to delete since no temporary files have been found', true)) );
-		} 			
+		} 
 
 		// Execute command 
 		$path = Utils::formatPath($path);

@@ -137,22 +137,22 @@ During the deployment, whatever the extension is, all 'prd.xxx' files will be de
 
 		// List of directories and files to exclude during the deployemnt process on the production server
 		var $exclude = array (
-			'app/tmp/logs/*',
-			'app/tmp/sessions/*',
-			'app/tmp/tests/*',
-			'app/config/database.php',
-			'app/config/config.php',
-			'app/webroot/files/*',
-			'files/logs/*',
-			'files/tmp/*'
+			'/app/tmp/logs/*',
+			'/app/tmp/sessions/*',
+			'/app/tmp/tests/*',
+			'/app/config/database.php',
+			'/app/config/config.php',
+			'/app/webroot/files/*',
+			'/files/logs/*',
+			'/files/tmp/*'
 		);
 
 		// Directories list on which the write permission will applied during the finalization step of the deployment process	
 		// log, cache, upload directories, etc...
 		var $writable = array (
-			'app/tmp',
-			'files/backup',
-			'files/logs'
+			'/app/tmp',
+			'/files/backup',
+			'/files/logs'
 		);
 
 	 }// DEPLOY_CONFIG
@@ -288,7 +288,7 @@ You will find in the following
 \begin{itemize}
 \item An example of web host that satisfy the requirements of Fredistrano \\ http://www.fbollon.net/node/12 \\
 \item A quick explanation on how to use Subversion \\ http://www.fbollon.net/node/65 \\
-\item The official support forum of Fredistrano \\ http://www.fbollon.net/forum/23
+\item The official support forum of Fredistrano \\ http://groups.google.com/group/fredistrano-discuss
 \end{itemize}
 
 

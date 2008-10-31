@@ -150,7 +150,7 @@ class Deployment extends AppModel {
 	 * @param string $step			Step that should be performed 
 	 * @param int $project_id 		Id of the project that should be deployed 
 	 * @param array $options		Various options used for configuring the step 
-     */			
+	 */
 	private function _runStep($step, $projectId, $options = array()) {
 		$this->_stepLog = new StepLog( $step );
 		try{	
@@ -190,8 +190,8 @@ class Deployment extends AppModel {
 	 * Step 1 of the deployment process: Export
 	 * @param SetLog 	$setLog		Custom logging object 
 	 * @param array 	$options	Various options used for configuring the step 
-     */
-	private function _export($options = array()) {				
+	 */
+	private function _export($options = array()) {
 		// Check input parameters
 		if (!$this->isInitialized()) {
 			$this->_stepLog->error( sprintf(__('Missing working data', true)) );
@@ -225,14 +225,14 @@ class Deployment extends AppModel {
 				// Export code from SVN
 				$log =  SvnAction::checkout( $this->_project['Project']['svn_url'], $projectTmpDir, 'tmpDir', $options);
 			}
-		// Retrieve sources by Export method	
+		// Retrieve sources by Export method
 		} else {
 			// Export code from SVN
 			if ( is_dir($projectTmpDir.DS.'tmpDir') ) {
 				//Clear temporary folders for the current project if exist
 				ShellAction::remove($projectTmpDir.DS.'tmpDir', true, array('stepLog'=>$this->_stepLog));
 			}
-			$log =  SvnAction::export( $this->_project['Project']['svn_url'], $projectTmpDir, 'tmpDir', $options);
+			$log = SvnAction::export( $this->_project['Project']['svn_url'], $projectTmpDir, 'tmpDir', $options);
 		}
 		
 		// Retrieve revision log 
@@ -246,8 +246,8 @@ class Deployment extends AppModel {
 	 * Step 2 of the deployment process: Synchronize
 	 * Synchronize the exported source code from snv with the code located in the target directory
 	 * @param SetLog 	$setLog		Custom logging object 
-	 * @param array $options	Various options used for configuring the step 
-     */
+	 * @param array 	$options	Various options used for configuring the step 
+	 */
 	private function _synchronize($options = array()) {
 		// Check input parameters
 		if (!$this->isInitialized()) {
@@ -262,7 +262,8 @@ class Deployment extends AppModel {
 			'simulation' 		=> true,
 	 		'runBeforeScript'	=> false,
 			'backup'			=> false,
-			'comment' 			=> 'none'
+			'comment' 			=> 'none',
+			'stepLog'			=> $this->_stepLog 
 		);
 		$options = array_merge($default_options, $options);
 		
@@ -274,35 +275,35 @@ class Deployment extends AppModel {
 			$log = ShellAction::createDirectory( 
 				$this->_project['Project']['prd_path'], 
 				Configure::read('FileSystem.permissions.directories'), 
-				array($this->_stepLog) 
+				array('stepLog' 	=> $this->_stepLog) 
 			);
 		}
-		
-		// Create a log entry for the pending deployement 
-		$actionLog =  $this->_stepLog->addNewAction('create', 'Directory: '.$this->_project['Project']['prd_path'], 'FS');
-		$data = array (
-			'DeploymentLog' => array (
-				'project_id'	=> 	$this->_project['Project']['id'],
-				'user_id' 		=> 	$this->_context['user'],
-				'uuid'			=> 	$this->_context['uuid'],
-				'title' 		=> 	date("D, M jS Y, H:i") . ' - ' . $this->_project['Project']['name'],
-				'comment' 		=> 	$options['comment'],
-				'archive' 		=> 	0
-			)
-		);
-		if (!$this->DeploymentLog->save($data) ) {
-			$actionLog->error( __('Unable to save deployment log', true) );
-		}
-		$actionLog->end();
-			
+
 		// Run initialization script
 		if (!$options['simulation']) {
+			// Create a log entry for the pending deployement 
+			$actionLog =  $this->_stepLog->addNewAction('create', 'Directory: '.$this->_project['Project']['prd_path'], 'FS');
+			$data = array (
+				'DeploymentLog' => array (
+					'project_id'	=> 	$this->_project['Project']['id'],
+					'user_id' 		=> 	$this->_context['user'],
+					'uuid'			=> 	$this->_context['uuid'],
+					'title' 		=> 	date("D, M jS Y, H:i") . ' - ' . $this->_project['Project']['name'],
+					'comment' 		=> 	$options['comment'],
+					'archive' 		=> 	0
+				)
+			);
+			if (!$this->DeploymentLog->save($data) ) {
+				$actionLog->error( __('Unable to save deployment log', true) );
+			}
+			$actionLog->end();
+			
 			if ($options['runBeforeScript']) {
 				$scriptPath = null;
 				if (isset($this->_config->scripts['before']) && !empty($this->_config->scripts['before'])) {
 					$scriptPath = $this->_config->scripts['before'];
 				}
-				$log =  ShellAction::runScript('before', $projectTmpDir, $scriptPath, $options);
+				$log = ShellAction::runScript('before', $projectTmpDir, $scriptPath, $options);
 			}
 			
 			// Backup (if required)
@@ -310,8 +311,8 @@ class Deployment extends AppModel {
 				$options['exclude'] = null;
 				$source = $this->_project['Project']['prd_path'];
 				$target = F_DEPLOYBACKUPDIR.$this->_project['Project']['name']. DS;
-				$log =  ShellAction::synchronizeContent( $source, $target, $options);
-			}		
+				$log = ShellAction::synchronizeContent( $source, $target, $options);
+			}
 		}
 
 		// Generate exclusion file
@@ -336,53 +337,18 @@ class Deployment extends AppModel {
 		
 		// Create file list
 		$output = $log->getResult();
-		$this->_createFilesListToChmod($output, $projectTmpDir, $target);
-		
-		$actionLog->end();
+		ShellAction::createFilesListToChmod($output, $projectTmpDir, $target, 
+			array('stepLog' 	=> $this->_stepLog)
+		);
 		
 		return $output;
 	}// _synchronize
-	
-	// Create files list and directories list for chmod step
-	private function _createFilesListToChmod($output=null, $projectTmpDir=null, $target=null) {
-		$actionLog = new ActionLog('createFilesListToChmod', null, 'listToChmod');
-		
-		if (empty($output) || empty($projectTmpDir) || empty($target)) {
-			$actionLog->error( sprintf(__('Missing working data', true)) );
-		}
-		
-		$actionLog =  $this->_stepLog->addNewAction('create', 'files_to_chmod.txt & dir_to_chmod.txt', 'FS');
-		$list = explode("\n", $output);
-		
-		$size = count($list);
-		if ($size > 0) {
-			$files_to_chmod = $projectTmpDir."files_to_chmod.txt";
-			$dir_to_chmod = $projectTmpDir."dir_to_chmod.txt";
-			$handle_f = fopen($files_to_chmod, "w");
-			$handle_d = fopen($dir_to_chmod, "w");
-
-			for ($i = 4; $i < $size ; $i++) { 
-				if (empty($list[$i])) {
-					break;
-				}
-		
-				if (is_file($target . $list[$i])) {
-					$tmp_str = $list[$i];
-					fwrite($handle_f, $target.str_replace(".prd.", ".", $list[$i]) . "\n");
-				} else {
-					fwrite($handle_d, $target.$list[$i] . "\n");
-				}
-			}
-			fclose($handle_f);
-			fclose($handle_d);
-		}
-	}
 
 	/**
 	 * Step 3 of the deployment process: Finalize
-	 * @param array $options	Various options used for configuring the step 
-	 * @return string 			Shell output 
-     */
+	 * @param array $options	Various options used for configuring the step
+	 * @return string 			Shell output
+	 */
 	private function _finalize($options = array()) {
 		// Check input parameters
 		if (!$this->isInitialized()) {
@@ -391,7 +357,7 @@ class Deployment extends AppModel {
 		
 		// Load project configuration 
 		self::_loadConfig();
-			
+		
 		// Define step options
 		$default_options = array(
 			'renamePrdFile' 		=> 	false,
@@ -403,7 +369,7 @@ class Deployment extends AppModel {
 		
 		$projectTmpDir = F_DEPLOYTMPDIR.$this->_project['Project']['name'].DS;
 		// Rename file type from .prd.xxx into .xxx
-		if ($options['renamePrdFile'] === true) {			
+		if ($options['renamePrdFile'] === true) {
 			$command = "find ".Utils::formatPath($this->_project['Project']['prd_path'])." -name '*.prd.*' "
 				."-exec /usr/bin/perl ".Utils::formatPath(F_DEPLOYDIR)."renamePrdFile -vf 's/\.prd\./\./i' {} \;";
 			$log =  ShellAction::executeCommand( $command,
@@ -467,11 +433,10 @@ class Deployment extends AppModel {
 		if (!$this->isInitialized()) {
 			$this->_stepLog->error( sprintf(__('Missing working data', true)) );
 		}
-				
+		
 		// Removing files
 		$path = F_DEPLOYTMPDIR.$this->_project['Project']['name'];
 		ShellAction::remove($path, true, array('stepLog'=>$this->_stepLog));
-
 	}// _clearProjectTempFiles
 	
 	private function _resetPermissions(){
@@ -500,12 +465,10 @@ class Deployment extends AppModel {
 		}
 	}// _resetPermissions
 	
-
-	
-    // Public methods ---------------------------------------------------------
+	// Public methods ---------------------------------------------------------
 	public function isInitialized() {
 		if ( is_null($this->_project) || is_null($this->_context) ||  is_null($this->_stepLog)) {
-			return false;		
+			return false;
 		} else {
 			return true;
 		}
@@ -571,13 +534,13 @@ class Deployment extends AppModel {
 	}// _recordLog
 
 	/**
-	 *
+	 * Find the deployment configuration file of a given project
 	 */ 
 	private function __getConfigPath ($projectName = null, $newPath = false) {
 		if ($newPath) {
 			return F_DEPLOYTMPDIR.$projectName.DS.'tmpDir'.DS.'.fredistrano'.DS.'deploy.php';
 		} else {
-			return F_DEPLOYTMPDIR.$projectName.DS.'tmpDir'.DS.'deploy.php';			
+			return F_DEPLOYTMPDIR.$projectName.DS.'tmpDir'.DS.'deploy.php';
 		}
 	}// getConfigPath
 

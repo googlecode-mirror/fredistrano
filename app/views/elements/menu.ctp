@@ -30,7 +30,6 @@
 		<li class="<?php echo (in_array($this->params['controller'], array('logs')))?"active":"first";?>"><?php echo $html->link(__('Logs', true),'/logs'); ?></li>
 		<li class="<?php echo (in_array($this->params['controller'], array('administration','users','groups','control_objects','acl_management','aclManagement')))?"active":"first";?>"><?php echo $html->link(__('Administration', true),'/administration'); ?></li>
 		<li class="<?php echo ($this->params['url']['url'] == 'pages/help')?"active":"first";?>"><?php echo $html->link(__('Help', true),'/pages/help'); ?></li>
-		<li class="<?php echo ($this->params['url']['url'] == 'pages/about')?"active":"first";?>"><?php echo $html->link(__('About', true),'/pages/about'); ?></li>
 </ul>
 
 
