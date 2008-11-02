@@ -102,11 +102,10 @@ class DeploymentsController extends AppController {
 			 		'renamePrdFile' 		=> 	true,
 					'changeFileMode' 		=> 	true,
 					'giveWriteMode'			=> 	true,
-		 			'runAfterScript'		=> 	true
+		 			'runAfterScript'		=> 	false
 		 		)
 		 	)
 		);
-
 		
 		// Process output
 		$this->set('output', 	$log->toHtml());

@@ -219,13 +219,6 @@ class AdvancedLog extends ElementaryLog {
 		
 		return $log;
 	}// addChildLog
-	
-	public function error($error = null , $trigger = true ) {
-		if (is_null($error)) {
-			$error = $this->getLastError();
-		}
-		parent::error($error,$trigger);
-	}// error
 
 	public function getLastError(){	
 		if (!is_null($this->error)) {
@@ -236,7 +229,7 @@ class AdvancedLog extends ElementaryLog {
 		for ( $i = 1 ; $i <= $count ; $i++ ) {
 			$log = $this->logs[$count - $i];
 			if ($log->hasError()) {
-				return '[Action: '.$log->name.'] > '.$log->getError();
+				return '['.$log->name.'] > '.$log->getError();
 			}
 		}
 		return false;
@@ -325,7 +318,7 @@ class StepLog extends AdvancedLog {
 		return 
 			'<div class="stepLog">'
 			.'<br />--STEP--------------------------------'
-			.'<br />[step name] '.$this->name." \ ".$uuid
+			.'<br />[step name] '.$this->name." ".$uuid
 			.parent::toHtml()
 			.'<br />[user] '.$user
 			.'<br />'.$actionLogs
@@ -352,7 +345,6 @@ class Processlog extends AdvancedLog {
 	var $childType = 'StepLog';
 
 	public function toXml() {
-		
 		$stepLogs = '';
 		foreach($this->logs as $stepLog) {
 			$stepLogs .= $stepLog->toXml(false);
@@ -366,7 +358,6 @@ class Processlog extends AdvancedLog {
 	}// toXml
 
 	public function toHtml() {
-		
 		$stepLogs = '';
 		foreach($this->logs as $stepLog) {
 			$stepLogs .= $stepLog->toHtml(false);
@@ -388,7 +379,7 @@ class Processlog extends AdvancedLog {
 		if ($log->writable()) {
 			return $log->append( $this->toXml() );
 		}
-		return false; //$this->error(sprintf(__('Unable to write in log file %s', true), $log->pwd()));
+		return false;
 	}// writeToFile
 
 }// Processlog

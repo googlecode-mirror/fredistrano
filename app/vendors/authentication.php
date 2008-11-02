@@ -29,38 +29,19 @@
  * the function authenticate may be modified according to your needs
  */
 class CustomAuthentication {
-	
-	private static $webServiceServer = 'https://ouassou:50001';
-	
-	private static $authenticationDirectory = "20"; 
-	
+
 	/**
 	 * Check if the given user has valid credentials
 	 * 
 	 * @param string $user username as submitted by the form
 	 * @param string $passwd password as submitted by the form
-	 * @return  boolean true fi authenticated; false otherwise
+	 * @return  boolean true if authenticated; false otherwise
 	 */
 	public static function authenticate($user, $passwd){
-		$client = new SoapClient( 
-			null,
-			array(
-				'location' 		=>	self::$webServiceServer . "/OSI_authentificationWS/ConfigSSL?style=document",
-			    'uri'  			=>	'urn:OSI_authentificationWSVi',
-                'use'     		=>	SOAP_LITERAL
-			)
-		);
-		$params = array (
-			new SoapParam( $user, 'login'),
-			new SoapParam( $passwd, 'pass'),
-			new SoapParam( self::$authenticationDirectory, 'annuaire')
-		);
-		try {
-			$result = $client->__soapCall('authentifierAnnuaire', $params);
-		} catch (SoapFault $fault) {
-			return false;
-		}
-		return $result=='true';
+		
+		// Write your custom code here
+		
+		return false;
 	}// authenticate
 
 }// CustomAuthentication

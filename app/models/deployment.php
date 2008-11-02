@@ -101,18 +101,26 @@ class Deployment extends AppModel {
 				if ($step == 'export') {
 					// Post actions
 					if (!($rev = $this->_stepLog->data['revision'])) {
-						$options['comment'] = sprintf(__('Revision exported %s', true), $rev);			
+						$options['comment'] = sprintf(__('Revision exported %s', true), $rev);
 					}	
-					$options = Set::merge($options, $this->_config->options);	
+					if ( isset($this->_config->options) && is_array($this->_config->options)) {
+						$options = Set::merge($options, $this->_config->options);
+					}
 				}
 			}// for
-
+			
 			// Process result
-			$processLog->end();		
+			$processLog->end();
 				
-		} catch (Exception $e) { 
-			if ( !$processLog->hasError() ) {
-				$processLog->error(__('An error occured during the process. See steps for further details.',true), false);
+		} catch (Exception $e) {
+			$errorLog = $e->getLog();
+			if (get_class($errorLog) == 'StepLog') {
+				if (!($errorLog->isAttached())) {
+					$processLog->addChildLog($errorLog);
+				}
+			}
+			if (!$processLog->hasError()) {
+				$processLog->error($processLog->getLastError(), false);
 			}
 		}
 		
@@ -134,7 +142,7 @@ class Deployment extends AppModel {
 				}  else {
 					return false;
 				}
-			} catch (Exception $e) { }
+			} catch (Exception $e) {}
 			
 			// Write log
 			$this->_stepLog->save();
@@ -152,37 +160,43 @@ class Deployment extends AppModel {
 	 * @param array $options		Various options used for configuring the step 
 	 */
 	private function _runStep($step, $projectId, $options = array()) {
-		$this->_stepLog = new StepLog( $step );
+		$stepLog = new StepLog( $step );
+		$this->_stepLog = $stepLog;
 		try{	
 			// Check input parameters
 			if ( !isset($this->_context['user']) || (!isset($this->_context['uuid']) && in_array($step, $this->process)) ) { 
-				$this->_stepLog->error( __('Invalid step context (use setContext() first)',true) );
+				$stepLog->error( __('Invalid step context (use setContext() first)',true) );
 			} 
-			$this->_stepLog->setContext($this->_context);
+			$stepLog->setContext($this->_context);
 			if ( !in_array($step, $this->allowedSteps) ) {
-				$this->_stepLog->error( sprintf(__('Unknown step %s',true), $step) );
+				$stepLog->error( sprintf(__('Unknown step %s',true), $step) );
 			}
 		
 			// Initialiaze processing
 			Configure::write('FileSystem.permissions.directories', Utils::computeDirMode(Configure::read('FileSystem.permissions.files'))  ); 
 			$this->_project = $this->Project->find('first', array('conditions' => array('Project.id' => $projectId), 'recursive' => 0));
-	 		if ( !$this->_project )  {
-				$this->_stepLog->error( __('Unknown project',true) );
+	 		if (!$this->_project)  {
+				$stepLog->error( __('Unknown project',true) );
 			}
 		
-			// Execute step	
+			// Execute step
 			set_time_limit( Configure::read('Deployment.timelimit.'.$step) );
-			$options['stepLog'] = $this->_stepLog;
+			$options['stepLog'] = $stepLog;
 			$this->{'_'.$step}($options);
-			$this->_stepLog->end(); 
+			$stepLog->end();
 			
-		} catch (LogException $e) { 
-			if ( !$this->_stepLog->hasError() ) {
-				if ( !($e->getLog()->isAttached()) ) {
-					$this->_recordLog( $e->getLog() );
+		} catch (LogException $e) {
+			$errorLog = $e->getLog();
+			if (get_class($errorLog) == 'ActionLog') {
+				if (!($errorLog->isAttached())) {
+					$stepLog->addChildLog($errorLog);
 				}
-				$this->_stepLog->error();
-			} 
+			}
+			if (!$stepLog->hasError()) {
+				$stepLog->error($stepLog->getLastError(), false);
+			}
+			// Propagate the error to upper level (if any)
+			throw new LogException($stepLog->getError(), $stepLog);
 		}
 	}// _runStep
 
@@ -262,8 +276,7 @@ class Deployment extends AppModel {
 			'simulation' 		=> true,
 	 		'runBeforeScript'	=> false,
 			'backup'			=> false,
-			'comment' 			=> 'none',
-			'stepLog'			=> $this->_stepLog 
+			'comment' 			=> 'none'
 		);
 		$options = array_merge($default_options, $options);
 		
@@ -382,7 +395,7 @@ class Deployment extends AppModel {
 		}
 
 		// Change file mode
-		if ($options['changeFileMode'] === true) {			
+		if ($options['changeFileMode'] === true) {
 			$command = "chmod ".Configure::read('FileSystem.permissions.files')."  $(<".$projectTmpDir."files_to_chmod.txt)";
 			$log =  ShellAction::executeCommand( $command,
 				array(

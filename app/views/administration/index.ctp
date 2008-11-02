@@ -24,7 +24,7 @@
  * @subpackage	app.views.administration
  */
  ?>
- <h1><?php __('Administration') ?></h1>
+<h1><?php __('Administration') ?></h1>
 <p><?php __('Use the links provided on this page to configure Fredistrano.') ?></p>
 
 <h2><?php __('Authorization management') ?></h2>
@@ -32,14 +32,15 @@
 <ul>
 	<li><?php echo $html->link( __('Users', true),'/users'); ?> - <?php __('manage users and group memberships') ?></li>
 	<li><?php echo $html->link( __('Groups', true),'/groups'); ?> - <?php __('manage groups (for advanced users)') ?></li>
-	<li><?php echo $html->link( __('Authorizations', true),'/aclite/acl_management'); ?> - <?php __('manage permissions (for advanced users)') ?></li>
+<!--
+		<li><?php echo $html->link( __('Authorizations', true),'/aclite/acl_management'); ?> - <?php __('manage permissions (for advanced users)') ?></li>
 	<li><?php echo $html->link( __('Control objects', true),'/control_objects'); ?> - <?php __('manage control objects (for developers only)') ?></li>
+-->
 </ul>
 <!--
 	TODO F:implement configuration management
 -->
 <!--
-
 <h2><?php __('Application configuration') ?></h2>
 <ul>
 	<li><?php echo $html->link( __('Modify configuration', true), '/configurations'); ?> - <?php __('Not Yet Implemented') ?></li>

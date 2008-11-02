@@ -19,7 +19,7 @@ CREATE TABLE `acos` (
   `lft` int(10) unsigned DEFAULT NULL,
   `rght` int(10) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 
 INSERT INTO `acos` (`id`,`parent_id`,`model`,`foreign_key`,`alias`,`lft`,`rght`) VALUES ('1',NULL,'ControlObject','1','all','1','18');
 INSERT INTO `acos` (`id`,`parent_id`,`model`,`foreign_key`,`alias`,`lft`,`rght`) VALUES ('2','1','ControlObject','2','public','2','3');
@@ -30,6 +30,7 @@ INSERT INTO `acos` (`id`,`parent_id`,`model`,`foreign_key`,`alias`,`lft`,`rght`)
 INSERT INTO `acos` (`id`,`parent_id`,`model`,`foreign_key`,`alias`,`lft`,`rght`) VALUES ('7','6','ControlObject','7','entrance','11','12');
 INSERT INTO `acos` (`id`,`parent_id`,`model`,`foreign_key`,`alias`,`lft`,`rght`) VALUES ('8','1','ControlObject','8','buinessData','16','17');
 INSERT INTO `acos` (`id`,`parent_id`,`model`,`foreign_key`,`alias`,`lft`,`rght`) VALUES ('9','6','ControlObject','9','password','13','14');
+INSERT INTO `acos` (`id`,`parent_id`,`model`,`foreign_key`,`alias`,`lft`,`rght`) VALUES ('10',NULL,'ControlObject','10','none','19','20');
 
 
 # Dump of table aros
@@ -87,7 +88,7 @@ CREATE TABLE `control_objects` (
   `modified` datetime DEFAULT NULL,
   `parent_id` int(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 
 INSERT INTO `control_objects` (`id`,`name`,`created`,`modified`,`parent_id`) VALUES ('1','all','2007-07-23 19:18:23','2007-07-23 19:18:23',NULL);
 INSERT INTO `control_objects` (`id`,`name`,`created`,`modified`,`parent_id`) VALUES ('2','public','2007-07-23 19:18:23','2007-07-23 19:18:23','1');
@@ -98,6 +99,7 @@ INSERT INTO `control_objects` (`id`,`name`,`created`,`modified`,`parent_id`) VAL
 INSERT INTO `control_objects` (`id`,`name`,`created`,`modified`,`parent_id`) VALUES ('7','entrance','2007-07-23 19:18:23','2007-07-23 19:18:23','6');
 INSERT INTO `control_objects` (`id`,`name`,`created`,`modified`,`parent_id`) VALUES ('8','buinessData','2007-07-23 19:18:23','2007-07-23 19:18:23','1');
 INSERT INTO `control_objects` (`id`,`name`,`created`,`modified`,`parent_id`) VALUES ('9','password','2008-08-15 16:21:02','2008-08-15 16:21:02','6');
+INSERT INTO `control_objects` (`id`,`name`,`created`,`modified`,`parent_id`) VALUES ('10','none','2008-11-02 18:25:29','2008-11-02 18:25:29','0');
 
 
 # Dump of table deployment_logs

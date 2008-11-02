@@ -37,7 +37,6 @@ class AdministrationController extends AppController {
 	 * Default action
 	 */
 	function index() {
-	
 	}// index
 
 } // Administration

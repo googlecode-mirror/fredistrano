@@ -35,19 +35,28 @@ class HomeController extends AppController {
 		
 		// Tableau de liens pour la création du menu contextuel
 		$tab[] = array (
-			'text' => __('See also', true)
+			'text' => __('Navigation', true)
 		);
-
 		$tab[] = array (
 			'text' => __('About', true),
 			'link' => '/pages/about'
 		);
-
+		if ($this->Session->read('User')) {
+			if ( Configure::read('Feeds.enabled') === true ) {
+				$tab[] = array (
+					'text' => __('Rss Feed', true),
+					'link' => '/deploymentLogs/index.rss?token='.$this->Session->read('User.Profile.rss_token')
+				);
+			}
+		}
+		
+		$tab[] = array (
+			'text' => __('See also', true)
+		);
 		$tab[] = array (
 			'text' => __('Homepage', true),
 			'link' => 'http://code.google.com/p/fredistrano/'
 		);
-
 		$tab[] = array (
 			'text' => __('Donate', true),
 			'link' => 'http://code.google.com/p/fredistrano/wiki/Donation'
