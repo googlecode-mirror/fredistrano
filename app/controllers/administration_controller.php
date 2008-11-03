@@ -25,7 +25,7 @@
  */
 class AdministrationController extends AppController {
 	
-	var $uses = array ();
+	var $uses = array ('DeploymentLog');
 
 	var $authLocal = array (
 		'Administration' => array (
@@ -36,8 +36,18 @@ class AdministrationController extends AppController {
 	/**
 	 * Default action
 	 */
-	function index() {
-	}// index
+	function index() {}
 
+	/**
+	 * Default action
+	 */
+	function cleanOrphanLogs() {
+		$count = $this->DeploymentLog->cleanOrphans();
+		
+		$this->Session->setFlash(sprintf(__('%d orphan logs have been deleted.', true), $count));
+		$this->redirect('/administration');
+		exit;
+	}// cleanOrphelinsLogs
+	
 } // Administration
 ?>

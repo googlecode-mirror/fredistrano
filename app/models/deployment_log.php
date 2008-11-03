@@ -53,7 +53,7 @@ class DeploymentLog extends AppModel {
 			// Suppresion du fichier
 			if ($log['DeploymentLog']['uuid']) {
 				$logFile = F_DEPLOYLOGDIR.$log['DeploymentLog']['uuid'].'.xml';
-				if (file_exists ($logFile)) {
+				if (file_exists($logFile)) {
 					@unlink( $logFile );
 				}
 			}//
@@ -73,6 +73,24 @@ class DeploymentLog extends AppModel {
 			$this->del($log['DeploymentLog']['id']);
 		}
 	}// delAll
+	
+	function cleanOrphans() {
+		$folder = new Folder(F_DEPLOYLOGDIR);
+		$files = $folder->find('.*\.xml');
+		
+		$uuids = $this->find('all',array('conditions'=>array('archive'=>'0'),'fields'=>('uuid')));
+		$uuids = Set::extract($uuids, '{n}.DeploymentLog.uuid');
+		
+		$count = 0;
+		foreach($files as $file) {
+			if (!in_array(substr($file,0,-4),$uuids)) {
+				unlink(F_DEPLOYLOGDIR.$file);
+				$count++;
+			}
+		}
+		
+		return $count;
+	}// cleanOrphans
 	
 }// DeploymentLog
 ?>

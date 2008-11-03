@@ -37,14 +37,8 @@
 	<li><?php echo $html->link( __('Control objects', true),'/control_objects'); ?> - <?php __('manage control objects (for developers only)') ?></li>
 -->
 </ul>
-<!--
-	TODO F:implement configuration management
--->
-<!--
+
 <h2><?php __('Application configuration') ?></h2>
 <ul>
-	<li><?php echo $html->link( __('Modify configuration', true), '/configurations'); ?> - <?php __('Not Yet Implemented') ?></li>
-	<li><?php echo $html->link( __('Import ', true), '/administration/import').' / '.$html->link( __('Export', true), '/administration/export').' configuration'; ?> - <?php __('Not Yet Implemented') ?></li>
-	<li><?php echo $html->link( __('Reset RSS token', true), '/administration/resetRssToken'); ?> - <?php __('Not Yet Implemented') ?></li>
+	<li><?php echo $html->link( __('Clean orphan logs', true), '/administration/cleanOrphanLogs', null, __('Are you sure you want to cleanup orphan logs?', true)); ?> - <?php __('delete from the file system logs that are not associated to a database entry') ?></li>
 </ul>
--->
