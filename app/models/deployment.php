@@ -350,7 +350,7 @@ class Deployment extends AppModel {
 		
 		// Create file list
 		$output = $log->getResult();
-		ShellAction::createFilesListToChmod($output, $projectTmpDir, $target, 
+		PhpAction::createFilesListToChmod($output, $projectTmpDir, $target,
 			array('stepLog' 	=> $this->_stepLog)
 		);
 		
@@ -517,45 +517,18 @@ class Deployment extends AppModel {
 
     // Helper functions ( private ) ---------------------------------------------------------
 	private function _loadConfig() {
-		$actionLog =  new ActionLog('loadConfig', null, 'include');
-		
 		if (!isset($this->_project) || !$this->_project) {
 			$actionLog->error( sprintf(__('Missing working data', true)) );
 		}
 		
 		if (!isset($this->_config) || !$this->_config) {
-			// Check new path
-			$path = $this->__getConfigPath($this->_project['Project']['name'], true);
-			if ( !file_exists( $path ) ) {
-				$path = $this->__getConfigPath($this->_project['Project']['name'], false);
-				if (!file_exists( $path )) {
-					$actionLog->error( sprintf(__('Unable to find deploy.php', true)) );
-				}
-			} 
-			include_once($path);
-			$this->_config = new DEPLOY_CONFIG();
+			PhpAction::loadConfig(
+				$this->_config, 
+				$this->_project['Project']['name'], 
+				array('stepLog' => $this->_stepLog)
+			);
 		}
-		
-		// End action
-		$actionLog->end();
-		
-		$this->_recordLog($actionLog);
-	}// loadConfig
-	
-	private function _recordLog($log) {
-		$this->_stepLog->addChildLog($log);
-	}// _recordLog
-
-	/**
-	 * Find the deployment configuration file of a given project
-	 */ 
-	private function __getConfigPath ($projectName = null, $newPath = false) {
-		if ($newPath) {
-			return F_DEPLOYTMPDIR.$projectName.DS.'tmpDir'.DS.'.fredistrano'.DS.'deploy.php';
-		} else {
-			return F_DEPLOYTMPDIR.$projectName.DS.'tmpDir'.DS.'deploy.php';
-		}
-	}// getConfigPath
+	}// _loadConfig
 
 }// Deployment
 ?>
