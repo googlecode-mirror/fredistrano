@@ -24,9 +24,6 @@
  * @subpackage	app.views.projects
  */
  ?>
- <h1><?php __('Deployable projects') ?></h1>
-
-<p><?php __('The list displays all the web projects configured in Fredistrano. Click on a project to deploy or manage it.') ?></p>
 
 <div class="projects">
 <table class="table1">

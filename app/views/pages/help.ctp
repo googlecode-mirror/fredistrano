@@ -24,7 +24,10 @@
  * @subpackage	app.views.pages
  */
  ?>
- <h1><?php __('Help') ?></h1>
+
+<h1><?php __('Help') ?></h1>
+
+<?php __('Find on this page help information about Fredistrano.') ?>
 
 <h3><?php __('Offline support') ?></h3>
 <ul>
