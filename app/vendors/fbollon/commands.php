@@ -88,15 +88,13 @@ class PhpAction extends Action {
 	
 	// Create files list and directories list for chmod step
 	public function createFilesListToChmod($output=null, $projectTmpDir=null, $target=null, $options = array()) {
-		$actionLog = self::initAction('createFilesListToChmod', null, 'PhpAction', $options);
+		$actionLog = self::initAction('createFilesListToChmod', 'files_to_chmod.txt and dir_to_chmod.txt', 'PhpAction', $options);
 		
 		if (empty($output) || empty($projectTmpDir) || empty($target)) {
 			$actionLog->error( sprintf(__('Missing working data', true)) );
 		}
 		
-		$actionLog =  $this->_stepLog->addNewAction('create', 'files_to_chmod.txt & dir_to_chmod.txt', 'FS');
 		$list = array_reverse(explode("\n", $output));
-		
 		$size = count($list);
 		if ($size > 0) {
 			$files_to_chmod = $projectTmpDir."files_to_chmod.txt";
