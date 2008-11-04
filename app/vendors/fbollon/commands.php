@@ -254,8 +254,8 @@ class ShellAction extends Action {
 			} else {
 				$cd = '';
 			}
-			$prefix = "bash.exe --login -c '".$cd;
-			$suffix = "'";
+			$prefix = "bash.exe --login -c \"".$cd;
+			$suffix = "\"";
 		} else {
 			if (!is_null($options['directory'])) {
 				chdir($options['directory']);

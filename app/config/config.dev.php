@@ -36,6 +36,7 @@
 		'options' 	=> array(
 	 		'export' 		=> array(),
 	 		'synchronize'	=> array(
+			 	'simulation'		=> 	false, 	//true to activate the simulation fonctionality
 	 			'backup'			=> 	false, 	//true to activate the backup fonctionality
 	 		 	'runBeforeScript'	=> 	false 	//true to activate the execution of your own customs scripts before the deployment 
 	 		),

@@ -384,7 +384,7 @@ class Deployment extends AppModel {
 		// Rename file type from .prd.xxx into .xxx
 		if ($options['renamePrdFile'] === true) {
 			$command = "find ".Utils::formatPath($this->_project['Project']['prd_path'])." -name '*.prd.*' "
-				."-exec /usr/bin/perl ".Utils::formatPath(F_DEPLOYDIR).'scripts'.DS."renamePrdFile -vf 's/\.prd\./\./i' {} \;";
+				."-exec /usr/bin/perl ".Utils::formatPath(F_DEPLOYDIR.'scripts'.DS)."renamePrdFile -vf 's/\.prd\./\./i' {} \;";
 			$log =  ShellAction::executeCommand( $command,
 				array(
 			        'comment'	=> __('Rename .prd files', true),
@@ -396,7 +396,7 @@ class Deployment extends AppModel {
 
 		// Change file mode
 		if ($options['changeFileMode'] === true) {
-			$command = "chmod ".Configure::read('FileSystem.permissions.files')."  $(<".$projectTmpDir."files_to_chmod.txt)";
+			$command = "chmod -v ".Configure::read('FileSystem.permissions.files')." $(<".Utils::formatPath($projectTmpDir."files_to_chmod.txt").")";
 			$log =  ShellAction::executeCommand( $command,
 				array(
 			        'comment'	=> sprintf(__('Changing files permissions to %s', true), Configure::read('FileSystem.permissions.files')),
@@ -404,7 +404,7 @@ class Deployment extends AppModel {
 				)
 			);
 			
-			$command = "chmod ". Configure::read('FileSystem.permissions.directories')."  $(<". $projectTmpDir . "dir_to_chmod.txt)";
+			$command = "chmod -v ". Configure::read('FileSystem.permissions.directories')." $(<".Utils::formatPath($projectTmpDir."dir_to_chmod.txt").")";
 			$log =  ShellAction::executeCommand( $command, 
 				array(
 			        'comment'	=> sprintf(__('Changing directories permissions to %s', true), Configure::read('FileSystem.permissions.directories')),
