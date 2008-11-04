@@ -88,24 +88,9 @@ class DeploymentsController extends AppController {
 		$this->Session->write('Deployment.uuid', $this->Deployment->generateUuid($id));
 		$this->_setContext();
 		
-		// Run step	
-		$log = $this->Deployment->process(
-			$this->data['Project']['id'], 
-			array(
-		 		'export' 		=> array(),
-		 		'synchronize'	=> array(
-					'simulation'			=> 	false,
-		 		 	'runBeforeScript'		=> 	false,
-		 			'backup'				=> 	false
-		 		),
-		 		'finalize'		=> array(
-			 		'renamePrdFile' 		=> 	true,
-					'changeFileMode' 		=> 	true,
-					'giveWriteMode'			=> 	true,
-		 			'runAfterScript'		=> 	false
-		 		)
-		 	)
-		);
+		// Run step
+		$options = Configure::read('Deployment.options');
+		$log = $this->Deployment->process($this->data['Project']['id'], $options);
 		
 		// Process output
 		$this->set('output', 	$log->toHtml());
