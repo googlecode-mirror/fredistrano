@@ -95,7 +95,7 @@ class PhpAction extends Action {
 		}
 		
 		$actionLog =  $this->_stepLog->addNewAction('create', 'files_to_chmod.txt & dir_to_chmod.txt', 'FS');
-		$list = explode("\n", $output);
+		$list = array_reverse(explode("\n", $output));
 		
 		$size = count($list);
 		if ($size > 0) {
@@ -104,15 +104,15 @@ class PhpAction extends Action {
 			$handle_f = fopen($files_to_chmod, "w");
 			$handle_d = fopen($dir_to_chmod, "w");
 
-			for ($i = 4; $i < $size ; $i++) { 
-				if (empty($list[$i])) {
+			for ($i = 4; $i < $size ; $i++) {
+				if (empty($list[$i]) || strpos($list[$i],'deleting ') !== false) {
 					break;
 				}
 		
 				if (is_file($target . $list[$i])) {
 					$tmp_str = $list[$i];
 					fwrite($handle_f, $target.str_replace(".prd.", ".", $list[$i]) . "\n");
-				} else {
+				} else if (is_dir($target . $list[$i])){
 					fwrite($handle_d, $target.$list[$i] . "\n");
 				}
 			}

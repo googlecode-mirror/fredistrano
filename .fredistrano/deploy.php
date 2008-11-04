@@ -51,22 +51,22 @@ class DEPLOY_CONFIG {
  	
 	// List of directories and files to exclude during the deployemnt process on the production server
 	var $exclude = array (
-		'/app/tmp/logs/*',
-		'/app/tmp/sessions/*',
-		'/app/tmp/tests/*',
-		'/app/config/database.php',
-		'/app/config/config.php',
-		'/app/webroot/files/*',
-		'/files/logs/*',
-		'/files/tmp/*'
+		'app/tmp/logs/*',
+		'app/tmp/sessions/*',
+		'app/tmp/tests/*',
+		'app/config/database.php',
+		'app/config/config.php',
+		'app/webroot/files/*',
+		'files/logs/*',
+		'files/tmp/*'
 	);
 		
 	// Directories list on which the write permission will applied during the finalization step of the deployment process	
 	// log, cache, upload directories, etc...
 	var $writable = array (
-		'/app/tmp',
-		'/files/backup',
-		'/files/logs'
+		'app/tmp',
+		'files/backup',
+		'files/logs'
 	);
 
  }// DEPLOY_CONFIG
