@@ -89,7 +89,7 @@ class ProjectsController extends AppController {
 	 * @param string $id ID of the project to be viewed
 	 */
 	function view($id = null) {
-		if (!$id) {
+		if (!$id or !$this->Project->read(null, $id)) {
 			$this->Session->setFlash(__('Invalid id.', true));
 			$this->redirect('/projects/index');
 			exit();
@@ -121,7 +121,7 @@ class ProjectsController extends AppController {
 	function edit($id = null) {
 		$this->_initializeLists();
 		if (empty ($this->data)) {
-			if (!$id) {
+			if (!$id or !$this->Project->read(null, $id)) {
 				$this->Session->setFlash(__('Invalid id.', true));
 				$this->redirect('/projects/index');
 			}
@@ -142,7 +142,7 @@ class ProjectsController extends AppController {
 	 * @param string $id ID of the project to be deleted
 	 */
 	function delete($id = null) {
-		if (!$id) {
+		if (!$id or !$this->Project->read(null, $id)) {
 			$this->Session->setFlash(__('Invalid id.', true));
 			$this->redirect('/projects/index');
 		}
@@ -152,8 +152,7 @@ class ProjectsController extends AppController {
 		}
 	}// delete
 	
-	function _initializeLists()
-	{
+	function _initializeLists() {
 		$this->set('deploymentMethods', $this->Project->deploymentMethods);
 	}
 	
