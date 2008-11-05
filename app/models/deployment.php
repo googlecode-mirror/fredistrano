@@ -100,9 +100,9 @@ class Deployment extends AppModel {
 				
 				if ($step == 'export') {
 					// Post actions
-					if (!($rev = $this->_stepLog->data['revision'])) {
-						$options['comment'] = sprintf(__('Revision exported %s', true), $rev);
-					}	
+					if (!empty($this->_stepLog->data['revision'])) {
+						$options['synchronize']['comment'] = sprintf(__('Revision exported %s', true), $this->_stepLog->data['revision']);
+					}
 					if ( isset($this->_config->options) && is_array($this->_config->options)) {
 						$options = Set::merge($options, $this->_config->options);
 					}
