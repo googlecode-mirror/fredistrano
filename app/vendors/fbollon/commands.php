@@ -152,6 +152,7 @@ class PhpAction extends Action {
 class ShellAction extends Action {
 
 	public static function changePermissions( $path=null, $mode=array(), $options = array() ) {
+		$actionLog = self::initAction('resetPermission', null, 'ShellAction', $options);	
 		if (!is_array($mode)) {
 			$mode = array(
 				'file' 	=> $mode,
@@ -163,17 +164,15 @@ class ShellAction extends Action {
 		if ( is_null($path) || empty($mode) ) {
 			$actionLog->error(sprintf(__('Forbidden NULL value for input parameter [%s;%s]',true),$path,$mode));	
 		}
-
 		if (!file_exists($path)) {
 			$actionLog->error(sprintf(__('Path [%s] not found',true),$path));	
 		}
-
 		$path = Utils::formatPath($path);
-		
+
 		if (isset($mode['file'])) {
 			// Change file mode
-			$comment = sprintf(__('Reseting permissions files on %s',true),$path);
-			$actionLog = self::initAction('resetPermission', $comment, 'ShellAction', $options);
+			$desc = sprintf(__('Reseting permissions files on %s',true),$path);
+			$actionLog->description = $desc;
 			$command = "find ".$path." -type f -exec chmod ".$mode['file']." {} \;";
 			ShellAction::executeCommand( $command,
 				array(
@@ -185,8 +184,8 @@ class ShellAction extends Action {
 
 		if (isset($mode['dir'])) {
 			// Change directory mode
-			$comment = sprintf(__('Resetting directories permissions on %s',true),$path);
-			$actionLog = self::initAction('resetPermission', $comment, 'ShellAction', $options);
+			$desc = sprintf(__('Resetting directories permissions on %s',true),$path);
+			$actionLog->description = $desc;
 			$command = "find ".$path." -type d -exec chmod ".$mode['dir']." {} \;";
 			ShellAction::executeCommand( $command,
 				array(
