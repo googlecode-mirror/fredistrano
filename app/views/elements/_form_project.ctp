@@ -60,7 +60,7 @@
 						);?>
 <?php echo $form->input('Project.prd_url', 
 						array(
-							'label' => '<b>'.__('Application Url', true), 
+							'label' => '<b>'.__('Application Url', true).'</b>', 
 							'size' => '60', 
 							'class' => 'f-name'
 							)
