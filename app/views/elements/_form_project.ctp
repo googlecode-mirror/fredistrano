@@ -73,16 +73,9 @@
 							'type' => 'textarea'
 							)
 						);?>
-
-<hr />
 						
-<?php echo $form->input('Project.method', 
-						array(
-							'legend' => __('Deployment method', true),
-							'label' => false,
-							'type' => 'radio',
-							'div' => 'z_radio',
-							'class' => 'f-radio-wrap',
-							'options' => $deploymentMethods
-						)
-					)?>
+<label for='Project.method'><b><?php __('Checkout source code') ?></b></label>
+<?php 
+	e($form->checkbox('Project.method').'&nbsp;').
+		__('If checked, Fredistrano downloads only code updates (faster method); otherwise, it performs a "SVN export".');
+?>
