@@ -85,7 +85,7 @@
 		?>
 		</tbody>
 	</table>
-	<? echo $this->renderElement('pagination'); ?>
+	<?php echo $this->renderElement('pagination'); ?>
 </div>
 <?php
 // debug($data);

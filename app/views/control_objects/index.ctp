@@ -78,7 +78,7 @@
 		</tbody>
 	</table>
 
-	<? echo $this->renderElement('pagination'); // Render the pagination element ?>
+	<?php echo $this->renderElement('pagination'); // Render the pagination element ?>
 </div>
 
 

@@ -55,7 +55,7 @@ foreach ($data as $output)
 }
 ?>
 </table>
-<? echo $this->renderElement('pagination'); ?>
+<?php echo $this->renderElement('pagination'); ?>
 </div>
 
 <br /><br /><br />
