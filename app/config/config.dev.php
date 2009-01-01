@@ -81,6 +81,11 @@
 		'configDirectory'	=> null,			//default subversion configuration directory
 		'parseResponse'	=> true,				//activate the command response parsing
 	);
+	
+	$config['Rsync'] = array(
+		'optionalOptions'	=> 'O'				//rsync option not supported on all OS, comment this line if you get an issue during the rsync command
+	);
+	
 
 	$config['Fredistrano'] = array(
 		'language'	=> 'en'						//default language 

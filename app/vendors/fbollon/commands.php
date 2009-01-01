@@ -353,9 +353,10 @@ class ShellAction extends Action {
 			// Live mode
 			$option = 'rtv';
 		}
-		//The rsync option "O" not yet supported on Mac
-		if ( F_OS != 'DAR') {
-			$option .= 'O';
+		
+		$optionalOptions = Configure::read('Rsync.optionalOptions');
+		if (!empty($optionalOptions)) {
+			$option .= $optionalOptions;
 		}
 		
 		// Execute command		
