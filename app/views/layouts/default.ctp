@@ -106,7 +106,8 @@ http://creativecommons.org/licenses/GPL/2.0/
 			<?php echo $content_for_layout;	?>
 	
 			<div id="footer">
-				<p>&copy; 2007-2008 <a href="http://fbollon.net">fbollon.net</a> 
+				<p>
+				&copy; 2007-2009 <a href="http://www.fbollon.net">www.fbollon.net</a> 
 				<?php echo $html->link( 
 									$html->image( 'cake.power.gif', array('alt' => 'cakephp', 'title' => 'cakephp', 'style' => 'float:right;')), 
 									'http://cakephp.org/', null, false, false ); ?>
