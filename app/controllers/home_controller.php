@@ -25,10 +25,7 @@
  */
 class HomeController extends AppController {
 
-	var $uses = array (
-		'Project',
-		'DeploymentLog'
-	);
+	var $uses = array ('Project','DeploymentLog');
 	
 	function beforeRender() {
 		parent::beforeRender();

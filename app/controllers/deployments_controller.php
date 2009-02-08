@@ -27,16 +27,9 @@ class DeploymentsController extends AppController {
 
 	var $name = 'Deployments';
 	
-	var $helpers = array (
-		'Html',
-		'Form',
-		'Ajax',
-		'Pagination'
-	);
+	var $helpers = array ('Ajax','Pagination');
 
-	var $uses = array (
-		'Deployment'
-	);
+	var $uses = array ('Deployment');
 	
 	var $authLocal = array (
 		'Deployments' => array (

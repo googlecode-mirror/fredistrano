@@ -27,16 +27,10 @@ class GroupsController extends AppController {
 
 	var $name = 'Groups';
 	
-	var $helpers = array (
-		'fbollon'
-	);
+	var $helpers = array ('fbollon');
 	
 	var $uses = array ('Group','User');
-		
-	var $components = array (
-		'RequestHandler'
-	);
-
+	
 	var $authLocal = array (
 		'Groups' => array (
 			'authorizations'
@@ -44,10 +38,7 @@ class GroupsController extends AppController {
 	);
 	
 	//configuration de la pagination	
-	var $paginate = array(
-		'limit' => 15,
-		'format' => 'pages'
-	);
+	var $paginate = array('limit' => 15,'format' => 'pages');
 
 	function beforeRender() {
 		parent::beforeRender();

@@ -39,10 +39,7 @@ class UsersController extends AppController {
 		)
 	);
 	
-	var $paginate = array(
-		'limit' => 10,
-		'format' => 'pages'
-	);
+	var $paginate = array('limit' => 10,'format' => 'pages');
 	
 	function beforeAuthorize(){
 		if (in_array($this->params['action'], array ('settings', 'change_password'))){

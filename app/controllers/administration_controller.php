@@ -49,5 +49,5 @@ class AdministrationController extends AppController {
 		exit;
 	}// cleanOrphelinsLogs
 	
-} // Administration
+}// Administration
 ?>
