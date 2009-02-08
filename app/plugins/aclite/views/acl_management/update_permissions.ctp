@@ -34,36 +34,32 @@
 
 	<div id="aclLines">
 		<div class="aclLine">
-		<?php echo $form->input('Permission/aro', array(
+		<?php echo $form->input('Permission.aro', array(
 											'options' => $aros, 
 											'label' => '',
 											'empty' => '--',
 											'class' => 'f-name'
 											)); ?>
-		<?php echo $form->input('Permission/type', array(
+		<?php echo $form->input('Permission.type', array(
 											'options' => $types, 
 											'label' => '',
 											'empty' => '--',
 											'class' => 'f-name'
 											)); ?>
 		exécuter l'action
-		<?php echo $form->input('Permission/action', array(
+		<?php echo $form->input('Permission.action', array(
 											'options' => $actions, 
 											'label' => '',
 											'empty' => '--',
 											'class' => 'f-name'
 											)); ?>
 		sur
-		<?php echo $form->input('Permission/aco', array(
+		<?php echo $form->input('Permission.aco', array(
 											'options' => $acos, 
 											'label' => '',
 											'empty' => '--',
 											'class' => 'f-name'
 											)); ?>
-											
-		
-		
-		
 		</div>
 	</div>
 	<p><br /></p>

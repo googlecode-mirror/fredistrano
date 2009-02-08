@@ -1,6 +1,5 @@
 <?php
-/* SVN FILE: $Id: xml.php 7296 2008-06-27 09:09:03Z gwoo $ */
-
+/* SVN FILE: $Id: xml.php 7945 2008-12-19 02:16:01Z gwoo $ */
 /**
  * XML handling for Cake.
  *
@@ -8,35 +7,32 @@
  *
  * PHP versions 4 and 5
  *
- * CakePHP(tm) :  Rapid Development Framework <http://www.cakephp.org/>
- * Copyright 2005-2008, Cake Software Foundation, Inc.
- *                     1785 E. Sahara Avenue, Suite 490-204
- *                     Las Vegas, Nevada 89104
+ * CakePHP(tm) :  Rapid Development Framework (http://www.cakephp.org)
+ * Copyright 2005-2008, Cake Software Foundation, Inc. (http://www.cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
  * @filesource
- * @copyright    Copyright 2005-2008, Cake Software Foundation, Inc.
- * @link         http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
- * @package      cake
- * @subpackage   cake.cake.libs
- * @since        CakePHP v .0.10.3.1400
- * @version			$Revision: 7296 $
- * @modifiedby		$LastChangedBy: gwoo $
- * @lastmodified	$Date: 2008-06-27 02:09:03 -0700 (Fri, 27 Jun 2008) $
- * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
+ * @copyright     Copyright 2005-2008, Cake Software Foundation, Inc. (http://www.cakefoundation.org)
+ * @link          http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
+ * @package       cake
+ * @subpackage    cake.cake.libs
+ * @since         CakePHP v .0.10.3.1400
+ * @version       $Revision: 7945 $
+ * @modifiedby    $LastChangedBy: gwoo $
+ * @lastmodified  $Date: 2008-12-18 18:16:01 -0800 (Thu, 18 Dec 2008) $
+ * @license       http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 App::import('Core', 'Set');
-
 /**
  * XML node.
  *
  * Single XML node in an XML tree.
  *
- * @package    cake
- * @subpackage cake.cake.libs
- * @since      CakePHP v .0.10.3.1400
+ * @package       cake
+ * @subpackage    cake.cake.libs
+ * @since         CakePHP v .0.10.3.1400
  */
 class XmlNode extends Object {
 /**
@@ -110,7 +106,7 @@ class XmlNode extends Object {
 
 		if (is_array($value) || is_object($value)) {
 			$this->normalize($value);
-		} elseif(!empty($value) || $value === 0 || $value === '0') {
+		} elseif (!empty($value) || $value === 0 || $value === '0') {
 			$this->createTextNode($value);
 		}
 	}
@@ -129,7 +125,19 @@ class XmlNode extends Object {
 		}
 		return false;
 	}
-
+/**
+ * Adds a namespace to the current node
+ *
+ * @param string $prefix The namespace prefix
+ * @param string $url The namespace DTD URL
+ * @return void
+ */
+	function removeNamespace($prefix) {
+		if (Xml::removeGlobalNs($prefix)) {
+			return true;
+		}
+		return false;
+	}
 /**
  * Creates an XmlNode object that can be appended to this document or a node in it
  *
@@ -184,9 +192,9 @@ class XmlNode extends Object {
 
 		if ($keyName !== null && !is_numeric($keyName)) {
 			$name = $keyName;
-		} elseif (isset($object->_name_) && !empty($object->_name_)) {
+		} elseif (!empty($object->_name_)) {
 			$name = $object->_name_;
-		} elseif (isset($object->name) && $object->name != null) {
+		} elseif (isset($object->name)) {
 			$name = $object->name;
 		} elseif ($options['format'] == 'attributes') {
 			$name = get_class($object);
@@ -375,15 +383,14 @@ class XmlNode extends Object {
 			return $return;
 		}
 
-		if (is_array($child) || is_object($child)) {
-			if (is_object($child) && is_a($child, 'XmlNode') && $this->compare($child)) {
+		if (is_object($child)) {
+			if ($this->compare($child)) {
 				trigger_error('Cannot append a node to itself.');
 				$return = false;
 				return $return;
 			}
-			if (is_array($child)) {
-				$child = Set::map($child);
-			}
+		} else if (is_array($child)) {
+			$child = Set::map($child);
 			if (is_array($child)) {
 				if (!is_a(current($child), 'XmlNode')) {
 					foreach ($child as $i => $childNode) {
@@ -396,21 +403,24 @@ class XmlNode extends Object {
 				}
 				return $child;
 			}
-			if (!is_a($child, 'XmlNode')) {
-				$child = $this->normalize($child, null, $options);
-			}
-
-			if (empty($child->namespace) && !empty($this->namespace)) {
-				$child->namespace = $this->namespace;
-			}
-		} elseif (is_string($child)) {
-			$attr = array();
-			if (func_num_args() >= 2 && is_array(func_get_arg(1))) {
+		} else {
+			$attributes = array();
+			if (func_num_args() >= 2) {
 				$attributes = func_get_arg(1);
 			}
-			$document = $this->document();
-			$child =& $document->createElement($child, null, $attributes);
+			$child =& $this->createNode($child, null, $attributes);
 		}
+
+		$child = $this->normalize($child, null, $options);
+
+		if (empty($child->namespace) && !empty($this->namespace)) {
+			$child->namespace = $this->namespace;
+		}
+
+		if (is_a($child, 'XmlNode')) {
+			$child->setParent($this);
+		}
+
 		return $child;
 	}
 /**
@@ -423,7 +433,8 @@ class XmlNode extends Object {
 		if (isset($this->children[0])) {
 			return $this->children[0];
 		} else {
-			return null;
+			$return = null;
+			return $return;
 		}
 	}
 /**
@@ -436,7 +447,8 @@ class XmlNode extends Object {
 		if (count($this->children) > 0) {
 			return $this->children[count($this->children) - 1];
 		} else {
-			return null;
+			$return = null;
+			return $return;
 		}
 	}
 /**
@@ -488,15 +500,17 @@ class XmlNode extends Object {
  * @access public
  */
 	function &nextSibling() {
+		$null = null;
 		$count = count($this->__parent->children);
 		for ($i = 0; $i < $count; $i++) {
-			if ($this->__parent->children == $this) {
+			if ($this->__parent->children[$i] == $this) {
 				if ($i >= $count - 1 || !isset($this->__parent->children[$i + 1])) {
-					return null;
+					return $null;
 				}
 				return $this->__parent->children[$i + 1];
 			}
 		}
+		return $null;
 	}
 /**
  * Gets a reference to the previous child node in the list of this node's parent.
@@ -505,15 +519,17 @@ class XmlNode extends Object {
  * @access public
  */
 	function &previousSibling() {
+		$null = null;
 		$count = count($this->__parent->children);
 		for ($i = 0; $i < $count; $i++) {
-			if ($this->__parent->children == $this) {
+			if ($this->__parent->children[$i] == $this) {
 				if ($i == 0 || !isset($this->__parent->children[$i - 1])) {
-					return null;
+					return $null;
 				}
 				return $this->__parent->children[$i - 1];
 			}
 		}
+		return $null;
 	}
 /**
  * Returns parent node.
@@ -591,8 +607,7 @@ class XmlNode extends Object {
 
 			if (is_array($this->attributes) && count($this->attributes) > 0) {
 				foreach ($this->attributes as $key => $val) {
-					$val = str_replace('"', '\"', $val);
-					$d .= ' ' . $key . '="' . h($val) . '"';
+					$d .= ' ' . $key . '="' . htmlspecialchars($val, ENT_QUOTES, Configure::read('App.encoding')) . '"';
 				}
 			}
 		}
@@ -631,8 +646,60 @@ class XmlNode extends Object {
 				}
 			}
 		}
-
 		return $d;
+	}
+/**
+ * Return array representation of current object.
+ *
+ * @param boolean $camelize true will camelize child nodes, false will not alter node names
+ * @return array Array representation
+ * @access public
+ */
+	function toArray($camelize = true) {
+		$out = $this->attributes;
+		$multi = null;
+
+		foreach ($this->children as $child) {
+			$key = $camelize ? Inflector::camelize($child->name) : $child->name;
+
+			if (is_a($child, 'XmlTextNode')) {
+				$out['value'] = $child->value;
+				continue;
+			} elseif (isset($child->children[0]) && is_a($child->children[0], 'XmlTextNode')) {
+				$value = $child->children[0]->value;
+
+				if ($child->attributes) {
+					$value = array_merge(array('value' => $value), $child->attributes);
+				}
+
+				if (isset($out[$child->name]) || isset($multi[$key])) {
+					if (!isset($multi[$key])) {
+						$multi[$key] = array($out[$child->name]);
+						unset($out[$child->name]);
+					}
+					$multi[$key][] = $value;
+				} else {
+					$out[$child->name] = $value;
+				}
+				continue;
+			} else {
+				$value = $child->toArray($camelize);
+			}
+
+			if (!isset($out[$key])) {
+				$out[$key] = $value;
+			} else {
+				if (!is_array($out[$key]) || !isset($out[$key][0])) {
+					$out[$key] = array($out[$key]);
+				}
+				$out[$key][] = $value;
+			}
+		}
+
+		if (isset($multi)) {
+			$out = array_merge($out, $multi);
+		}
+		return $out;
 	}
 /**
  * Returns data from toString when this object is converted to a string.
@@ -665,9 +732,9 @@ class XmlNode extends Object {
  *
  * Parses and stores XML data, representing the root of an XML document
  *
- * @package    cake
- * @subpackage cake.cake.libs
- * @since      CakePHP v .0.10.3.1400
+ * @package       cake
+ * @subpackage    cake.cake.libs
+ * @since         CakePHP v .0.10.3.1400
  */
 class Xml extends XmlNode {
 
@@ -734,7 +801,10 @@ class Xml extends XmlNode {
  * @param array $options Options to set up with
  */
 	function __construct($input = null, $options = array()) {
-		$defaults = array('root' => '#document', 'tags' => array(), 'namespaces' => array(), 'version' => '1.0', 'encoding' => 'UTF-8', 'format' => 'attributes');
+		$defaults = array(
+			'root' => '#document', 'tags' => array(), 'namespaces' => array(),
+			'version' => '1.0', 'encoding' => 'UTF-8', 'format' => 'attributes'
+		);
 		$options = array_merge($defaults, Xml::options(), $options);
 
 		foreach (array('version', 'encoding', 'namespaces') as $key) {
@@ -802,7 +872,7 @@ class Xml extends XmlNode {
 		for ($i = 0; $i < $count; $i++) {
 			$data = $vals[$i];
 			$data = array_merge(array('tag' => null, 'value' => null, 'attributes' => array()), $data);
-			switch($data['type']) {
+			switch ($data['type']) {
 				case "open" :
 					$xml =& $xml->createElement($data['tag'], $data['value'], $data['attributes']);
 				break;
@@ -920,6 +990,21 @@ class Xml extends XmlNode {
 		return parent::addNamespace($prefix, $url);
 	}
 /**
+ * Removes a namespace to the current document
+ *
+ * @param string $prefix The namespace prefix
+ * @return void
+ */
+	function removeNamespace($prefix) {
+		if ($count = count($this->children)) {
+			for ($i = 0; $i < $count; $i++) {
+				$this->children[$i]->removeNamespace($prefix);
+			}
+			return true;
+		}
+		return parent::removeNamespace($prefix);
+	}
+/**
  * Return string representation of current object.
  *
  * @return string String representation
@@ -1000,13 +1085,13 @@ class Xml extends XmlNode {
  */
 	function resolveNamespace($name, $url) {
 		$_this =& XmlManager::getInstance();
-		if ($url == null && in_array($name, array_keys($_this->defaultNamespaceMap))) {
+		if ($url == null && isset($_this->defaultNamespaceMap[$name])) {
 			$url = $_this->defaultNamespaceMap[$name];
 		} elseif ($url == null) {
 			return false;
 		}
 
-		if (!strpos($url, '://') && in_array($name, array_keys($_this->defaultNamespaceMap))) {
+		if (!strpos($url, '://') && isset($_this->defaultNamespaceMap[$name])) {
 			$_url = $_this->defaultNamespaceMap[$name];
 			$name = $url;
 			$url = $_url;
@@ -1031,9 +1116,10 @@ class Xml extends XmlNode {
  */
 	function removeGlobalNs($name) {
 		$_this =& XmlManager::getInstance();
-		if (in_array($name, array_keys($_this->namespaces))) {
+		if (isset($_this->namespaces[$name])) {
 			unset($_this->namespaces[$name]);
 			unset($this->namespaces[$name]);
+			return true;
 		} elseif (in_array($name, $_this->namespaces)) {
 			$keys = array_keys($_this->namespaces);
 			$count = count($keys);
@@ -1041,10 +1127,11 @@ class Xml extends XmlNode {
 				if ($_this->namespaces[$keys[$i]] == $name) {
 					unset($_this->namespaces[$keys[$i]]);
 					unset($this->namespaces[$keys[$i]]);
-					return;
+					return true;
 				}
 			}
 		}
+		return false;
 	}
 /**
  * Alias to Xml::removeNs
@@ -1052,8 +1139,8 @@ class Xml extends XmlNode {
  * @access public
  * @static
  */
-	function removeGlobalNamespace($name, $url = null) {
-		Xml::removeGlobalNs($name, $url);
+	function removeGlobalNamespace($name) {
+		return Xml::removeGlobalNs($name);
 	}
 /**
  * Sets/gets global XML options
@@ -1138,7 +1225,7 @@ class XmlElement extends XmlNode {
  * @return boolean
  */
 	function removeAttribute($attr) {
-		if ($this->attributes[$attr]) {
+		if (array_key_exists($attr, $this->attributes)) {
 			unset($this->attributes[$attr]);
 			return true;
 		}
@@ -1151,9 +1238,9 @@ class XmlElement extends XmlNode {
  *
  * Stores XML text data according to the encoding of the parent document
  *
- * @package    cake
- * @subpackage cake.cake.libs
- * @since      CakePHP v .1.2.6000
+ * @package       cake
+ * @subpackage    cake.cake.libs
+ * @since         CakePHP v .1.2.6000
  */
 class XmlTextNode extends XmlNode {
 /**
@@ -1175,9 +1262,6 @@ class XmlTextNode extends XmlNode {
  * @param mixed $value Node value
  */
 	function __construct($value = null) {
-		if (is_numeric($value)) {
-			$value = floatval($value);
-		}
 		$this->value = $value;
 	}
 /**
@@ -1217,7 +1301,7 @@ class XmlTextNode extends XmlNode {
 			$val = mb_convert_encoding($val,'UTF-8', 'HTML-ENTITIES');
 		}
 
-		if ($options['cdata'] === true && is_string($val)) {
+		if ($options['cdata'] === true && !is_numeric($val)) {
 			$val = '<![CDATA[' . $val . ']]>';
 		}
 
@@ -1276,7 +1360,7 @@ class XmlManager {
 	function &getInstance() {
 		static $instance = array();
 
-		if (!isset($instance[0]) || !$instance[0]) {
+		if (!$instance) {
 			$instance[0] =& new XmlManager();
 		}
 		return $instance[0];

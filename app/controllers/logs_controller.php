@@ -30,12 +30,7 @@ class LogsController extends AppController {
 	
 	var $uses = array('Project');
 	
-	var $helpers = array (
-		'Html',
-		'Form',
-		'Ajax',
-		'Pagination'
-	);
+	var $helpers = array ('Ajax','Pagination');
 	
 	var $authLocal = array (
 		'Logs'	=> 	array( 'entrance' )
@@ -57,10 +52,16 @@ class LogsController extends AppController {
 	}
 	
 	function index($project_id = '') {
-		$projects = $this->Project->find( 'list', array("`Project`.`log_path` != 'NULL'", "`Project`.`log_path` != ''"),'Project.name ASC');
+		$projects = $this->Project->find( 
+			'list', 
+			array(
+				'conditions' =>"`Project`.`log_path` != 'NULL'", "`Project`.`log_path` != ''",
+				'order'=>'Project.name ASC'
+			)
+		);
+		$this->set('projects', $projects);
 		$this->set('logs', $this->getLogList($project_id));
 		$this->set('project_id', $project_id);
-		$this->set('projects', $projects);
 	}// index
 	
 	function getLogList($id){
@@ -70,7 +71,7 @@ class LogsController extends AppController {
 		$logs = explode("\n", $logs['Project']['log_path']);
 		$this->set('logs', $logs);
 		return $logs;
-	}
+	}// getLogList
 	
 	function view() {
 		$this->layout = 'ajax';

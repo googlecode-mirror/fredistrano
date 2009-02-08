@@ -1,36 +1,34 @@
 <?php
-/* SVN FILE: $Id: string.php 7118 2008-06-04 20:49:29Z gwoo $ */
+/* SVN FILE: $Id: string.php 7945 2008-12-19 02:16:01Z gwoo $ */
 /**
  * String handling methods.
  *
  *
  * PHP versions 4 and 5
  *
- * CakePHP(tm) :  Rapid Development Framework <http://www.cakephp.org/>
- * Copyright 2005-2008, Cake Software Foundation, Inc.
- *			1785 E. Sahara Avenue, Suite 490-204
- *			Las Vegas, Nevada 89104
+ * CakePHP(tm) :  Rapid Development Framework (http://www.cakephp.org)
+ * Copyright 2005-2008, Cake Software Foundation, Inc. (http://www.cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
  * @filesource
- * @copyright		Copyright 2005-2008, Cake Software Foundation, Inc.
- * @link				http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
- * @package			cake
- * @subpackage		cake.cake.libs
- * @since			CakePHP(tm) v 1.2.0.5551
- * @version			$Revision: 7118 $
- * @modifiedby		$LastChangedBy: gwoo $
- * @lastmodified	$Date: 2008-06-04 13:49:29 -0700 (Wed, 04 Jun 2008) $
- * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
+ * @copyright     Copyright 2005-2008, Cake Software Foundation, Inc. (http://www.cakefoundation.org)
+ * @link          http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
+ * @package       cake
+ * @subpackage    cake.cake.libs
+ * @since         CakePHP(tm) v 1.2.0.5551
+ * @version       $Revision: 7945 $
+ * @modifiedby    $LastChangedBy: gwoo $
+ * @lastmodified  $Date: 2008-12-18 18:16:01 -0800 (Thu, 18 Dec 2008) $
+ * @license       http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 /**
  * String handling methods.
  *
  *
- * @package		cake
- * @subpackage	cake.cake.libs
+ * @package       cake
+ * @subpackage    cake.cake.libs
  */
 class String extends Object {
 /**
@@ -43,7 +41,7 @@ class String extends Object {
 	function &getInstance() {
 		static $instance = array();
 
-		if (!isset($instance[0]) || !$instance[0]) {
+		if (!$instance) {
 			$instance[0] =& new String();
 		}
 		return $instance[0];
@@ -124,12 +122,12 @@ class String extends Object {
  *
  * @param string $data The data to tokenize
  * @param string $separator The token to split the data on
- * @return string
+ * @return array
  * @access public
  * @static
  */
 	function tokenize($data, $separator = ',', $leftBound = '(', $rightBound = ')') {
-		if(empty($data) || is_array($data)) {
+		if (empty($data) || is_array($data)) {
 			return $data;
 		}
 
@@ -156,10 +154,10 @@ class String extends Object {
 				} else {
 					$buffer .= $data{$tmpOffset};
 				}
-				if ($leftBound != $rightBound) { 
+				if ($leftBound != $rightBound) {
 					if ($data{$tmpOffset} == $leftBound) {
 						$depth++;
-					} 
+					}
 					if ($data{$tmpOffset} == $rightBound) {
 						$depth--;
 					}
@@ -210,6 +208,7 @@ class String extends Object {
  * @param string $options An array of options, see description above
  * @return string
  * @access public
+ * @static
  */
 	function insert($str, $data, $options = array()) {
 		$options = array_merge(
@@ -233,14 +232,20 @@ class String extends Object {
 		if (array_keys($data) === array_keys(array_values($data))) {
 			$offset = 0;
 			while ($pos = strpos($str, '?', $offset)) {
-				$offset = $pos;
 				$val = array_shift($data);
+				$offset = $pos + strlen($val);
 				$str = substr_replace($str, $val, $pos, 1);
 			}
 		} else {
-			foreach ($data as $key => $val) {
+			$hashKeys = array_map('md5', array_keys($data));
+			$tempData = array_combine(array_keys($data), array_values($hashKeys));
+			foreach ($tempData as $key => $hashVal) {
 				$key = sprintf($format, preg_quote($key, '/'));
-				$str = preg_replace($key, $val, $str);
+				$str = preg_replace($key, $hashVal, $str);
+			}
+			$dataReplacements = array_combine($hashKeys, array_values($data));
+			foreach ($dataReplacements as $tmpHash => $data) {
+				$str = str_replace($tmpHash, $data, $str);
 			}
 		}
 
@@ -257,10 +262,11 @@ class String extends Object {
  * text but html is also available. The goal of this function is to replace all whitespace and uneeded markup around placeholders
  * that did not get replaced by Set::insert.
  *
- * @param string $str 
- * @param string $options 
- * @return void
+ * @param string $str
+ * @param string $options
+ * @return string
  * @access public
+ * @static
  */
 	function cleanInsert($str, $options) {
 		$clean = $options['clean'];
@@ -275,8 +281,8 @@ class String extends Object {
 		}
 		switch ($clean['method']) {
 			case 'html':
-				$clean = am(array(
-					'word' => '[\w,]+',
+				$clean = array_merge(array(
+					'word' => '[\w,.]+',
 					'andText' => true,
 					'replacement' => '',
 				), $clean);
@@ -293,8 +299,8 @@ class String extends Object {
 				}
 				break;
 			case 'text':
-				$clean = am(array(
-					'word' => '[\w,]+',
+				$clean = array_merge(array(
+					'word' => '[\w,.]+',
 					'gap' => '[\s]*(?:(?:and|or)[\s]*)?',
 					'replacement' => '',
 				), $clean);

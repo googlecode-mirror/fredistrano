@@ -24,7 +24,7 @@
  * @subpackage	app.views.logs
  */
  ?>
- <?php echo $form->create('Log', array('url' => '/projects/edit/'.$html->value('Project/id'), 'method' => 'post', 'class' => 'f-wrap-1'));?>
+ <?php echo $form->create('Log', array('url' => '/projects/edit/'.$html->value('Project.id'), 'method' => 'post', 'class' => 'f-wrap-1'));?>
 <fieldset>
 	<h3><?php __('Query parameters') ?></h3>
 	<?php
@@ -40,17 +40,17 @@
 											'onchange'	=> 'new Ajax.Updater(\'slave\', \''.$html->url('/logs/getLogList').'/\'+$(\'LogProjectId\')[$(\'LogProjectId\').selectedIndex].value ,{ method: \'get\', asynchronous:true, evalScripts:true});'
 											)); ?>
 		<div id="slave">
-		<?php echo $form->input('Search/logPath', array(
+		<?php echo $form->input('Search.logPath', array(
 											'options' => $logs, 
 											'label' => '<b>' . __('Log file', true). '</b>',
 											'selected' => $this->params['pass'][1],
 											'class' => 'f-name',
 											));?>									
 		</div>									
-		<?php e($form->input('Search/pattern', array('label' => '<b>'.__('Enter a search pattern', true).'</b>','size' => '20', 'class' => 'f-name')));?>
-		<?php echo $form->label('Search/reverse', '<b>'.__('Reverse order', true).'</b>') ?>
-		<?php echo  e($form->checkbox('Search/reverse', null, array('checked' => 'checked', 'class' => 'f-checkbox'))); ?>
-		<?php e($form->input('Search/maxsize', array('label' =>'<b>'. __('Max load size (in bytes)', true).'</b>', 'size' => '20', 'class' => 'f-name', 'value' => Configure::read('Log.maxSize'))));?>
+		<?php e($form->input('Search.pattern', array('label' => '<b>'.__('Enter a search pattern', true).'</b>','size' => '20', 'class' => 'f-name')));?>
+		<?php e($form->label('Search.reverse', '<b>'.__('Reverse order', true).'</b>')); ?>
+		<?php e($form->checkbox('Search.reverse', null, array('checked' => 'checked', 'class' => 'f-checkbox'))); ?>
+		<?php e($form->input('Search.maxsize', array('label' =>'<b>'. __('Max load size (in bytes)', true).'</b>', 'size' => '20', 'class' => 'f-name', 'value' => Configure::read('Log.maxSize'))));?>
 		<?php e($ajax->submit(__('Retrieve', true),array( 'url' => '/logs/view', 'update' => 'logs', 'class' => 'f-submit'))); ?>
 	</div>
 </fieldset>
@@ -59,6 +59,3 @@
 <h3><?php __('Log output') ?></h3>
 <div id="logs"><?php __('Please select a project in the query section') ?></div>
 <br/><br/><br/><br/>
-
-
-

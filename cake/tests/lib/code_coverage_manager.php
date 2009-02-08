@@ -1,5 +1,5 @@
 <?php
-/* SVN FILE: $Id: code_coverage_manager.php 7118 2008-06-04 20:49:29Z gwoo $ */
+/* SVN FILE: $Id: code_coverage_manager.php 7945 2008-12-19 02:16:01Z gwoo $ */
 /**
  * A class to manage all aspects for Code Coverage Analysis
  *
@@ -8,30 +8,28 @@
  * PHP versions 4 and 5
  *
  * CakePHP(tm) Tests <https://trac.cakephp.org/wiki/Developement/TestSuite>
- * Copyright 2005-2008, Cake Software Foundation, Inc.
- *								1785 E. Sahara Avenue, Suite 490-204
- *								Las Vegas, Nevada 89104
+ * Copyright 2005-2008, Cake Software Foundation, Inc. (http://www.cakefoundation.org)
  *
  *  Licensed under The Open Group Test Suite License
  *  Redistributions of files must retain the above copyright notice.
  *
  * @filesource
- * @copyright		Copyright 2005-2008, Cake Software Foundation, Inc.
- * @link				https://trac.cakephp.org/wiki/Developement/TestSuite CakePHP(tm) Tests
- * @package			cake
- * @subpackage		cake.cake.tests.lib
- * @since			CakePHP(tm) v 1.2.0.4433
- * @version			$Revision: 7118 $
- * @modifiedby		$LastChangedBy: gwoo $
- * @lastmodified	$Date: 2008-06-04 13:49:29 -0700 (Wed, 04 Jun 2008) $
- * @license			http://www.opensource.org/licenses/opengroup.php The Open Group Test Suite License
+ * @copyright     Copyright 2005-2008, Cake Software Foundation, Inc. (http://www.cakefoundation.org)
+ * @link          https://trac.cakephp.org/wiki/Developement/TestSuite CakePHP(tm) Tests
+ * @package       cake
+ * @subpackage    cake.cake.tests.lib
+ * @since         CakePHP(tm) v 1.2.0.4433
+ * @version       $Revision: 7945 $
+ * @modifiedby    $LastChangedBy: gwoo $
+ * @lastmodified  $Date: 2008-12-18 18:16:01 -0800 (Thu, 18 Dec 2008) $
+ * @license       http://www.opensource.org/licenses/opengroup.php The Open Group Test Suite License
  */
 App::import('Core', 'Folder');
 /**
  * Short description for class.
  *
- * @package    cake
- * @subpackage cake.cake.tests.lib
+ * @package       cake
+ * @subpackage    cake.cake.tests.lib
  */
 class CodeCoverageManager {
 /**
@@ -79,7 +77,7 @@ class CodeCoverageManager {
  */
 	function &getInstance() {
 		static $instance = array();
-		if (!isset($instance[0]) || !$instance[0]) {
+		if (!$instance) {
 			$instance[0] =& new CodeCoverageManager();
 		}
 		return $instance[0];
@@ -216,8 +214,8 @@ class CodeCoverageManager {
 
 		foreach ($testObjectFile as $num => $line) {
 			$num++;
-			$foundByManualFinder = array_key_exists($num, $execCodeLines) && trim($execCodeLines[$num]) != '';
-			$foundByXdebug = array_key_exists($num, $coverageData) && $coverageData[$num] !== -2;
+			$foundByManualFinder = isset($execCodeLines[$num]) && trim($execCodeLines[$num]) != '';
+			$foundByXdebug = isset($coverageData[$num]) && $coverageData[$num] !== -2;
 
 			// xdebug does not find all executable lines (zend engine fault)
 			if ($foundByManualFinder && $foundByXdebug) {
@@ -250,11 +248,11 @@ class CodeCoverageManager {
 		$lines = array();
 
 		for ($i = 1; $i < $total + 1; $i++) {
-			$foundByManualFinder = array_key_exists($i, $execCodeLines) && trim($execCodeLines[$i]) != '';
-			$foundByXdebug = array_key_exists($i, $coverageData);
+			$foundByManualFinder = isset($execCodeLines[$i]) && trim($execCodeLines[$i]) != '';
+			$foundByXdebug = isset($coverageData[$i]);
 
 			if (!$foundByManualFinder || !$foundByXdebug || $coverageData[$i] === -2) {
-				if (array_key_exists($i, $lines)) {
+				if (isset($lines[$i])) {
 					$lines[$i] = 'ignored ' . $lines[$i];
 				} else {
 					$lines[$i] = 'ignored';
@@ -263,7 +261,7 @@ class CodeCoverageManager {
 			}
 
 			if ($coverageData[$i] !== -1) {
-				if (array_key_exists($i, $lines)) {
+				if (isset($lines[$i])) {
 					$lines[$i] = 'covered ' . $lines[$i];
 				} else {
 					$lines[$i] = 'covered';
@@ -276,7 +274,7 @@ class CodeCoverageManager {
 			for ($j = 1; $j <= $numContextLines; $j++) {
 				$key = $i - $j;
 
-				if ($key > 0 && array_key_exists($key, $lines)) {
+				if ($key > 0 && isset($lines[$key])) {
 					if (strpos($lines[$key], 'end') !== false) {
 						$foundEndBlockInContextSearch = true;
 						if ($j < $numContextLines) {
@@ -317,17 +315,19 @@ class CodeCoverageManager {
 				}
 			}
 		}
+
 		// find the last "uncovered" or "show"n line and "end" its block
 		$lastShownLine = $manager->__array_strpos($lines, 'show', true);
-
 		if (isset($lines[$lastShownLine])) {
 			$lines[$lastShownLine] .= ' end';
 		}
+
 		// give the first start line another class so we can control the top padding of the entire results
 		$firstShownLine = $manager->__array_strpos($lines, 'show');
 		if (isset($lines[$firstShownLine])) {
 			$lines[$firstShownLine] .= ' realstart';
 		}
+
 		// get the output
 		$lineCount = $coveredCount = 0;
 		$report = '';
@@ -366,8 +366,8 @@ class CodeCoverageManager {
 
 		foreach ($testObjectFile as $num => $line) {
 			$num++;
-			$foundByManualFinder = array_key_exists($num, $execCodeLines) && trim($execCodeLines[$num]) != '';
-			$foundByXdebug = array_key_exists($num, $coverageData) && $coverageData[$num] !== -2;
+			$foundByManualFinder = isset($execCodeLines[$num]) && trim($execCodeLines[$num]) != '';
+			$foundByXdebug = isset($coverageData[$num]) && $coverageData[$num] !== -2;
 
 			if ($foundByManualFinder && $foundByXdebug) {
 				$lineCount++;
@@ -399,8 +399,8 @@ class CodeCoverageManager {
 
 			foreach ($testObjectFile as $num => $line) {
 				$num++;
-				$foundByManualFinder = array_key_exists($num, $execCodeLines[$objFilename]) && trim($execCodeLines[$objFilename][$num]) != '';
-				$foundByXdebug = array_key_exists($num, $coverageData[$objFilename]) && $coverageData[$objFilename][$num] !== -2;
+				$foundByManualFinder = isset($execCodeLines[$objFilename][$num]) && trim($execCodeLines[$objFilename][$num]) != '';
+				$foundByXdebug = isset($coverageData[$objFilename][$num]) && $coverageData[$objFilename][$num] !== -2;
 
 				if ($foundByManualFinder && $foundByXdebug) {
 					$class = 'uncovered';
@@ -438,8 +438,8 @@ class CodeCoverageManager {
 
 			foreach ($testObjectFile as $num => $line) {
 				$num++;
-				$foundByManualFinder = array_key_exists($num, $execCodeLines[$objFilename]) && trim($execCodeLines[$objFilename][$num]) != '';
-				$foundByXdebug = array_key_exists($num, $coverageData[$objFilename]) && $coverageData[$objFilename][$num] !== -2;
+				$foundByManualFinder = isset($execCodeLines[$objFilename][$num]) && trim($execCodeLines[$objFilename][$num]) != '';
+				$foundByXdebug = isset($coverageData[$objFilename][$num]) && $coverageData[$objFilename][$num] !== -2;
 
 				if ($foundByManualFinder && $foundByXdebug) {
 					$lineCount++;
@@ -515,6 +515,15 @@ class CodeCoverageManager {
 
 		if (!!$manager->pluginTest) {
 			$path = APP . 'plugins' . DS . $manager->pluginTest . DS . 'tests' . DS . 'groups';
+
+			$pluginPaths = Configure::read('pluginPaths');
+			foreach ($pluginPaths as $pluginPath) {
+				$tmpPath = $pluginPath . $manager->pluginTest . DS . 'tests' . DS. 'groups';
+				if (file_exists($tmpPath)) {
+					$path = $tmpPath;
+					break;
+				}
+			}
 		}
 		$path .= DS . $groupFile . $testManager->_groupExtension;
 
@@ -522,6 +531,7 @@ class CodeCoverageManager {
 			trigger_error('This group file does not exist!');
 			return array();
 		}
+
 		$result = array();
 		$groupContent = file_get_contents($path);
 		$ds = '\s*\.\s*DS\s*\.\s*';
@@ -535,6 +545,7 @@ class CodeCoverageManager {
 				'/\s*APP_TEST_CASES\s*/',
 				'/\s*CORE_TEST_CASES\s*/',
 			);
+
 			$replacements = array(DS, '', '');
 			$file = preg_replace($patterns, $replacements, $file);
 			$file = str_replace("'", '', $file);
@@ -666,7 +677,7 @@ class CodeCoverageManager {
 /**
  * Paints a code line for html output
  *
- * @package default
+ * @package       default
  * @access private
  */
 	function __paintCodeline($class, $num, $line) {
@@ -707,10 +718,22 @@ class CodeCoverageManager {
 		if ($isApp) {
 			$path .= APP_DIR . DS;
 		} elseif (!!$manager->pluginTest) {
-			$path .= APP_DIR . DS . 'plugins' . DS . $manager->pluginTest . DS;
+			$pluginPath = APP . 'plugins' . DS . $manager->pluginTest . DS;
+
+			$pluginPaths = Configure::read('pluginPaths');
+			foreach ($pluginPaths as $tmpPath) {
+				$tmpPath = $tmpPath . $manager->pluginTest . DS;
+				if (file_exists($tmpPath)) {
+					$pluginPath = $tmpPath;
+					break;
+				}
+			}
+
+			$path = $pluginPath;
 		} else {
 			$path = TEST_CAKE_CORE_INCLUDE_PATH;
 		}
+
 		return $path;
 	}
 /**

@@ -1,36 +1,34 @@
 <?php
-/* SVN FILE: $Id: xcache.php 7118 2008-06-04 20:49:29Z gwoo $ */
+/* SVN FILE: $Id: xcache.php 8004 2009-01-16 20:15:21Z gwoo $ */
 /**
  * Xcache storage engine for cache.
  *
  *
  * PHP versions 4 and 5
  *
- * CakePHP(tm) :  Rapid Development Framework <http://www.cakephp.org/>
- * Copyright 2005-2008, Cake Software Foundation, Inc.
- *								1785 E. Sahara Avenue, Suite 490-204
- *								Las Vegas, Nevada 89104
+ * CakePHP(tm) :  Rapid Development Framework (http://www.cakephp.org)
+ * Copyright 2005-2008, Cake Software Foundation, Inc. (http://www.cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
  * @filesource
- * @copyright		Copyright 2005-2008, Cake Software Foundation, Inc.
- * @link				http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
- * @package			cake
- * @subpackage		cake.cake.libs.cache
- * @since			CakePHP(tm) v 1.2.0.4947
- * @version			$Revision: 7118 $
- * @modifiedby		$LastChangedBy: gwoo $
- * @lastmodified	$Date: 2008-06-04 13:49:29 -0700 (Wed, 04 Jun 2008) $
- * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
+ * @copyright     Copyright 2005-2008, Cake Software Foundation, Inc. (http://www.cakefoundation.org)
+ * @link          http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
+ * @package       cake
+ * @subpackage    cake.cake.libs.cache
+ * @since         CakePHP(tm) v 1.2.0.4947
+ * @version       $Revision: 8004 $
+ * @modifiedby    $LastChangedBy: gwoo $
+ * @lastmodified  $Date: 2009-01-16 12:15:21 -0800 (Fri, 16 Jan 2009) $
+ * @license       http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 /**
  * Xcache storage engine for cache
  *
- * @link http://trac.lighttpd.net/xcache/ Xcache
- * @package		cake
- * @subpackage	cake.cake.libs.cache
+ * @link          http://trac.lighttpd.net/xcache/ Xcache
+ * @package       cake
+ * @subpackage    cake.cake.libs.cache
  */
 class XcacheEngine extends CacheEngine {
 /**
@@ -69,6 +67,8 @@ class XcacheEngine extends CacheEngine {
  * @access public
  */
 	function write($key, &$value, $duration) {
+		$expires = time() + $duration;
+		xcache_set($key.'_expires', $expires, $duration);
 		return xcache_set($key, $value, $duration);
 	}
 /**
@@ -80,6 +80,11 @@ class XcacheEngine extends CacheEngine {
  */
 	function read($key) {
 		if (xcache_isset($key)) {
+			$time = time();
+			$cachetime = intval(xcache_get($key.'_expires'));
+			if ($cachetime < $time || ($time + $this->settings['duration']) < $cachetime) {
+				return false;
+			}
 			return xcache_get($key);
 		}
 		return false;
@@ -101,16 +106,12 @@ class XcacheEngine extends CacheEngine {
  * @access public
  */
 	function clear() {
-		$result = true;
 		$this->__auth();
 		for ($i = 0, $max = xcache_count(XC_TYPE_VAR); $i < $max; $i++) {
-			if (!xcache_clear_cache(XC_TYPE_VAR, $i)) {
-				$result = false;
-				break;
-			}
+			xcache_clear_cache(XC_TYPE_VAR, $i);
 		}
 		$this->__auth(true);
-		return $result;
+		return xcache_count(XC_TYPE_VAR) == 0;
 	}
 /**
  * Populates and reverses $_SERVER authentication values
@@ -124,8 +125,8 @@ class XcacheEngine extends CacheEngine {
  */
 	function __auth($reverse = false) {
 		static $backup = array();
-		$keys = array('PHP_AUTH_USER', 'PHP_AUTH_PW');
-		foreach ($keys as $key) {
+		$keys = array('PHP_AUTH_USER' => 'user', 'PHP_AUTH_PW' => 'password');
+		foreach ($keys as $key => $setting) {
 			if ($reverse) {
 				if (isset($backup[$key])) {
 					$_SERVER[$key] = $backup[$key];
@@ -138,8 +139,13 @@ class XcacheEngine extends CacheEngine {
 				if (!empty($value)) {
 					$backup[$key] = $value;
 				}
-				$varName = '__' . $key;
-				$_SERVER[$key] = $this->settings[$varName];
+				if (!empty($this->settings[$setting])) {
+					$_SERVER[$key] = $this->settings[$setting];
+				} else if (!empty($this->settings[$key])) {
+					$_SERVER[$key] = $this->settings[$key];
+				} else {
+					$_SERVER[$key] = $value;
+				}
 			}
 		}
 	}

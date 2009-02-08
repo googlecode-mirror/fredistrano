@@ -1,5 +1,5 @@
 <?php
-/* SVN FILE: $Id: cake_test_fixture.php 7296 2008-06-27 09:09:03Z gwoo $ */
+/* SVN FILE: $Id: cake_test_fixture.php 7945 2008-12-19 02:16:01Z gwoo $ */
 /**
  * Short description for file.
  *
@@ -8,29 +8,27 @@
  * PHP versions 4 and 5
  *
  * CakePHP(tm) Tests <https://trac.cakephp.org/wiki/Developement/TestSuite>
- * Copyright 2005-2008, Cake Software Foundation, Inc.
- *								1785 E. Sahara Avenue, Suite 490-204
- *								Las Vegas, Nevada 89104
+ * Copyright 2005-2008, Cake Software Foundation, Inc. (http://www.cakefoundation.org)
  *
  *  Licensed under The Open Group Test Suite License
  *  Redistributions of files must retain the above copyright notice.
  *
  * @filesource
- * @copyright		Copyright 2005-2008, Cake Software Foundation, Inc.
- * @link				https://trac.cakephp.org/wiki/Developement/TestSuite CakePHP(tm) Tests
- * @package			cake
- * @subpackage		cake.cake.tests.libs
- * @since			CakePHP(tm) v 1.2.0.4667
- * @version			$Revision: 7296 $
- * @modifiedby		$LastChangedBy: gwoo $
- * @lastmodified	$Date: 2008-06-27 02:09:03 -0700 (Fri, 27 Jun 2008) $
- * @license			http://www.opensource.org/licenses/opengroup.php The Open Group Test Suite License
+ * @copyright     Copyright 2005-2008, Cake Software Foundation, Inc. (http://www.cakefoundation.org)
+ * @link          https://trac.cakephp.org/wiki/Developement/TestSuite CakePHP(tm) Tests
+ * @package       cake
+ * @subpackage    cake.cake.tests.libs
+ * @since         CakePHP(tm) v 1.2.0.4667
+ * @version       $Revision: 7945 $
+ * @modifiedby    $LastChangedBy: gwoo $
+ * @lastmodified  $Date: 2008-12-18 18:16:01 -0800 (Thu, 18 Dec 2008) $
+ * @license       http://www.opensource.org/licenses/opengroup.php The Open Group Test Suite License
  */
 /**
  * Short description for class.
  *
- * @package    cake
- * @subpackage cake.cake.tests.lib
+ * @package       cake
+ * @subpackage    cake.cake.tests.lib
  */
 class CakeTestFixture extends Object {
 /**
@@ -49,11 +47,9 @@ class CakeTestFixture extends Object {
 /**
  * Instantiate the fixture.
  *
- * @param object	Cake's DBO driver (e.g: DboMysql).
- *
  * @access public
  */
-	function __construct(&$db) {
+	function __construct() {
 		App::import('Model', 'Schema');
 		$this->Schema = new CakeSchema(array('name' => 'TestSuite', 'connection' => 'test_suite'));
 
@@ -68,38 +64,33 @@ class CakeTestFixture extends Object {
  */
 	function init() {
 		if (isset($this->import) && (is_string($this->import) || is_array($this->import))) {
-			$import = array();
+			$import = array_merge(array('connection' => 'default', 'records' => false), is_array($this->import) ? $this->import : array('model' => $this->import));
 
-			if (is_string($this->import) || is_array($this->import) && isset($this->import['model'])) {
-				$import = array_merge(array('records' => false), ife(is_array($this->import), $this->import, array()));
-				$import['model'] = ife(is_array($this->import), $this->import['model'], $this->import);
-			} elseif (isset($this->import['table'])) {
-				$import = array_merge(array('connection' => 'default', 'records' => false), $this->import);
-			}
-
-			if (isset($import['model']) && (class_exists($import['model']) || App::import('Model', $import['model']))) {
-				$model =& new $import['model'];
-
+			if (isset($import['model']) && App::import('Model', $import['model'])) {
+				ClassRegistry::config(array('ds' => $import['connection']));
+				$model =& ClassRegistry::init($import['model']);
 				$db =& ConnectionManager::getDataSource($model->useDbConfig);
 				$db->cacheSources = false;
 				$this->fields = $model->schema(true);
 				$this->fields[$model->primaryKey]['key'] = 'primary';
+				ClassRegistry::config(array('ds' => 'test_suite'));
+				ClassRegistry::flush();
 			} elseif (isset($import['table'])) {
 				$model =& new Model(null, $import['table'], $import['connection']);
 				$db =& ConnectionManager::getDataSource($import['connection']);
 				$db->cacheSources = false;
+				$model->useDbConfig = $import['connection'];
 				$model->name = Inflector::camelize(Inflector::singularize($import['table']));
 				$model->table = $import['table'];
 				$model->tablePrefix = $db->config['prefix'];
 				$this->fields = $model->schema(true);
 			}
 
-			if ($import['records'] !== false && isset($model) && isset($db)) {
+			if (isset($import['records']) && $import['records'] !== false && isset($model) && isset($db)) {
 				$this->records = array();
-
 				$query = array(
 					'fields' => array_keys($this->fields),
-					'table' => $db->name($model->table),
+					'table' => $db->fullTableName($model->table),
 					'alias' => $model->alias,
 					'conditions' => array(),
 					'order' => null,
@@ -121,7 +112,7 @@ class CakeTestFixture extends Object {
 		if (!isset($this->table)) {
 			$this->table = Inflector::underscore(Inflector::pluralize($this->name));
 		}
-				
+
 		if (!isset($this->primaryKey) && isset($this->fields['id'])) {
 			$this->primaryKey = 'id';
 		}
@@ -139,7 +130,9 @@ class CakeTestFixture extends Object {
 		}
 
 		$this->Schema->_build(array($this->table => $this->fields));
-		return ($db->execute($db->createSchema($this->Schema)) !== false);
+		return (
+			$db->execute($db->createSchema($this->Schema), array('log' => false)) !== false
+		);
 	}
 /**
  * Run after all tests executed, should return SQL statement to drop table for this fixture.
@@ -150,10 +143,12 @@ class CakeTestFixture extends Object {
  */
 	function drop(&$db) {
 		$this->Schema->_build(array($this->table => $this->fields));
-		return ($db->execute($db->dropSchema($this->Schema)) !== false);
+		return (
+			$db->execute($db->dropSchema($this->Schema), array('log' => false)) !== false
+		);
 	}
 /**
- * Run before each tests is executed, should return a set of SQL statements to insert records for the table 
+ * Run before each tests is executed, should return a set of SQL statements to insert records for the table
  * of this fixture could be executed successfully.
  *
  * @param object $db An instance of the database into which the records will be inserted
@@ -179,11 +174,15 @@ class CakeTestFixture extends Object {
  * truncate.
  *
  * @param object $db A reference to a db instance
- * @return void
+ * @return boolean
  * @access public
  */
 	function truncate(&$db) {
-		return $db->truncate($this->table);
+		$fullDebug = $db->fullDebug;
+		$db->fullDebug = false;
+		$return = $db->truncate($this->table);
+		$db->fullDebug = $fullDebug;
+		return $return;
 	}
 }
 ?>

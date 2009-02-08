@@ -25,16 +25,9 @@
  */
 class AppController extends Controller {
 	
-	var $helpers = array (
-		'Html',
-		'Form',
-		'Javascript'
-	);
+	var $helpers = array ('Html','Form','Javascript');
 
-	var $components = array (
-		'Aclite',
-		'RequestHandler'
-	);
+	var $components = array ('Aclite','RequestHandler');
 				
 	function beforeFilter() {
 		// Loading lang

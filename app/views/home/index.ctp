@@ -31,13 +31,17 @@
 	<div id='quick_start'>
 		<h3>Quick start</h3>
 		<ul>
-		<li><?php __('Access an existing project: ') ?>
-			<?php echo $form->select(
-								'Project/id', 
-								$projects, 
-								null, 
-								array('onchange' => "document.location = '".$this->base."/projects/view/'+$('ProjectId').value;"), 
-								true); ?>
+		<li>
+			<?php
+				__('Access an existing project: ');
+				echo $form->select(
+					'Project.id', 
+					$projects, 
+					null, 
+					array('onchange' => "document.location = '".$this->base."/projects/view/'+$('ProjectId').value;"), 
+					true
+				); 
+			?>
 		</li>
 		<li><?php echo $html->link(__('Create a new project', true),'/projects/add'); ?></li>
 		</ul>

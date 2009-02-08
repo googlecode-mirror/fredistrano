@@ -1,36 +1,34 @@
 <?php
-/* SVN FILE: $Id: html.php 7296 2008-06-27 09:09:03Z gwoo $ */
+/* SVN FILE: $Id: html.php 8004 2009-01-16 20:15:21Z gwoo $ */
 /**
  * Html Helper class file.
  *
  * Simplifies the construction of HTML elements.
  *
- * CakePHP(tm) :  Rapid Development Framework <http://www.cakephp.org/>
- * Copyright 2005-2008, Cake Software Foundation, Inc.
- *								1785 E. Sahara Avenue, Suite 490-204
- *								Las Vegas, Nevada 89104
+ * CakePHP(tm) :  Rapid Development Framework (http://www.cakephp.org)
+ * Copyright 2005-2008, Cake Software Foundation, Inc. (http://www.cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
  * @filesource
- * @copyright		Copyright 2005-2008, Cake Software Foundation, Inc.
- * @link				http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
- * @package			cake
- * @subpackage		cake.cake.libs.view.helpers
- * @since			CakePHP(tm) v 0.9.1
- * @version			$Revision: 7296 $
- * @modifiedby		$LastChangedBy: gwoo $
- * @lastmodified	$Date: 2008-06-27 02:09:03 -0700 (Fri, 27 Jun 2008) $
- * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
+ * @copyright     Copyright 2005-2008, Cake Software Foundation, Inc. (http://www.cakefoundation.org)
+ * @link          http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
+ * @package       cake
+ * @subpackage    cake.cake.libs.view.helpers
+ * @since         CakePHP(tm) v 0.9.1
+ * @version       $Revision: 8004 $
+ * @modifiedby    $LastChangedBy: gwoo $
+ * @lastmodified  $Date: 2009-01-16 12:15:21 -0800 (Fri, 16 Jan 2009) $
+ * @license       http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 /**
  * Html Helper class for easy use of HTML widgets.
  *
  * HtmlHelper encloses all methods needed while working with HTML pages.
  *
- * @package		cake
- * @subpackage	cake.cake.libs.view.helpers
+ * @package       cake
+ * @subpackage    cake.cake.libs.view.helpers
  */
 class HtmlHelper extends AppHelper {
 /*************************************************************************
@@ -233,12 +231,12 @@ class HtmlHelper extends AppHelper {
 
 		if (isset($attributes['link'])) {
 			if (isset($attributes['rel']) && $attributes['rel'] === 'icon') {
-				$out = sprintf($this->tags['metalink'], $attributes['link'], $this->_parseAttributes($attributes, array('link')));
+				$out = sprintf($this->tags['metalink'], $attributes['link'], $this->_parseAttributes($attributes, array('link'), ' ', ' '));
 				$attributes['rel'] = 'shortcut icon';
 			} else {
 				$attributes['link'] = $this->url($attributes['link'], true);
 			}
-			$out .= sprintf($this->tags['metalink'], $attributes['link'], $this->_parseAttributes($attributes, array('link')));
+			$out .= sprintf($this->tags['metalink'], $attributes['link'], $this->_parseAttributes($attributes, array('link'), ' ', ' '));
 		} else {
 			$out = sprintf($this->tags['meta'], $this->_parseAttributes($attributes, array('type')));
 		}
@@ -257,8 +255,10 @@ class HtmlHelper extends AppHelper {
  * @return string A meta tag containing the specified character set.
  */
 	function charset($charset = null) {
-		$charset = current(array_filter(array($charset, strtolower(Configure::read('App.encoding')), 'utf-8')));
-		return $this->output(sprintf($this->tags['charset'], $charset));
+		if (empty($charset)) {
+			$charset = strtolower(Configure::read('App.encoding'));
+		}
+		return $this->output(sprintf($this->tags['charset'], (!empty($charset) ? $charset : 'utf-8')));
 	}
 /**
  * Creates an HTML link.
@@ -289,8 +289,9 @@ class HtmlHelper extends AppHelper {
 			$escapeTitle = $htmlAttributes['escape'];
 			unset($htmlAttributes['escape']);
 		}
+
 		if ($escapeTitle === true) {
-			$title = htmlspecialchars($title, ENT_QUOTES);
+			$title = h($title);
 		} elseif (is_string($escapeTitle)) {
 			$title = htmlentities($title, ENT_QUOTES, $escapeTitle);
 		}
@@ -337,7 +338,7 @@ class HtmlHelper extends AppHelper {
 		if (strpos($path, '://') !== false) {
 			$url = $path;
 		} else {
-			if ($path{0} !== '/') {
+			if ($path[0] !== '/') {
 				$path = CSS_URL . $path;
 			}
 
@@ -345,15 +346,18 @@ class HtmlHelper extends AppHelper {
 				if (strpos($path, '.css') === false) {
 					$path .= '.css';
 				}
-				if ((Configure::read('Asset.timestamp') === true && Configure::read() > 0) || Configure::read('Asset.timestamp') === 'force') {
-					$path .= '?' . @filemtime(WWW_ROOT . str_replace('/', DS, $path));
-				}
+			}
+
+			$path = $this->webroot($path);
+
+			$url = $path;
+			if (strpos($path, '?') === false && ((Configure::read('Asset.timestamp') === true && Configure::read() > 0) || Configure::read('Asset.timestamp') === 'force')) {
+				$url .= '?' . @filemtime(WWW_ROOT . str_replace('/', DS, $path));
 			}
 
 			if (Configure::read('Asset.filter.css')) {
-				$path = str_replace(CSS_URL, 'ccss/', $path);
+				$url = str_replace(CSS_URL, 'ccss/', $url);
 			}
-			$url = $this->webroot($path);
 		}
 
 		if ($rel == 'import') {
@@ -428,11 +432,9 @@ class HtmlHelper extends AppHelper {
 	function image($path, $options = array()) {
 		if (is_array($path)) {
 			$path = $this->url($path);
-		} elseif ($path{0} === '/') {
+		} elseif ($path[0] === '/') {
 			$path = $this->webroot($path);
-		} elseif (strpos($path, '://') !== false) {
-			$path = $path;
-		} else {
+		} elseif (strpos($path, '://') === false) {
 			if (Configure::read('Asset.timestamp') == true && Configure::read() > 0) {
 				$path .= '?' . @filemtime(str_replace('/', DS, WWW_ROOT . IMAGES_URL . $path));
 			}
@@ -620,7 +622,7 @@ class HtmlHelper extends AppHelper {
 		$out = '';
 
 		$index = 1;
-		foreach($items as $key => $item) {
+		foreach ($items as $key => $item) {
 			if (is_array($item)) {
 				$item = $key . $this->nestedList($item, $attributes, $itemAttributes, $tag);
 			}

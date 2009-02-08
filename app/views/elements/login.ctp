@@ -35,9 +35,9 @@
 <div id="identificationForm" style="display: none;">
 	<?php echo $form->create('User', array('url' => $loginUrl, 'method' => 'post'));?>
 	    <fieldset>
-		    <?php echo $form->input('login', array('label' => __('Username', true), 'size' => 20, 'class' => 'f-name'));?>
-		    <?php echo $form->password('password', array('label' => __('Password', false), 'size' => 20, 'class' => 'f-name'));?>
-		    <?php echo $form->submit('login', array('class' => 'f-submit', 'label' => __('Login', true))) ?>
+		    <?php echo $form->input('User.login', array('label' => __('Username', true), 'size' => 20, 'class' => 'f-name'));?>
+		    <?php echo $form->password('User.password', array('label' => __('Password', false), 'size' => 20, 'class' => 'f-name'));?>
+		    <?php echo $form->submit('User.login', array('class' => 'f-submit', 'label' => __('Login', true))) ?>
 		</fieldset>
 	<?php echo $form->end();?>
 </div>

@@ -70,6 +70,8 @@ class HomeController extends AppController {
 	 */
 	function index() {
 		if ($this->Session->read('User')) {
+			$projects = $this->Project->find('list', array('order'=>'Project.name ASC'));
+			
 			$fields = array (
 				'id',
 				'project_id',
@@ -81,11 +83,8 @@ class HomeController extends AppController {
 			);
 			$order = 'DeploymentLog.created DESC';
 			$logs = $this->DeploymentLog->findAll(null, $fields, $order,10);
-
-			$projects = $this->Project->find('list');
-		
-			$this->set('logs', $logs);
-			$this->set('projects', $projects);
+			
+			$this->set(compact('logs','projects'));
 		}
 	}// index
 	

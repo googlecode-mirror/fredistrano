@@ -1,6 +1,5 @@
 <?php
-/* SVN FILE: $Id: helper.php 7296 2008-06-27 09:09:03Z gwoo $ */
-
+/* SVN FILE: $Id: helper.php 8004 2009-01-16 20:15:21Z gwoo $ */
 /**
  * Backend for helpers.
  *
@@ -8,26 +7,23 @@
  *
  * PHP versions 4 and 5
  *
- * CakePHP(tm) :  Rapid Development Framework <http://www.cakephp.org/>
- * Copyright 2005-2008, Cake Software Foundation, Inc.
- *								1785 E. Sahara Avenue, Suite 490-204
- *								Las Vegas, Nevada 89104
+ * CakePHP(tm) :  Rapid Development Framework (http://www.cakephp.org)
+ * Copyright 2005-2008, Cake Software Foundation, Inc. (http://www.cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
  * @filesource
- * @copyright		Copyright 2005-2008, Cake Software Foundation, Inc.
- * @link				http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
- * @package			cake
- * @subpackage		cake.cake.libs.view
- * @since			CakePHP(tm) v 0.2.9
- * @version			$Revision: 7296 $
- * @modifiedby		$LastChangedBy: gwoo $
- * @lastmodified	$Date: 2008-06-27 02:09:03 -0700 (Fri, 27 Jun 2008) $
- * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
+ * @copyright     Copyright 2005-2008, Cake Software Foundation, Inc. (http://www.cakefoundation.org)
+ * @link          http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
+ * @package       cake
+ * @subpackage    cake.cake.libs.view
+ * @since         CakePHP(tm) v 0.2.9
+ * @version       $Revision: 8004 $
+ * @modifiedby    $LastChangedBy: gwoo $
+ * @lastmodified  $Date: 2009-01-16 12:15:21 -0800 (Fri, 16 Jan 2009) $
+ * @license       http://www.opensource.org/licenses/mit-license.php The MIT License
  */
-
 /**
  * Included libs
  */
@@ -38,11 +34,10 @@ App::import('Core', 'Overloadable');
  *
  * Long description for class
  *
- * @package		cake
- * @subpackage	cake.cake.libs.view
+ * @package       cake
+ * @subpackage    cake.cake.libs.view
  */
 class Helper extends Overloadable {
-
 /**
  * List of helpers used by this helper
  *
@@ -180,7 +175,7 @@ class Helper extends Overloadable {
  * @return string  Full translated URL with base path.
  */
 	function url($url = null, $full = false) {
-		return Router::url($url, $full);
+		return Router::url($url, array('full' => $full, 'escape' => true));
 	}
 /**
  * Checks if a file exists when theme is used, if no file is found default location is returned
@@ -193,7 +188,9 @@ class Helper extends Overloadable {
 		if (!empty($this->themeWeb)) {
 			$os = env('OS');
 			if (!empty($os) && strpos($os, 'Windows') !== false) {
-				$path = str_replace('/', '\\', WWW_ROOT . $this->themeWeb  . $file);
+				if (strpos(WWW_ROOT . $this->themeWeb  . $file, '\\') !== false) {
+					$path = str_replace('/', '\\', WWW_ROOT . $this->themeWeb  . $file);
+				}
 			} else {
 				$path = WWW_ROOT . $this->themeWeb  . $file;
 			}
@@ -201,7 +198,10 @@ class Helper extends Overloadable {
 				$webPath = "{$this->webroot}" . $this->themeWeb . $file;
 			}
 		}
-		return str_replace('//', '/', $webPath);
+		if (strpos($webPath, '//') !== false) {
+			return str_replace('//', '/', $webPath);
+		}
+		return $webPath;
 	}
 
 /**
@@ -297,7 +297,7 @@ class Helper extends Overloadable {
 				$attribute = sprintf($attributeFormat, $key, $key);
 			}
 		} else {
-			$attribute = sprintf($attributeFormat, $key, ife($escape, h($value), $value));
+			$attribute = sprintf($attributeFormat, $key, ($escape ? h($value) : $value));
 		}
 		return $attribute;
 	}
@@ -327,7 +327,7 @@ class Helper extends Overloadable {
 
 		$model = $view->model;
 		$sameScope = $hasField = false;
-		$parts = array_values(Set::filter(preg_split('/\/|\./', $entity), true));
+		$parts = array_values(Set::filter(explode('.', $entity), true));
 
 		if (empty($parts)) {
 			return;
@@ -366,11 +366,11 @@ class Helper extends Overloadable {
 
 		switch (count($parts)) {
 			case 1:
-				if($view->modelScope === false) {
+				if ($view->modelScope === false) {
 					$view->model = $parts[0];
 				} else {
 					$view->field = $parts[0];
-					if($sameScope === false) {
+					if ($sameScope === false) {
 						$view->association = $parts[0];
 					}
 				}
@@ -580,7 +580,7 @@ class Helper extends Overloadable {
 
 		if (is_array($result)) {
 			$view =& ClassRegistry::getObject('view');
-			if(isset($result[$view->fieldSuffix])) {
+			if (isset($result[$view->fieldSuffix])) {
 				$result = $result[$view->fieldSuffix];
 			}
 		}
@@ -605,8 +605,9 @@ class Helper extends Overloadable {
  * @param array $options
  * @param string $key
  * @return array
+ * @access protected
  */
-	function __initInputField($field, $options = array()) {
+	function _initInputField($field, $options = array()) {
 		if ($field !== null) {
 			$this->setEntity($field);
 		}
@@ -645,24 +646,6 @@ class Helper extends Overloadable {
  */
 	function output($str) {
 		return $str;
-	}
-/**
- * Assigns values to tag templates.
- *
- * Finds a tag template by $keyName, and replaces $values's keys with
- * $values's keys.
- *
- * @param  string $keyName Name of the key in the tag array.
- * @param  array  $values  Values to be inserted into tag.
- * @return string Tag with inserted values.
- */
-	function assign($keyName, $values) {
-		$out = $keyName;
-		if (isset($this->tags) && isset($this->tags[$keyName])) {
-			$out = $this->tags[$keyName];
-		}
-
-		//$out =
 	}
 /**
  * Before render callback.  Overridden in subclasses.
@@ -736,30 +719,24 @@ class Helper extends Overloadable {
 			$this->__cleaned = $this->__tainted;
 		}
 
-		$this->__cleaned = str_replace(array("&amp;","&lt;","&gt;"),array("&amp;amp;","&amp;lt;","&amp;gt;"), $this->__cleaned);
-		$this->__cleaned = preg_replace('#(&\#*\w+)[\x00-\x20]+;#u',"$1;", $this->__cleaned);
-		$this->__cleaned = preg_replace('#(&\#x*)([0-9A-F]+);*#iu',"$1$2;", $this->__cleaned);
+		$this->__cleaned = str_replace(array("&amp;", "&lt;", "&gt;"), array("&amp;amp;", "&amp;lt;", "&amp;gt;"), $this->__cleaned);
+		$this->__cleaned = preg_replace('#(&\#*\w+)[\x00-\x20]+;#u', "$1;", $this->__cleaned);
+		$this->__cleaned = preg_replace('#(&\#x*)([0-9A-F]+);*#iu', "$1$2;", $this->__cleaned);
 		$this->__cleaned = html_entity_decode($this->__cleaned, ENT_COMPAT, "UTF-8");
-		$this->__cleaned = preg_replace('#(<*[^>]*[\x00-\x20\"\'])(on|xmlns)[^>]*>#iUu',"$1>", $this->__cleaned);
-		$this->__cleaned = preg_replace('#([a-z]*)[\x00-\x20]*=[\x00-\x20]*([\`\'\"]*)[\\x00-\x20]*j[\x00-\x20]*a[\x00-\x20]*v[\x00-\x20]*a[\x00-\x20]*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iUu','$1=$2nojavascript...', $this->__cleaned);
-		$this->__cleaned = preg_replace('#([a-z]*)[\x00-\x20]*=([\'\"]*)[\x00-\x20]*v[\x00-\x20]*b[\x00-\x20]*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iUu','$1=$2novbscript...', $this->__cleaned);
+		$this->__cleaned = preg_replace('#(<[^>]+[\x00-\x20\"\'\/])(on|xmlns)[^>]*>#iUu', "$1>", $this->__cleaned);
+		$this->__cleaned = preg_replace('#([a-z]*)[\x00-\x20]*=[\x00-\x20]*([\`\'\"]*)[\\x00-\x20]*j[\x00-\x20]*a[\x00-\x20]*v[\x00-\x20]*a[\x00-\x20]*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iUu', '$1=$2nojavascript...', $this->__cleaned);
+		$this->__cleaned = preg_replace('#([a-z]*)[\x00-\x20]*=([\'\"]*)[\x00-\x20]*v[\x00-\x20]*b[\x00-\x20]*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iUu', '$1=$2novbscript...', $this->__cleaned);
 		$this->__cleaned = preg_replace('#([a-z]*)[\x00-\x20]*=*([\'\"]*)[\x00-\x20]*-moz-binding[\x00-\x20]*:#iUu','$1=$2nomozbinding...', $this->__cleaned);
-		$this->__cleaned = preg_replace('#(<[^>]+)style[\x00-\x20]*=[\x00-\x20]*([\`\'\"]*).*expression[\x00-\x20]*\([^>]*>#iU',"$1>", $this->__cleaned);
-		$this->__cleaned = preg_replace('#(<[^>]+)style[\x00-\x20]*=[\x00-\x20]*([\`\'\"]*).*behaviour[\x00-\x20]*\([^>]*>#iU',"$1>", $this->__cleaned);
-		$this->__cleaned = preg_replace('#(<[^>]+)style[\x00-\x20]*=[\x00-\x20]*([\`\'\"]*).*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:*[^>]*>#iUu',"$1>",$this->__cleaned);
-		$this->__cleaned = preg_replace('#</*\w+:\w[^>]*>#i',"", $this->__cleaned);
+		$this->__cleaned = preg_replace('#([a-z]*)[\x00-\x20]*=([\'\"]*)[\x00-\x20]*data[\x00-\x20]*:#Uu', '$1=$2nodata...', $this->__cleaned);
+		$this->__cleaned = preg_replace('#(<[^>]+)style[\x00-\x20]*=[\x00-\x20]*([\`\'\"]*).*expression[\x00-\x20]*\([^>]*>#iU', "$1>", $this->__cleaned);
+		$this->__cleaned = preg_replace('#(<[^>]+)style[\x00-\x20]*=[\x00-\x20]*([\`\'\"]*).*behaviour[\x00-\x20]*\([^>]*>#iU', "$1>", $this->__cleaned);
+		$this->__cleaned = preg_replace('#(<[^>]+)style[\x00-\x20]*=[\x00-\x20]*([\`\'\"]*).*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:*[^>]*>#iUu', "$1>", $this->__cleaned);
+		$this->__cleaned = preg_replace('#</*\w+:\w[^>]*>#i', "", $this->__cleaned);
 		do {
 			$oldstring = $this->__cleaned;
-			$this->__cleaned = preg_replace('#</*(applet|meta|xml|blink|link|style|script|embed|object|iframe|frame|frameset|ilayer|layer|bgsound|title|base)[^>]*>#i',"",$this->__cleaned);
+			$this->__cleaned = preg_replace('#</*(applet|meta|xml|blink|link|style|script|embed|object|iframe|frame|frameset|ilayer|layer|bgsound|title|base)[^>]*>#i', "", $this->__cleaned);
 		} while ($oldstring != $this->__cleaned);
-	}
-
-/**
- * @deprecated
- */
-	function setFormTag($tagValue, $setScope = false) {
-		trigger_error(__('Helper::setFormTag() Deprecated, use Helper::setEntity()', true), E_USER_WARNING);
-		return $this->setEntity($tagValue, $setScope);
+		$this->__cleaned = str_replace(array("&amp;", "&lt;", "&gt;"), array("&amp;amp;", "&amp;lt;", "&amp;gt;"), $this->__cleaned);
 	}
 }
 ?>

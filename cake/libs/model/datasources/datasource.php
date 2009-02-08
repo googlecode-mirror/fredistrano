@@ -1,5 +1,5 @@
 <?php
-/* SVN FILE: $Id: datasource.php 7118 2008-06-04 20:49:29Z gwoo $ */
+/* SVN FILE: $Id: datasource.php 7945 2008-12-19 02:16:01Z gwoo $ */
 /**
  * DataSource base class
  *
@@ -7,32 +7,30 @@
  *
  * PHP versions 4 and 5
  *
- * CakePHP(tm) :  Rapid Development Framework <http://www.cakephp.org/>
- * Copyright 2005-2008, Cake Software Foundation, Inc.
- *								1785 E. Sahara Avenue, Suite 490-204
- *								Las Vegas, Nevada 89104
+ * CakePHP(tm) :  Rapid Development Framework (http://www.cakephp.org)
+ * Copyright 2005-2008, Cake Software Foundation, Inc. (http://www.cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
  * @filesource
- * @copyright		Copyright 2005-2008, Cake Software Foundation, Inc.
- * @link				http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
- * @package			cake
- * @subpackage		cake.cake.libs.model.datasources
- * @since			CakePHP(tm) v 0.10.5.1790
- * @version			$Revision: 7118 $
- * @modifiedby		$LastChangedBy: gwoo $
- * @lastmodified	$Date: 2008-06-04 13:49:29 -0700 (Wed, 04 Jun 2008) $
- * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
+ * @copyright     Copyright 2005-2008, Cake Software Foundation, Inc. (http://www.cakefoundation.org)
+ * @link          http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
+ * @package       cake
+ * @subpackage    cake.cake.libs.model.datasources
+ * @since         CakePHP(tm) v 0.10.5.1790
+ * @version       $Revision: 7945 $
+ * @modifiedby    $LastChangedBy: gwoo $
+ * @lastmodified  $Date: 2008-12-18 18:16:01 -0800 (Thu, 18 Dec 2008) $
+ * @license       http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 /**
  * DataSource base class
  *
  * Long description for file
  *
- * @package		cake
- * @subpackage	cake.cake.libs.model.datasources
+ * @package       cake
+ * @subpackage    cake.cake.libs.model.datasources
  */
 class DataSource extends Object {
 /**
@@ -77,6 +75,18 @@ class DataSource extends Object {
  * @access public
  */
 	var $took = null;
+/**
+ * The starting character that this DataSource uses for quoted identifiers.
+ *
+ * @var string
+ */
+	var $startQuote = null;
+/**
+ * The ending character that this DataSource uses for quoted identifiers.
+ *
+ * @var string
+ */
+	var $endQuote = null;
 /**
  * Enter description here...
  *
@@ -180,11 +190,9 @@ class DataSource extends Object {
 /**
  * Constructor.
  */
-	function __construct() {
+	function __construct($config = array()) {
 		parent::__construct();
-		if (func_num_args() > 0) {
-			$this->setConfig(func_get_arg(0));
-		}
+		$this->setConfig($config);
 	}
 /**
  * Caches/returns cached results for child instances
@@ -195,22 +203,18 @@ class DataSource extends Object {
 		if ($this->cacheSources === false) {
 			return null;
 		}
-		if ($this->_sources != null) {
+
+		if ($this->_sources !== null) {
 			return $this->_sources;
 		}
 
-		if (Configure::read() > 0) {
-			$expires = "+30 seconds";
-		} else {
-			$expires = "+999 days";
-		}
-
-		$key = ConnectionManager::getSourceName($this) . '_' . Inflector::slug($this->config['database']) . '_list';
+		$key = ConnectionManager::getSourceName($this) . '_' . $this->config['database'] . '_list';
+		$key = preg_replace('/[^A-Za-z0-9_\-.+]/', '_', $key);
 		$sources = Cache::read($key, '_cake_model_');
 
-		if ($sources == null) {
+		if (empty($sources)) {
 			$sources = $data;
-			Cache::write($key, $data, array('duration' => $expires, 'config' => '_cake_model_'));
+			Cache::write($key, $data, '_cake_model_');
 		}
 
 		$this->_sources = $sources;
@@ -221,9 +225,11 @@ class DataSource extends Object {
  *
  * @return array
  */
-	function sources() {
-		$return = array_map('strtolower', $this->listSources());
-		return $return;
+	function sources($reset = false) {
+		if ($reset === true) {
+			$this->_sources = null;
+		}
+		return array_map('strtolower', $this->listSources());
 	}
 /**
  * Returns a Model description (metadata) or null if none found.
@@ -366,14 +372,10 @@ class DataSource extends Object {
  * Sets the configuration for the DataSource
  *
  * @param array $config The configuration array
+ * @return void
  */
-	function setConfig($config) {
-		if (is_array($this->_baseConfig)) {
-			$this->config = $this->_baseConfig;
-			foreach ($config as $key => $val) {
-				$this->config[$key] = $val;
-			}
-		}
+	function setConfig($config = array()) {
+		$this->config = array_merge($this->_baseConfig, $this->config, $config);
 	}
 /**
  * Cache the DataSource description
@@ -385,11 +387,6 @@ class DataSource extends Object {
 		if ($this->cacheSources === false) {
 			return null;
 		}
-		if (Configure::read() > 0) {
-			$expires = "+15 seconds";
-		} else {
-			$expires = "+999 days";
-		}
 
 		if ($data !== null) {
 			$this->__descriptions[$object] =& $data;
@@ -400,7 +397,7 @@ class DataSource extends Object {
 
 		if (empty($cache)) {
 			$cache = $data;
-			Cache::write($key, $cache, array('duration' => $expires, 'config' => '_cake_model_'));
+			Cache::write($key, $cache, '_cake_model_');
 		}
 
 		return $cache;
@@ -424,7 +421,7 @@ class DataSource extends Object {
 			$val = null;
 
 			if (strpos($query, $key) !== false) {
-				switch($key) {
+				switch ($key) {
 					case '{$__cakeID__$}':
 						if (isset($data[$model->alias]) || isset($data[$association])) {
 							if (isset($data[$model->alias][$model->primaryKey])) {

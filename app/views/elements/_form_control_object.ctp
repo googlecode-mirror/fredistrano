@@ -33,7 +33,7 @@
 	}
 ?>
 
-<?php echo $form->input('name', array( 
+<?php echo $form->input('ControlObject.name', array( 
 								'label' => '<b>' . __('Name', true). '<span class="req">*</span></b>',
 								'size' => '60',
 								'class' => 'f-name',
@@ -41,9 +41,9 @@
 								));
 ?>
 	
-<?php echo $form->hidden('id') ?>
+<?php echo $form->hidden('ControlObject.id') ?>
 
-<?php echo $form->input('parent_id', array(
+<?php echo $form->input('ControlObject.parent_id', array(
 									'options' => $controlObjects, 
 									'label' => '<b>' . __('Parent', true). '</b>',
 									'empty' => '--',

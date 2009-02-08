@@ -27,18 +27,11 @@ class ProjectsController extends AppController {
 
 	var $name = 'Projects';
 	
-	var $helpers = array (
-		'Html',
-		'Form',
-		'Ajax',
-		'Fbollon'
-	);
+	var $helpers = array ('Ajax','Fbollon');
 
     var $paginate = array('limit' => 15, 'page' => 1, 'order' => 'name'); 
 
-	var $uses = array (
-		'Project'
-	);
+	var $uses = array ('Project');
 
 	var $authLocal = array (
 		'Projects'	=> 	array( 'entrance' ), 
@@ -74,7 +67,7 @@ class ProjectsController extends AppController {
 			'link' => '/deploymentLogs'
 		);
 		$this->set("context_menu", $tab);
-	}
+	}// beforeRender
 
 	// Public actions -----------------------------------------------------------
 	/**
@@ -89,12 +82,11 @@ class ProjectsController extends AppController {
 	 * @param string $id ID of the project to be viewed
 	 */
 	function view($id = null) {
-		if (!$id or !$this->Project->read(null, $id)) {
+		if (!$id or !($project = $this->Project->read(null, $id))) {
 			$this->Session->setFlash(__('Invalid id.', true));
 			$this->redirect('/projects/index');
 			exit();
 		}
-		$project = $this->Project->read(null, $id);
 		$this->set('project', $project);
 		$this->set('deploymentMethod', $this->Project->getMethodName($project['Project']['method']));
 	}// view
@@ -121,11 +113,11 @@ class ProjectsController extends AppController {
 	function edit($id = null) {
 		$this->_initializeLists();
 		if (empty ($this->data)) {
-			if (!$id or !$this->Project->read(null, $id)) {
+			if (!$id or !($project = $this->Project->read(null, $id))) {
 				$this->Session->setFlash(__('Invalid id.', true));
 				$this->redirect('/projects/index');
 			}
-			$this->data = $this->Project->read(null, $id);
+			$this->data = $project;
 			
 		} else {
 			if ($this->Project->save($this->data)) {
@@ -154,7 +146,7 @@ class ProjectsController extends AppController {
 	
 	function _initializeLists() {
 		$this->set('deploymentMethods', $this->Project->deploymentMethods);
-	}
+	}// _initializeLists
 	
 }// ProjectsController
 ?>

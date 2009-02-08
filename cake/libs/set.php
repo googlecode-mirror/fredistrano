@@ -1,66 +1,41 @@
 <?php
-/* SVN FILE: $Id: set.php 7296 2008-06-27 09:09:03Z gwoo $ */
+/* SVN FILE: $Id: set.php 8004 2009-01-16 20:15:21Z gwoo $ */
 /**
  * Library of array functions for Cake.
  *
  * PHP versions 4 and 5
  *
- * CakePHP(tm) :  Rapid Development Framework <http://www.cakephp.org/>
- * Copyright 2005-2008, Cake Software Foundation, Inc.
- *								1785 E. Sahara Avenue, Suite 490-204
- *								Las Vegas, Nevada 89104
+ * CakePHP(tm) :  Rapid Development Framework (http://www.cakephp.org)
+ * Copyright 2005-2008, Cake Software Foundation, Inc. (http://www.cakefoundation.org)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
  * @filesource
- * @copyright		Copyright 2005-2008, Cake Software Foundation, Inc.
- * @link				http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
- * @package			cake
- * @subpackage		cake.cake.libs
- * @since			CakePHP(tm) v 1.2.0
- * @version			$Revision: 7296 $
- * @modifiedby		$LastChangedBy: gwoo $
- * @lastmodified	$Date: 2008-06-27 02:09:03 -0700 (Fri, 27 Jun 2008) $
- * @license			http://www.opensource.org/licenses/mit-license.php The MIT License
+ * @copyright     Copyright 2005-2008, Cake Software Foundation, Inc. (http://www.cakefoundation.org)
+ * @link          http://www.cakefoundation.org/projects/info/cakephp CakePHP(tm) Project
+ * @package       cake
+ * @subpackage    cake.cake.libs
+ * @since         CakePHP(tm) v 1.2.0
+ * @version       $Revision: 8004 $
+ * @modifiedby    $LastChangedBy: gwoo $
+ * @lastmodified  $Date: 2009-01-16 12:15:21 -0800 (Fri, 16 Jan 2009) $
+ * @license       http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 /**
  * Class used for manipulation of arrays.
  *
  * Long description for class
  *
- * @package		cake
- * @subpackage	cake.cake.libs
+ * @package       cake
+ * @subpackage    cake.cake.libs
  */
 class Set extends Object {
 /**
- * Value of the Set object.
+ * Deprecated
  *
- * @var array
- * @access public
  */
 	var $value = array();
-/**
- * Constructor. Defaults to an empty array.
- *
- * @access public
- */
-	function __construct() {
-		if (func_num_args() == 1 && is_array(func_get_arg(0))) {
-			$this->value = func_get_arg(0);
-		} else {
-			$this->value = func_get_args();
-		}
-	}
-/**
- * Returns the contents of the Set object
- *
- * @return array
- * @access public
- */
-	function &get() {
-		return $this->value;
-	}
 /**
  * This function can be thought of as a hybrid between PHP's array_merge and array_merge_recursive. The difference
  * to the two is that if an array key contains another array then the function behaves recursive (unlike array_merge)
@@ -72,27 +47,13 @@ class Set extends Object {
  * @param array $arr2 Array to merge with
  * @return array Merged array
  * @access public
+ * @static
  */
 	function merge($arr1, $arr2 = null) {
 		$args = func_get_args();
 
-		if (isset($this) && is_a($this, 'set')) {
-			$backtrace = debug_backtrace();
-			$previousCall = strtolower($backtrace[1]['class'].'::'.$backtrace[1]['function']);
-			if ($previousCall != 'set::merge') {
-				$r =& $this->value;
-				array_unshift($args, null);
-			}
-		}
-		if (!isset($r)) {
-			$r = (array)current($args);
-		}
-
+		$r = (array)current($args);
 		while (($arg = next($args)) !== false) {
-			if (is_a($arg, 'set')) {
-				$arg = $arg->get();
-			}
-
 			foreach ((array)$arg as $key => $val)	 {
 				if (is_array($val) && isset($r[$key]) && is_array($r[$key])) {
 					$r[$key] = Set::merge($r[$key], $val);
@@ -112,17 +73,17 @@ class Set extends Object {
  * @param boolean $isArray Force to tell $var is an array when $var is empty
  * @return mixed Either filtered array, or true/false when in callback
  * @access public
+ * @static
  */
 	function filter($var, $isArray = false) {
 		if (is_array($var) && (!empty($var) || $isArray)) {
 			return array_filter($var, array('Set', 'filter'));
-		} else {
-			if ($var === 0 || $var === '0' || !empty($var)) {
-				return true;
-			} else {
-				return false;
-			}
 		}
+
+		if ($var === 0 || $var === '0' || !empty($var)) {
+			return true;
+		}
+		return false;
 	}
 /**
  * Pushes the differences in $array2 onto the end of $array
@@ -131,9 +92,13 @@ class Set extends Object {
  * @param mixed $array2 Differences to push
  * @return array Combined array
  * @access public
+ * @static
  */
-	function pushDiff($array = null, $array2 = null) {
-		if ($array2 !== null && is_array($array2)) {
+	function pushDiff($array, $array2) {
+		if (empty($array) && !empty($array2)) {
+			return $array2;
+		}
+		if (!empty($array) && !empty($array2)) {
 			foreach ($array2 as $key => $value) {
 				if (!array_key_exists($key, $array)) {
 					$array[$key] = $value;
@@ -143,14 +108,8 @@ class Set extends Object {
 					}
 				}
 			}
-			return $array;
 		}
-
-		if (!isset($this->value)) {
-			$this->value = array();
-		}
-		$this->value = Set::pushDiff($this->value, Set::__array($array));
-		return $this->value;
+		return $array;
 	}
 /**
  * Maps the contents of the Set object to an object hierarchy.
@@ -160,16 +119,15 @@ class Set extends Object {
  * @param string $tmp A temporary class name used as $class if $class is an array
  * @return object Hierarchical object
  * @access public
+ * @static
  */
 	function map($class = 'stdClass', $tmp = 'stdClass') {
 		if (is_array($class)) {
 			$val = $class;
 			$class = $tmp;
-		} elseif (is_a($this, 'set')) {
-			$val = $this->get();
 		}
 
-		if (empty($val) || $val == null) {
+		if (empty($val)) {
 			return null;
 		}
 		return Set::__map($val, $class);
@@ -187,10 +145,8 @@ class Set extends Object {
  * @access private
  */
 	function __array($array) {
-		if ($array == null) {
-			$array = $this->value;
-		} elseif (is_object($array) && (is_a($array, 'set'))) {
-			$array = $array->get();
+		if (empty($array)) {
+			$array = array();
 		} elseif (is_object($array)) {
 			$array = get_object_vars($array);
 		} elseif (!is_array($array)) {
@@ -212,6 +168,7 @@ class Set extends Object {
  * @param boolean $primary whether to assign first array key as the _name_
  * @return mixed Mapped object
  * @access private
+ * @static
  */
 	function __map(&$array, $class, $primary = false) {
 		if ($class === true) {
@@ -222,22 +179,44 @@ class Set extends Object {
 		if (is_array($array)) {
 			$keys = array_keys($array);
 			foreach ($array as $key => $value) {
-				if($keys[0] === $key && $class !== true) {
+				if ($keys[0] === $key && $class !== true) {
 					$primary = true;
 				}
 				if (is_numeric($key)) {
 					if (is_object($out)) {
 						$out = get_object_vars($out);
 					}
-					$out[$key] = Set::__map($value, $class, true);
-				} elseif ($primary === true && is_array($value)) {
-					$out->_name_ = $key;
-					$primary = false;
-					foreach($value as $key2 => $value2) {
-						$out->{$key2} = Set::__map($value2, true);
+					$out[$key] = Set::__map($value, $class);
+					if (is_object($out[$key])) {
+						if ($primary !== true && is_array($value) && Set::countDim($value, true) === 2) {
+							if (!isset($out[$key]->_name_)) {
+								$out[$key]->_name_ = $primary;
+							}
+						}
+					}
+				} elseif (is_array($value)) {
+					if ($primary === true) {
+						if (!isset($out->_name_)) {
+							$out->_name_ = $key;
+						}
+						$primary = false;
+						foreach ($value as $key2 => $value2) {
+							$out->{$key2} = Set::__map($value2, true);
+						}
+					} else {
+						if (!is_numeric($key)) {
+							$out->{$key} = Set::__map($value, true, $key);
+							if (is_object($out->{$key}) && !is_numeric($key)) {
+								if (!isset($out->{$key}->_name_)) {
+									$out->{$key}->_name_ = $key;
+								}
+							}
+						} else {
+							$out->{$key} = Set::__map($value, true);
+						}
 					}
 				} else {
-					$out->{$key} = Set::__map($value, $class);
+					$out->{$key} = $value;
 				}
 			}
 		} else {
@@ -251,13 +230,14 @@ class Set extends Object {
  * @param array $array The array to check.  If null, the value of the current Set object
  * @return boolean true if values are numeric, false otherwise
  * @access public
+ * @static
  */
 	function numeric($array = null) {
-		if ($array == null && (is_a($this, 'set') || is_a($this, 'Set'))) {
-			$array = $this->get();
+		if (empty($array)) {
+			return null;
 		}
 
-		if ($array == range(0, count($array) - 1)) {
+		if ($array === range(0, count($array) - 1)) {
 			return true;
 		}
 
@@ -287,11 +267,10 @@ class Set extends Object {
  * @param mixed $list can be an array or a comma-separated list.
  * @return string the value of the array key or null if no match
  * @access public
+ * @static
  */
 	function enum($select, $list = null) {
-		if (empty($list) && is_a($this, 'Set')) {
-			$list = $this->get();
-		} elseif (empty($list)) {
+		if (empty($list)) {
 			$list = array('no', 'yes');
 		}
 
@@ -311,6 +290,7 @@ class Set extends Object {
  * @param array		$keys An array containing one or more Set::extract()-style key paths
  * @return array	An array of strings extracted from $keys and formatted with $format
  * @access public
+ * @static
  */
 	function format($data, $format, $keys) {
 
@@ -368,7 +348,7 @@ class Set extends Object {
  * - /User[id>2] (selects all Users with an id > 2)
  * - /User[id>2][<5] (selects all Users with an id > 2 but < 5)
  * - /Post/Comment[author_name=john]/../name (Selects the name of all Posts that have at least one Comment written by john)
- * - /Posts[title] (Selects all Posts that have a 'name' key)
+ * - /Posts[name] (Selects all Posts that have a 'name' key)
  * - /Comment/.[1] (Selects the contents of the first comment)
  * - /Comment/.[:last] (Selects the last comment)
  * - /Comment/.[:first] (Selects the first comment)
@@ -386,12 +366,13 @@ class Set extends Object {
  * @param string $options Currently only supports 'flatten' which can be disabled for higher XPath-ness
  * @return array An array of matched items
  * @access public
+ * @static
  */
 	function extract($path, $data = null, $options = array()) {
-		if (empty($data) && is_string($path) && $path{0} == '/') {
+		if (empty($data) && is_string($path) && $path{0} === '/') {
 			return array();
 		}
-		if (is_string($data) && $data{0} == '/') {
+		if (is_string($data) && $data{0} === '/') {
 			$tmp = $path;
 			$path = $data;
 			$data = $tmp;
@@ -399,16 +380,16 @@ class Set extends Object {
 		if (is_array($path) || empty($data) || is_object($path) || empty($path)) {
 			return Set::classicExtract($path, $data);
 		}
-		if ($path == '/') {
+		if ($path === '/') {
 			return $data;
 		}
 		$contexts = $data;
-		$options = am(array('flatten' => true), $options);
+		$options = array_merge(array('flatten' => true), $options);
 		if (!isset($contexts[0])) {
 			$contexts = array($data);
 		}
-
 		$tokens = array_slice(preg_split('/(?<!=)\/(?![a-z]*\])/', $path), 1);
+
 		do {
 			$token = array_shift($tokens);
 			$conditions = false;
@@ -417,43 +398,72 @@ class Set extends Object {
 				$token = substr($token, 0, strpos($token, '['));
 			}
 			$matches = array();
-			$i = 0;
-			$contextsCount = count($contexts);
 			foreach ($contexts as $key => $context) {
-				$i++;
 				if (!isset($context['trace'])) {
-					$context = array('trace' => array(), 'item' => $context, 'key' => null);
+					$context = array('trace' => array(null), 'item' => $context, 'key' => $key);
 				}
-				if ($token == '..') {
-					$context['item'] = Set::extract(join('/', $context['trace']), $data);
+				if ($token === '..') {
+					if (count($context['trace']) == 1) {
+						$context['trace'][] = $context['key'];
+					}
+					$parent = join('/', $context['trace']) . '/.';
+					$context['item'] = Set::extract($parent, $data);
 					$context['key'] = array_pop($context['trace']);
-					$context['item'] = $context['item'][0][$context['key']];
+					if (isset($context['trace'][1]) && $context['trace'][1] > 0) {
+						$context['item'] = $context['item'][0];
+					} else {
+						$context['item'] = $context['item'][$key];
+					}
 					$matches[] = $context;
 					continue;
 				}
-
 				$match = false;
-				if ($token == '@*' && is_array($context['item'])) {
+				if ($token === '@*' && is_array($context['item'])) {
 					$matches[] = array(
-						'trace' => am($context['trace'], $key),
+						'trace' => array_merge($context['trace'], (array)$key),
 						'key' => $key,
 						'item' => array_keys($context['item']),
 					);
 				} elseif (is_array($context['item']) && array_key_exists($token, $context['item'])) {
 					$items = $context['item'][$token];
-					if (!is_array($items) || !isset($items[0])) {
+					if (!is_array($items)) {
 						$items = array($items);
+					} elseif (!isset($items[0])) {
+						$current = current($items);
+						if ((is_array($current) && count($items) <= 1) || !is_array($current)) {
+							$items = array($items);
+						}
 					}
-					foreach ($items as $item) {
+
+					foreach ($items as $key => $item) {
+						$ctext = array($context['key']);
+						if (!is_numeric($key)) {
+							$ctext[] = $token;
+							$token = array_shift($tokens);
+							if (isset($items[$token])) {
+								$ctext[] = $token;
+								$item = $items[$token];
+								$matches[] = array(
+									'trace' => array_merge($context['trace'], $ctext),
+									'key' => $key,
+									'item' => $item,
+								);
+								break;
+							}
+						} else {
+							$key = $token;
+						}
+
 						$matches[] = array(
-							'trace' => am($context['trace'], $context['key']),
-							'key' => $token,
+							'trace' => array_merge($context['trace'], $ctext),
+							'key' => $key,
 							'item' => $item,
 						);
 					}
 				} elseif (($key === $token || (ctype_digit($token) && $key == $token) || $token === '.')) {
+					$context['trace'][] = $key;
 					$matches[] = array(
-						'trace' => am($context['trace'], $key),
+						'trace' => $context['trace'],
 						'key' => $key,
 						'item' => $context['item'],
 					);
@@ -464,7 +474,7 @@ class Set extends Object {
 					$filtered = array();
 					$length = count($matches);
 					foreach ($matches as $i => $match) {
-						if (Set::matches(array($condition), $match['item'], $i+1, $length)) {
+						if (Set::matches(array($condition), $match['item'], $i + 1, $length)) {
 							$filtered[] = $match;
 						}
 					}
@@ -472,12 +482,14 @@ class Set extends Object {
 				}
 			}
 			$contexts = $matches;
+
 			if (empty($tokens)) {
 				break;
 			}
 		} while(1);
 
 		$r = array();
+
 		foreach ($matches as $match) {
 			if ((!$options['flatten'] || is_array($match['item'])) && !is_int($match['key'])) {
 				$r[] = array($match['key'] => $match['item']);
@@ -495,6 +507,7 @@ class Set extends Object {
  * @param integer $i Optional: The 'nth'-number of the item being matched.
  * @return boolean
  * @access public
+ * @static
  */
 	function matches($conditions, $data = array(), $i = null, $length = null) {
 		if (empty($conditions)) {
@@ -504,12 +517,12 @@ class Set extends Object {
 			return !!Set::extract($conditions, $data);
 		}
 		foreach ($conditions as $condition) {
-			if ($condition == ':last') {
+			if ($condition === ':last') {
 				if ($i != $length) {
 					return false;
 				}
 				continue;
-			} elseif ($condition == ':first') {
+			} elseif ($condition === ':first') {
 				if ($i != 1) {
 					return false;
 				}
@@ -531,20 +544,28 @@ class Set extends Object {
 			if (!isset($data[$key])) {
 				return false;
 			}
+
 			$val = $data[$key];
-			if ($op == '=' && $expected && $expected{0} == '/') {
+
+			if ($op === '=' && $expected && $expected{0} === '/') {
 				return preg_match($expected, $val);
-			} elseif ($op == '=' &&  $val != $expected) {
+			}
+			if ($op === '=' && $val != $expected) {
 				return false;
-			} elseif ($op == '!=' && $val == $expected) {
+			}
+			if ($op === '!=' && $val == $expected) {
 				return false;
-			} elseif ($op == '>' && $val <= $expected) {
+			}
+			if ($op === '>' && $val <= $expected) {
 				return false;
-			} elseif ($op == '<' && $val >= $expected) {
+			}
+			if ($op === '<' && $val >= $expected) {
 				return false;
-			} elseif ($op == '<=' && $val > $expected) {
+			}
+			if ($op === '<=' && $val > $expected) {
 				return false;
-			} elseif ($op == '>=' && $val < $expected) {
+			}
+			if ($op === '>=' && $val < $expected) {
 				return false;
 			}
 		}
@@ -560,11 +581,11 @@ class Set extends Object {
  * @param mixed $path As an array, or as a dot-separated string.
  * @return array Extracted data
  * @access public
+ * @static
  */
 	function classicExtract($data, $path = null) {
-		if ($path === null && is_a($this, 'set')) {
-			$path = $data;
-			$data = $this->get();
+		if (empty($path)) {
+			return $data;
 		}
 		if (is_object($data)) {
 			$data = get_object_vars($data);
@@ -574,6 +595,9 @@ class Set extends Object {
 		}
 
 		if (!is_array($path)) {
+			if (!class_exists('String')) {
+				App::import('Core', 'String');
+			}
 			$path = String::tokenize($path, '.', '{', '}');
 		}
 		$tmp = array();
@@ -583,13 +607,13 @@ class Set extends Object {
 		}
 
 		foreach ($path as $i => $key) {
-			if (is_numeric($key) && intval($key) > 0 || $key == '0') {
+			if (is_numeric($key) && intval($key) > 0 || $key === '0') {
 				if (isset($data[intval($key)])) {
 					$data = $data[intval($key)];
 				} else {
 					return null;
 				}
-			} elseif ($key == '{n}') {
+			} elseif ($key === '{n}') {
 				foreach ($data as $j => $val) {
 					if (is_int($j)) {
 						$tmpPath = array_slice($path, $i + 1);
@@ -601,7 +625,7 @@ class Set extends Object {
 					}
 				}
 				return $tmp;
-			} elseif ($key == '{s}') {
+			} elseif ($key === '{s}') {
 				foreach ($data as $j => $val) {
 					if (is_string($j)) {
 						$tmpPath = array_slice($path, $i + 1);
@@ -645,23 +669,19 @@ class Set extends Object {
  * @param array $data Data to insert
  * @return array
  * @access public
+ * @static
  */
 	function insert($list, $path, $data = null) {
-		if (empty($data) && is_a($this, 'Set')) {
-			$data = $path;
-			$path = $list;
-			$list =& $this->get();
-		}
 		if (!is_array($path)) {
 			$path = explode('.', $path);
 		}
 		$_list =& $list;
 
 		foreach ($path as $i => $key) {
-			if (is_numeric($key) && intval($key) > 0 || $key == '0') {
+			if (is_numeric($key) && intval($key) > 0 || $key === '0') {
 				$key = intval($key);
 			}
-			if ($i == count($path) - 1) {
+			if ($i === count($path) - 1) {
 				$_list[$key] = $data;
 			} else {
 				if (!isset($_list[$key])) {
@@ -679,11 +699,11 @@ class Set extends Object {
  * @param mixed $path A dot-separated string.
  * @return array Array with $path removed from its value
  * @access public
+ * @static
  */
 	function remove($list, $path = null) {
-		if (empty($path) && is_a($this, 'Set')) {
-			$path = $list;
-			$list =& $this->get();
+		if (empty($path)) {
+			return $list;
 		}
 		if (!is_array($path)) {
 			$path = explode('.', $path);
@@ -691,10 +711,10 @@ class Set extends Object {
 		$_list =& $list;
 
 		foreach ($path as $i => $key) {
-			if (is_numeric($key) && intval($key) > 0 || $key == '0') {
+			if (is_numeric($key) && intval($key) > 0 || $key === '0') {
 				$key = intval($key);
 			}
-			if ($i == count($path) - 1) {
+			if ($i === count($path) - 1) {
 				unset($_list[$key]);
 			} else {
 				if (!isset($_list[$key])) {
@@ -703,13 +723,7 @@ class Set extends Object {
 				$_list =& $_list[$key];
 			}
 		}
-
-		if (is_a($this, 'Set')) {
-			$this->value = $list;
-			return $this;
-		} else {
-			return $list;
-		}
+		return $list;
 	}
 /**
  * Checks if a particular path is set in an array
@@ -718,28 +732,28 @@ class Set extends Object {
  * @param mixed $path A dot-separated string.
  * @return boolean true if path is found, false otherwise
  * @access public
+ * @static
  */
 	function check($data, $path = null) {
-		if (empty($path) && is_a($this, 'Set')) {
-			$path = $data;
-			$data = $this->get();
+		if (empty($path)) {
+			return $data;
 		}
 		if (!is_array($path)) {
 			$path = explode('.', $path);
 		}
 
 		foreach ($path as $i => $key) {
-			if (is_numeric($key) && intval($key) > 0 || $key == '0') {
+			if (is_numeric($key) && intval($key) > 0 || $key === '0') {
 				$key = intval($key);
 			}
-			if ($i == count($path) - 1) {
+			if ($i === count($path) - 1) {
 				return (is_array($data) && array_key_exists($key, $data));
-			} else {
-				if (!is_array($data) || !array_key_exists($key, $data)) {
-					return false;
-				}
-				$data =& $data[$key];
 			}
+
+			if (!is_array($data) || !array_key_exists($key, $data)) {
+				return false;
+			}
+			$data =& $data[$key];
 		}
 		return true;
 	}
@@ -750,20 +764,13 @@ class Set extends Object {
  * @param mixed $val2 Second value
  * @return array Computed difference
  * @access public
+ * @static
  */
 	function diff($val1, $val2 = null) {
-		if ($val2 == null && is_a($this, 'set')) {
-			$val2 = $val1;
-			$val1 = $this->get();
-		}
-
-		if (is_a($val2, 'set')) {
-			$val2 = $val2->get();
-		}
-
 		if (empty($val1)) {
 			return (array)$val2;
-		} elseif (empty($val2)) {
+		}
+		if (empty($val2)) {
 			return (array)$val1;
 		}
 		$out = array();
@@ -793,13 +800,9 @@ class Set extends Object {
  * @param array $val2 Second value
  * @return boolean true if they are equal, false otherwise
  * @access public
+ * @static
  */
 	function isEqual($val1, $val2 = null) {
-		if ($val2 == null && (is_a($this, 'set') || is_a($this, 'Set'))) {
-			$val2 = $val1;
-			$val1 = $this->get();
-		}
-
 		return ($val1 == $val2);
 	}
 /**
@@ -809,20 +812,16 @@ class Set extends Object {
  * @param array $val2 Second value
  * @return boolean true if $val1 contains $val2, false otherwise
  * @access public
+ * @static
  */
 	function contains($val1, $val2 = null) {
-		if ($val2 == null && is_a($this, 'set')) {
-			$val2 = $val1;
-			$val1 = $this->get();
-		} elseif ($val2 != null && is_object($val2) && is_a($val2, 'set')) {
-			$val2 = $val2->get();
+		if (empty($val1) || empty($val2)) {
+			return false;
 		}
 
 		foreach ($val2 as $key => $val) {
 			if (is_numeric($key)) {
-				if (!in_array($val, $val1)) {
-					return false;
-				}
+				Set::contains($val, $val1);
 			} else {
 				if (!isset($val1[$key]) || $val1[$key] != $val) {
 					return false;
@@ -840,13 +839,9 @@ class Set extends Object {
  * @param integer $count Start the dimension count at this number
  * @return integer The number of dimensions in $array
  * @access public
+ * @static
  */
 	function countDim($array = null, $all = false, $count = 0) {
-		if ($array === null) {
-			$array = $this->get();
-		} elseif (is_object($array) && is_a($array, 'set')) {
-			$array = $array->get();
-		}
 		if ($all) {
 			$depth = array($count);
 			if (is_array($array) && reset($array) !== false) {
@@ -873,12 +868,15 @@ class Set extends Object {
  * @param boolean $trim If true, separated strings will be trimmed
  * @return array
  * @access public
+ * @static
  */
 	function normalize($list, $assoc = true, $sep = ',', $trim = true) {
 		if (is_string($list)) {
 			$list = explode($sep, $list);
 			if ($trim) {
-				$list = array_map('trim', $list);
+				foreach ($list as $key => $value) {
+					$list[$key] = trim($value);
+				}
 			}
 			if ($assoc) {
 				return Set::normalize($list);
@@ -922,21 +920,11 @@ class Set extends Object {
  * @param string $groupPath As an array, or as a dot-separated string.
  * @return array Combined array
  * @access public
+ * @static
  */
 	function combine($data, $path1 = null, $path2 = null, $groupPath = null) {
 		if (empty($data)) {
 			return array();
-		}
-
-		if (is_a($this, 'set') && is_string($data) && is_string($path1) && is_string($path2)) {
-			$groupPath = $path2;
-			$path2 = $path1;
-			$path1 = $data;
-			$data = $this->get();
-		} elseif (is_a($this, 'set') && is_string($data) && empty($path2)) {
-			$path2 = $path1;
-			$path1 = $data;
-			$data = $this->get();
 		}
 
 		if (is_object($data)) {
@@ -989,51 +977,12 @@ class Set extends Object {
  *
  * @param object $object Object to reverse
  * @return array
+ * @static
  */
 	function reverse($object) {
 		$out = array();
 		if (is_a($object, 'XmlNode')) {
-			$out = $object->attributes;
-			$multi = null;
-			foreach ($object->children as $child) {
-				if (is_a($child, 'XmlTextNode')) {
-					$out['value'] = $child->value;
-					continue;
-				} elseif (isset($child->children[0]) && is_a($child->children[0], 'XmlTextNode')) {
-					$value = $child->children[0]->value;
-					if ($child->attributes) {
-						$value = array_merge(array(
-							'value' => $value
-						), $child->attributes);
-					}
-					if (isset($out[$child->name])) {
-						if (!isset($multi)) {
-							$multi = array($out[$child->name]);
-						}
-						$multi[] = $value;
-					} else {
-						$out[$child->name] = $value;
-					}
-					continue;
-				} else {
-					$value = Set::reverse($child);
-				}
-				$key = Inflector::camelize($child->name);
-				if (!isset($out[$key])) {
-					$out[$key] = $value;
-				} else {
-					if (!is_array($out[$key]) || !isset($out[$key][0])) {
-						$out[$key] = array($out[$key]);
-					}
-					$out[$key][] = $value;
-				}
-			}
-			if (isset($multi)) {
-				unset($out[$object->children[0]->name]);
-				foreach ($multi as $item) {
-					$out[] = array(Inflector::camelize($object->children[0]->name) => $item);
-				}
-			}
+			$out = $object->toArray();
 			return $out;
 		} else if (is_object($object)) {
 			$keys = get_object_vars($object);
@@ -1046,7 +995,11 @@ class Set extends Object {
 				if (is_array($value)) {
 					$new[$key] = (array)Set::reverse($value);
 				} else {
-					$new[$key] = Set::reverse($value);
+					if (isset($value->_name_)) {
+						$new = array_merge($new, Set::reverse($value));
+					} else {
+						$new[$key] = Set::reverse($value);
+					}
 				}
 			}
 			if (isset($identity)) {
@@ -1062,6 +1015,41 @@ class Set extends Object {
 			$out = $object;
 		}
 		return $out;
+	}
+/**
+ * Collapses a multi-dimensional array into a single dimension, using a delimited array path for
+ * each array element's key, i.e. array(array('Foo' => array('Bar' => 'Far'))) becomes
+ * array('0.Foo.Bar' => 'Far').
+ *
+ * @param array $data Array to flatten
+ * @param string $separator String used to separate array key elements in a path, defaults to '.'
+ * @return array
+ * @access public
+ * @static
+ */
+	function flatten($data, $separator = '.') {
+		$result = array();
+		$path = null;
+
+		if (is_array($separator)) {
+			extract($separator, EXTR_OVERWRITE);
+		}
+
+		if (!is_null($path)) {
+			$path .= $separator;
+		}
+
+		foreach ($data as $key => $val) {
+			if (is_array($val)) {
+				$result += (array)Set::flatten($val, array(
+					'separator' => $separator,
+					'path' => $path . $key
+				));
+			} else {
+				$result[$path . $key] = $val;
+			}
+		}
+		return $result;
 	}
 /**
  * Flattens an array for sorting
@@ -1093,14 +1081,16 @@ class Set extends Object {
  * @param string $path A Set-compatible path to the array value
  * @param string $dir asc/desc
  * @return array
+ * @static
  */
 	function sort($data, $path, $dir) {
 		$result = Set::__flatten(Set::extract($data, $path));
 		list($keys, $values) = array(Set::extract($result, '{n}.id'), Set::extract($result, '{n}.value'));
-
-		if ($dir == 'asc') {
+		
+		$dir = strtolower($dir);
+		if ($dir === 'asc') {
 			$dir = SORT_ASC;
-		} elseif ($dir == 'desc') {
+		} elseif ($dir === 'desc') {
 			$dir = SORT_DESC;
 		}
 		array_multisort($values, $dir, $keys, $dir);
@@ -1112,6 +1102,13 @@ class Set extends Object {
 			$sorted[] = $data[$k];
 		}
 		return $sorted;
+	}
+/**
+ * Deprecated, Set class should be called statically
+ *
+ */
+	function &get() {
+		trigger_error('get() is deprecated. Set class should be called statically', E_USER_WARNING);
 	}
 }
 ?>
