@@ -413,7 +413,7 @@ class SvnAction extends Action {
 			$configDirectory = '--config-dir '.Utils::formatPath( $options['configDirectory'] );
 		}
 		$command = "svn checkout --non-interactive $configDirectory $revision $authentication $svnUrl $targetDir 2>&1";	
-		$commandForLog = "svn checkout --non-interactive $configDirectory $revision xxxxxxxxxxxxxxxxxxxxxx $svnUrl $targetDir 2>&1";		
+		$commandForLog = "svn checkout --non-interactive $configDirectory $revision XXXX $svnUrl $targetDir 2>&1";		
 		ShellAction::executeCommand( $command,
 			array(
 		        'directory'		=> $path,
@@ -468,10 +468,12 @@ class SvnAction extends Action {
 			$configDirectory = '--config-dir '.Utils::formatPath( $options['configDirectory'] );
 		}
 		$command = "svn export --non-interactive $configDirectory $revision $authentication $svnUrl $targetDir 2>&1";
+		$commandForLog = "svn export --non-interactive $configDirectory $revision XXXX $svnUrl $targetDir 2>&1";		
 		ShellAction::executeCommand( $command,
 			array(
 		        'directory'	=> $path,
-				'actionLog' => $actionLog
+				'actionLog' => $actionLog,
+				'commandForLog'	=> $commandForLog
 			)
 		);
 		// Parse output
@@ -509,13 +511,22 @@ class SvnAction extends Action {
 		// Execute command 
 		$projectDir = Utils::formatPath($projectDir);
 		$revision = ($options['revision']!=null)?' -r' . $options['revision']:'';
+		$authentication = '';
+		if (!is_null($options['user_svn'])) {
+			$authentication .= '--username '.$options['user_svn'];
+			if (!empty($options['password_svn'])) {
+				$authentication .= ' --password '.$options['password_svn'];
+			}
+		}
 		if (!is_null($options['configDirectory'])) {
 			$configDirectory = '--config-dir '.Utils::formatPath( $options['configDirectory'] );
 		}
-		$command = "svn update --non-interactive $configDirectory $revision 2>&1";
+		$command = "svn update --non-interactive $configDirectory $revision $authentication 2>&1";
+		$commandForLog = "svn update --non-interactive $configDirectory $revision XXXX 2>&1";		
 		ShellAction::executeCommand( $command, array(
-			'directory'	=> $projectDir,
-			'actionLog' => $actionLog
+				'directory'	=> $projectDir,
+				'actionLog' => $actionLog,
+				'commandForLog'	=> $commandForLog
 			) 
 		);
 		
