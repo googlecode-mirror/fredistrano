@@ -37,13 +37,27 @@ class AppController extends Controller {
 		}
 		
 		// Applying lang
-		uses('L10n');
-		$this->L10n = new L10n();
-		$this->L10n->get($lang);
-		
+		Configure::write('Config.language',$this->selectLanguage());
+	}// beforeFilter
+	
+	function beforeRender() {
 		// Disable cache due to a proxy issue
 		$this->disableCache();
-	}// beforeFilter
+	}// beforeRender
+	
+	/**
+	 * Return the language to use
+	 * order config -> user profile -> selected during navigation
+	 * @return $lang string
+	 */
+	function selectLanguage(){
+		if ($this->Session->read('User.Profile.lang')) {
+			return $this->Session->read('User.Profile.lang');
+		}
+		if (Configure::read('Language.default') !== null) {
+			return Configure::read('Fredistrano.language');
+		}
+	}// selectLanguage
 	
 }// AppController
 ?>
