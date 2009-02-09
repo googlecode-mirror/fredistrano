@@ -54,59 +54,54 @@ class Group extends AppModel {
 			// 'finderQuery' => 'SELECT user_id AS id FROM groups_users AS User WHERE group_id = {$__cakeID__$}',
 			'deleteQuery' => '',
 			'insertQuery' => ''
-		),
-		
+		)
 	);
 
 	var $belongsTo = array (
 		'ParentGroup' => array (
 			'className' => 'Group',
-			'foreignKey' => 'parent_id',
+			'foreignKey' => 'parent_id'
 		)		
 	);
 	
-	// var $hasOne = array (
-	// 	'ParentGroup' => array (
-	// 		'className' => 'Group',
-	// 		'foreignKey' => 'parent_id',
-	// 		
-	// 	)		
-	// );
-	
 	function getUsers($id = null) {
-    	if ($id == null)
+    	if (is_null($id)) {
 			return null;
+		}
 			
-		$sql = "SELECT `user_id` FROM `groups_users` 
-				WHERE `group_id` LIKE '$id'";	
+		$sql = "SELECT `user_id` FROM `groups_users` WHERE `group_id` LIKE '$id'";	
 		$res = $this->query($sql);	
 		
 		$tmp = array();
 		$size = count($res);
-		for ($i = 0; $i < $size; $i++)
+		for ($i = 0; $i < $size; $i++) {
 			$tmp[$i]['User']['id'] = $res[$i]['groups_users']['user_id'];
-debug($tmp);
+		}
 		
-    	return $tmp; 	
-    }
-     
-    function updateMembership($data){
-    	if ($data == null)
+		return $tmp;
+	}// getUsers
+
+	function updateMembership($data = null){
+		if (is_null($data)) {
 			return false;
+		}
 		
 		$this->id = $data['Group']['id'];
 		$this->data = $data;	
-			
-		if ($this->deleteMembership())
+
+		if ($this->deleteMembership()) {
 			return $this->_addMembership();
-    }
-    
-    function deleteMembership($id=null){
-    	if ($id==null)
-    		$id = $this->id;
-    	$sql = "DELETE FROM `groups_users` WHERE `group_id` = " . $id;
-    	return (is_array($this->query($sql)));
-    }
+		}
+	}// updateMembership
+
+	function deleteMembership($id=null){
+		if (is_null($id)) {
+			$id = $this->id;
+		}
+
+		$sql = "DELETE FROM `groups_users` WHERE `group_id` = " . $id;
+		return (is_array($this->query($sql)));
+	}// deleteMembership
     
 	private function _addMembership(){
 		if (isset($this->data['User']) && is_array($this->data['User'])) {
@@ -122,8 +117,7 @@ debug($tmp);
 			return (is_array($this->query($sql)));
 		}
 		return true;
-    }
+	}// _addMembership
 	
-	
-}
+}// Group
 ?>

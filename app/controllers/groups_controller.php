@@ -89,7 +89,6 @@ class GroupsController extends AppController {
 	 * @return void
 	 * @author Frédéric BOLLON
 	 */
-
 	function add() {
 		if (empty ($this->data)) {
 			$this->set('groups', $this->Group->find('list'));
@@ -122,7 +121,7 @@ class GroupsController extends AppController {
 			$this->data = $this->Group->read(null, $id);
 			$this->set('groups', $this->Group->find('list'));
 		} else {
-			if ($this->Group->save($this->data)) {				
+			if ($this->Group->save($this->data)) {
 				$this->Aclite->reloadsAcls('Aro');
 				$this->Session->setFlash(__('The group has been updated.', true));
 				$this->redirect('/groups/view/' . $id);
@@ -198,5 +197,5 @@ class GroupsController extends AppController {
 		}
 	}
 	
-}
+}// Group
 ?>

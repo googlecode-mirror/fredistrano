@@ -23,8 +23,8 @@
  * @package		app
  * @subpackage	app.views.groups
  */
- ?>
- <?php echo $javascript->link('multipleSelectBox.js');?>
+?>
+<?php echo $javascript->link('multipleSelectBox.js');?>
 
 <?php echo $form->create('Group', array(
 									'method' => 'post', 
@@ -58,11 +58,11 @@
 		</select>
 
 	</fieldset>
-		<?php echo $form->hidden('Group/id',array('value'=>$group['Group']['id'])) ?>
+	<?php echo $form->hidden('Group.id',array('value'=>$group['Group']['id'])) ?>
 
-		<div class="f-submit-wrap">
-			<?php echo $form->submit(__('Update', true), array('class' => 'f-submit'));?>
-		</div>
+	<div class="f-submit-wrap">
+		<?php echo $form->submit(__('Update', true), array('class' => 'f-submit'));?>
+	</div>
 		
 <?php echo $form->end();?>
 

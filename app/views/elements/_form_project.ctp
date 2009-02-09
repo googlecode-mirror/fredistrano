@@ -33,7 +33,6 @@
 	}
 ?>
 
-
 <?php echo $form->input('Project.name', 
 						array(
 							'label' => '<b>'.__('Project name', true).'<span class="req">*</span></b>',
