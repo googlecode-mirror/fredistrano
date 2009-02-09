@@ -109,7 +109,7 @@ class PhpAction extends Action {
 		
 				if (is_file($target . $list[$i])) {
 					$tmp_str = $list[$i];
-					fwrite($handle_f, $target.str_replace(".prd.", ".", $list[$i]) . "\n");
+					fwrite($handle_f, $target.str_replace(".".Configure::read('FileSystem.renameExt').".", ".", $list[$i]) . "\n");
 				} else if (is_dir($target . $list[$i])){
 					fwrite($handle_d, $target.$list[$i] . "\n");
 				}

@@ -62,7 +62,8 @@
 		'permissions'	=> array(
 			'files' 	=> '644',				//files mode after deployment, the directories mode will be calculate on this basis
 			'writable'	=> '777'				//writable mode on directories defined in deploy.php
-		)
+		),
+		'renameExt'		=> 'dev'
 	);
 	
 	$config['Log'] = array(

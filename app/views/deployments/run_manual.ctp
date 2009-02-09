@@ -186,7 +186,7 @@
 				<?php echo $form->hidden('Project.id', array('value' => $id))?>
 				
 				<fieldset class="f-name">
-					<label for="RenamePrdFile"><b><?php __('Rename files');?> '.prd.'</b>
+					<label for="RenamePrdFile"><b><?php e(sprintf(__('Rename files .%s', true),Configure::read('FileSystem.renameExt')));?></b>
 						<?php 
 							e($form->checkbox(
 								'Project.RenamePrdFile',  

@@ -381,13 +381,13 @@ class Deployment extends AppModel {
 		$options = array_merge($default_options, $options);
 		
 		$projectTmpDir = F_DEPLOYTMPDIR.$this->_project['Project']['name'].DS;
-		// Rename file type from .prd.xxx into .xxx
+		// Rename file type (eg. from .prd.xxx into .xxx)
 		if ($options['renamePrdFile'] === true) {
-			$command = "find ".Utils::formatPath($this->_project['Project']['prd_path'])." -name '*.prd.*' "
-				."-exec /usr/bin/perl ".Utils::formatPath(F_DEPLOYDIR.'scripts'.DS)."renamePrdFile -vf 's/\.prd\./\./i' {} \;";
+			$command = "find ".Utils::formatPath($this->_project['Project']['prd_path'])." -name '*.".Configure::read('FileSystem.renameExt').".*' "
+				."-exec /usr/bin/perl ".Utils::formatPath(F_DEPLOYDIR.'scripts'.DS)."renamePrdFile -vf 's/\.".Configure::read('FileSystem.renameExt')."\./\./i' {} \;";
 			$log =  ShellAction::executeCommand( $command,
 				array(
-			        'comment'	=> __('Rename .prd files', true),
+			        'comment'	=> sprintf(__('Rename .%s files', true),Configure::read('FileSystem.renameExt')),
 			        'directory'	=> F_DEPLOYDIR,
 					'stepLog' 	=> $this->_stepLog
 				)
