@@ -150,7 +150,7 @@
 <td>
 	
 <form action="<?php echo $html->url('/projects/deploy'); ?>" method="post">
-<?php echo $form->hidden('Project/id', array('value' => $project['Project']['id']))?>
+<?php echo $form->hidden('Project.id', array('value' => $project['Project']['id']))?>
 	<?php e($html->image('loading_orange.gif',
 						array(
 							'alt' => 'Loading...', 
