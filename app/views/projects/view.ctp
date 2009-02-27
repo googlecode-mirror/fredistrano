@@ -137,6 +137,11 @@
 </tr>
 
 <tr>
+<th class="sub"><?php __('Observation');?></th>
+<td><?php echo nl2br($project['Project']['observation']); ?>&nbsp;</td>
+</tr>
+
+<tr>
 <th class="sub"><?php __('Deployment method');?></th>
 <td>
 		<b><?php 

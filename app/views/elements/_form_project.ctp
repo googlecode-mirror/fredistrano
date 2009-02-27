@@ -72,6 +72,14 @@
 							'type' => 'textarea'
 							)
 						);?>
+<?php echo $form->input('Project.observation', 
+						array(
+							'label' => '<b>'.__('Observations', true).'</b>', 
+							'cols' => '70', 
+							'class' => 'f-name',
+							'type' => 'textarea'
+							)
+						);?>
 						
 <label for='Project.method'><b><?php __('Checkout source code') ?></b></label>
 <?php 
