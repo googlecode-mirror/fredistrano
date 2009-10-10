@@ -75,6 +75,13 @@ class ProjectsController extends AppController {
 	 * List all projects
 	 */
 	function index() {
+		$crumbs[] = array(
+			'name' 		=> __('Projects', true),
+			'link'		=> null,
+			'options'	=> null
+			);
+		$this->set('crumbs', $crumbs);
+		
 		$this->set('data', $this->paginate('Project')); 
 	}// index
 	
@@ -83,11 +90,23 @@ class ProjectsController extends AppController {
 	 * @param string $id ID of the project to be viewed
 	 */
 	function view($id = null) {
+		
 		if (!$id or !($project = $this->Project->read(null, $id))) {
 			$this->Session->setFlash(__('Invalid id.', true));
 			$this->redirect('/projects/index');
 			exit();
 		}
+		$crumbs[] = array(
+			'name' 		=> __('Projects', true),
+			'link'		=> '/projects/index',
+			'options'	=> null
+			);
+		$crumbs[] = array(
+			'name' 		=> $project['Project']['name'],
+			'link'		=> null,
+			'options'	=> null
+			);
+		$this->set('crumbs', $crumbs);
 		$this->set('project', $project);
 		$this->set('deploymentMethod', $this->Project->getMethodName($project['Project']['method']));
 	}// view
@@ -96,6 +115,18 @@ class ProjectsController extends AppController {
 	 * Add a new project
 	 */
 	function add() {
+		$crumbs[] = array(
+			'name' 		=> __('Projects', true),
+			'link'		=> '/projects/index',
+			'options'	=> null
+			);
+		$crumbs[] = array(
+			'name' 		=> __('New project', true),
+			'link'		=> null,
+			'options'	=> null
+			);
+		$this->set('crumbs', $crumbs);
+		
 		$this->_initializeLists();
 		if (!empty ($this->data)) {
 			if ($this->Project->save($this->data)) {
@@ -117,9 +148,25 @@ class ProjectsController extends AppController {
 				$this->Session->setFlash(__('Invalid id.', true));
 				$this->redirect('/projects/index');
 			}
+			
 			$this->data = $project;
 			$this->data['Project']['id'] = null;
-			
+			$crumbs[] = array(
+				'name' 		=> __('Projects', true),
+				'link'		=> '/projects/index',
+				'options'	=> null
+				);
+			$crumbs[] = array(
+				'name' 		=> __($project['Project']['name'], true),
+				'link'		=> '/projects/view/'.$project['Project']['id'],
+				'options'	=> null
+				);
+			$crumbs[] = array(
+				'name' 		=> __('New project', true),
+				'link'		=> null,
+				'options'	=> null
+				);
+			$this->set('crumbs', $crumbs);
 		} else {
 			if ($this->Project->save($this->data)) {
 				$this->Session->setFlash(__('Project saved.', true));

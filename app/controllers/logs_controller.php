@@ -52,6 +52,12 @@ class LogsController extends AppController {
 	}
 	
 	function index($project_id = '') {
+		$crumbs[] = array(
+			'name' 		=> __('Logs', true),
+			'link'		=> null,
+			'options'	=> null
+			);
+		$this->set('crumbs', $crumbs);
 		$projects = $this->Project->find( 
 			'list', 
 			array(

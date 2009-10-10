@@ -112,12 +112,31 @@ class DeploymentLogsController extends AppController {
 				break;
 			case 'project' :
 				$this->_listByProject($id);
+				$crumbs[] = array(
+					'name' 		=> __('Projects', true),
+					'link'		=> '/projects',
+					'options'	=> null
+					);
+				$crumbs[] = array(
+					'name' 		=> $this->Project->getProjectName($id),
+					'link'		=> '/projects/view/' . $id,
+					'options'	=> null
+					);
+				
 				break;
 			default :
 				$this->Session->setFlash(__('Unsupported action ', true) . $op);
 				$this->redirect('/deploymentLogs/list_all');
 				break;
 		} // switch
+		
+		$crumbs[] = array(
+			'name' 		=> __('Deployment logs', true),
+			'link'		=> null,
+			'options'	=> null
+			);
+		$this->set('crumbs', $crumbs);
+		
 	} // index
 
 	/**
@@ -145,7 +164,19 @@ class DeploymentLogsController extends AppController {
 				$this->set('size', 		$this->Project->lastReadSize);
 				$this->set('logPath',	$options['logPath']);
 			}
-		}			
+		}
+		$crumbs[] = array(
+			'name' 		=> __('Deployment logs', true),
+			'link'		=> '/projects/view/'.$this->data['Search']['project_id'],
+			'options'	=> null
+			);
+		$crumbs[] = array(
+			'name' 		=> __('Deployment logs', true),
+			'link'		=> null,
+			'options'	=> null
+			);
+		$this->set('crumbs', $crumbs);
+		
 		$this->set('log',	 	$output);
 		$this->set('deployLog', $deployLog);
 		$this->set('project', 	$this->Project->read(null, $this->data['Search']['project_id']));

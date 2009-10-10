@@ -68,6 +68,18 @@ class UsersController extends AppController {
 	function index() {
 		$data = $this->paginate('User');
 		$this->set(compact('data'));
+		$crumbs[] = array(
+			'name' 		=> __('Administration', true),
+			'link'		=> '/administration',
+			'options'	=> null
+			);
+		$crumbs[] = array(
+			'name' 		=> __('Users', true),
+			'link'		=> null,
+			'options'	=> null
+			);
+		$this->set('crumbs', $crumbs);
+		
 	}
 
 	function view($id = null) {
@@ -78,6 +90,23 @@ class UsersController extends AppController {
 		}
 		$user = $this->User->findById($id);
 		$this->set('user', $user);
+		$this->set(compact('data'));
+		$crumbs[] = array(
+			'name' 		=> __('Administration', true),
+			'link'		=> '/administration',
+			'options'	=> null
+			);
+		$crumbs[] = array(
+			'name' 		=> __('Users', true),
+			'link'		=> '/users',
+			'options'	=> null
+			);
+		$crumbs[] = array(
+			'name' 		=> $user['User']['login'],
+			'link'		=> null,
+			'options'	=> null
+			);
+		$this->set('crumbs', $crumbs);
 	}
 
 	function add() {
@@ -103,9 +132,27 @@ class UsersController extends AppController {
 				$this->set('selectedGroups', $this->data['Group']['Group']);
 			}
 		}
+		$crumbs[] = array(
+			'name' 		=> __('Administration', true),
+			'link'		=> '/administration',
+			'options'	=> null
+			);
+		$crumbs[] = array(
+			'name' 		=> __('Users', true),
+			'link'		=> '/users',
+			'options'	=> null
+			);
+		$crumbs[] = array(
+			'name' 		=> __('New user', true),
+			'link'		=> null,
+			'options'	=> null
+			);
+		$this->set('crumbs', $crumbs);
+		
 	}
 
 	function edit($id = null) {
+		
 		if (empty ($this->data)) {
 			if (!$id or !$this->User->read(null, $id)) {
 				$this->Session->setFlash(__('Invalid id.', true));
@@ -131,6 +178,27 @@ class UsersController extends AppController {
 				$this->set('selectedGroups', $this->data['Group']['Group']);
 			}
 		}
+		$crumbs[] = array(
+			'name' 		=> __('Administration', true),
+			'link'		=> '/administration',
+			'options'	=> null
+			);
+		$crumbs[] = array(
+			'name' 		=> __('Users', true),
+			'link'		=> '/users',
+			'options'	=> null
+			);
+		$crumbs[] = array(
+			'name' 		=> $this->data['User']['login'],
+			'link'		=> '/users/view/'. $this->data['User']['id'],
+			'options'	=> null
+			);
+		$crumbs[] = array(
+			'name' 		=> __('edit', true),
+			'link'		=> null,
+			'options'	=> null
+			);
+		$this->set('crumbs', $crumbs);
 	}
 
 	function delete($id = null) {

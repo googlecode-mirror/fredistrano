@@ -25,7 +25,7 @@
  */
 class HomeController extends AppController {
 
-	var $uses = array ('Project','DeploymentLog');
+	var $uses = array('Project','DeploymentLog');
 	
 	function beforeRender() {
 		parent::beforeRender();
@@ -66,6 +66,14 @@ class HomeController extends AppController {
 	 * Display the welcome screen
 	 */
 	function index() {
+		$crumbs[] = array(
+			'name' 		=> null,
+			'link'		=> null,
+			'options'	=> null
+			);
+		$this->set('crumbs', $crumbs);
+		
+		
 		if ($this->Session->read('User')) {
 			$projects = $this->Project->find('list', array('order'=>'Project.name ASC'));
 			

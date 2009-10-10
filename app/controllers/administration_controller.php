@@ -36,7 +36,14 @@ class AdministrationController extends AppController {
 	/**
 	 * Default action
 	 */
-	function index() {}
+	function index() {
+		$crumbs[] = array(
+			'name' 		=> __('Administration', true),
+			'link'		=> null,
+			'options'	=> null
+			);
+		$this->set('crumbs', $crumbs);
+	}
 
 	/**
 	 * Default action

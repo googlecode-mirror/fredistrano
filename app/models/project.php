@@ -133,6 +133,14 @@ class Project extends AppModel {
 	public function getMethodName($method){
 		return $this->deploymentMethods[$method];
 	}
+	
+	function getProjectName($id){
+		$project = $this->find('first', array(
+			'conditions' => array('id' => $id),
+			'fields' => array('name')
+			));
+		return $project['Project']['name'];
+	}
 
 }
 ?>

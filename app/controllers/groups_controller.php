@@ -62,6 +62,18 @@ class GroupsController extends AppController {
 	function index() {
 		$data = $this->paginate('Group');
 		$this->set(compact('data'));
+		$crumbs[] = array(
+			'name' 		=> __('Administration', true),
+			'link'		=> '/administration',
+			'options'	=> null
+			);
+		$crumbs[] = array(
+			'name' 		=> __('Groups', true),
+			'link'		=> null,
+			'options'	=> null
+			);
+		$this->set('crumbs', $crumbs);
+		
 	}
 
 	/**
@@ -78,9 +90,26 @@ class GroupsController extends AppController {
 			exit;
 		}
 		// $this->Group->recursive = 0;
-		$this->set('group', $this->Group->read(null, $id));
+		$this->set('group', $group = $this->Group->read(null, $id));
 		// $this->set('users', $this->Group->getUsers($id));
 		$this->set('person', $this->User->find('list', array('fields' => array('User.login', 'User.login'))));
+		$crumbs[] = array(
+			'name' 		=> __('Administration', true),
+			'link'		=> '/administration',
+			'options'	=> null
+			);
+		$crumbs[] = array(
+			'name' 		=> __('Groups', true),
+			'link'		=> '/groups/index',
+			'options'	=> null
+			);
+		$crumbs[] = array(
+			'name' 		=> $group['Group']['name'],
+			'link'		=> null,
+			'options'	=> null
+			);
+		$this->set('crumbs', $crumbs);
+		
 	}
 
 	/**
@@ -102,6 +131,23 @@ class GroupsController extends AppController {
 				$this->set('groups', $this->Group->find('list'));
 			}
 		}
+		$crumbs[] = array(
+			'name' 		=> __('Administration', true),
+			'link'		=> '/administration',
+			'options'	=> null
+			);
+		$crumbs[] = array(
+			'name' 		=> __('Groups', true),
+			'link'		=> '/groups/index',
+			'options'	=> null
+			);
+		$crumbs[] = array(
+			'name' 		=> __('New group', true),
+			'link'		=> null,
+			'options'	=> null
+			);
+		$this->set('crumbs', $crumbs);
+		
 	}
 	
 	/**
@@ -130,6 +176,23 @@ class GroupsController extends AppController {
 				$this->set('groups', $this->Group->find('list'));
 			}
 		}
+		$crumbs[] = array(
+			'name' 		=> __('Administration', true),
+			'link'		=> '/administration',
+			'options'	=> null
+			);
+		$crumbs[] = array(
+			'name' 		=> __('Groups', true),
+			'link'		=> '/groups/index',
+			'options'	=> null
+			);
+		$crumbs[] = array(
+			'name' 		=> $this->data['Group']['name'],
+			'link'		=> null,
+			'options'	=> null
+			);
+		$this->set('crumbs', $crumbs);
+		
 	}
 	
 	/**
@@ -195,6 +258,22 @@ class GroupsController extends AppController {
 			$this->redirect('/groups/view/'.$id);
 			exit;
 		}
+		$crumbs[] = array(
+			'name' 		=> __('Administration', true),
+			'link'		=> '/administration',
+			'options'	=> null
+			);
+		$crumbs[] = array(
+			'name' 		=> __('Groups', true),
+			'link'		=> '/groups/index',
+			'options'	=> null
+			);
+		$crumbs[] = array(
+			'name' 		=> __('Manage group members for ', true).$group['Group']['name'],
+			'link'		=> null,
+			'options'	=> null
+			);
+		$this->set('crumbs', $crumbs);
 	}
 	
 }// Group
