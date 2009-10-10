@@ -38,6 +38,7 @@ class ProjectsController extends AppController {
 		'except' 	=> 	array(
 			'edit' 		=> 	array( 'buinessData' ),
 			'add'		=> 	array( 'buinessData' ),
+			'copy'		=> 	array( 'buinessData' ),
 			'delete' 	=> 	array( 'buinessData' )
 		)
 	);
@@ -105,6 +106,30 @@ class ProjectsController extends AppController {
 			}
 		}
 	}// add 
+	
+	/**
+	 * Add a new project
+	 */
+	function copy($id = null) {
+		$this->_initializeLists();
+		if (empty ($this->data)) {
+			if (!$id or !($project = $this->Project->read(null, $id))) {
+				$this->Session->setFlash(__('Invalid id.', true));
+				$this->redirect('/projects/index');
+			}
+			$this->data = $project;
+			$this->data['Project']['id'] = null;
+			
+		} else {
+			if ($this->Project->save($this->data)) {
+				$this->Session->setFlash(__('Project saved.', true));
+				$lastId = $this->Project->getLastInsertID();
+				$this->redirect('/projects/view/' . $lastId);
+			} else {
+				$this->Session->setFlash(__('Please correct errors below.', true));
+			}
+		}
+	}// copy 
 	
 	/**
 	 * Edit a project properties

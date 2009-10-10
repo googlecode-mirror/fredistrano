@@ -84,6 +84,16 @@
 										false,
 										false);?></li>
 			<li>.</li>							
+			<li><?php echo $html->link($html->image('edit-copy.png', 
+													array(
+														'alt' => __('Create new project by copy', true), 
+														'title' => __('Create new project by copy', true)
+														)
+													), 
+										'/projects/copy/' . $project['Project']['id'], 
+										null,
+										false,
+										false);?></li>
 			<li><?php echo $html->link($html->image('b_edit.png', 
 													array(
 														'alt' => __('Edit', true), 
