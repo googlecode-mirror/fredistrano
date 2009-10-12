@@ -90,5 +90,11 @@
 	$config['Fredistrano'] = array(
 		'language'	=> 'en'						//default language 
 	);
+	
+	$config['YUI'] = array(
+		'path'				=> 'http://yui.yahooapis.com/2.7.0',
+		'version'			=> '2.7.0'
+	);
+	
 
 ?>

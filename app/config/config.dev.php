@@ -87,8 +87,13 @@
 		'optionalOptions'	=> 'O'				//rsync option not supported on all OS, comment this line if you get an issue during the rsync command
 	);
 	
-
 	$config['Fredistrano'] = array(
 		'language'	=> 'en'						//default language 
 	);
+	
+	$config['YUI'] = array(
+		'path'				=> 'http://yui.yahooapis.com/2.7.0',
+		'version'			=> '2.7.0'
+	);
+	
 ?>

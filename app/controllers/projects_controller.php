@@ -216,6 +216,20 @@ class ProjectsController extends AppController {
 		}
 	}// delete
 	
+	/**
+	 * Projects list for autocomplete field
+	 *
+	 * @return void
+	 * @author Frédéric BOLLON
+	 */
+	function projectsList(){
+		Configure::write('debug', 0);
+		$this->layout = 'ajax';
+		$projects = $this->Project->find('list');
+		
+		$this->set('projects', $projects);
+	}
+	
 	function _initializeLists() {
 		$this->set('deploymentMethods', $this->Project->deploymentMethods);
 	}// _initializeLists

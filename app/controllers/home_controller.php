@@ -27,6 +27,8 @@ class HomeController extends AppController {
 
 	var $uses = array('Project','DeploymentLog');
 	
+	var $helpers = array('Yui');
+	
 	function beforeRender() {
 		parent::beforeRender();
 		

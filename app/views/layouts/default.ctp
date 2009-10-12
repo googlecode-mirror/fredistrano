@@ -60,6 +60,42 @@ http://creativecommons.org/licenses/GPL/2.0/
 <?php echo $javascript->link('pngfix') ?>
 <![endif]-->
 
+<!-- YUI -->
+<script type="text/javascript" src="<?php e(Configure::read('YUI.path'))?>/build/yuiloader/yuiloader-min.js"></script>
+<script type="text/javascript" src="<?php e(Configure::read('YUI.path'))?>/build/yahoo/yahoo-min.js" ></script>
+<script type="text/javascript" src="<?php e(Configure::read('YUI.path'))?>/build/event/event-min.js" ></script>
+<script type="text/javascript" charset="utf-8">
+	YAHOO.namespace ("fbc"); 
+	YAHOO.fbc.loaderReady = new YAHOO.util.CustomEvent("loaderReady", this);
+	YAHOO.fbc.jsLibs = ['dom'];
+	YAHOO.util.Event.onDOMReady( function () {
+    	var loader = new YAHOO.util.YUILoader({
+	        require: YAHOO.fbc.jsLibs, // what components?
+			<?php
+			if (Configure::read('debug') > 0) {
+				echo "filter: 'debug',";
+			} else {
+				echo "loadOptional: false,"; 
+		        echo "combine: true,"; 
+		        echo "filter: 'MIN',";
+		        echo "allowRollup: true,";
+			}
+			?>
+			base: '<?php e(Configure::read('YUI.path'))?>/build/',//where do they live?
+			onSuccess: function(o) {
+				YAHOO.fbc.loaderReady.fire();
+			},
+			onFailure: function(o) {
+				alert("error: " + YAHOO.lang.dump(o));
+			}
+		});
+		// Calculate the dependency and insert the required scripts and css resources
+		// into the document
+		loader.insert(); 
+	});
+</script>
+<!-- fin YUI -->
+
 </head>
 
 <body id="type-e">

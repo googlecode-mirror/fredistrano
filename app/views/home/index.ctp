@@ -32,16 +32,23 @@
 		<h3>Quick start</h3>
 		<ul>
 		<li>
+			<form name="acProject">
 			<?php
-				__('Access an existing project: ');
-				echo $form->select(
-					'Project.id', 
-					$projects, 
-					null, 
-					array('onchange' => "document.location = '".$this->base."/projects/view/'+$('ProjectId').value;"), 
-					true
-				); 
+				echo $yui->autoComplete(
+			 		'Project.id', 
+			 		array(
+			 			'url' 		=> '/projects/projectsList',
+			 			'fields' 	=> array('id', 'name'),
+			 			'name'		=> 'YAHOO.fbc.projects'
+			 			), 
+			 		array(
+			 			'label'		=> __('Access an existing project', true), 
+						'redirectTo' => $this->base."/projects/view/",
+			 			'multiple'	=> false
+			 			)
+			 		);
 			?>
+			</form>
 		</li>
 		<li><?php echo $html->link(__('Create a new project', true),'/projects/add'); ?></li>
 		</ul>
@@ -66,5 +73,8 @@
 	</div>
 <?php 
 	endif;
-	e('<br/><br/><br/><br/><br/><br/>');
+	//e('<br/><br/><br/><br/><br/><br/>');
 ?>
+<script type="text/javascript" charset="utf-8">
+	document.acProject.elements['dividinput'].focus();
+</script>

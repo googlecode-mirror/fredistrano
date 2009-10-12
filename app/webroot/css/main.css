@@ -84,7 +84,7 @@ ul {margin: .3em 0 1.5em 0;list-style-type:none}
 	ul.related {margin-top: -1em}
 ol {margin: .5em .5em 1.5em}
 ol li {margin-left: 1.4em;padding-left: 0;background: none; list-style-type: decimal}
-li {line-height: 1.4em;padding-left: 25px;background: transparent url("images/sprites.gif") no-repeat 0 0}
+li {line-height: 1.4em;padding-left: 25px;background: transparent /*url("images/sprites.gif")*/ no-repeat 0 0}
 li.doc {background-position: 3px -500px}
 ul.nomarker li {background:none;padding-left:0}
 
