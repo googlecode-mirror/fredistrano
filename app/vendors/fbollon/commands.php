@@ -264,7 +264,7 @@ class ShellAction extends Action {
 		}
 		
 		// Execute command 
-		$output = shell_exec( $prefix.$command.$suffix );
+		$output = utf8_encode(shell_exec($prefix.$command.$suffix));
 		
 		if (!is_null($options['commandForLog'])) {
 			$commandForLog = $options['commandForLog'];
