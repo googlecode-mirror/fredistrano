@@ -80,7 +80,14 @@
 							'type' => 'textarea'
 							)
 						);?>
-						
+<?php 
+	echo $form->input('Project.user_id', 
+		array(
+			'type' => 'hidden', 
+			'value' => (empty($this->data['Prooject']['user_id'])?$session->read('User.User.id'):$this->data['Prooject']['user_id'])
+		)
+	);
+?>
 <label for='Project.method'><b><?php __('Checkout source code') ?></b></label>
 <?php 
 	e($form->checkbox('Project.method').'&nbsp;').
