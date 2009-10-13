@@ -1,0 +1,13 @@
+ALTER TABLE `acos`  ENGINE = MYISAM;
+ALTER TABLE `aros`  ENGINE = MYISAM;
+ALTER TABLE `aros_acos`  ENGINE = MYISAM;
+ALTER TABLE `control_objects`  ENGINE = MYISAM;
+ALTER TABLE `deployment_logs`  ENGINE = MYISAM;
+ALTER TABLE `groups`  ENGINE = MYISAM;
+ALTER TABLE `groups_users`  ENGINE = MYISAM;
+ALTER TABLE `profiles`  ENGINE = MYISAM;
+ALTER TABLE `projects`  ENGINE = MYISAM;
+ALTER TABLE `users`  ENGINE = MYISAM;
+
+ALTER TABLE `projects` ADD `observation` TEXT NULL;
+ALTER TABLE `projects` ADD `user_id` INT NOT NULL;
