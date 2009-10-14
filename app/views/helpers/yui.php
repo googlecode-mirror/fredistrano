@@ -87,15 +87,15 @@ class YuiHelper extends FormHelper {
 		?>
 		<div class="yui-skin-sam">
 			<label for="<?php e($inputId) ?>"><?php e($label) ?></label>
-			<div id="<?php e($divId) ?>" style="width:21em;padding-bottom:2em;z-index:<?php e(self::$zindex) ?>">
+			<div id="<?php e($divId) ?>" style="width:30em;z-index:<?php e(self::$zindex) ?>">
 				
 				<?php self::$zindex--;?>
 				
 				<?php 
 				if ($requireHidden) {
-					e("<input id='$inputId' type='text' value='$selected' style=' position:static;width:20em; vertical-align:middle;'/>");
+					e("<input id='$inputId' type='text' value='$selected' style='position:static;width:20em; vertical-align:middle;'/>");
 				} else {
-					e("<input id='$inputId' type='text' value='$selected' name='data[$model][$field]' style=' position:static;width:20em; vertical-align:middle;'/>");
+					e("<input id='$inputId' type='text' value='$selected' name='data[$model][$field]' style='position:static;width:20em; vertical-align:middle;'/>");
 				}
 				?>
 				<span id='toggleB'></span>
