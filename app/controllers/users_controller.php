@@ -51,35 +51,24 @@ class UsersController extends AppController {
 	
 	function beforeRender() {
 		parent::beforeRender();
-		// Tableau de liens pour la création du menu contextuel
-		$tab[] = array('text' => 'Actions');
-		if ($this->action != 'index' && $this->action != 'change_password')
-			$tab[] = array('text' => __('User list', true), 'link' => '/users/index');
-		if ($this->action != 'add' && $this->action != 'change_password')
-			$tab[] = array('text' => __('Add user', true), 'link' => '/users/add');
+		$this->ContextMenu->addSection(__('Actions', true));
+		
+		if ($this->action != 'index' && $this->action != 'change_password'){
+			$this->ContextMenu->addLink(__('User list', true), '/users/index');
+		}
+		if ($this->action != 'add' && $this->action != 'change_password'){
+			$this->ContextMenu->addLink(__('Add user', true), '/users/add');
+		}
+		$this->ContextMenu->addLink(__('Manage groups', true), '/groups/index');
 			
-		$tab[] = array('text' => __('Manage groups', true), 'link' => '/groups/index');
-
-		if (sizeof($tab)< 2)
-				$tab = array();
-		$this->set("context_menu", $tab);
 	}
 
 	function index() {
 		$data = $this->paginate('User');
 		$this->set(compact('data'));
-		$crumbs[] = array(
-			'name' 		=> __('Administration', true),
-			'link'		=> '/administration',
-			'options'	=> null
-			);
-		$crumbs[] = array(
-			'name' 		=> __('Users', true),
-			'link'		=> null,
-			'options'	=> null
-			);
-		$this->set('crumbs', $crumbs);
 		
+		$this->Crumbs->addLink(__('Administration', true), '/administration');
+		$this->Crumbs->leaf = __('Users', true);
 	}
 
 	function view($id = null) {
@@ -91,22 +80,10 @@ class UsersController extends AppController {
 		$user = $this->User->findById($id);
 		$this->set('user', $user);
 		$this->set(compact('data'));
-		$crumbs[] = array(
-			'name' 		=> __('Administration', true),
-			'link'		=> '/administration',
-			'options'	=> null
-			);
-		$crumbs[] = array(
-			'name' 		=> __('Users', true),
-			'link'		=> '/users',
-			'options'	=> null
-			);
-		$crumbs[] = array(
-			'name' 		=> $user['User']['login'],
-			'link'		=> null,
-			'options'	=> null
-			);
-		$this->set('crumbs', $crumbs);
+		
+		$this->Crumbs->addLink(__('Administration', true), '/administration');
+		$this->Crumbs->addLink(__('Users', true), '/users');
+		$this->Crumbs->leaf = $user['User']['login'];
 	}
 
 	function add() {
@@ -132,23 +109,10 @@ class UsersController extends AppController {
 				$this->set('selectedGroups', $this->data['Group']['Group']);
 			}
 		}
-		$crumbs[] = array(
-			'name' 		=> __('Administration', true),
-			'link'		=> '/administration',
-			'options'	=> null
-			);
-		$crumbs[] = array(
-			'name' 		=> __('Users', true),
-			'link'		=> '/users',
-			'options'	=> null
-			);
-		$crumbs[] = array(
-			'name' 		=> __('New user', true),
-			'link'		=> null,
-			'options'	=> null
-			);
-		$this->set('crumbs', $crumbs);
 		
+		$this->Crumbs->addLink(__('Administration', true), '/administration');
+		$this->Crumbs->addLink(__('Users', true), '/users');
+		$this->Crumbs->leaf = __('New user', true);
 	}
 
 	function edit($id = null) {
@@ -178,27 +142,11 @@ class UsersController extends AppController {
 				$this->set('selectedGroups', $this->data['Group']['Group']);
 			}
 		}
-		$crumbs[] = array(
-			'name' 		=> __('Administration', true),
-			'link'		=> '/administration',
-			'options'	=> null
-			);
-		$crumbs[] = array(
-			'name' 		=> __('Users', true),
-			'link'		=> '/users',
-			'options'	=> null
-			);
-		$crumbs[] = array(
-			'name' 		=> $this->data['User']['login'],
-			'link'		=> '/users/view/'. $this->data['User']['id'],
-			'options'	=> null
-			);
-		$crumbs[] = array(
-			'name' 		=> __('edit', true),
-			'link'		=> null,
-			'options'	=> null
-			);
-		$this->set('crumbs', $crumbs);
+		
+		$this->Crumbs->addLink(__('Administration', true), '/administration');
+		$this->Crumbs->addLink(__('Users', true), '/users');
+		$this->Crumbs->addLink($this->data['User']['login'], '/users/view/'. $this->data['User']['id']);
+		$this->Crumbs->leaf = __('edit', true);
 	}
 
 	function delete($id = null) {

@@ -43,44 +43,22 @@ class ProjectsController extends AppController {
 		)
 	);
 	
-	function beforeRender() {
-		parent::beforeRender();
+	
+	function beforeFilter(){
+		parent::beforeFilter();
 		
-		// Tableau de liens pour la création du menu contextuel
-		$tab[] = array (
-			'text' => 'Actions'
-		);
-
-		if ($this->action != 'index')
-			$tab[] = array (
-				'text' => __('Project list', true),
-				'link' => '/projects/index'
-			);
-
-		if ($this->action != 'add')
-			$tab[] = array (
-				'text' => __('Add project', true),
-				'link' => '/projects/add'
-			);
-
-		$tab[] = array (
-			'text' => __('Display full history', true),
-			'link' => '/deploymentLogs'
-		);
-		$this->set("context_menu", $tab);
-	}// beforeRender
-
+		$this->ContextMenu->addSection(__('Actions', true));
+	}
+	
 	// Public actions -----------------------------------------------------------
 	/**
 	 * List all projects
 	 */
 	function index() {
-		$crumbs[] = array(
-			'name' 		=> __('Projects', true),
-			'link'		=> null,
-			'options'	=> null
-			);
-		$this->set('crumbs', $crumbs);
+		$this->Crumbs->leaf = __('Projects', true);
+		
+		$this->ContextMenu->addLink(__('Add project', true), '/projects/add');
+		$this->ContextMenu->addLink(__('Display full history', true), '/deploymentLogs');
 		
 		$this->set('data', $this->paginate('Project')); 
 	}// index
@@ -96,17 +74,14 @@ class ProjectsController extends AppController {
 			$this->redirect('/projects/index');
 			exit();
 		}
-		$crumbs[] = array(
-			'name' 		=> __('Projects', true),
-			'link'		=> '/projects/index',
-			'options'	=> null
-			);
-		$crumbs[] = array(
-			'name' 		=> $project['Project']['name'],
-			'link'		=> null,
-			'options'	=> null
-			);
-		$this->set('crumbs', $crumbs);
+		
+		$this->Crumbs->addLink(__('Projects', true), '/projects/index');
+		$this->Crumbs->leaf = $project['Project']['name'];
+		
+		$this->ContextMenu->addLink(__('Project list', true), '/projects');
+		$this->ContextMenu->addLink(__('Add project', true), '/projects/add');
+		$this->ContextMenu->addLink(__('Display full history', true), '/deploymentLogs');
+		
 		$this->set('project', $project);
 		$this->set('deploymentMethod', $this->Project->getMethodName($project['Project']['method']));
 	}// view
@@ -115,17 +90,11 @@ class ProjectsController extends AppController {
 	 * Add a new project
 	 */
 	function add() {
-		$crumbs[] = array(
-			'name' 		=> __('Projects', true),
-			'link'		=> '/projects/index',
-			'options'	=> null
-			);
-		$crumbs[] = array(
-			'name' 		=> __('New project', true),
-			'link'		=> null,
-			'options'	=> null
-			);
-		$this->set('crumbs', $crumbs);
+		$this->Crumbs->addLink(__('Projects', true), '/projects/index');
+		$this->Crumbs->leaf = __('New project', true);
+		
+		$this->ContextMenu->addLink(__('Project list', true), '/projects');
+		$this->ContextMenu->addLink(__('Display full history', true), '/deploymentLogs');
 		
 		$this->_initializeLists();
 		if (!empty ($this->data)) {
@@ -151,22 +120,15 @@ class ProjectsController extends AppController {
 			
 			$this->data = $project;
 			$this->data['Project']['id'] = null;
-			$crumbs[] = array(
-				'name' 		=> __('Projects', true),
-				'link'		=> '/projects/index',
-				'options'	=> null
-				);
-			$crumbs[] = array(
-				'name' 		=> __($project['Project']['name'], true),
-				'link'		=> '/projects/view/'.$project['Project']['id'],
-				'options'	=> null
-				);
-			$crumbs[] = array(
-				'name' 		=> __('New project', true),
-				'link'		=> null,
-				'options'	=> null
-				);
-			$this->set('crumbs', $crumbs);
+			
+			$this->Crumbs->addLink(__('Projects', true), '/projects/index');
+			$this->Crumbs->addLink($project['Project']['name'], '/projects/view/'.$project['Project']['id']);
+			$this->Crumbs->leaf = __('New project', true);
+
+			$this->ContextMenu->addLink(__('Project list', true), '/projects');
+			$this->ContextMenu->addLink(__('Display full history', true), '/deploymentLogs');
+			
+			
 		} else {
 			if ($this->Project->save($this->data)) {
 				$this->Session->setFlash(__('Project saved.', true));
@@ -189,6 +151,15 @@ class ProjectsController extends AppController {
 				$this->Session->setFlash(__('Invalid id.', true));
 				$this->redirect('/projects/index');
 			}
+
+			$this->Crumbs->addLink(__('Projects', true), '/projects/index');
+			$this->Crumbs->addLink($project['Project']['name'], '/projects/view/'.$project['Project']['id']);
+			$this->Crumbs->leaf = __('Edit project', true);
+
+			$this->ContextMenu->addLink(__('Project list', true), '/projects');
+			$this->ContextMenu->addLink(__('Add project', true), '/projects/add');
+			$this->ContextMenu->addLink(__('Display full history', true), '/deploymentLogs');
+
 			$this->data = $project;
 			
 		} else {

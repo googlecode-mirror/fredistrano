@@ -40,31 +40,19 @@ class DeploymentLogsController extends AppController {
 
 	function beforeRender() {
 		parent::beforeRender();
-
+		$this->ContextMenu->addSection(__('Actions', true));
+		
 		// Tableau de lien pour la création du menu contextuel
-		$tab[] = array (
-			'text' => 'Actions'
-		);
 		if ($this->action != 'index') {
-			$tab[] = array (
-				'text' => __('Display full history', true),
-				'link' => '/deploymentLogs'
-			);
+			$this->ContextMenu->addLink(__('Display full history', true), '/deploymentLogs');
 		}
-		$tab[] = array (
-			'text' => __('List projects', true),
-			'link' => '/projects'
-		);
+		$this->ContextMenu->addLink(__('List projects', true), '/projects');
+		
 		if ($this->Session->read('User')) {
 			if ( Configure::read('Feeds.enabled') === true ) {
-				$tab[] = array (
-					'text' => __('Rss Feed', true),
-					'link' => '/deploymentLogs/index.rss?token='.$this->Session->read('User.Profile.rss_token')
-				);
+				$this->ContextMenu->addLink(__('Rss Feed', true), '/deploymentLogs/index.rss?token='.$this->Session->read('User.Profile.rss_token'));
 			}
 		}
-		// On passe le tableau de lien dans la variable links pour l'élément context_menu.thtml
-		$this->set("context_menu", $tab);
 	} // beforeRender
 
 	// Available actions ----------------------------------------------------------------------------------
@@ -112,17 +100,8 @@ class DeploymentLogsController extends AppController {
 				break;
 			case 'project' :
 				$this->_listByProject($id);
-				$crumbs[] = array(
-					'name' 		=> __('Projects', true),
-					'link'		=> '/projects',
-					'options'	=> null
-					);
-				$crumbs[] = array(
-					'name' 		=> $this->Project->getProjectName($id),
-					'link'		=> '/projects/view/' . $id,
-					'options'	=> null
-					);
-				
+				$this->Crumbs->addLink(__('Projects', true), '/projects');
+				$this->Crumbs->addLink($this->Project->getProjectName($id), '/projects/view/' . $id);
 				break;
 			default :
 				$this->Session->setFlash(__('Unsupported action ', true) . $op);
@@ -130,13 +109,7 @@ class DeploymentLogsController extends AppController {
 				break;
 		} // switch
 		
-		$crumbs[] = array(
-			'name' 		=> __('Deployment logs', true),
-			'link'		=> null,
-			'options'	=> null
-			);
-		$this->set('crumbs', $crumbs);
-		
+		$this->Crumbs->leaf = __('Deployment logs', true);
 	} // index
 
 	/**
@@ -165,17 +138,9 @@ class DeploymentLogsController extends AppController {
 				$this->set('logPath',	$options['logPath']);
 			}
 		}
-		$crumbs[] = array(
-			'name' 		=> __('Deployment logs', true),
-			'link'		=> '/projects/view/'.$this->data['Search']['project_id'],
-			'options'	=> null
-			);
-		$crumbs[] = array(
-			'name' 		=> __('Deployment logs', true),
-			'link'		=> null,
-			'options'	=> null
-			);
-		$this->set('crumbs', $crumbs);
+		
+		$this->Crumbs->addLink(__('Deployment logs', true), '/projects/view/'.$this->data['Search']['project_id']);
+		$this->Crumbs->leaf = __('Deployment logs', true);
 		
 		$this->set('log',	 	$output);
 		$this->set('deployLog', $deployLog);

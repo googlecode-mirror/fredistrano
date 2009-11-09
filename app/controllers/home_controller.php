@@ -31,50 +31,25 @@ class HomeController extends AppController {
 	
 	function beforeRender() {
 		parent::beforeRender();
+				
+		$this->ContextMenu->addSection(__('Navigation', true));
+		$this->ContextMenu->addLink(__('About', true), '/pages/about');
 		
-		// Tableau de liens pour la création du menu contextuel
-		$tab[] = array (
-			'text' => __('Navigation', true)
-		);
-		$tab[] = array (
-			'text' => __('About', true),
-			'link' => '/pages/about'
-		);
 		if ($this->Session->read('User')) {
 			if ( Configure::read('Feeds.enabled') === true ) {
-				$tab[] = array (
-					'text' => __('Rss Feed', true),
-					'link' => '/deploymentLogs/index.rss?token='.$this->Session->read('User.Profile.rss_token')
-				);
+				$this->ContextMenu->addLink(__('Rss Feed', true),'/deploymentLogs/index.rss?token='.$this->Session->read('User.Profile.rss_token'));
 			}
 		}
 		
-		$tab[] = array (
-			'text' => __('See also', true)
-		);
-		$tab[] = array (
-			'text' => __('Homepage', true),
-			'link' => 'http://code.google.com/p/fredistrano/'
-		);
-		$tab[] = array (
-			'text' => __('Donate', true),
-			'link' => 'http://code.google.com/p/fredistrano/wiki/Donation'
-		);
-
-		$this->set("context_menu", $tab);
+		$this->ContextMenu->addSection(__('See also', true));
+		$this->ContextMenu->addLink(__('Homepage', true), 'http://code.google.com/p/fredistrano/');
+		$this->ContextMenu->addLink(__('Donate', true), 'http://code.google.com/p/fredistrano/wiki/Donation');
 	}
 
 	/**
 	 * Display the welcome screen
 	 */
 	function index() {
-		$crumbs[] = array(
-			'name' 		=> null,
-			'link'		=> null,
-			'options'	=> null
-			);
-		$this->set('crumbs', $crumbs);
-		
 		
 		if ($this->Session->read('User')) {
 			$projects = $this->Project->find('list', array('order'=>'Project.name ASC'));

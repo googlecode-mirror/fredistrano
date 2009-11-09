@@ -36,28 +36,14 @@ class LogsController extends AppController {
 		'Logs'	=> 	array( 'entrance' )
 	);
 	
-	function beforeRender() {
-		parent::beforeRender();
+	function beforeFilter(){
+		parent::beforeFilter();
 		
-		// Tableau de liens pour la création du menu contextuel
-		$tab[] = array (
-			'text' => 'Actions'
-		);
-
-		$tab[] = array (
-			'text' => __('Project list', true),
-			'link' => '/projects'
-		);
-		$this->set("context_menu", $tab);
+		$this->ContextMenu->addSection(__('Actions', true));
 	}
 	
 	function index($project_id = '') {
-		$crumbs[] = array(
-			'name' 		=> __('Logs', true),
-			'link'		=> null,
-			'options'	=> null
-			);
-		$this->set('crumbs', $crumbs);
+		
 		$projects = $this->Project->find( 
 			'list', 
 			array(
@@ -65,8 +51,18 @@ class LogsController extends AppController {
 				'order'=>'Project.name ASC'
 			)
 		);
+
+		$this->Crumbs->addLink(__('Projects', true), '/projects/index');
+		if (!empty($project_id)) {
+			$currentProject = $this->Project->findById($project_id);
+			$this->Crumbs->addLink($currentProject['Project']['name'], '/projects/view/'.$currentProject['Project']['id']);
+		}
+		$this->Crumbs->leaf = __('Logs', true);
+
+		$logs = $this->getLogList($project_id);
+
 		$this->set('projects', $projects);
-		$this->set('logs', $this->getLogList($project_id));
+		$this->set('logs', $logs);
 		$this->set('project_id', $project_id);
 	}// index
 	

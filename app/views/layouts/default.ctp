@@ -129,10 +129,9 @@ http://creativecommons.org/licenses/GPL/2.0/
 		</div>
 		
 		<div id="content">
-			
 			<div id="ariane">
-				<?php echo $this->renderElement('ariane') ?>
-			</div><!-- ariane -->
+				<?php echo $contextElement->crumbs($crumbs); ?>
+			</div>
 			
 			<?php 
 			if ($session->check('Message.flash')):

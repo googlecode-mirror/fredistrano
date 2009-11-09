@@ -42,38 +42,24 @@ class GroupsController extends AppController {
 
 	function beforeRender() {
 		parent::beforeRender();
-		// Tableau de liens pour la création du menu contextuel
-		$tab[] = array (
-			'text' => 'Actions'
-		);
-		if ($this->action != 'index')
-			$tab[] = array (
-				'text' => __('Group list', true),
-				'link' => '/groups/index'
-			);
-		if ($this->action != 'add')
-			$tab[] = array (
-				'text' => __('Add group', true),
-				'link' => '/groups/add'
-			);
-		$this->set('context_menu', $tab);
+
+		$this->ContextMenu->addSection(__('Actions', true));
+
+		if ($this->action != 'index'){
+			$this->ContextMenu->addLink(__('Group list', true), '/groups/index');
+		}
+		if ($this->action != 'add'){
+			$this->ContextMenu->addLink(__('Add group', true), '/groups/add');
+		}
+
 	}
 
 	function index() {
 		$data = $this->paginate('Group');
 		$this->set(compact('data'));
-		$crumbs[] = array(
-			'name' 		=> __('Administration', true),
-			'link'		=> '/administration',
-			'options'	=> null
-			);
-		$crumbs[] = array(
-			'name' 		=> __('Groups', true),
-			'link'		=> null,
-			'options'	=> null
-			);
-		$this->set('crumbs', $crumbs);
 		
+		$this->Crumbs->addLink(__('Administration', true), '/administration');
+		$this->Crumbs->leaf = __('Groups', true);
 	}
 
 	/**
@@ -93,23 +79,10 @@ class GroupsController extends AppController {
 		$this->set('group', $group = $this->Group->read(null, $id));
 		// $this->set('users', $this->Group->getUsers($id));
 		$this->set('person', $this->User->find('list', array('fields' => array('User.login', 'User.login'))));
-		$crumbs[] = array(
-			'name' 		=> __('Administration', true),
-			'link'		=> '/administration',
-			'options'	=> null
-			);
-		$crumbs[] = array(
-			'name' 		=> __('Groups', true),
-			'link'		=> '/groups/index',
-			'options'	=> null
-			);
-		$crumbs[] = array(
-			'name' 		=> $group['Group']['name'],
-			'link'		=> null,
-			'options'	=> null
-			);
-		$this->set('crumbs', $crumbs);
-		
+
+		$this->Crumbs->addLink(__('Administration', true), '/administration');
+		$this->Crumbs->addLink(__('Groups', true), '/groups/index');
+		$this->Crumbs->leaf = $group['Group']['name'];
 	}
 
 	/**
@@ -131,23 +104,10 @@ class GroupsController extends AppController {
 				$this->set('groups', $this->Group->find('list'));
 			}
 		}
-		$crumbs[] = array(
-			'name' 		=> __('Administration', true),
-			'link'		=> '/administration',
-			'options'	=> null
-			);
-		$crumbs[] = array(
-			'name' 		=> __('Groups', true),
-			'link'		=> '/groups/index',
-			'options'	=> null
-			);
-		$crumbs[] = array(
-			'name' 		=> __('New group', true),
-			'link'		=> null,
-			'options'	=> null
-			);
-		$this->set('crumbs', $crumbs);
 		
+		$this->Crumbs->addLink(__('Administration', true), '/administration');
+		$this->Crumbs->addLink(__('Groups', true), '/groups/index');
+		$this->Crumbs->leaf = __('New group', true);
 	}
 	
 	/**
@@ -176,23 +136,10 @@ class GroupsController extends AppController {
 				$this->set('groups', $this->Group->find('list'));
 			}
 		}
-		$crumbs[] = array(
-			'name' 		=> __('Administration', true),
-			'link'		=> '/administration',
-			'options'	=> null
-			);
-		$crumbs[] = array(
-			'name' 		=> __('Groups', true),
-			'link'		=> '/groups/index',
-			'options'	=> null
-			);
-		$crumbs[] = array(
-			'name' 		=> $this->data['Group']['name'],
-			'link'		=> null,
-			'options'	=> null
-			);
-		$this->set('crumbs', $crumbs);
 		
+		$this->Crumbs->addLink(__('Administration', true), '/administration');
+		$this->Crumbs->addLink(__('Groups', true), '/groups/index');
+		$this->Crumbs->leaf = $this->data['Group']['name'];
 	}
 	
 	/**
@@ -258,22 +205,10 @@ class GroupsController extends AppController {
 			$this->redirect('/groups/view/'.$id);
 			exit;
 		}
-		$crumbs[] = array(
-			'name' 		=> __('Administration', true),
-			'link'		=> '/administration',
-			'options'	=> null
-			);
-		$crumbs[] = array(
-			'name' 		=> __('Groups', true),
-			'link'		=> '/groups/index',
-			'options'	=> null
-			);
-		$crumbs[] = array(
-			'name' 		=> __('Manage group members for ', true).$group['Group']['name'],
-			'link'		=> null,
-			'options'	=> null
-			);
-		$this->set('crumbs', $crumbs);
+		
+		$this->Crumbs->addLink(__('Administration', true), '/administration');
+		$this->Crumbs->addLink(__('Groups', true), '/groups/index');
+		$this->Crumbs->leaf = __('Manage group members for ', true).$group['Group']['name'];
 	}
 	
 }// Group
